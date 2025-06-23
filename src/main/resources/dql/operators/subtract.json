@@ -1,0 +1,23 @@
+{
+  "operator": "subtract",
+  "mapping": {
+    "long": {
+      "long": "long",
+      "double": "double"
+    },
+    "double": {
+      "long": "double",
+      "double": "double"
+    },
+    "timestamp": {
+      "timestamp": "duration",
+      "duration": "timestamp"
+    },
+    "duration": {
+      "duration": "duration"
+    },
+    "timeframe": {
+      "duration": "timeframe"
+    }
+  }
+}

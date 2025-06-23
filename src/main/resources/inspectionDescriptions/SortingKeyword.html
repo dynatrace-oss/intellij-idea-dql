@@ -1,0 +1,19 @@
+<html>
+<body>
+Verifies the sorting keyword is used in the correct context.
+
+<p>
+    Sorting operation can only be used in a specific DQL command context, inside sorting parameters.
+    In all other places, the inspection will report an error.
+</p>
+<pre><code>
+data json: "..."
+| sort field1, field2 desc, field3 desc // this is a correct usage, because "sort" command expects a sorting expression
+| fields field1, field2 desc, field3 desc // field2 and field3 will report an error, as the sorting expression cannot be used here
+| dedup field1, sort: field2 desc, field3 desc // this is a correct usage
+</code></pre>
+<p>
+    After applying the quick-fix, the sorting keyword will be dropped.
+</p>
+</body>
+</html>

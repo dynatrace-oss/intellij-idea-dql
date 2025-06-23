@@ -1,0 +1,18 @@
+{
+  "operator": "divide",
+  "mapping": {
+    "long": {
+      "long": "long",
+      "double": "double"
+    },
+    "double": {
+      "long": "double",
+      "double": "double"
+    },
+    "duration": {
+      "long": "duration",
+      "double": "duration",
+      "duration": "double"
+    }
+  }
+}

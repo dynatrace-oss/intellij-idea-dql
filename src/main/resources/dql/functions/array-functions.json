@@ -1,0 +1,745 @@
+{
+  "array": {
+    "group": "array-functions",
+    "name": "array",
+    "description": "Creates an array from the list of given parameters.",
+    "syntax": [
+      "array(expression, …)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "array",
+          "boolean",
+          "double",
+          "duration",
+          "ip",
+          "long",
+          "record",
+          "string",
+          "timeframe",
+          "timestamp"
+        ],
+        "description": "An element inside the array.",
+        "required": true,
+        "repetitive": true
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Creates an array from the list of given parameters.",
+    "aliases": [
+      "array"
+    ]
+  },
+  "arrayAvg": {
+    "group": "array-functions",
+    "name": "arrayAvg",
+    "description": "Returns the average of an array.",
+    "syntax": [
+      "arrayAvg(array)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "double",
+      "long"
+    ],
+    "longDescription": "Returns the average of an array. Values that are not numeric are ignored. Returns 0 if there is no matching element.",
+    "aliases": [
+      "arrayAvg"
+    ]
+  },
+  "arrayConcat": {
+    "group": "array-functions",
+    "name": "arrayConcat",
+    "description": "Concatenates multiple arrays into a single array.",
+    "syntax": [
+      "arrayConcat(array, …)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array expression"
+        ],
+        "description": "Array expression that should be combined with others.",
+        "required": true,
+        "repetitive": true
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Concatenates multiple arrays into a single array. This function skips all null values and non-array input parameter values. If no array parameter input is available, it returns null.",
+    "aliases": [
+      "arrayConcat"
+    ]
+  },
+  "arrayCumulativeSum": {
+    "group": "array-functions",
+    "name": "arrayCumulativeSum",
+    "description": "Returns the cumulative sum, also known as the running total, of the elements of the input array.",
+    "syntax": [
+      "arrayCumulativeSum(array)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "The input array.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Returns the cumulative sum, also known as the running total, of the elements of the input array.",
+    "aliases": [
+      "arrayCumulativeSum"
+    ]
+  },
+  "arrayDelta": {
+    "group": "array-functions",
+    "name": "arrayDelta",
+    "description": "Returns an array where each element is the difference from the previous non-null element.",
+    "syntax": [
+      "arrayDelta(array)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Returns an array where each element is the difference from the previous non-null element, when positive, otherwise it returns 0. Null elements are skipped. The first element of the returned array is null.",
+    "aliases": [
+      "arrayDelta"
+    ]
+  },
+  "arrayDistinct": {
+    "group": "array-functions",
+    "name": "arrayDistinct",
+    "description": "Returns the array without duplicates.",
+    "syntax": [
+      "arrayDistinct(array)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Returns the array without duplicates. It sorts numbers in ascending order and strings in lexicographic order.",
+    "aliases": [
+      "arrayDistinct"
+    ]
+  },
+  "arrayFirst": {
+    "group": "array-functions",
+    "name": "arrayFirst",
+    "description": "Returns the first non-null element of an array.",
+    "syntax": [
+      "arrayFirst(arrayName)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": ["any"],
+    "longDescription": "Returns the first non-null element of an array.",
+    "aliases": [
+      "arrayFirst"
+    ]
+  },
+  "arrayFlatten": {
+    "group": "array-functions",
+    "name": "arrayFlatten",
+    "description": "Returns a flattened array.",
+    "syntax": [
+      "arrayFlatten(array)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "The array that should be flattened.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Returns a flattened array.",
+    "aliases": [
+      "arrayFlatten"
+    ]
+  },
+  "arrayIndexOf": {
+    "group": "array-functions",
+    "name": "arrayIndexOf",
+    "description": "Returns position of the first member in the array, which is equal to the given value.",
+    "syntax": [
+      "arrayIndexOf(array, value)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "The array expression in which the value is searched for.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "value",
+        "type": [
+          "expression"
+        ],
+        "description": "The primitive value to search for in the expression.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Returns the position of the first member in the array, which is equal to the given value.",
+    "aliases": [
+      "arrayIndexOf"
+    ]
+  },
+  "arrayLast": {
+    "group": "array-functions",
+    "name": "arrayLast",
+    "description": "Returns the last non-null element of an array.",
+    "syntax": [
+      "arrayLast(array)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array",
+          "boolean",
+          "double",
+          "duration",
+          "ip",
+          "long",
+          "record",
+          "string",
+          "timeframe",
+          "timestamp"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": ["any"],
+    "longDescription": "Returns the last non-null element of an array.",
+    "aliases": [
+      "arrayLast"
+    ]
+  },
+  "arrayLastIndexOf": {
+    "group": "array-functions",
+    "name": "arrayLastIndexOf",
+    "description": "Returns position of the last member in the array, which is equal to the given value.",
+    "syntax": [
+      "arrayLastIndexOf(array, value)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "The array expression in which the value is searched for.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "value",
+        "type": [
+          "expression"
+        ],
+        "description": "The primitive value to search for in the expression.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Returns position of the last member in the array, which is equal to the given value.",
+    "aliases": [
+      "arrayLastIndexOf"
+    ]
+  },
+  "arrayMax": {
+    "group": "array-functions",
+    "name": "arrayMax",
+    "description": "Returns the biggest number of an array.",
+    "syntax": [
+      "arrayMax(array)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": ["any"],
+    "longDescription": "Returns the maximum (biggest) number of an array. Values that are not numeric are ignored. Returns NULL if there is no matching element.",
+    "aliases": [
+      "arrayMax"
+    ]
+  },
+  "arrayMedian": {
+    "group": "array-functions",
+    "name": "arrayMedian",
+    "description": "Returns the median of the members of an array.",
+    "syntax": [
+      "arrayMedian(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "array"
+        ],
+        "description": "The array from which to compute the median.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean",
+      "double",
+      "duration",
+      "timestamp"
+    ],
+    "longDescription": "Returns the median of the members of an array. Returns null for arrays with mixed data type. Quantile calculations use an exponential histogram representation suitable for large data sets with high dynamic ranges, producing small relative errors. Results might differ slightly from those obtained through less calculation-efficient methods.",
+    "aliases": [
+      "arrayMedian"
+    ]
+  },
+  "arrayMin": {
+    "group": "array-functions",
+    "name": "arrayMin",
+    "description": "Returns the smallest number of an array.",
+    "syntax": [
+      "arrayMin(array)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": ["any"],
+    "longDescription": "Returns the minimum (smallest) number of an array. Values that are not numeric are ignored. Returns NULL if there is no matching element.",
+    "aliases": [
+      "arrayMin"
+    ]
+  },
+  "arrayMovingAvg": {
+    "group": "array-functions",
+    "name": "arrayMovingAvg",
+    "description": "Replaces each element of the input array with the average of current and previous elements within the window.",
+    "syntax": [
+      "arrayMovingAvg(array, window)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "window",
+        "type": [
+          "double",
+          "long"
+        ],
+        "description": "The maximum number of elements to look back at. Maximum 60.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Replaces each element of the input array with the average of current and previous elements within the window.",
+    "aliases": [
+      "arrayMovingAvg"
+    ]
+  },
+  "arrayMovingMax": {
+    "group": "array-functions",
+    "name": "arrayMovingMax",
+    "description": "Replaces each element of the input array with the maximum of current and previous elements within the window.",
+    "syntax": [
+      "arrayMovingMax(array, window)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "window",
+        "type": [
+          "double",
+          "long"
+        ],
+        "description": "The maximum number of elements to look back at. Maximum 60.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Replaces each element of the input array with the maximum of current and previous elements within the window.",
+    "aliases": [
+      "arrayMovingMax"
+    ]
+  },
+  "arrayMovingMin": {
+    "group": "array-functions",
+    "name": "arrayMovingMin",
+    "description": "Replaces each element of the input array with the minimum of current and previous elements within the window.",
+    "syntax": [
+      "arrayMovingMin(array, windowSize)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "window",
+        "type": [
+          "double",
+          "long"
+        ],
+        "description": "The maximum number of elements to look back at. Maximum 60.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Replaces each element of the input array with the minimum of current and previous elements within the window.",
+    "aliases": [
+      "arrayMovingMin"
+    ]
+  },
+  "arrayMovingSum": {
+    "group": "array-functions",
+    "name": "arrayMovingSum",
+    "description": "Replaces each element of the input array with the sum of current and previous elements within the window.",
+    "syntax": [
+      "arrayMovingSum(array, windowSize)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "window",
+        "type": [
+          "double",
+          "long"
+        ],
+        "description": "The maximum number of elements to look back at. Maximum 60.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Replaces each element of the input array with the sum of current and previous elements within the window.",
+    "aliases": [
+      "arrayMovingSum"
+    ]
+  },
+  "arrayPercentile": {
+    "group": "array-functions",
+    "name": "arrayPercentile",
+    "description": "Calculates a given percentile of an array.",
+    "syntax": [
+      "arrayPercentile(expression, percentile)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "array"
+        ],
+        "description": "The array from which to compute a percentile.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "percentile",
+        "type": [
+          "double",
+          "long"
+        ],
+        "description": "The percentile to compute, between 0 and 100.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean",
+      "double",
+      "duration",
+      "timestamp"
+    ],
+    "longDescription": "Calculates a given percentile of an array. Quantile calculations use an exponential histogram representation suitable for large data sets with high dynamic ranges, producing small relative errors. Results might differ slightly from those obtained through less calculation-efficient methods.",
+    "aliases": [
+      "arrayPercentile"
+    ]
+  },
+  "arrayRemoveNulls": {
+    "group": "array-functions",
+    "name": "arrayRemoveNulls",
+    "description": "Returns the array where null elements are removed.",
+    "syntax": [
+      "arrayRemoveNulls(array)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Returns the array where NULL elements are removed.",
+    "aliases": [
+      "arrayRemoveNulls"
+    ]
+  },
+  "arrayReverse": {
+    "group": "array-functions",
+    "name": "arrayReverse",
+    "description": "Returns the array with elements in reversed order.",
+    "syntax": [
+      "arrayReverse(array)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Returns the array with elements in reversed order.",
+    "aliases": [
+      "arrayReverse"
+    ]
+  },
+  "arraySize": {
+    "group": "array-functions",
+    "name": "arraySize",
+    "description": "Returns the size of an array.",
+    "syntax": [
+      "arraySize(array)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Returns the size of an array.",
+    "aliases": [
+      "arraySize"
+    ]
+  },
+  "arraySort": {
+    "group": "array-functions",
+    "name": "arraySort",
+    "description": "Returns the array with elements sorted in ascending order by default.",
+    "syntax": [
+      "arraySort(array, direction)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "direction",
+        "type": [
+          "string"
+        ],
+        "description": "A sort order. Possible values: ascending, descending. Default: ascending.",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Returns the array with elements sorted in ascending order by default. If you need to control the order, use the direction parameter.",
+    "aliases": [
+      "arraySort"
+    ]
+  },
+  "arraySum": {
+    "group": "array-functions",
+    "name": "arraySum",
+    "description": "Returns the sum of an array.",
+    "syntax": [
+      "arraySum(array)"
+    ],
+    "parameters": [
+      {
+        "name": "array",
+        "type": [
+          "array"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "double",
+      "long"
+    ],
+    "longDescription": "Returns the sum of an array. Values that are not numeric are ignored. Returns 0 if there is no matching element.",
+    "aliases": [
+      "arraySum"
+    ]
+  }
+}

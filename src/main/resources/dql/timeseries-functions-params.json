@@ -1,0 +1,58 @@
+{
+  "name": "timeseries-params",
+  "parameters": [
+    {
+      "name": "rollup",
+      "type": [
+        "enumeration"
+      ],
+      "description": "The time rollup that should be used for the aggregation. Can be min, max, sum, avg, total.",
+      "required": false,
+      "repetitive": false,
+      "defaultValue": "min",
+      "enumValues": [
+        "min",
+        "max",
+        "sum",
+        "avg",
+        "total"
+      ]
+    },
+    {
+      "name": "default",
+      "type": [
+        "number"
+      ],
+      "description": "The default value that should be used to fill gaps/empty bins. The default value is null.",
+      "required": false,
+      "repetitive": false
+    },
+    {
+      "name": "rate",
+      "type": [
+        "duration"
+      ],
+      "description": "The duration that shall be used to adjust the bin values using the following formula: (binValue / interval) * rate.",
+      "required": false,
+      "repetitive": false
+    },
+    {
+      "name": "scalar",
+      "type": [
+        "boolean"
+      ],
+      "description": "Flag to indicate that a single scalar value spanning the whole timeframe shall be calculated. Can be used on any aggregation function except start and end.",
+      "required": false,
+      "repetitive": false
+    },
+    {
+      "name": "filter",
+      "type": [
+        "boolean"
+      ],
+      "description": "An additional filter condition that shall be applied on the source records before time-/space-aggregation. If all aggregations are filtering on the same condition, the global filter parameter can be used over specifying the same condition in each aggregation individually.",
+      "required": false,
+      "repetitive": false
+    }
+  ]
+}

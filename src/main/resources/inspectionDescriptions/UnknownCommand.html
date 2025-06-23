@@ -1,0 +1,14 @@
+<html>
+<body>
+Verifies the usage of supported DQL commands.
+
+<p>
+    This inspection reports an error if it detects a keyword that belongs to an unknown command.
+    No further validations will be performed on such command.
+</p>
+
+<pre><code>
+unknownCommand true, from: now() // will report an error, because "unknownCommand" is not a valid command keyword
+</code></pre>
+</body>
+</html>

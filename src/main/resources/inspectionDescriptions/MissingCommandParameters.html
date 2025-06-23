@@ -1,0 +1,22 @@
+<html>
+<body>
+Verifies if a command has a properly defined parameters list.
+
+<p>Will report an error if any of the required parameters is missing.</p>
+
+<pre><code>
+data json: "..."
+| lookup [...] // is missing parameters "sourceField" and "lookupField"
+</code></pre>
+
+<p>
+    After applying the quick-fix, all required parameters will be added and the user will be prompted
+    to fill in their values.
+</p>
+<pre><code>
+data json: "..."
+| lookup [...], sourceField: some.field, lookupField: some.field // the "some.field" will be template variables for the user to fill in
+</code></pre>
+
+</body>
+</html>

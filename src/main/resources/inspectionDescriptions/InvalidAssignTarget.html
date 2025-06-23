@@ -1,0 +1,14 @@
+<html>
+<body>
+Checks if both sides of an assignment expression are valid.
+
+<p>You can only assign values to fields. This inspection will raise an error if the value is assigned to an invalid expression.</p>
+
+<pre><code>
+data json: "..."
+| fields field = 55 // this is a correct assignment
+| fields concat("some", "value)" = field // you cannot assign values to - for example - functions
+</code></pre>
+
+</body>
+</html>

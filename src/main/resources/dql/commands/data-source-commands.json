@@ -1,0 +1,156 @@
+{
+  "fetch": {
+    "name": "fetch",
+    "description": "Loads data from the specified resource.",
+    "type": "data-source-commands",
+    "syntax": [
+      "fetch dataObject [,timeframe:] [,from:] [,to:] [,samplingRatio:] [,scanLimitGBytes:]"
+    ],
+    "parameters": [
+      {
+        "name": "dataObject",
+        "description": "The data source object to query",
+        "nameAllowed": false,
+        "required": true,
+        "type": [
+          "data object"
+        ],
+        "suggested": [
+          "spans",
+          "events",
+          "bizevents",
+          "logs"
+        ]
+      },
+      {
+        "name": "timeframe",
+        "description": "The timeframe to fetch data from.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "timeframe"
+        ],
+        "disallows": [
+          "from",
+          "to"
+        ]
+      },
+      {
+        "name": "from",
+        "description": "The start time for fetching data.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "timestamp",
+          "duration"
+        ],
+        "disallows": [
+          "timeframe"
+        ],
+        "defaultValue": "-1h"
+      },
+      {
+        "name": "to",
+        "description": "The end time for fetching data.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "timestamp",
+          "duration"
+        ],
+        "disallows": [
+          "timeframe"
+        ],
+        "defaultValue": "now()"
+      },
+      {
+        "name": "samplingRatio",
+        "description": "Sampling happens vertically across the data, resulting in the selection of a subset of Log records, according to the specified parameter.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "positive long"
+        ],
+        "disallows": [],
+        "defaultValue": 1
+      },
+      {
+        "name": "scanLimitGBytes",
+        "description": "Controls the amount of uncompressed data to be read by the fetch stage. The default value is 500GB unless specified otherwise. If set to -1, all data available in the query time range is analyzed.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "long"
+        ],
+        "disallows": [],
+        "defaultValue": 500
+      }
+    ]
+  },
+  "data": {
+    "name": "data",
+    "description": "Generates sample data during query runtime.",
+    "type": "data-source-commands",
+    "syntax": [
+      "data [ records ] [, json: json_string ]"
+    ],
+    "oneOfRequired": [
+      "records", "json"
+    ],
+    "parameters": [
+      {
+        "name": "records",
+        "description": "A list of record expressions. Either records or JSON has to be specified.",
+        "required": false,
+        "repetitive": true,
+        "nameAllowed": false,
+        "constant": true,
+        "allowsDuplicates": true,
+        "type": [
+          "records list",
+          "record"
+        ],
+        "disallows": [
+          "json"
+        ]
+      },
+      {
+        "name": "json",
+        "description": "A string that defines either a single JSON object or a JSON array. Either records or JSON has to be specified.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "string"
+        ],
+        "disallows": [
+          "records"
+        ]
+      }
+    ]
+  },
+  "describe": {
+    "name": "describe",
+    "description": "Describes the on-read schema extraction definition for a given data object.",
+    "type": "data-source-commands",
+    "syntax": [
+      "describe dataObject"
+    ],
+    "parameters": [
+      {
+        "name": "dataObject",
+        "description": "The data source object to query",
+        "nameAllowed": false,
+        "required": true,
+        "type": [
+          "data object"
+        ],
+        "suggested": [
+          "spans",
+          "events",
+          "bizevents",
+          "logs"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+<html>
+<body>
+Checks if a field value write operation is allowed in this context.
+<p>
+    You can assign a value to a field only in a specific DQL context.
+    This inspection verifies that the write operation is correctly used.
+</p>
+<p>Example:</p>
+<pre><code>
+data json: "..."
+| fieldsKeep someField = "some value" // you can just list the fields name, without setting their values here
+</code></pre>
+</body>
+</html>

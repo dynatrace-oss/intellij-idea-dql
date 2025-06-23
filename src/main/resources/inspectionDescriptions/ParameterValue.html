@@ -1,0 +1,14 @@
+<html>
+<body>
+Validates the parameter value type.
+
+<p>
+    All parameters have a defined set of possible value types. You can hover over the parameter, command, or function
+    to see the list of expected values.
+</p>
+<pre><code>
+data json: 55 // "json" should be a string
+ | filter matchesValue(field, "some", caseSensitive: 55) // "caseSensitive" should be a boolean
+</code></pre>
+</body>
+</html>

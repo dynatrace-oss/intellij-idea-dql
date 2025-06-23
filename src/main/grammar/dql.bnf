@@ -1,0 +1,339 @@
+{
+    parserClass="pl.thedeem.intellij.dql.DQLParser"
+    extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+    psiClassPrefix="DQL"
+    psiImplClassSuffix="Impl"
+    psiPackage="pl.thedeem.intellij.dql.psi"
+    psiImplPackage="pl.thedeem.intellij.dql.impl"
+
+    elementTypeHolderClass="pl.thedeem.intellij.dql.psi.DQLTypes"
+    elementTypeClass="pl.thedeem.intellij.dql.psi.DQLElementType"
+    tokenTypeClass="pl.thedeem.intellij.dql.psi.DQLTokenType"
+
+    psiImplUtilClass="pl.thedeem.intellij.dql.psi.DQLPsiImplUtil"
+
+    extends(".+_expression")=expression
+    consumeTokenMethod(".*")="consumeTokenFast"
+
+    tokens=[
+        // Definitions
+        IDENTIFIER = 'regexp:[a-zA-Z_][a-zA-Z0-9_]*'
+        NUMBERED_IDENTIFIER = 'regexp:[0-9]+[a-zA-Z_]+'
+        POSITIVE_LONG = 'regexp:[0-9]+'
+        POSITIVE_DOUBLE = 'regexp:[0-9]+\.[0-9]+'
+        EOL_COMMENT = 'regexp://.*'
+        TRUE = 'true'
+        FALSE = 'false'
+
+        // Operators
+        ML_COMMENT_START = '/*'
+        ML_COMMENT_FINISH = '*/'
+        PIPE = '|'
+        EQUALS = '=='
+        NOT_EQUALS = '!='
+        GREATER_OR_EQUALS_THAN = '>='
+        LESSER_OR_EQUALS_THAN = '<='
+        GREATER_THAN = '>'
+        LESSER_THAN = '<'
+        L_BRACE = '{'
+        R_BRACE = '}'
+        L_PARENTHESIS = '('
+        R_PARENTHESIS = ')'
+        SET = '='
+        COMMA = ','
+        COLON = ':'
+        DOT = '.'
+        ARRAY_OPEN = '['
+        ARRAY_CLOSE = ']'
+        ADD = '+'
+        SUBTRACT = '-'
+        MULTIPLY = '*'
+        DIVIDE = '/'
+        MODULO = '%'
+        AND = 'and'
+        OR = 'or'
+        XOR = 'xor'
+        NOT = 'not'
+        AT = '@'
+      ]
+}
+
+root ::= comment | query?
+query ::= query_statement (query_statement)* { pin=1 }
+
+query_statement ::= PIPE? query_statement_keyword query_parameters_list? {
+    pin=2
+    recoverWhile=query_statement_recover
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.CommandImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.Command"
+}
+
+query_statement_keyword ::= IDENTIFIER {
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.CommandKeywordImpl"
+   implements="pl.thedeem.intellij.dql.psi.elements.CommandKeyword"
+}
+
+private query_parameters_list ::= expression (COMMA expression)*
+
+// Comment types
+comment ::= end_of_line_comment | multiline_comment
+end_of_line_comment ::= EOL_COMMENT { pin=1 extends=comment }
+multiline_comment ::= ML_COMMENT { pin=1 extends=comment }
+
+// Supported expression types
+expression ::=
+    assign_expression |
+    condition_expression |
+    comparison_expression |
+    unary_expression |
+    multiplicative_expression |
+    additive_expression |
+    equality_expression |
+    bracket_expression |
+    negative_value_expression |
+    array_expression |
+    parameter_expression |
+    parenthesised_expression |
+    in_expression |
+    time_alignment_now_expression |
+    time_alignment_at_expression |
+    sort_expression |
+    function_call_expression |
+    subquery_expression |
+    variable_expression |
+    field_expression |
+    simple_expression
+
+condition_expression ::= expression condition_operator expression {
+    pin=2
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.ConditionExpressionImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.ConditionExpression"
+}
+condition_operator ::= AND|OR|XOR {
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
+}
+
+equality_expression ::= expression equality_operator expression {
+    pin=2
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.EqualityExpressionImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.EqualityExpression"
+}
+equality_operator ::= EQUALS | NOT_EQUALS {
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
+}
+
+comparison_expression ::= expression comparison_operator expression {
+    pin=2
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.ComparisonExpressionImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.ComparisonExpression"
+}
+comparison_operator ::= GREATER_THAN | GREATER_OR_EQUALS_THAN | LESSER_THAN | LESSER_OR_EQUALS_THAN {
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
+}
+
+multiplicative_expression ::= expression multiplicative_operator expression {
+   pin=2
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.MultiplicativeExpressionImpl"
+   implements="pl.thedeem.intellij.dql.psi.elements.ArithmeticalExpression"
+}
+multiplicative_operator ::= MULTIPLY | DIVIDE | MODULO {
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
+}
+
+additive_expression ::= expression additive_operator expression {
+   pin=2
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.AdditiveExpressionImpl"
+   implements="pl.thedeem.intellij.dql.psi.elements.ArithmeticalExpression"
+}
+additive_operator ::= ADD | SUBTRACT {
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
+}
+
+unary_expression ::= unary_operator expression {
+    pin=1
+    rightAssociative=true
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.UnaryExpressionImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.UnaryExpression"
+}
+unary_operator ::= NOT {
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
+}
+
+assign_expression ::= expression assignment_operator expression {
+    pin=2
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.AssignExpressionImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.AssignExpression"
+}
+assignment_operator ::= SET {
+  mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
+}
+parenthesised_expression ::= L_PARENTHESIS parenthesised_expression_content R_PARENTHESIS {
+    pin=1
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.ParenthesizedExpressionImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.ParenthesizedExpression"
+}
+private parenthesised_expression_content ::= expression {pin=1 recoverWhile=recover_parenthesised_item}
+
+bracket_expression ::= L_BRACE bracket_expression_content? R_BRACE {
+    pin=1
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.BracketExpressionImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.BracketExpression"
+}
+private bracket_expression_content ::=  bracket_expression_item (COMMA bracket_expression_item)*
+private bracket_expression_item ::= expression { recoverWhile=recover_bracket_content }
+
+subquery_expression ::= ARRAY_OPEN subquery_expression_content? ARRAY_CLOSE {
+    pin=1
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.SubqueryExpressionImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.SubqueryExpression"
+}
+private subquery_expression_content ::= query {recoverWhile=recover_array_content}
+
+in_expression ::= expression in_expression_operand subquery_expression {
+    pin=2
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.InExpressionImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.InExpression"
+}
+in_expression_operand ::= "in" {
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
+}
+
+sort_expression ::= expression sort_direction {
+   pin=2
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.SortingExpressionImpl"
+   implements="pl.thedeem.intellij.dql.psi.elements.SortingExpression"
+}
+
+time_alignment_now_expression ::= time_alignment_expression_operator time_alignment_operand {
+   pin=1
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.TimeAlignmentExpressionImpl"
+   implements="pl.thedeem.intellij.dql.psi.elements.TimeAlignmentExpression"
+}
+time_alignment_at_expression ::= expression time_alignment_expression_operator time_alignment_operand {
+   pin=2
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.TimeAlignmentExpressionImpl"
+   implements="pl.thedeem.intellij.dql.psi.elements.TimeAlignmentExpression"
+}
+time_alignment_expression_operator ::= AT {
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
+}
+
+time_alignment_operand ::= IDENTIFIER
+
+function_call_expression ::= function_name L_PARENTHESIS function_arguments_list? R_PARENTHESIS {
+    pin=2
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.FunctionCallExpressionImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.FunctionCallExpression"
+}
+
+private function_arguments_list ::= function_argument (COMMA function_argument)*
+private function_argument ::= expression// { recoverWhile=recover_parenthesised_item }
+
+parameter_expression ::= parameter_name COLON expression {
+    pin=1
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.ParameterExpressionImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.ParameterExpression"
+}
+
+array_expression ::= expression ARRAY_OPEN array_expression_accessor? ARRAY_CLOSE {
+    pin=2
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.ArrayExpressionImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.ArrayExpression"
+}
+array_expression_accessor ::= expression { extends=expression }
+
+negative_value_expression ::= SUBTRACT expression {
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.NegativeValueExpressionImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.NegativeValueExpression"
+}
+
+simple_expression ::=
+    boolean |
+    string |
+    number |
+    duration |
+    null
+
+// Field types
+field_expression ::= field_name | escaped_field_name {
+    implements="pl.thedeem.intellij.dql.psi.elements.FieldElement"
+}
+field_name ::= DOTTED_IDENTIFIER | IDENTIFIER {
+    extends=field_expression
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.FieldNameElementImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.FieldElement"
+}
+escaped_field_name ::= TICK_QUOTE string_content_element TICK_QUOTE {
+    pin=1
+    extends=field_expression
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.EscapedFieldNameElementImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.FieldElement"
+}
+string ::= double_quoted_string | single_quoted_string | multiline_string {
+    extends=simple_expression
+    implements="pl.thedeem.intellij.dql.psi.elements.StringElement"
+}
+double_quoted_string ::= DOUBLE_QUOTE string_content_element DOUBLE_QUOTE {
+    pin=1
+    extends=string
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.DoubleQuotedStringElementImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.StringElement"
+}
+single_quoted_string ::= SINGLE_QUOTE string_content_element SINGLE_QUOTE {
+    pin=1
+    extends=string
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.SingleQuotedStringElementImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.StringElement"
+}
+multiline_string ::= MULTILINE_STRING_QUOTE string_content_element MULTILINE_STRING_QUOTE {
+    pin=1
+    extends=string
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.MultilineStringElementImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.StringElement"
+}
+string_content_element ::= STRING_CONTENT {
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.StringContentElementImpl"
+}
+variable_expression ::= VARIABLE {
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.VariableElementImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.VariableElement"
+}
+function_name ::= IDENTIFIER {
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.FunctionNameElementImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.FunctionNameElement"
+}
+parameter_name ::= PARAM_IDENTIFIER {
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.ParameterElementImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.ParameterElement"
+}
+sort_direction ::= "asc" | "desc" {
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.SortKeywordElementImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.SortKeywordElement"
+}
+number ::= POSITIVE_LONG | POSITIVE_DOUBLE {
+   extends=simple_expression
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.PositiveNumberElementImpl"
+   implements="pl.thedeem.intellij.dql.psi.elements.NumberElement"
+}
+duration ::= NUMBERED_IDENTIFIER {
+    extends=simple_expression
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.PositiveDurationElementImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.DurationElement"
+}
+boolean ::= TRUE | FALSE {
+    extends=simple_expression
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.BooleanElementImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.BooleanElement"
+}
+null ::= NULL_TYPE {
+    extends=simple_expression
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.NullElementImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.NullElement"
+}
+
+// recovers
+private query_statement_recover ::= !(PIPE|ARRAY_CLOSE)
+private recover_parenthesised_item ::= !(R_PARENTHESIS|COLON|PIPE)
+private recover_array_content ::= !(ARRAY_CLOSE|PIPE|COLON|R_BRACE)
+private recover_bracket_content ::= !(ARRAY_CLOSE|R_BRACE|COMMA|PIPE|COLON)

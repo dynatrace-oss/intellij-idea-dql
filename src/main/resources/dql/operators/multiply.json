@@ -1,0 +1,19 @@
+{
+  "operator": "multiply",
+  "mapping": {
+    "long": {
+      "long": "long",
+      "double": "double",
+      "duration": "duration"
+    },
+    "double": {
+      "long": "double",
+      "double": "double",
+      "duration": "duration"
+    },
+    "duration": {
+      "long": "duration",
+      "double": "duration"
+    }
+  }
+}

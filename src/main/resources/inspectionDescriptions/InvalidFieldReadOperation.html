@@ -1,0 +1,14 @@
+<html>
+<body>
+Checks if a field value read operation is allowed in this context.
+<p>
+    Some parameter values expect the user to provide an assignment value. This inspection verifies that the read operation
+    is correctly used.
+</p>
+<p>Example:</p>
+<pre><code>
+data json: "..."
+| fieldsRename newFieldName // should be newFieldName = oldFieldName
+</code></pre>
+</body>
+</html>

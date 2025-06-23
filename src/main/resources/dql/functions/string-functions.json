@@ -1,0 +1,1062 @@
+{
+  "concat": {
+    "group": "string-functions",
+    "name": "concat",
+    "description": "Concatenates the expressions into a single string.",
+    "syntax": [
+      "concat(expression, …)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "double",
+          "long",
+          "string"
+        ],
+        "description": "required",
+        "required": true,
+        "repetitive": true
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "longDescription": "Concatenates the expressions into a single string.",
+    "aliases": [
+      "concat"
+    ]
+  },
+  "contains": {
+    "group": "string-functions",
+    "name": "contains",
+    "description": "Searches the string expression for a substring.",
+    "syntax": [
+      "contains(expression, substring [, caseSensitive])"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The field or expression to check.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "substring",
+        "type": [
+          "string"
+        ],
+        "description": "The substring that should be contained.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "caseSensitive",
+        "type": [
+          "boolean"
+        ],
+        "description": "Whether the search should be done in a case-sensitive way. The default value is true.",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Searches the string expression for a substring. Returns true if the substring was found, false otherwise.",
+    "aliases": [
+      "contains"
+    ]
+  },
+  "decodeUrl": {
+    "group": "string-functions",
+    "name": "decodeUrl",
+    "description": "Returns a URL-decoded string.",
+    "syntax": [
+      "decodeUrl(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The string expression that will be decoded.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "longDescription": "Returns a URL-decoded string.",
+    "aliases": [
+      "decodeUrl"
+    ]
+  },
+  "encodeUrl": {
+    "group": "string-functions",
+    "name": "encodeUrl",
+    "description": "Encodes a URL string.",
+    "syntax": [
+      "encodeUrl(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The string expression that will be encoded.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "longDescription": "Encodes a URL string by replacing characters that aren't numbers or letters with percentage symbols and hexadecimal numbers.",
+    "aliases": [
+      "encodeUrl"
+    ]
+  },
+  "endsWith": {
+    "group": "string-functions",
+    "name": "endsWith",
+    "description": "Checks if a string expression ends with a suffix.",
+    "syntax": [
+      "endsWith(expression, suffix [, caseSensitive])"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The string expression that will be checked.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "suffix",
+        "type": [
+          "string"
+        ],
+        "description": "The suffix string with which the expression should end.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "caseSensitive",
+        "type": [
+          "boolean"
+        ],
+        "description": "Whether the check should be done in a case-sensitive way.",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Checks if a string expression ends with a suffix. Returns true if does, false otherwise.",
+    "aliases": [
+      "endsWith"
+    ]
+  },
+  "escape": {
+    "group": "string-functions",
+    "name": "escape",
+    "description": "Returns an escaped string.",
+    "syntax": [
+      "escape(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string expression"
+        ],
+        "description": "The string expression that will be escaped.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "longDescription": "Escaping rulesSingle and double quotes are escaped. Backticks are not escaped.InputOutput\"\\\"'\\'Backslashes are escaped.InputOutput\\\\\\ASCII characters backspace, form feed, new line, carriage return, horizontal tabs are escaped.InputOutput<backspace>\\b<form feed>\\f<new line>\\n<carriage return>\\r<horizontal tab>\\tASCII characters within the range 0x20 - 0x7e (printable ASCII characters), that are not covered by any of the above rules, stay as they are.InputOutputaa11\nAll other ASCII characters are represented as \\xhh. This applies to the following characters\ncharacters within the range 0x00 - 0x07character 0x0b (vertical tab)characters within the range 0x0e - 0x1fcharacter 0x7f\nInputOutput<vertical tab>\\x0bAll characters in extended ASCII space (0x80-0xff) and Unicode characters outside of the ASCII space are represented as \\uhhhh.InputOutputö\\u00f6",
+    "aliases": [
+      "escape"
+    ]
+  },
+  "getCharacter": {
+    "group": "string-functions",
+    "name": "getCharacter",
+    "description": "Returns the character at a given position from a string expression.",
+    "syntax": [
+      "getCharacter(expression, position)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "position",
+        "type": [
+          "long"
+        ],
+        "description": "The position at which to get the character.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "longDescription": "Returns the character at a given position from a string expression. Negative values for the position parameter are counted from the end of the string. If a position refers to a position outside the string, the function returns NULL.",
+    "aliases": [
+      "getCharacter"
+    ]
+  },
+  "indexOf": {
+    "group": "string-functions",
+    "name": "indexOf",
+    "description": "Returns the index of the first occurrence of a substring in a string expression.",
+    "syntax": [
+      "indexOf(expression, substring [, from])"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The string expression in which the substring is searched for.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "substring",
+        "type": [
+          "string"
+        ],
+        "description": "The substring expression to search for in the expression.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "from",
+        "type": [
+          "long"
+        ],
+        "description": "The index from which to start the forward search for the first occurrence of the substring within the expression. Negative values are counted from the end of the string.",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Returns the index of the first occurrence of a substring in a string expression.\nStarts to search forward from a given index. Negative values for the from parameter are counted from the end of the string.\nThe default value for from is 0 (the search from the start of the string).\nThe search is case-sensitive.\nIf the defined substring is not found, the function returns -1.",
+    "aliases": [
+      "indexOf"
+    ]
+  },
+  "lastIndexOf": {
+    "group": "string-functions",
+    "name": "lastIndexOf",
+    "description": "Returns the index of the last occurrence of a substring in a string expression.",
+    "syntax": [
+      "lastIndexOf(expression, substring [, from])"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The string expression in which the substring is searched for.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "substring",
+        "type": [
+          "string"
+        ],
+        "description": "The substring expression to search for in the expression.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "from",
+        "type": [
+          "long"
+        ],
+        "description": "",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Returns the index of the last occurrence of a substring in a string expression. Starts to search backward from a given index. Negative values for the from parameter are counted from the end of the string. The default value for from is -1 (search from the end of the string). The search is case-sensitive. If the substring is not found, the function returns -1.",
+    "aliases": [
+      "lastIndexOf"
+    ]
+  },
+  "levenshteinDistance": {
+    "group": "string-functions",
+    "name": "levenshteinDistance",
+    "description": "Computes the Levenshtein distance between two input strings.",
+    "syntax": [
+      "levenshteinDistance(expression, expression)"
+    ],
+    "parameters": [
+      {
+        "name": "first expression",
+        "type": [
+          "string"
+        ],
+        "description": "The first string expression to compute the Levenshtein distance from.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "second",
+        "type": [
+          "string"
+        ],
+        "description": "The second string expression to compute the Levenshtein distance from.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Computes the Levenshtein distance between two input strings.",
+    "aliases": [
+      "levenshteinDistance"
+    ]
+  },
+  "like": {
+    "group": "string-functions",
+    "name": "like",
+    "description": "Tests if a string expression matches a pattern.",
+    "syntax": [
+      "like(expression, pattern)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "pattern",
+        "type": [
+          "string"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Tests if a string expression matches a pattern. If the pattern does not contain percent signs, like() acts as the == operator (equality check). A percent character in the pattern (%) matches any sequence of zero or more characters. An underscore in the pattern (\\_) matches a single character.",
+    "aliases": [
+      "like"
+    ]
+  },
+  "lower": {
+    "group": "string-functions",
+    "name": "lower",
+    "description": "Converts a string to lowercase.",
+    "syntax": [
+      "lower(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The string expression to convert to lowercase.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "longDescription": "Converts a string to lowercase.",
+    "aliases": [
+      "lower"
+    ]
+  },
+  "matchesPattern": {
+    "group": "string-functions",
+    "name": "matchesPattern",
+    "description": "Tests if a string expression matches the DPL pattern.",
+    "syntax": [
+      "matchesPattern(expression, pattern)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "A field or string expression to test.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "pattern",
+        "type": [
+          "string"
+        ],
+        "description": "The matching pattern.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Tests if a string expression matches the DPL pattern and returns true if it does, otherwise, returns false.",
+    "aliases": [
+      "matchesPattern"
+    ]
+  },
+  "matchesPhrase": {
+    "group": "string-functions",
+    "name": "matchesPhrase",
+    "description": "Matches a phrase against the input string expression using token matchers.",
+    "syntax": [
+      "matchesPhrase(expression, phrase [, caseSensitive])"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string",
+          "array"
+        ],
+        "description": "The expression (string or array of strings) that should be checked.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "phrase",
+        "type": [
+          "string"
+        ],
+        "description": "The phrase to search for.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "caseSensitive",
+        "type": [
+          "boolean"
+        ],
+        "description": "Whether the match should be done case-sensitive. Default: false.",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Matches a phrase against the input string expression using token matchers.",
+    "aliases": [
+      "matchesPhrase"
+    ]
+  },
+  "matchesValue": {
+    "group": "string-functions",
+    "name": "matchesValue",
+    "description": "Searches records for a specific value in a given attribute. Returns true or false.",
+    "syntax": [
+      "matchesValue(expression, value, … [, caseSensitive])"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string",
+          "array"
+        ],
+        "description": "The expression (string or array of strings) that should be checked.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "value",
+        "type": [
+          "string",
+          "array"
+        ],
+        "description": "The value to search for using patterns (supports an array of patterns or a list of patterns).",
+        "required": true,
+        "repetitive": true
+      },
+      {
+        "name": "caseSensitive",
+        "type": [
+          "boolean"
+        ],
+        "description": "Whether the match should be done case-sensitive. Default: false.",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Searches records for a specific value in a given attribute. Returns true or false.",
+    "aliases": [
+      "matchesValue"
+    ]
+  },
+  "parse": {
+    "group": "string-functions",
+    "name": "parse",
+    "description": "Extracts a single value from a string as specified in the pattern or a record if there are multiple named matchers.",
+    "syntax": [
+      "parse(expression, pattern)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string",
+          "record"
+        ],
+        "description": "A field or string expression to parse.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "pattern",
+        "type": [
+          "string"
+        ],
+        "description": "The parse pattern. Must conform with patterns (see DPL).",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "any",
+      "parsed_record"
+    ],
+    "longDescription": "Extracts a single value from a string as specified in the pattern or a record if there are multiple named matchers.",
+    "aliases": [
+      "parse"
+    ]
+  },
+  "parseAll": {
+    "group": "string-functions",
+    "name": "parseAll",
+    "description": "Extracts several values from a string as specified in the pattern.",
+    "syntax": [
+      "parseAll(expression, pattern)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "A field or string expression to parse.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "pattern",
+        "type": [
+          "string"
+        ],
+        "description": "The parse pattern. Must conform with DPL patterns.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Extracts several values from a string as specified in the pattern.\nUnlike the parse function, parseAll returns an array all the time. The array can be empty if no patterns matched. A single element can be primitive type or a record.",
+    "aliases": [
+      "parseAll"
+    ]
+  },
+  "punctuation": {
+    "group": "string-functions",
+    "name": "punctuation",
+    "description": "Extracts punctuation characters out of an input string.",
+    "syntax": [
+      "punctuation(expression, [, count] [, withSpace])"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The string expression from which the punctuation characters are extracted.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "count",
+        "type": [
+          "positive long"
+        ],
+        "description": "The maximum number of returned punctuation characters. Default: 32.",
+        "required": false,
+        "repetitive": false
+      },
+      {
+        "name": "withSpace",
+        "type": [
+          "boolean"
+        ],
+        "description": "Whether space characters should be included. Default: false.",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "longDescription": "Extracts punctuation characters out of an input string.",
+    "aliases": [
+      "punctuation"
+    ]
+  },
+  "replacePattern": {
+    "group": "string-functions",
+    "name": "replacePattern",
+    "description": "Replaces each substring of a string that matches the DPL pattern with the given string.",
+    "syntax": [
+      "replacePattern(expression, pattern, replacement)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "A field or string expression to replace.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "pattern",
+        "type": [
+          "string"
+        ],
+        "description": "The replacing pattern.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "replacement",
+        "type": [
+          "string"
+        ],
+        "description": "The string that should replace the found substrings.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "longDescription": "Replaces each substring of a string that matches the DPL pattern with the given string. The pattern must be defined as a constant string expression. For additional details about pattern syntax, see the DPL documentation.",
+    "aliases": [
+      "replacePattern"
+    ]
+  },
+  "replaceString": {
+    "group": "string-functions",
+    "name": "replaceString",
+    "description": "Replaces each substring of a string with a given string",
+    "syntax": [
+      "replaceString(expression, substring, replacement)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The field or expression where substrings should be replaced.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "substring",
+        "type": [
+          "string"
+        ],
+        "description": "The substring that should be replaced.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "replacement",
+        "type": [
+          "string"
+        ],
+        "description": "The string that should replace the found substrings.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "longDescription": "Replaces each substring of a string with a given string. This function replaces only exactly matched substrings from the original string to the replacement. Matching is case-sensitive and doesn't use any wildcards. All found patterns will be replaced if they do not intersect. For instance, replacing abcabca in a string with abca pattern produces only one replacement. Only the first occurrence at the beginning of the string will be replaced.",
+    "aliases": [
+      "replaceString"
+    ]
+  },
+  "splitByPattern": {
+    "group": "string-functions",
+    "name": "splitByPattern",
+    "description": "Splits a string into an array at each occurrence of the DPL pattern.",
+    "syntax": [
+      "splitByPattern(expression, pattern)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "A field or string expression to split.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "pattern",
+        "type": [
+          "string"
+        ],
+        "description": "The splitting pattern. Must conform with DPL patterns.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Splits a string into an array at each occurrence of the DPL pattern.",
+    "aliases": [
+      "splitByPattern"
+    ]
+  },
+  "splitString": {
+    "group": "string-functions",
+    "name": "splitString",
+    "description": "Splits a string according to the parameters set.",
+    "syntax": [
+      "splitString(expression, pattern)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The string expression to split up into an array.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "pattern",
+        "type": [
+          "string"
+        ],
+        "description": "The pattern to split the string expression at, or the empty string to split into one-byte strings.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "If the pattern is empty, it splits the expression into one-byte substrings. For example, splitString(\"abc\", \"\") results in \"a\", \"b\", \"c\".",
+    "aliases": [
+      "splitString"
+    ]
+  },
+  "startsWith": {
+    "group": "string-functions",
+    "name": "startsWith",
+    "description": "Checks if a string expression starts with a prefix. Returns true if does, false otherwise.",
+    "syntax": [
+      "startsWith(expression, prefix [, caseSensitive])"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The string expression that will be checked.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "prefix",
+        "type": [
+          "string"
+        ],
+        "description": "The prefix string with which the expression should start.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "caseSensitive",
+        "type": [
+          "boolean"
+        ],
+        "description": "Whether the check should be done in a case-sensitive way.",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Checks if a string expression starts with a prefix. Returns true if does, false otherwise.",
+    "aliases": [
+      "startsWith"
+    ]
+  },
+  "stringLength": {
+    "group": "string-functions",
+    "name": "stringLength",
+    "description": "Returns the length of a string expression.",
+    "syntax": [
+      "stringLength(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The string expression to get the number of UTF-16 code units for.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "No specific normalization form is guaranteed for Dynatrace-provided strings.",
+    "aliases": [
+      "stringLength"
+    ]
+  },
+  "substring": {
+    "group": "string-functions",
+    "name": "substring",
+    "description": "Gets a code unit range using a start index (inclusive) and an end index (exclusive).",
+    "syntax": [
+      "substring(expression [, from] [, to])"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The string expression to get a substring of.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "from",
+        "type": [
+          "long"
+        ],
+        "description": "Index of first code unit to include in sub-string, inclusive, relative to start of expression if positive, relative to end if negative. Clamped at string bounds.",
+        "required": false,
+        "repetitive": false
+      },
+      {
+        "name": "to",
+        "type": [
+          "long"
+        ],
+        "description": "Index of last code unit to include in sub-string, exclusive, relative to start of expression if positive, relative to end if negative. Clamped at string bounds.",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "longDescription": "The returned substring never starts or ends with an incomplete UTF-16 surrogate pair. Instead of that, it starts or ends with a question mark. This safeguards against the creation of invalid Unicode strings.",
+    "aliases": [
+      "substring"
+    ]
+  },
+  "trim": {
+    "group": "string-functions",
+    "name": "trim",
+    "description": "Removes leading and trailing whitespaces.",
+    "syntax": [
+      "trim(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The string expression to remove leading and trailing white-space from.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "longDescription": "Removes leading and trailing whitespaces. Any code point <= ASCII 32 in decimal is considered a whitespace, where ASCII 32 is a blank space.",
+    "aliases": [
+      "trim"
+    ]
+  },
+  "unescape": {
+    "group": "string-functions",
+    "name": "unescape",
+    "description": "Returns an unescaped string.",
+    "syntax": [
+      "unescape(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string expression"
+        ],
+        "description": "The string expression that will be unescaped.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "longDescription": "Unescaping rulesSingle quotes, double quotes and backticks are unescaped.InputOutput\\\"\"\\''\\``Backslashes are unescaped.InputOutput\\\\\\ASCII characters bell, backspace, form feed, new line, carriage return, horizontal tab and vertical tab are unescaped.InputOutput\\a<bell>\\b<backspace>\\f<form feed>\\n<new line>\\r<carriage return>\\t<horizontal tab>\\v<vertical tab>\\xhh within standard ASCII space (0x00 - 0x7f) is replaced by the related character.InputOutput\\x40@\\x64d\\xhh within extended ASCII space (0x80 - 0xff) is interpreted as \\u00hh and replaced by the related Unicode character.InputOutput\\xffÿ\\uhhhh is replaced by the related Unicode character.InputOutput\\u002e.\\u0064d",
+    "aliases": [
+      "unescape"
+    ]
+  },
+  "unescapeHtml": {
+    "group": "string-functions",
+    "name": "unescapeHtml",
+    "description": "Unescapes HTML in a string by replacing ASCII characters with HTML syntax.",
+    "syntax": [
+      "unescapeHtml(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The string expression that will be unescaped.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "longDescription": "Unescapes HTML in a string by replacing ASCII characters with HTML syntax.",
+    "aliases": [
+      "unescapeHtml"
+    ]
+  },
+  "upper": {
+    "group": "string-functions",
+    "name": "upper",
+    "description": "Converts a string to uppercase.",
+    "syntax": [
+      "upper(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The string expression to convert to uppercase.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "longDescription": "Converts a string to uppercase.",
+    "aliases": [
+      "upper"
+    ]
+  }
+}

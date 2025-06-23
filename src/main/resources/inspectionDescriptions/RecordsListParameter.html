@@ -1,0 +1,17 @@
+<html>
+<body>
+Ensures a valid record function is used in the record list context.
+<p>
+    Some DQL commands require a specific parameter value, called "record list functions".
+    They require a list of expressions that use a specific group of functions. Any other function used will be reported
+    as an error.
+</p>
+<pre><code>
+data
+  record(field = 5),
+  record(field = 5),
+  otherFunction(field = 5), // this will report an error
+  field = 5 // this is also not a valid function and reports an error
+</code></pre>
+</body>
+</html>

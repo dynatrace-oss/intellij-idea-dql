@@ -1,0 +1,245 @@
+{
+  "bitwiseAnd": {
+    "group": "bitwise-functions",
+    "name": "bitwiseAnd",
+    "description": "Calculates the bitwise and between two long expressions.",
+    "syntax": [
+      "bitwiseAnd(long expression, long expression)"
+    ],
+    "parameters": [
+      {
+        "name": "firstExpression",
+        "type": [
+          "long"
+        ],
+        "description": "The first long expression for the binary operation.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "secondExpression",
+        "type": [
+          "long"
+        ],
+        "description": "The second long expression for the binary operation.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Calculates the bitwise and between two long expressions.",
+    "aliases": [
+      "bitwiseAnd"
+    ]
+  },
+  "bitwiseCountOnes": {
+    "group": "bitwise-functions",
+    "name": "bitwiseCountOnes",
+    "description": "Counts the bits assigned to one of the long expressions.",
+    "syntax": [
+      "bitwiseCountOnes(long expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "long"
+        ],
+        "description": "The long expression whose bits will be inverted.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Counts the bits assigned to one of the long expressions.",
+    "aliases": [
+      "bitwiseCountOnes"
+    ]
+  },
+  "bitwiseNot": {
+    "group": "bitwise-functions",
+    "name": "bitwiseNot",
+    "description": "Inverts the bits included in the long expression.",
+    "syntax": [
+      "bitwiseNot(long expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "long"
+        ],
+        "description": "The long expression whose bits will be inverted.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Inverts the bits included in the long expression.",
+    "aliases": [
+      "bitwiseNot"
+    ]
+  },
+  "bitwiseShiftLeft": {
+    "group": "bitwise-functions",
+    "name": "bitwiseShiftLeft",
+    "description": "Shifts the long expressions by the number of given bits to the left.",
+    "syntax": [
+      "bitwiseShiftLeft(long expression, long expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "long"
+        ],
+        "description": "The long expression that will be bitwise shifted to the left.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "numberOfBits",
+        "type": [
+          "long"
+        ],
+        "description": "The number of bits by which the expression will be shifted left.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Shifts the long expressions by the number of given bits to the left.",
+    "aliases": [
+      "bitwiseShiftLeft"
+    ]
+  },
+  "bitwiseShiftRight": {
+    "group": "bitwise-functions",
+    "name": "bitwiseShiftRight",
+    "description": "Shifts the long expression by number of given bits to the right.",
+    "syntax": [
+      "bitwiseShiftRight(long expression, long expression, ignoreSign: boolean)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "long"
+        ],
+        "description": "The long expression that will be bitwise shifted right.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "numberOfBits",
+        "type": [
+          "long"
+        ],
+        "description": "The number of bits by which the expression will be shifted right.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "ignoreSign",
+        "type": [
+          "boolean expression"
+        ],
+        "description": "The boolean expression that indicates if the sign bit should be ignored (treated like any bit) while shifting, If false, the sign bit is preserved and just the other bits are shifted.",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Shifts the long expression by number of given bits to the right. It has an optional parameter ignoreSign, that defines, if the sign bit should be ignored. If the parameter is false, it can be compared to >> in Java, otherwise to >>>.",
+    "aliases": [
+      "bitwiseShiftRight"
+    ]
+  },
+  "bitwiseOr": {
+    "group": "bitwise-functions",
+    "name": "bitwiseOr",
+    "description": "Calculates the bitwise or between two long expressions.",
+    "syntax": [
+      "bitwiseOr(long expression, long expression)"
+    ],
+    "parameters": [
+      {
+        "name": "firstExpression",
+        "type": [
+          "long"
+        ],
+        "description": "The first long expression for the binary operation.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "secondExpression",
+        "type": [
+          "long"
+        ],
+        "description": "The second long expression for the binary operation.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Calculates the bitwise or between two long expressions.",
+    "aliases": [
+      "bitwiseOr"
+    ]
+  },
+  "bitwiseXor": {
+    "group": "bitwise-functions",
+    "name": "bitwiseXor",
+    "description": "Calculates the bitwise xor between two long expressions.",
+    "syntax": [
+      "bitwiseXor(long expression, long expression)"
+    ],
+    "parameters": [
+      {
+        "name": "firstExpression",
+        "type": [
+          "long"
+        ],
+        "description": "The first long expression for the binary operation.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "secondExpression",
+        "type": [
+          "long"
+        ],
+        "description": "The second long expression for the binary operation.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Calculates the bitwise xor between two long expressions.",
+    "aliases": [
+      "bitwiseXor"
+    ]
+  }
+}

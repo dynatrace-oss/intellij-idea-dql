@@ -1,0 +1,717 @@
+{
+  "avg": {
+    "group": "aggregation-functions",
+    "name": "avg",
+    "description": "Calculates the average value of a field for a list of records.",
+    "syntax": [
+      "avg(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "double",
+          "long",
+          "duration",
+          "iterative expression"
+        ],
+        "description": "The expression whose average is to be calculated.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "double",
+      "duration"
+    ],
+    "longDescription": "Calculates the average value of a field for a list of records.",
+    "aliases": [
+      "avg"
+    ]
+  },
+  "collectArray": {
+    "group": "aggregation-functions",
+    "name": "collectArray",
+    "description": "Collects the values of the provided field into an array.",
+    "syntax": [
+      "collectArray(expression [, expand] [, maxLength])"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "array",
+          "boolean",
+          "double",
+          "duration",
+          "ip",
+          "long",
+          "record",
+          "string",
+          "timeframe",
+          "timestamp"
+        ],
+        "description": "The expression whose values are to be collected into an array.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "expand",
+        "type": [
+          "boolean"
+        ],
+        "description": "The boolean expression that indicates whether the output should be a flat array.",
+        "required": false,
+        "repetitive": false
+      },
+      {
+        "name": "maxLength",
+        "type": [
+          "long"
+        ],
+        "description": "The maximum length of the resulting array. Must be between 1 and 131072. The default value is 131072.",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Collects the values of the provided field into an array. The original order of elements is not guaranteed.",
+    "aliases": [
+      "collectArray"
+    ]
+  },
+  "collectDistinct": {
+    "group": "aggregation-functions",
+    "name": "collectDistinct",
+    "description": "Collects distinct values of the provided field into an array.",
+    "syntax": [
+      "collectDistinct(expression [, expand] [, maxLength])"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "array",
+          "boolean",
+          "double",
+          "duration",
+          "ip",
+          "long",
+          "record",
+          "string",
+          "timeframe",
+          "timestamp"
+        ],
+        "description": "The expression whose distinct values are to be collected.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "expand",
+        "type": [
+          "boolean"
+        ],
+        "description": "The boolean expression that indicates whether the output should be a flat array.",
+        "required": false,
+        "repetitive": false
+      },
+      {
+        "name": "maxLength",
+        "type": [
+          "long"
+        ],
+        "description": "The maximum length of the resulting array. Must be between 1 and 131072. The default value is 131072.",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array"
+    ],
+    "longDescription": "Collects distinct values of the provided field into an array. The original order of elements is not guaranteed.",
+    "aliases": [
+      "collectDistinct"
+    ]
+  },
+  "correlation": {
+    "group": "aggregation-functions",
+    "name": "correlation",
+    "description": "Calculates the Pearson correlation of two numeric fields for a list of records.",
+    "syntax": [
+      "correlation(expression1, expression2)"
+    ],
+    "parameters": [
+      {
+        "name": "expression1",
+        "type": [
+          "double",
+          "long"
+        ],
+        "description": "The first numeric expression to be used in calculating the correlation.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "expression2",
+        "type": [
+          "double",
+          "long"
+        ],
+        "description": "The second numeric expression to be used in calculating the correlation.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "double"
+    ],
+    "longDescription": "Calculates the Pearson correlation of two numeric fields for a list of records. If one of the fields has a constant value, the covariance of both fields used for correlation is zero. In this case, the correlation coefficient causes a division by zero, yielding null for the correlation.",
+    "aliases": [
+      "correlation"
+    ]
+  },
+  "count": {
+    "group": "aggregation-functions",
+    "name": "count",
+    "description": "Counts the total number of records.",
+    "syntax": [
+      "count()"
+    ],
+    "parameters": [],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Counts the total number of records.",
+    "aliases": [
+      "count"
+    ]
+  },
+  "countDistinctApprox": {
+    "group": "aggregation-functions",
+    "name": "countDistinctApprox",
+    "description": "Calculates the cardinality of unique values of a field for a list of records based on a stochastic estimation.",
+    "syntax": [
+      "countDistinctApprox(expression [, precision])"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "any"
+        ],
+        "description": "The field or expression whose unique values are to be counted.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "precision",
+        "type": [
+          "long"
+        ],
+        "description": "Parameter that sets the precision level of the estimation.",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "The precision parameter affects the relative standard error of the final estimation. The formula for getting the standard relative errors is 0.782/((2^precision)^(1/2)). Note that, this is the standard error (expected or average error), this means that the estimation error can be greater than the calculated one.",
+    "aliases": [
+      "countDistinctApprox",
+      "countDistinct"
+    ]
+  },
+  "countDistinctExact": {
+    "group": "aggregation-functions",
+    "name": "countDistinctExact",
+    "description": "Calculates the cardinality of unique values for the provided expression up to a maximum of 1M distinct values.",
+    "syntax": [
+      "countDistinctExact(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "any"
+        ],
+        "description": "The expression whose distinct values are to be counted.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "This function counts up to 1M distinct values and if exceeded the query will fail. The function issues a warning once it reaches 100k distinct values.",
+    "aliases": [
+      "countDistinctExact"
+    ]
+  },
+  "countIf": {
+    "group": "aggregation-functions",
+    "name": "countIf",
+    "description": "Counts the number of records that match the condition.",
+    "syntax": [
+      "countIf(condition)"
+    ],
+    "parameters": [
+      {
+        "name": "condition",
+        "type": [
+          "boolean"
+        ],
+        "description": "The expression that determines which records to count.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "long"
+    ],
+    "longDescription": "Counts the number of records that match the condition.",
+    "aliases": [
+      "countIf"
+    ]
+  },
+  "max": {
+    "group": "aggregation-functions",
+    "name": "max",
+    "description": "Calculates the maximum value of a field for a list of records.",
+    "syntax": [
+      "max(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "double",
+          "long",
+          "duration",
+          "timestamp",
+          "string",
+          "boolean",
+          "iterative expression"
+        ],
+        "description": "The expression whose maximum value is to be calculated.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "double",
+      "long",
+      "timestamp",
+      "duration",
+      "string",
+      "boolean"
+    ],
+    "longDescription": "Calculates the maximum value of a field for a list of records.",
+    "aliases": [
+      "max"
+    ]
+  },
+  "median": {
+    "group": "aggregation-functions",
+    "name": "median",
+    "description": "Calculates the median of an expression.",
+    "syntax": [
+      "median(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "double",
+          "long",
+          "duration",
+          "timestamp",
+          "boolean"
+        ],
+        "description": "The expression whose median value is to be calculated.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean",
+      "double",
+      "duration",
+      "timestamp"
+    ],
+    "longDescription": "Calculates the median of an expression (short for percentile(expression, 50)). Quantile calculations use an exponential histogram representation suitable for large data sets with high dynamic ranges, producing small relative errors. Results might differ slightly from those obtained through less calculation-efficient methods.",
+    "aliases": [
+      "median"
+    ]
+  },
+  "min": {
+    "group": "aggregation-functions",
+    "name": "min",
+    "description": "Calculates the minimum value of a field for a list of records.",
+    "syntax": [
+      "min(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "double",
+          "long",
+          "duration",
+          "string",
+          "timestamp",
+          "boolean",
+          "iterative expression"
+        ],
+        "description": "The expression whose minimum value is to be calculated.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "double",
+      "long",
+      "timestamp",
+      "duration",
+      "string",
+      "boolean"
+    ],
+    "longDescription": "Calculates the minimum value of a field for a list of records.",
+    "aliases": [
+      "min"
+    ]
+  },
+  "percentile": {
+    "group": "aggregation-functions",
+    "name": "percentile",
+    "description": "Calculates a given percentile of an expression.",
+    "syntax": [
+      "percentile(expression, percentile)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "double",
+          "long",
+          "duration",
+          "timestamp",
+          "boolean"
+        ],
+        "description": "The expression from which to compute a percentile.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "percentile",
+        "type": [
+          "double",
+          "long"
+        ],
+        "description": "The percentile to compute (between 0 and 100).",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "double",
+      "boolean",
+      "duration",
+      "timestamp"
+    ],
+    "longDescription": "Calculates a given percentile of an expression. Quantile calculations use an exponential histogram representation suitable for large data sets with high dynamic ranges, producing small relative errors. Results might differ slightly from those obtained through less calculation-efficient methods.",
+    "aliases": [
+      "percentile"
+    ]
+  },
+  "stddev": {
+    "group": "aggregation-functions",
+    "name": "stddev",
+    "description": "Calculates the standard deviation of a field for a list of records.",
+    "syntax": [
+      "stddev(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "double",
+          "long"
+        ],
+        "description": "The expression whose standard deviation is to be calculated.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "double"
+    ],
+    "longDescription": "Calculates the standard deviation of a field for a list of records.",
+    "aliases": [
+      "stddev"
+    ]
+  },
+  "sum": {
+    "group": "aggregation-functions",
+    "name": "sum",
+    "description": "Calculates the sum of a field for a list of records.",
+    "syntax": [
+      "sum(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "double",
+          "duration",
+          "long"
+        ],
+        "description": "The expression that specifies which values are to be added together.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "double",
+      "duration"
+    ],
+    "longDescription": "Calculates the sum of a field for a list of records.",
+    "aliases": [
+      "sum"
+    ]
+  },
+  "takeAny": {
+    "group": "aggregation-functions",
+    "name": "takeAny",
+    "description": "Returns any non-null value of a field for a list of records.",
+    "syntax": [
+      "takeAny(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "any"
+        ],
+        "description": "The expression from which to retrieve any non-null value.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array",
+      "binary",
+      "boolean",
+      "double",
+      "duration",
+      "ip",
+      "long",
+      "record",
+      "string",
+      "timeframe",
+      "timestamp",
+      "uid"
+    ],
+    "longDescription": "Returns any non-null value of a field for a list of records.",
+    "aliases": [
+      "takeAny"
+    ]
+  },
+  "takeFirst": {
+    "group": "aggregation-functions",
+    "name": "takeFirst",
+    "description": "Returns the first value of a field for a list of records.",
+    "syntax": [
+      "takeFirst(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "any"
+        ],
+        "description": "The expression from which the first value is retrieved.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array",
+      "binary",
+      "boolean",
+      "double",
+      "duration",
+      "ip",
+      "long",
+      "record",
+      "string",
+      "timeframe",
+      "timestamp",
+      "uid"
+    ],
+    "longDescription": "The order of records may differ each time a query is executed. Since the summarize command doesn't sort the records, we recommend using the sort command before using summarize takeFirst(expression) to ensure consistent results.",
+    "aliases": [
+      "takeFirst"
+    ]
+  },
+  "takeLast": {
+    "group": "aggregation-functions",
+    "name": "takeLast",
+    "description": "Returns the last value of a field for a list of records.",
+    "syntax": [
+      "takeLast(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "any"
+        ],
+        "description": "The expression from which the last value is retrieved.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array",
+      "binary",
+      "boolean",
+      "double",
+      "duration",
+      "ip",
+      "long",
+      "record",
+      "string",
+      "timeframe",
+      "timestamp",
+      "uid"
+    ],
+    "longDescription": "The order of records may differ each time a query is executed. Since the summarize command doesn't sort the records, we recommend using the sort command before using summarize takeLast(expression) to ensure consistent results.",
+    "aliases": [
+      "takeLast"
+    ]
+  },
+  "takeMax": {
+    "group": "aggregation-functions",
+    "name": "takeMax",
+    "description": "Returns the maximum value of a field for a list of records.",
+    "syntax": [
+      "takeMax(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "any"
+        ],
+        "description": "The expression from which the maximum value is to be extracted.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array",
+      "binary",
+      "boolean",
+      "double",
+      "duration",
+      "ip",
+      "long",
+      "record",
+      "string",
+      "timeframe",
+      "timestamp",
+      "uid"
+    ],
+    "longDescription": "Retrieves the maximum from a list of records. Renders results for lists with both homogenous and non-homogenous data.",
+    "aliases": [
+      "takeMax"
+    ]
+  },
+  "takeMin": {
+    "group": "aggregation-functions",
+    "name": "takeMin",
+    "description": "Returns the minimum value of a field for a list of records.",
+    "syntax": [
+      "takeMin(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "any"
+        ],
+        "description": "The expression from which the minimum value is to be extracted.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "array",
+      "binary",
+      "boolean",
+      "double",
+      "duration",
+      "ip",
+      "long",
+      "record",
+      "string",
+      "timeframe",
+      "timestamp",
+      "uid"
+    ],
+    "longDescription": "Returns the minimum value of a field for a list of records.",
+    "aliases": [
+      "takeMin"
+    ]
+  },
+  "variance": {
+    "group": "aggregation-functions",
+    "name": "variance",
+    "description": "Calculates the variance of a field for a list of records.",
+    "syntax": [
+      "variance(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "double",
+          "long"
+        ],
+        "description": "The expression from which the minimum value is to be extracted.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "double"
+    ],
+    "longDescription": "Calculates the variance of a field for a list of records.",
+    "aliases": [
+      "variance"
+    ]
+  }
+}

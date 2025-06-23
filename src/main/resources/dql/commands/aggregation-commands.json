@@ -1,0 +1,245 @@
+{
+  "fieldsSummary": {
+    "name": "fieldsSummary",
+    "description": "Calculates the cardinality of field values that the specified fields have.",
+    "type": "aggregation-commands",
+    "syntax": [
+      "fieldsSummary field, … [, topValues] [, extrapolateSamples]"
+    ],
+    "parameters": [
+      {
+        "name": "field",
+        "description": "A field identifier.",
+        "required": true,
+        "nameAllowed": false,
+        "repetitive": true,
+        "type": [
+          "data object",
+          "read-only expression"
+        ]
+      },
+      {
+        "name": "topValues",
+        "description": "The number of top N values to be returned. The default value is `20`.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "positive long"
+        ],
+        "disallows": [],
+        "defaultValue": 20
+      },
+      {
+        "name": "extrapolateSamples",
+        "description": "Flag indicating if the cardinality shall be multiplied with a possible sampling rate.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "boolean"
+        ],
+        "disallows": []
+      }
+    ]
+  },
+  "makeTimeseries": {
+    "name": "makeTimeseries",
+    "description": "Creates timeseries from the data in the stream.",
+    "type": "aggregation-commands",
+    "syntax": [
+      "makeTimeseries [by: { [expression, …] }] [, interval] [, bins] [, from] [, to] [, timeframe] [, time ,] [, spread ,] [, nonempty ,] [, scalar:] aggregation, …"
+    ],
+    "injectMetricParameters": true,
+    "parameters": [
+      {
+        "name": "aggregation",
+        "nameAllowed": false,
+        "description": "The aggregation function that should be used to create the series.\nInput values in the aggregation function need to be numeric.",
+        "required": true,
+        "repetitive": true,
+        "type": [
+          "list of expressions",
+          "aggregation function",
+          "assign expression"
+        ]
+      },
+      {
+        "name": "time",
+        "description": "The expression that provides the timestamp for a record, which will be assigned to a series bucket.",
+        "required": false,
+        "type": [
+          "timestamp",
+          "timeframe"
+        ],
+        "disallows": []
+      },
+      {
+        "name": "timeframe",
+        "description": "The timeframe of the series. The actual series timeframe will be adjusted by the series alignment. The default value is query timeframe.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "timeframe"
+        ],
+        "disallows": [
+          "from",
+          "to"
+        ]
+      },
+      {
+        "name": "from",
+        "description": "The start timestamp of the series. The actual series timeframe will be adjusted by the series alignment.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "timestamp",
+          "duration"
+        ],
+        "disallows": [
+          "timeframe"
+        ],
+        "defaultValue": "-1h"
+      },
+      {
+        "name": "to",
+        "description": "The end timestamp of the series. The actual series timeframe will be adjusted by the series alignment.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "timestamp",
+          "duration"
+        ],
+        "disallows": [
+          "timeframe"
+        ],
+        "defaultValue": "now()"
+      },
+      {
+        "name": "nonempty",
+        "description": "Produces empty series when there is no data.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "boolean"
+        ],
+        "disallows": []
+      },
+      {
+        "name": "interval",
+        "description": "The length of a bucket in the series. Must not be specified if bins is specified. Automatically calculated based on the number of bins.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "positive duration"
+        ],
+        "disallows": [
+          "bins"
+        ]
+      },
+      {
+        "name": "bins",
+        "description": "The number of buckets that should be created for the series. Must not be specified if `interval` is specified. The default value is `120`.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "positive long"
+        ],
+        "disallows": [
+          "interval"
+        ]
+      },
+      {
+        "name": "spread",
+        "description": "A timeframe expression that provides the timeframe for the bucket calculation of the values in the series. Spread can only be used instead of time and you can only use it with the count or countIf functions.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "timeframe"
+        ],
+        "disallows": []
+      },
+      {
+        "name": "scalar",
+        "description": "Flag to indicate that a single scalar value spanning the whole timeframe shall be calculated. Can be used on any aggregation function except start and end.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "boolean"
+        ],
+        "disallows": []
+      },
+      {
+        "name": "by",
+        "description": "The expressions the series should be split by.",
+        "required": false,
+        "repetitive": true,
+        "type": [
+          "array",
+          "boolean",
+          "counter",
+          "double",
+          "duration",
+          "ip",
+          "long",
+          "record",
+          "string",
+          "timeframe",
+          "timestamp",
+          "list of expressions"
+        ],
+        "disallows": []
+      }
+    ]
+  },
+  "summarize": {
+    "name": "summarize",
+    "description": "Groups together records that have the same values for a given field and aggregates them.",
+    "type": "aggregation-commands",
+    "syntax": [
+      "summarize [field =] aggregation, ... [, by: {[field =] expression, ...}]"
+    ],
+    "parameters": [
+      {
+        "name": "aggregation",
+        "required": true,
+        "repetitive": true,
+        "nameAllowed": false,
+        "description": "An aggregation function",
+        "type": [
+          "array",
+          "boolean",
+          "counter",
+          "double",
+          "duration",
+          "ip",
+          "long",
+          "record",
+          "string",
+          "timeframe",
+          "timestamp",
+          "assign expression"
+        ]
+      },
+      {
+        "name": "by",
+        "description": "The fields definition that will be used to group records.",
+        "required": false,
+        "repetitive": true,
+        "type": [
+          "array",
+          "boolean",
+          "counter",
+          "double",
+          "duration",
+          "ip",
+          "long",
+          "record",
+          "string",
+          "timeframe",
+          "timestamp",
+          "list of expressions"
+        ],
+        "disallows": []
+      }
+    ]
+  }
+}

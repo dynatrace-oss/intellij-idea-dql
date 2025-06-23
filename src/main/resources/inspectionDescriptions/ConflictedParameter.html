@@ -1,0 +1,19 @@
+<html>
+<body>
+Verifies if a parameter is not conflicted with another already defined parameter.
+
+<p>
+    Some parameters disallow their usage in a pair with other parameters. You can see the
+    list of them inside the documentation tooltips.
+</p>
+<pre><code>
+fetch logs,
+    from: -7d,
+    to: now(),
+    timeframe: timeframe(from: "...", to: "...") // will cause an error, because the "timeframe" parameter cannot be used with "from" and "to"
+</code></pre>
+<p>
+    After applying the quick-fix, the selected parameter will be dropped, resolving the conflict.
+</p>
+</body>
+</html>

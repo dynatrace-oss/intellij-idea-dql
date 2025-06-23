@@ -1,0 +1,102 @@
+{
+  "coalesce": {
+    "group": "conditional-functions",
+    "name": "coalesce",
+    "description": "Returns the first non-null argument, if any, otherwise null.",
+    "syntax": [
+      "coalesce(expression, …)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "array",
+          "boolean",
+          "double",
+          "duration",
+          "ip",
+          "long",
+          "record",
+          "string",
+          "timeframe",
+          "timestamp"
+        ],
+        "description": "Returned if previous arguments are null.",
+        "required": true,
+        "repetitive": true
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "any"
+    ],
+    "longDescription": "Returns the first non-null argument, if any, otherwise null.",
+    "aliases": [
+      "coalesce"
+    ]
+  },
+  "if": {
+    "group": "conditional-functions",
+    "name": "if",
+    "description": "Evaluates the condition, and returns the value of either the then or else parameter.",
+    "syntax": [
+      "if(condition, then [, else])"
+    ],
+    "parameters": [
+      {
+        "name": "condition",
+        "type": [
+          "boolean"
+        ],
+        "description": "The condition to check.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "then",
+        "type": [
+          "array",
+          "boolean",
+          "double",
+          "duration",
+          "ip",
+          "long",
+          "record",
+          "string",
+          "timeframe",
+          "timestamp"
+        ],
+        "description": "The expression if the condition is true.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "else",
+        "type": [
+          "array",
+          "boolean",
+          "double",
+          "duration",
+          "ip",
+          "long",
+          "record",
+          "string",
+          "timeframe",
+          "timestamp",
+          "null"
+        ],
+        "description": "The expression if the condition is false or null.",
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "any"
+    ],
+    "longDescription": "Evaluates the condition, and returns the value of either the then or else parameter.",
+    "aliases": [
+      "if"
+    ]
+  }
+}

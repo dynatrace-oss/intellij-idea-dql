@@ -1,0 +1,21 @@
+<html>
+<body>
+Checks usage of nested negative values.
+
+<p>
+    Nested negative values are much harder to understand, whether the value is positive or negative.
+    The inspection reports a notice that the value could be simplified by removing unnecessary <code>-</code> signs.
+    Although <strong>the expression is perfectly valid on DQL</strong>, it still useful for code style quality
+    remove unnecessary negative values.
+</p>
+<pre><code>
+data record()
+  | fields {
+      field = ------55,  // is the same as "field = 55"
+      field2 = -------55 // is the same as "field2 = -55"
+  }
+</code></pre>
+<p>After applying the quick-fix, the negative value will be simplified.</p>
+
+</body>
+</html>

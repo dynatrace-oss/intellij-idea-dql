@@ -1,0 +1,375 @@
+<idea-plugin>
+    <id>pl.thedeem.intellij.dql</id>
+    <name>Dynatrace Query Language</name>
+    <vendor url="https://www.dynatrace.com">(unofficial) Dynatrace</vendor>
+    <description><!-- language=HTML --><![CDATA[
+    <div>
+        <p>
+            Custom Language Support for
+            <a href="https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-query-language">
+                Dynatrace Query Language (DQL)
+            </a>.
+        </p>
+        <p>
+            This is an <strong>unofficial</strong> plugin offering tools for effective writing of
+            DQL files. It offers similar functionality to the Dynatrace Notebooks, but works fully
+            locally, but can work fully locally.
+        </p>
+        <p>
+            In the <strong>full-local mode</strong>, the plugin does not know any field-related context:
+            it does not know which fields are available in <code>logs</code> or metrics, so it
+            <strong>cannot validate the whole query</strong> as well as Dynatrace Notebooks
+            can.
+        </p>
+        <p>
+            When <strong>a connection to the Dynatrace tenant is configured</strong>,
+            the plugin can execute DQL scripts and show the results. It can also use the connection to show
+            any kind of validation offered by Dynatrace Notebooks.
+        </p>
+        <p>
+            The plugin <strong>does not aim to replace Dynatrace Notebooks</strong> - it should still be your primary
+            choice when writing DQLs!
+            The main goal is to provide a good enough environment to work within IntelliJ when storing your DQLs in Git.
+            In the local-only mode, it does not have nearly as many validations as the real notebook environment,
+            so valid DQL queries written using the plugin can still be invalid after executing them on Notebooks
+            (although errors should be rather minor).
+        </p>
+        <h3>DQL customization</h3>
+        <p>
+            The plugin offers advanced and <strong>customizable syntax highlighting</strong> - within the code
+            style settings page you can change most of the colors used for DQL tokens and keywords.
+        </p>
+        <p>
+            The plugin also provides a lot of code style settings related to indents,
+            spaces and line breaks between DQL tokens.
+            You will now be able to ensure a common style for all <code>.dql</code> files stored in your repository.
+        </p>
+        <p>
+            As a bonus, the plugin also adds support for IntelliJ <em>inlays</em> for unnamed parameters,
+            so it is now much easier to see which values belong to which parameter.
+        </p>
+        <h3>Code completion</h3>
+        <p>
+            Depending on the context of the DQL query, the completion contributor will show you available
+            options. It works with:
+        </p>
+        <ul>
+            <li>
+                <strong>Query commands</strong> (<em>statements</em>),
+                with distinction for query-starting commands and operations on the data set.
+            </li>
+            <li>
+                <strong>Statement parameters</strong>,
+                with automatically fulfilling their default values.
+            </li>
+            <li>
+                <strong>DQL fields</strong>. You'll see all fields used in the query, and if the field's value was
+                overwritten, it will also show the value within the completion tooltip.
+            </li>
+            <li>
+                <strong>DQL functions and their parameters</strong>,
+                with automatically filtering out functions that do not provide a proper return value for the current context.
+            </li>
+            <li>
+                <strong>DQL subqueries</strong> for commands offering joining functionality.
+            </li>
+        </ul>
+        <h3>Contextual issues detection</h3>
+        <p>
+            Apart from just validating the DQL file syntax, the plugin is also automatically detecting contextual
+            issues and - where possible - offering a quick fix to resolve them. It can detect:
+        </p>
+        <ul>
+            <li>Invalid statement types</li>
+            <li>
+                Invalid parameters: invalid names and values, missing and duplicated parameters, conflicts
+                with other parameters.
+            </li>
+            <li>
+                Invalid parameters for functions (also recursively checking if the function return value
+                matches the required parameter type).
+            </li>
+            <li>Empty braces and subqueries</li>
+        </ul>
+        <h3>Documentation tooltips</h3>
+        <p>
+            You can hover over query parts to see more information about the element. The information is taken from
+            the Dynatrace documentation page.
+        </p>
+        <ul>
+            <li>DQL command documentation: description, list of available parameters</li>
+            <li>DQL functions documentation: description, syntax, list of available parameters, return values</li>
+            <li>Parameters documentation (for statements and functions): description, possible values</li>
+            <li>Context information for other elements, like DQL fields, variables, boolean types, etc.</li>
+        </ul>
+        <h3>Dynatrace tenant connection</h3>
+        <p>You can also configure a connection to a Dynatrace tenant. This will allow you to:</p>
+        <ul>
+            <li>
+                <strong>Execute DQL files</strong> - plugin adds support for Run Configuration for each <code>.dql</code>
+                file. After DQL execution, you'll see results in IntelliJ presented as a table.
+            </li>
+            <li>
+                <strong>Dynatrace REST API validation</strong> - when using the live validations feature, the plugin
+                will query DQL verification REST API, showing all detected issues in the editor view. This means, that
+                you'll see the same validations offered by Dynatrace Notebooks.
+            </li>
+        </ul>
+    </div>
+  ]]></description>
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType
+                name="DQL"
+                implementationClass="pl.thedeem.intellij.dql.DQLFileType"
+                fieldName="INSTANCE"
+                language="DQL"
+                extensions="dql"/>
+        <lang.parserDefinition
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.DQLParserDefinition"/>
+
+        <!-- Syntax -->
+        <lang.syntaxHighlighterFactory
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.highlighting.DQLSyntaxHighlighterFactory"/>
+        <colorSettingsPage
+                implementation="pl.thedeem.intellij.dql.highlighting.DQLColorSettingsPage"/>
+        <annotator
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.annotator.DQLAnnotator"/>
+        <lang.foldingBuilder
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.code.DQLFoldingBuilder"/>
+        <lang.commenter
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.code.DQLCommenter"/>
+        <lang.braceMatcher language="DQL"
+                           implementationClass="pl.thedeem.intellij.dql.code.DQLPairedBraceMatcher"/>
+        <quoteHandler className="pl.thedeem.intellij.dql.code.DQLQuoteHandler" fileType="DQL"/>
+        <codeInsight.parameterNameHints language="DQL"
+                                        implementationClass="pl.thedeem.intellij.dql.highlighting.DQLInlayParameterHintsProvider"/>
+        <multiHostInjector
+                implementation="pl.thedeem.intellij.dql.highlighting.DQLJsonInjectorContributor"/>
+
+        <!-- Docs -->
+        <lang.documentationProvider
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.documentation.DQLDocumentationProvider"/>
+
+        <!-- References -->
+        <psi.referenceContributor
+                language="DQL"
+                implementation="pl.thedeem.intellij.dql.indexing.DQLReferenceContributor"/>
+        <lang.refactoringSupport
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.indexing.DQLRefactoringSupportProvider"/>
+        <lang.findUsagesProvider
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.indexing.DQLFindUsagesProvider"/>
+        <usageTypeProvider implementation="pl.thedeem.intellij.dql.indexing.DQLUsageTypeProvider"/>
+        <lang.elementManipulator
+                forClass="pl.thedeem.intellij.dql.psi.elements.FieldElement"
+                implementationClass="pl.thedeem.intellij.dql.indexing.DQLFieldElementManipulator"/>
+        <lang.elementManipulator
+                forClass="pl.thedeem.intellij.dql.psi.elements.VariableElement"
+                implementationClass="pl.thedeem.intellij.dql.indexing.DQLVariableElementManipulator"/>
+        <renameInputValidator implementation="pl.thedeem.intellij.dql.indexing.DQLRenameInputValidator"/>
+        <renamePsiElementProcessor implementation="pl.thedeem.intellij.dql.indexing.DQLRenamePsiElementProcessor"/>
+
+        <!-- Completions -->
+        <completion.contributor
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.completion.DQLCompletionContributor"/>
+
+        <!-- Styling -->
+        <lang.formatter
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.style.DQLFormattingModelBuilder"/>
+        <codeStyleSettingsProvider
+                implementation="pl.thedeem.intellij.dql.style.DQLCodeStyleSettingsProvider"/>
+        <langCodeStyleSettingsProvider
+                implementation="pl.thedeem.intellij.dql.style.DQLLanguageCodeStyleSettingsProvider"/>
+
+        <!-- Structure -->
+        <lang.psiStructureViewFactory
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.structure.DQLStructureViewFactory"/>
+        <navbar implementation="pl.thedeem.intellij.dql.structure.DQLStructureAwareNavbar"/>
+
+        <!-- Validations -->
+        <spellchecker.support language="DQL"
+                              implementationClass="pl.thedeem.intellij.dql.code.DQLSpellcheckingStrategy"/>
+        <!-- Expression validations -->
+        <localInspection language="DQL" shortName="InvalidTimeAlignmentDuration" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.time.alignment.operand.type.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidTimeAlignmentDurationInspection"/>
+        <localInspection language="DQL" shortName="InvalidTimeAlignmentTarget" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.time.alignment.operator.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidTimeAlignmentTargetInspection"/>
+        <localInspection language="DQL" shortName="EmptySubquery" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.subquery.body.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.EmptySubqueryInspection"/>
+        <localInspection language="DQL" shortName="EmptyBrackets" enabledByDefault="true" level="INFO"
+                         groupKey="inspection.groups.dql" key="inspection.bracket.body.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.EmptyBracketsInspection"/>
+        <localInspection language="DQL" shortName="SortingKeyword" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.sortingKeyword.usage.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.SortingKeywordInspection"/>
+        <localInspection language="DQL" shortName="InvalidSortingOperation" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.sorting.invalidTarget.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidSortingOperationInspection"/>
+        <localInspection language="DQL" shortName="InvalidFieldReadOperation" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.fieldReadOperation.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidFieldReadOperationInspection"/>
+        <localInspection language="DQL" shortName="InvalidFieldWriteOperation" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.fieldWriteOperation.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidFieldWriteOperationInspection"/>
+        <localInspection language="DQL" shortName="InvalidNegationTarget" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.negation.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidNegationTargetInspection"/>
+        <localInspection language="DQL" shortName="InvalidEqualityTarget" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.equality.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidEqualityTargetInspection"/>
+        <localInspection language="DQL" shortName="UnsupportedEqualityType" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.equality.unsupportedType.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.UnsupportedEqualityTypeInspection"/>
+        <localInspection language="DQL" shortName="InvalidArithmeticalTarget" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.arithmetical.operation.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidArithmeticalTargetInspection"/>
+        <localInspection language="DQL" shortName="UnsupportedArithmeticalType" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.arithmetical.unsupportedType.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.UnsupportedArithmeticalTypeInspection"/>
+        <localInspection language="DQL" shortName="InvalidComparisonTarget" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.comparison.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidComparisonTargetInspection"/>
+        <localInspection language="DQL" shortName="UnsupportedComparisonType" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.comparison.unsupportedType.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.UnsupportedComparisonTypeInspection"/>
+        <localInspection language="DQL" shortName="InvalidConditionTarget" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.condition.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidConditionTargetInspection"/>
+        <localInspection language="DQL" shortName="InvalidArrayTarget" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.array.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidArrayTargetInspection"/>
+        <localInspection language="DQL" shortName="InvalidAssignTarget" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.assign.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidAssignTargetInspection"/>
+        <localInspection language="DQL" shortName="StaticCondition" enabledByDefault="true" level="INFO"
+                         groupKey="inspection.groups.dql" key="inspection.condition.static.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.StaticConditionInspection"/>
+        <localInspection language="DQL" shortName="StaticComparison" enabledByDefault="true" level="INFO"
+                         groupKey="inspection.groups.dql" key="inspection.comparison.static.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.StaticComparisonInspection"/>
+        <localInspection language="DQL" shortName="InvalidNegativeValueTarget" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.negativeValue.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidNegativeValueTargetInspection"/>
+        <localInspection language="DQL" shortName="ComplexNegativeValue" enabledByDefault="true" level="INFO"
+                         groupKey="inspection.groups.dql" key="inspection.complexNegativeValue.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.ComplexNegativeValueInspection"/>
+        <localInspection language="DQL" shortName="RightSideNegativeValue" enabledByDefault="true" level="INFO"
+                         groupKey="inspection.groups.dql" key="inspection.rightSideNegativeValue.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.RightSideNegativeValueInspection"/>
+        <!-- Function validations -->
+        <localInspection language="DQL" shortName="UnknownFunction" enabledByDefault="true" level="WARNING"
+                         groupKey="inspection.groups.dql" key="inspection.function.name.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.functions.UnknownFunctionInspection"/>
+        <localInspection language="DQL" shortName="MissingFunctionParameters" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.function.parameters.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.functions.MissingFunctionParametersInspection"/>
+        <localInspection language="DQL" shortName="DuplicatedFunctionParameter" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.function.duplicatedParameters.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.functions.DuplicatedFunctionParameterInspection"/>
+        <!-- Command validations -->
+        <localInspection language="DQL" shortName="UnknownCommand" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.command.name.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.commands.UnknownCommandInspection"/>
+        <localInspection language="DQL" shortName="InvalidCommandContext" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.command.context.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.commands.InvalidCommandContextInspection"/>
+        <localInspection language="DQL" shortName="MissingCommandParameters" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.command.body.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.commands.MissingCommandParametersInspection"/>
+        <localInspection language="DQL" shortName="DuplicatedCommandParameters" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.command.duplicatedParameters.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.commands.DuplicatedCommandParametersInspection"/>
+        <localInspection language="DQL" shortName="AdvisedBracketsAroundParameters" enabledByDefault="true" level="INFO"
+                         groupKey="inspection.groups.dql" key="inspection.command.advisedBrackets.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.commands.AdvisedBracketsAroundParametersInspection"/>
+        <localInspection language="DQL" shortName="DuplicatedFieldNames" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.command.duplicatedFieldNames.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.commands.DuplicatedFieldNamesInspection"/>
+        <!-- Parameters validations -->
+        <localInspection language="DQL" shortName="ConflictedParameter" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.parameter.conflicted.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.ConflictedParameterInspection"/>
+        <localInspection language="DQL" shortName="InvalidParameterName" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.parameter.invalidName.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.InvalidParameterNameInspection"/>
+        <localInspection language="DQL" shortName="UnknownParameter" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.parameter.unknown.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.UnknownParameterInspection"/>
+        <localInspection language="DQL" shortName="ParameterValue" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.command.parametersValue.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.ParameterValueInspection"/>
+        <localInspection language="DQL" shortName="RecordsListParameter" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.parameter.recordsList.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.RecordsListParameterInspection"/>
+        <localInspection language="DQL" shortName="AggregationFunction" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.parameter.aggregationFunction.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.AggregationFunctionParameterInspection"/>
+        <localInspection language="DQL" shortName="EnumValueParameter" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.parameter.enumValue.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.EnumValueParameterInspection"/>
+        <localInspection language="DQL" shortName="ConstantValueParameter" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.parameter.constantValue.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.ConstantValueParameterInspection"/>
+        <localInspection language="DQL" shortName="JoinConditionParameter" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.parameter.joinCondition.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.JoinConditionParameterInspection"/>
+        <!-- Value validations -->
+        <localInspection language="DQL" shortName="SingleQuotesUsage" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.singleQuotes.usage.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.simple.SingleQuotesUsageInspection"/>
+        <localInspection language="DQL" shortName="DurationType" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.duration.type.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.simple.DurationTypeInspection"/>
+        <!-- Dynatrace inspections -->
+        <externalAnnotator language="DQL" implementationClass="pl.thedeem.intellij.dql.inspections.external.DQLVerificationAnnotator"/>
+
+        <!-- Settings -->
+        <applicationService serviceImplementation="pl.thedeem.intellij.dql.settings.DQLSettings"/>
+
+        <applicationConfigurable
+                parentId="tools"
+                id="DQLSettingsConfigurable"
+                instance="pl.thedeem.intellij.dql.settings.DQLSettingsConfigurable"
+                key="settings.dql.title"
+        />
+        <applicationConfigurable
+                parentId="DQLSettingsConfigurable"
+                id="DQLTenants"
+                instance="pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsConfigurable"
+                key="settings.dql.tenants.title"
+        />
+
+        <!-- Services -->
+        <applicationService serviceImplementation="pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService"/>
+        <configurationType
+                implementation="pl.thedeem.intellij.dql.executing.executeDql.ExecuteDQLConfigurationType"/>
+        <programRunner implementation="pl.thedeem.intellij.dql.executing.DQLProgramRunner"/>
+        <serviceViewContributor implementation="pl.thedeem.intellij.dql.executing.services.DQLServiceViewContributor"/>
+    </extensions>
+
+    <actions resource-bundle="messages.DQLBundle">
+        <group id="DQL">
+            <action id="DQL.ExecuteScript" class="pl.thedeem.intellij.dql.executing.actions.ExecuteDQLFromEditorAction" icon="AllIcons.Actions.Execute">
+                <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="RunnerActions"/>
+                <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="NewGroup"/>
+                <keyboard-shortcut keymap="$default"  first-keystroke="control alt E"/>
+            </action>
+        </group>
+    </actions>
+    <resource-bundle>messages.DQLBundle</resource-bundle>
+</idea-plugin>

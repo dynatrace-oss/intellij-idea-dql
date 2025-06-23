@@ -1,0 +1,26 @@
+<html>
+<body>
+Reports an error if a DQL command is used in a wrong place.
+
+<p>
+    DQL has two different groups of commands: one that can start the DQL query,
+    and the second one that manages the set of data, the first one returned.
+    They cannot be used in a wrong context.
+</p>
+<pre><code>
+data json: "..." // is allowed query start command
+| filter field == true // is allowed query manipulation command
+| append [
+   summarize field // this will report an error, because the append command block requires a query start command
+]
+</code></pre>
+
+<p>
+    In some cases, DQL files are split into smaller ones, for example, when dynamically building a big DQL file using
+    <a href="https://docs.dynatrace.com/docs/deliver/configuration-as-code/monaco/configuration/yaml-configuration">Monaco</a>.
+
+    This inspection would then render such smaller pieces of the query as errors. You can disable this inspection by
+    renaming your file to "file_name<strong>.partial</strong>.dql".
+</p>
+</body>
+</html>

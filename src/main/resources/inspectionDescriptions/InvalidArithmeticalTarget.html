@@ -1,0 +1,17 @@
+<html>
+<body>
+Checks if both sides of an arithmetical operation are valid.
+<p>
+    This inspection focuses on the validity of expression types used on either side of the operation.
+    To be a deemed valid expression, both sides must be supported data types.
+    See all supported operation types
+    <a href="https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-query-language/operators">
+        in the official Dynatrace documentation.
+    </a>
+</p>
+<pre><code>
+data json: "..."
+| fields field = 22 * "string" // string is not a valid arithmetical target
+</code></pre>
+</body>
+</html>

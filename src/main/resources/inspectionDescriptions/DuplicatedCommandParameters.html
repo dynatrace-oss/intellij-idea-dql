@@ -1,0 +1,16 @@
+<html>
+<body>
+Verifies if a parameter is not duplicated.
+
+<p>Apart from repetitive parameters, you cannot define the same parameter twice.</p>
+<pre><code>
+fetch logs,
+    from: -7d,
+    to: now(),
+    from: -10d // will cause an error, because "from" was already defined
+</code></pre>
+<p>
+    After applying the quick-fix, the selected parameter will be dropped, resolving the duplication.
+</p>
+</body>
+</html>

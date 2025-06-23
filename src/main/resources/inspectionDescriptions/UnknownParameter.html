@@ -1,0 +1,17 @@
+<html>
+<body>
+Verifies the usage of supported DQL parameters.
+
+<p>
+    This inspection reports an error if it detects a parameter that is not included in a known function
+    or command parameters list.
+</p>
+
+<pre><code>
+fetch logs,
+from: now(),
+to: now(unknownParameter: true),  // reports an error, because "unknownParameter" is not a valid parameter for the "now" function
+unknownParameter: false // reports an error, because "unknownParameter" is not a valid parameter for the "fetch" command
+</code></pre>
+</body>
+</html>

@@ -1,0 +1,95 @@
+{
+  "expand": {
+    "name": "expand",
+    "description": "Expands an array into separate records.",
+    "type": "structuring-commands",
+    "syntax": [
+      "expand [alias =] expression [, limit]"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "nameAllowed": false,
+        "required": true,
+        "description": "The field definition used to expand records",
+        "type": [
+          "data object",
+          "assign expression"
+        ]
+      },
+      {
+        "name": "limit",
+        "description": "The number of elements is limited by the limit parameter or the length of the array",
+        "required": false,
+        "constant": true,
+        "type": [
+          "positive long"
+        ],
+        "disallows": []
+      }
+    ]
+  },
+  "fieldsFlatten": {
+    "name": "fieldsFlatten",
+    "description": "Extracts/flattens fields from a nested record.",
+    "type": "structuring-commands",
+    "syntax": [
+      "fieldsFlatten expression [, prefix] [, fields: { [field, …] }] [, depth]"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "description": "An identifier returning the record from which to flatten the fields.",
+        "required": true,
+        "nameAllowed": false,
+        "type": [
+          "data object"
+        ]
+      },
+      {
+        "name": "prefix",
+        "description": "Prefix that is applied to all fields that are going to be flattened out. It can't be used together with the fields parameter. Default: The provided field name and a dot.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "string"
+        ],
+        "disallows": [
+          "fields"
+        ]
+      },
+      {
+        "name": "depth",
+        "description": "Flatten nested records until the specified depth is reached. Must be between 1 and 10. The default value is 1.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "positive long"
+        ],
+        "disallows": []
+      },
+      {
+        "name": "fields",
+        "description": "Fields from the record that are going to be flattened out. It can't be used together with the prefix parameter.",
+        "required": false,
+        "type": [
+          "array",
+          "boolean",
+          "counter",
+          "double",
+          "duration",
+          "ip",
+          "long",
+          "record",
+          "string",
+          "timeframe",
+          "timestamp",
+          "list of expressions"
+        ],
+        "disallows": [
+          "prefix"
+        ]
+      }
+    ]
+  }
+}

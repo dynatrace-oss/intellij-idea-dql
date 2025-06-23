@@ -1,0 +1,24 @@
+{
+  "operator": "addition",
+  "mapping": {
+    "long": {
+      "long": "long",
+      "double": "double"
+    },
+    "double": {
+      "long": "double",
+      "double": "double"
+    },
+    "timestamp": {
+      "duration": "timestamp"
+    },
+    "duration": {
+      "timestamp": "timestamp",
+      "duration": "duration",
+      "timeframe": "timeframe"
+    },
+    "timeframe": {
+      "timeframe": "timeframe"
+    }
+  }
+}

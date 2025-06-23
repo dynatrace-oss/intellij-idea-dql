@@ -1,0 +1,17 @@
+<html>
+<body>
+Checks usage of negative values inside arithmetical expressions.
+
+<p>
+    The inspection reports information if a negative value is used on the right side of an arithmetical expression.
+    While DQL allows such expressions, it is considered a good style using parenthesis for better code readability.
+    After applying the quick-fix, parentheses will be added for the right side of the expression.
+</p>
+<pre><code>
+data record()
+  | fields {
+      field = 55*-1+-2 // after applying quick-fix, will replace it with 55*(-1)+(-2)
+  }
+</code></pre>
+</body>
+</html>

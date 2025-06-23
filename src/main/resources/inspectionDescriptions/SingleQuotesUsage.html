@@ -1,0 +1,22 @@
+<html>
+<body>
+Verifies that no single-quoted strings are used in the DQL query.
+
+<p>
+    DQL does not allow single-quoted strings usage. This inspection will report an error if it finds any such string
+    used anywhere in the query.
+</p>
+<pre><code>
+data json: "..."
+    | fields field = 'an invalid string' // single quotes are not supported
+</code></pre>
+<p>
+    After applying the quick-fix, single quotes will be automatically replaced with double ones, using a correct type
+    of DQL string.
+</p>
+<pre><code>
+data json: "..."
+    | fields field = "an invalid string" // single quotes will be automatically converted into the double quotes
+</code></pre>
+</body>
+</html>

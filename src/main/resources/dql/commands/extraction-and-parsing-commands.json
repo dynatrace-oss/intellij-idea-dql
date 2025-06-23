@@ -1,0 +1,53 @@
+{
+  "parse": {
+    "name": "parse",
+    "description": "Parses a record field and puts the result into one or more fields as specified in the pattern.",
+    "type": "extraction-and-parsing-commands",
+    "syntax": [
+      "parse expression, pattern [, preserveFieldsOnFailure] [, parsingPrerequisite]"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "description": "A field or string expression to parse.",
+        "required": true,
+        "nameAllowed": false,
+        "type": [
+          "string",
+          "data object"
+        ],
+        "disallows": []
+      },
+      {
+        "name": "pattern",
+        "description": "The parse pattern.",
+        "required": true,
+        "nameAllowed": false,
+        "constant": true,
+        "type": [
+          "string"
+        ],
+        "disallows": []
+      },
+      {
+        "name": "preserveFieldsOnFailure",
+        "description": "Determines if field values should be preserved if parsing fails. When used in OpenPipeline, the value is `true`.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "boolean"
+        ],
+        "disallows": []
+      },
+      {
+        "name": "parsingPrerequisite",
+        "description": "Determines if record should be parsed.",
+        "required": false,
+        "type": [
+          "boolean"
+        ],
+        "disallows": []
+      }
+    ]
+  }
+}

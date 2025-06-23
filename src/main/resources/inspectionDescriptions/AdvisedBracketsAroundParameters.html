@@ -1,0 +1,18 @@
+<html>
+<body>
+Reports when a named parameter has multiple values, but they are not contained within brackets.
+
+<p>Example:</p>
+<pre><code>
+data json: "..."
+| summarize field1, field2, by: field3, field4 // "by" parameter is the problem
+</code></pre>
+<p>After the quick-fix is applied, value of the <code>by</code> parameter will be contained within brackets:</p>
+<pre><code>
+data json: "..."
+| summarize field1, field2, by: { field3, field4 }
+</code></pre>
+
+<p>It is advised to list fields in bracket expression for a better code quality and readability.</p>
+</body>
+</html>

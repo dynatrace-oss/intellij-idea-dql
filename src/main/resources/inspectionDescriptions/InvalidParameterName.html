@@ -1,0 +1,17 @@
+<html>
+<body>
+Reports an error if the provided has an invalid name.
+
+<p>
+    Some parameters in DQL cannot be named. This inspection ensures that names are not provided when they are not
+    allowed.
+</p>
+
+<pre><code>
+data json: "..."
+| fieldsAdd field: someField // will report an error, because the parameter "field" cannot be named
+</code></pre>
+
+<p>After applying the quick-fix, the parameter name will be dropped.</p>
+</body>
+</html>

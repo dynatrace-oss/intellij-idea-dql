@@ -1,0 +1,146 @@
+{
+  "vectorL1Distance": {
+    "group": "vector-distance-functions",
+    "name": "vectorL1Distance",
+    "description": "Calculates the taxicab distance between numeric array expressions.",
+    "syntax": [
+      "vectorL1Distance(firstExpression, secondExpression)"
+    ],
+    "parameters": [
+      {
+        "name": "firstExpression",
+        "type": [
+          "array"
+        ],
+        "description": "The first vector between which the distance should be computed",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "secondExpression",
+        "type": [
+          "array"
+        ],
+        "description": "The second vector between which the distance should be computed",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "double"
+    ],
+    "longDescription": "Calculates the taxicab distance between numeric array expressions. It can be used to query embedding vectors that are most similar (for example, have the lowest distance) to a given vector.",
+    "aliases": [
+      "vectorL1Distance"
+    ]
+  },
+  "vectorL2Distance": {
+    "group": "vector-distance-functions",
+    "name": "vectorL2Distance",
+    "description": "Calculates the Euclidean distance between numeric array expressions.",
+    "syntax": [
+      "vectorL2Distance(firstExpression, secondExpression)"
+    ],
+    "parameters": [
+      {
+        "name": "firstExpression",
+        "type": [
+          "array"
+        ],
+        "description": "The first vector between which the distance should be computed",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "secondExpression",
+        "type": [
+          "array"
+        ],
+        "description": "The second vector between which the distance should be computed",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "double"
+    ],
+    "longDescription": "Calculates the Euclidean distance between numeric array expressions. It can be used to query embedding vectors that are most similar (for example, have the lowest distance) to a given vector.",
+    "aliases": [
+      "vectorL2Distance"
+    ]
+  },
+  "vectorCosineDistance": {
+    "group": "vector-distance-functions",
+    "name": "vectorCosineDistance",
+    "description": "Calculates the cosine distance between numeric array expressions.",
+    "syntax": [
+      "vectorCosineDistance(firstExpression, secondExpression)"
+    ],
+    "parameters": [
+      {
+        "name": "firstExpression",
+        "type": [
+          "array"
+        ],
+        "description": "The first vector between which the distance should be computed",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "secondExpression",
+        "type": [
+          "array"
+        ],
+        "description": "The second vector between which the distance should be computed",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "double"
+    ],
+    "longDescription": "Calculates the cosine distance between numeric array expressions. It can be used to query embedding vectors that are most similar (for example, have the lowest distance) to a given vector.",
+    "aliases": [
+      "vectorCosineDistance"
+    ]
+  },
+  "vectorInnerProductDistance": {
+    "group": "vector-distance-functions",
+    "name": "vectorInnerProductDistance",
+    "description": "Calculates the negative dot product between numeric array expressions.",
+    "syntax": [
+      "vectorInnerProductDistance(firstExpression, secondExpression)"
+    ],
+    "parameters": [
+      {
+        "name": "firstExpression",
+        "type": [
+          "array"
+        ],
+        "description": "The first vector between which the distance should be computed",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "secondExpression",
+        "type": [
+          "array"
+        ],
+        "description": "The second vector between which the distance should be computed",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "double"
+    ],
+    "longDescription": "Calculates the negative dot product between numeric array expressions. It can be used to query embedding vectors that are most similar to a given vector.",
+    "aliases": [
+      "vectorInnerProductDistance"
+    ]
+  }
+}

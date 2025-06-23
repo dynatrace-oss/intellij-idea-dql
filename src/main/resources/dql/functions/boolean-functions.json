@@ -1,0 +1,128 @@
+{
+  "isFalseOrNull": {
+    "group": "boolean-functions",
+    "name": "isFalseOrNull",
+    "description": "Evaluates if an expression is false or null.",
+    "syntax": [
+      "isFalseOrNull(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "boolean"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Evaluates if an expression is false or null.",
+    "aliases": [
+      "isFalseOrNull"
+    ]
+  },
+  "isNotNull": {
+    "group": "boolean-functions",
+    "name": "isNotNull",
+    "description": "Tests if a value is not null.",
+    "syntax": [
+      "isNotNull(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "array",
+          "boolean",
+          "double",
+          "duration",
+          "ip",
+          "long",
+          "record",
+          "string",
+          "timeframe",
+          "timestamp"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Tests if a value is not null.",
+    "aliases": [
+      "isNotNull"
+    ]
+  },
+  "isNull": {
+    "group": "boolean-functions",
+    "name": "isNull",
+    "description": "Tests if a value is null.",
+    "syntax": [
+      "isNull(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "array",
+          "boolean",
+          "double",
+          "duration",
+          "ip",
+          "long",
+          "record",
+          "string",
+          "timeframe",
+          "timestamp"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Tests if a value is null.",
+    "aliases": [
+      "isNull"
+    ]
+  },
+  "isTrueOrNull": {
+    "group": "boolean-functions",
+    "name": "isTrueOrNull",
+    "description": "Evaluates if an expression is true or null.",
+    "syntax": [
+      "isTrueOrNull(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "boolean"
+        ],
+        "description": "",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Evaluates if an expression is true or null.",
+    "aliases": [
+      "isTrueOrNull"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+<html>
+<body>
+Validates the joining <code>on</code> condition.
+
+<p>
+    The <code>on</code> parameter in the joining conditions needs to have a proper syntax in order to validate
+    successfully. You can provide multiple conditions, and they all need to be valid.
+</p>
+
+<p>
+    A valid joining condition uses the equality expression between two special fields called <code>left</code>
+    (the original query context) and <code>right</code> (the joined query context). You can also specify just the
+    field name if both queries include it.
+</p>
+
+<pre><code>
+data json: "..."
+| join [...] on: id // if the "id" is in both queries, the condition is OK
+| join [...] on: left[dt.entity.host] == right[id] // if the fields are different, you need to use the "left" and "right" fields
+// you can also provide multiple conditions using a valid syntax for each of them
+| join [...] on: {
+    left[service.id] == right[id],
+    left[cloudType] == right[cloud],
+    dt.entity.host
+}
+</code></pre>
+
+<p>
+    You can find more information in the
+    <a href="https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-query-language/commands/correlation-and-join-commands#join">
+        official Dynatrace documentation
+    </a>.
+</p>
+</body>
+</html>

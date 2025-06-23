@@ -1,0 +1,15 @@
+<html>
+<body>
+Verifies if a parameter is not duplicated.
+
+<p>Apart from repetitive parameters, you cannot define the same parameter twice.</p>
+<pre><code>
+fetch logs
+   | filter matchesValue(field, "value", caseSensitive: true, caseSensitive: false) // will report an error, because "caseInsensitive" was already specified
+</code></pre>
+
+<p>
+    After applying the quick-fix, the selected parameter will be dropped, resolving the duplication.
+</p>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<html>
+<body>
+Checks if the condition expression is done on static values from both sides.
+
+<p>
+    This inspection adds simple information that a condition expression will always have the same value
+    (<code>true</code> or <code>false</code>) and could be simplified.
+</p>
+
+<pre><code>
+data json: "..."
+| filter true or false // this will always be true
+</code></pre>
+</body>
+</html>

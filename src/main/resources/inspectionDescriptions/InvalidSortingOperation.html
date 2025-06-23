@@ -1,0 +1,18 @@
+<html>
+<body>
+Checks if the sorting operation is invoked on the right expression.
+<p>
+    To be a deemed valid expression, the sorting expression needs to be invoked on a specific set of allowed expressions,
+    like a simple value, a field, or on a function.
+    You can find more about sorting expressions
+    <a href="https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-query-language/commands/ordering-commands#sort">
+        in the official Dynatrace documentation.
+    </a>
+</p>
+
+<pre><code>
+data json: "..."
+| sort field desc, toString(field2) asc // is a correct usage
+</code></pre>
+</body>
+</html>

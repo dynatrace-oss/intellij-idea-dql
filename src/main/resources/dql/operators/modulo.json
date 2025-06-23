@@ -1,0 +1,16 @@
+{
+  "operator": "modulo",
+  "mapping": {
+    "long": {
+      "long": "long",
+      "double": "double"
+    },
+    "double": {
+      "long": "double",
+      "double": "double"
+    },
+    "duration": {
+      "duration": "duration"
+    }
+  }
+}

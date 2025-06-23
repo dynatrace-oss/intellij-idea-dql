@@ -1,0 +1,314 @@
+{
+  "ip": {
+    "group": "network-functions",
+    "name": "ip",
+    "description": "You can use this function to create an IP address.",
+    "syntax": [
+      "ip(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string",
+          "ip address"
+        ],
+        "description": "The expression to create a new IP address.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "ip"
+    ],
+    "longDescription": "You can use this function to create an IP address.",
+    "aliases": [
+      "ip"
+    ]
+  },
+  "ipIn": {
+    "group": "network-functions",
+    "name": "ipIn",
+    "description": "This function can be used to check if a list of IP addresses or an IP network (e.g. 127.0.0.1/8) contains particular IP addresses",
+    "syntax": [
+      "ipIn(needle_expressions, haystack_expressions...)"
+    ],
+    "parameters": [
+      {
+        "name": "needle_expressions",
+        "type": [
+          "string",
+          "ip",
+          "array of string expressions/IP addresses"
+        ],
+        "description": "Represents the IP addresses that needs to be found in the haystack_expressions.",
+        "required": true,
+        "repetitive": true
+      },
+      {
+        "name": "haystack_expressions",
+        "type": [
+          "string",
+          "ip",
+          "array of string expressions/ip addresses"
+        ],
+        "description": "The variable argument list where the needle_expressions should be found.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "This function returns a Boolean which indicates if at least one IP address of the first parameter can be found in the following ones - the same behavior as the in() function.",
+    "aliases": [
+      "ipIn"
+    ]
+  },
+  "ipIsLinkLocal": {
+    "group": "network-functions",
+    "name": "ipIsLinkLocal",
+    "description": "Checks if an IP address is a link-local IP address.",
+    "syntax": [
+      "ipIsLinkLocal(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string",
+          "ip address"
+        ],
+        "description": "The expression to check if it is a particular type of IP address.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Checks if an IP address is a link-local IP address.",
+    "aliases": [
+      "ipIsLinkLocal"
+    ]
+  },
+  "ipIsLoopback": {
+    "group": "network-functions",
+    "name": "ipIsLoopback",
+    "description": "Checks if an IP address is a loopback IP address.",
+    "syntax": [
+      "ipIsLoopback(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string",
+          "ip address"
+        ],
+        "description": "The expression to check if it is a particular type of IP address.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Checks if an IP address is a loopback IP address.",
+    "aliases": [
+      "ipIsLoopback"
+    ]
+  },
+  "ipIsPrivate": {
+    "group": "network-functions",
+    "name": "ipIsPrivate",
+    "description": "Checks if an IP address is a private IP address.",
+    "syntax": [
+      "ipIsPrivate(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string",
+          "ip address"
+        ],
+        "description": "The expression to check if it is a particular type of IP address.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Checks if an IP address is a private IP address.",
+    "aliases": [
+      "ipIsPrivate"
+    ]
+  },
+  "ipIsPublic": {
+    "group": "network-functions",
+    "name": "ipIsPublic",
+    "description": "Checks if an IP address is a public IP address.",
+    "syntax": [
+      "ipIsPublic(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string",
+          "ip address"
+        ],
+        "description": "The expression to check if it is a particular type of IP address.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Checks if an IP address is a public IP address.",
+    "aliases": [
+      "ipIsPublic"
+    ]
+  },
+  "ipMask": {
+    "group": "network-functions",
+    "name": "ipMask",
+    "description": "You can use this function to mask an IP address with given bits.",
+    "syntax": [
+      "ipMask(expression, maskBits [, ipv6MaskBits])"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string",
+          "ip address"
+        ],
+        "description": "The expression to check if it is a particular type of IP address.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "maskBits",
+        "type": [
+          "long"
+        ],
+        "description": "The number of masking bits in the IP address.",
+        "constant": true,
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "ipv6MaskBits",
+        "type": [
+          "long"
+        ],
+        "description": "The number of masking bits in a IPv6 address.",
+        "constant": true,
+        "required": false,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "ip"
+    ],
+    "longDescription": "Masks an IP address with given bits (optional parameter for IPv6 addresses).",
+    "aliases": [
+      "ipMask"
+    ]
+  },
+  "isIp": {
+    "group": "network-functions",
+    "name": "isIp",
+    "description": "Checks if an expression is an IPv4/v6 address.",
+    "syntax": [
+      "isIp(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string",
+          "ip address"
+        ],
+        "description": "The expression to check if it contains/produces an IPv4/v6 address.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Checks if an expression is an IPv4/v6 address.",
+    "aliases": [
+      "isIp"
+    ]
+  },
+  "isIpV4": {
+    "group": "network-functions",
+    "name": "isIpV4",
+    "description": "Checks if an expression is an IPv4 address.",
+    "syntax": [
+      "isIpV4(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string",
+          "ip address"
+        ],
+        "description": "The expression to check if it contains/produces an IPv4 address.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Checks if an expression is an IPv4 address.",
+    "aliases": [
+      "isIpV4"
+    ]
+  },
+  "isIpV6": {
+    "group": "network-functions",
+    "name": "isIpV6",
+    "description": "Checks if an expression is an IPv6 address.",
+    "syntax": [
+      "isIpV6(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string",
+          "ip address"
+        ],
+        "description": "The expression to check if it contains/produces an IPv6 address.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean"
+    ],
+    "longDescription": "Checks if an expression is an IPv6 address.",
+    "aliases": [
+      "isIpV6"
+    ]
+  }
+}

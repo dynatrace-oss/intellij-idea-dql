@@ -1,0 +1,16 @@
+<html>
+<body>
+Ensures an aggregation function is used in the aggregating context.
+<p>
+    Some DQL commands require a specific set of functions, called "aggregation functions".
+    This inspections checks if the field on the list uses one of that functions.
+</p>
+<pre><code>
+timeseries {
+  somefield = avg(metric), // avg is one of the aggregation functions
+  min(metric), // min is one as well
+  matchesValue(metric, "test") // because the matchesValue is not an aggregation function, it will be reported as an error
+}
+</code></pre>
+</body>
+</html>

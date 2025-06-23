@@ -1,0 +1,19 @@
+<html>
+<body>
+Verifies if a field is not duplicated on the field list.
+<p>
+    In some contexts, you can only specify the same field once; otherwise it would overwrite the previous value.
+</p>
+<pre><code>
+fetch logs
+  | fields {
+    field1 = somevalue,
+    field1 = othervalue // will cause an error, because the "field1" was already defined on the list
+  }
+</code></pre>
+<p>
+    After applying the quick-fix, the selected field will be dropped, resolving the duplication.
+    You can also, alternatively, rename the field.
+</p>
+</body>
+</html>

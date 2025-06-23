@@ -1,0 +1,21 @@
+<html>
+<body>
+Verifies the usage of supported DQL functions.
+
+<p>
+    This inspection reports a warning if it detects an unknown function name.
+    Because the plugin uses scraping to get the list of all supported DQL functions, it is possible that there is some
+    function that is not yet indexed in the plugin —
+    this is why the severity is <code>WARNING</code> instead of <code>ERROR</code>.
+</p>
+
+<p>
+    No further validations will be performed on such functions.
+</p>
+
+<pre><code>
+data json: "..."
+| filter thisIsAnUnknownFunction(someParameter: true) // reports an error about unknown function
+</code></pre>
+</body>
+</html>
