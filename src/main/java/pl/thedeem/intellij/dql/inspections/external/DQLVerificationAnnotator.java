@@ -11,8 +11,10 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.executing.DQLExecutionUtil;
+import pl.thedeem.intellij.dql.executing.DQLParsedQuery;
 import pl.thedeem.intellij.dql.executing.executeDql.ExecuteDQLRunConfiguration;
 import pl.thedeem.intellij.dql.sdk.DynatraceRestClient;
 import pl.thedeem.intellij.dql.sdk.errors.DQLErrorResponseException;
@@ -27,22 +29,22 @@ import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 import java.io.IOException;
 
 public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationAnnotator.Input, DQLVerificationAnnotator.Result> {
-    public record Input(String content, PsiFile file) {
+    public record Input(PsiFile file) {
     }
 
-    public record Result(DQLVerifyResponse response) {
+    public record Result(DQLVerifyResponse response, @Nullable DQLParsedQuery parsedQuery) {
     }
 
     @Override
     public Input collectInformation(@NotNull PsiFile file, @NotNull Editor editor, boolean hasErrors) {
-        return new Input(file.getText(), file);
+        return new Input(file);
     }
 
     @Override
     public Result doAnnotate(Input input) {
         // We cannot do any annotations on partial files, as they will not be valid either way
         if (!canPerformExternalValidation(input)) {
-            return new Result(new DQLVerifyResponse());
+            return new Result(new DQLVerifyResponse(), null);
         }
         String tenantName = findTenantName(input);
         DynatraceTenant tenant = DynatraceTenantsService.getInstance().getTenantByUrl(tenantName);
@@ -50,28 +52,35 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
             String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
             DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
             try {
-                DQLVerifyResponse response = client.verifyDQL(new DQLVerifyPayload(input.content()), apiToken);
-                return new Result(response);
+                DQLParsedQuery parsedQuery = new DQLParsedQuery(input.file);
+                DQLVerifyResponse response = client.verifyDQL(new DQLVerifyPayload(parsedQuery.getParsedQuery()), apiToken);
+                return new Result(response, parsedQuery);
             } catch (IOException | InterruptedException | DQLNotAuthorizedException | DQLErrorResponseException e) {
-                return new Result(new DQLVerifyResponse());
+                return new Result(new DQLVerifyResponse(), null);
             }
         }
-        return new Result(new DQLVerifyResponse());
+        return new Result(new DQLVerifyResponse(), null);
     }
 
     @Override
     public void apply(@NotNull PsiFile file, Result result, @NotNull AnnotationHolder holder) {
         for (DQLVerifyResponse.DQLVerifyNotification notification : result.response().getNotifications()) {
             holder.newAnnotation(HighlightSeverity.GENERIC_SERVER_ERROR_OR_WARNING, notification.getMessage())
-                    .range(getTextRange(notification))
+                    .range(getTextRange(notification, result.parsedQuery()))
                     .highlightType(getSeverity(notification))
                     .create();
         }
     }
 
-    private TextRange getTextRange(DQLVerifyResponse.DQLVerifyNotification notification) {
+    private TextRange getTextRange(DQLVerifyResponse.DQLVerifyNotification notification, @Nullable DQLParsedQuery parsedQuery) {
         DQLSyntaxErrorPositionDetails syntaxPosition = notification.getSyntaxPosition();
-        return new TextRange(syntaxPosition.getStartIndex(), syntaxPosition.getEndIndex());
+        int start = syntaxPosition.getStartIndex();
+        int end = syntaxPosition.getEndIndex();
+        if (parsedQuery != null) {
+            start = parsedQuery.getOriginalOffset(start);
+            end = parsedQuery.getOriginalOffset(end);
+        }
+        return new TextRange(start, end);
     }
 
     private boolean canPerformExternalValidation(Input input) {

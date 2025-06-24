@@ -1,11 +1,15 @@
 package pl.thedeem.intellij.dql.sdk.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DQLVerifyResponse {
     public Boolean valid;
     public List<DQLVerifyNotification> notifications;
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class DQLVerifyNotification {
         public List<Object> arguments;
         public String message;

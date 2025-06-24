@@ -6,7 +6,7 @@ import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.DQLParameterObject;
-import pl.thedeem.intellij.dql.inspections.fixes.AddBracketsToParameterValue;
+import pl.thedeem.intellij.dql.inspections.fixes.AddBracketsToParameterValueQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
@@ -27,7 +27,7 @@ public class AdvisedBracketsAroundParametersInspection extends LocalInspectionTo
                         holder.registerProblem(
                                 parameter.getNameIdentifier(),
                                 DQLBundle.message("inspection.command.advisedBrackets.missingBrackets"),
-                                new AddBracketsToParameterValue(parameter)
+                                new AddBracketsToParameterValueQuickFix(parameter)
                         );
                     }
                 }

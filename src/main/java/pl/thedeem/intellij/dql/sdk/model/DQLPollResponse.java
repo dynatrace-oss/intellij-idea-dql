@@ -1,5 +1,8 @@
 package pl.thedeem.intellij.dql.sdk.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DQLPollResponse {
     public String state;
     public Long progress;

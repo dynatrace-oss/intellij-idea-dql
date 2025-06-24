@@ -34,10 +34,10 @@ public class DQLDocumentationProvider extends AbstractDocumentationProvider {
             case DQLFunctionName func ->
                     new DQLFunctionDocumentationProvider((DQLFunctionCallExpression) func.getParent());
             case DQLFieldExpression field -> new BaseTypedElementDocumentationProvider(
-                originalElement != null && originalElement.getParent() instanceof DQLFieldExpression originalField ? originalField : field,
-                DQLBundle.message("documentation.field.type")
+                    originalElement != null && originalElement.getParent() instanceof DQLFieldExpression originalField ? originalField : field,
+                    DQLBundle.message("documentation.field.type")
             );
-            case DQLVariableExpression variable -> new BaseTypedElementDocumentationProvider(variable, DQLBundle.message("documentation.variable.type"));
+            case DQLVariableExpression variable -> new DQLVariableDocumentationProvider(variable);
             case ExpressionOperatorImpl operator -> {
                 if (operator.getParent() instanceof DQLExpression expression) {
                     yield new DQLExpressionDocumentationProvider(expression);
@@ -56,7 +56,12 @@ public class DQLDocumentationProvider extends AbstractDocumentationProvider {
                     new BaseDocumentationProvider(nullElement, DQLBundle.message("documentation.null.type"));
             case DQLString ignored ->
                     new BaseDocumentationProvider(null, DQLBundle.message("documentation.string.type"));
-            default -> new BaseDocumentationProvider();
+            default -> {
+                if (originalElement != null && originalElement.getParent() instanceof DQLVariableExpression variable) {
+                    yield new DQLVariableDocumentationProvider(variable);
+                }
+                yield new BaseDocumentationProvider();
+            }
         };
         return docsProvider.buildDocumentation();
     }

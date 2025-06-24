@@ -119,6 +119,8 @@
   ]]></description>
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
+    <depends>com.intellij.modules.json</depends>
+
     <extensions defaultExtensionNs="com.intellij">
         <fileType
                 name="DQL"
@@ -335,6 +337,9 @@
         <localInspection language="DQL" shortName="DurationType" enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.duration.type.display.name"
                          implementationClass="pl.thedeem.intellij.dql.inspections.simple.DurationTypeInspection"/>
+        <localInspection language="DQL" shortName="UnknownVariable" enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.variable.unknown.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.simple.UnknownVariableInspection"/>
         <!-- Dynatrace inspections -->
         <externalAnnotator language="DQL" implementationClass="pl.thedeem.intellij.dql.inspections.external.DQLVerificationAnnotator"/>
 

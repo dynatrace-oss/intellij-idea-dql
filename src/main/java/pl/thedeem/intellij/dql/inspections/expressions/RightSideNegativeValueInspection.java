@@ -6,7 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.inspections.fixes.ParenthesizeElement;
+import pl.thedeem.intellij.dql.inspections.fixes.ParenthesizeElementQuickFix;
 import pl.thedeem.intellij.dql.psi.*;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public class RightSideNegativeValueInspection extends LocalInspectionTool {
                 holder.registerProblem(
                         leftSide,
                         DQLBundle.message("inspection.rightSideNegativeValue.shouldBeParenthesized"),
-                        new ParenthesizeElement()
+                        new ParenthesizeElementQuickFix()
                 );
             }
         }
@@ -46,7 +46,7 @@ public class RightSideNegativeValueInspection extends LocalInspectionTool {
             holder.registerProblem(
                     rightSide,
                     DQLBundle.message("inspection.rightSideNegativeValue.shouldBeParenthesized"),
-                    new ParenthesizeElement()
+                    new ParenthesizeElementQuickFix()
             );
         }
     }

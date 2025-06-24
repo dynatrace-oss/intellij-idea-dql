@@ -4,7 +4,7 @@ plugins {
     id("org.jetbrains.intellij.platform") version "2.3.0"
 }
 
-group = "com.thedeemed"
+group = "pl.thedeem"
 version = "1.0-SNAPSHOT"
 
 sourceSets {
@@ -29,6 +29,7 @@ dependencies {
         create("IC", "2025.1.1")
         testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
         bundledPlugin("com.intellij.java")
+        bundledPlugin("com.intellij.modules.json")
     }
 }
 

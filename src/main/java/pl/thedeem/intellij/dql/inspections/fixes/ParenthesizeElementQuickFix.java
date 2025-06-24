@@ -12,7 +12,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 
-public class ParenthesizeElement implements LocalQuickFix {
+public class ParenthesizeElementQuickFix implements LocalQuickFix {
     @Override
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) throws IncorrectOperationException {
         PsiElement element = descriptor.getPsiElement();

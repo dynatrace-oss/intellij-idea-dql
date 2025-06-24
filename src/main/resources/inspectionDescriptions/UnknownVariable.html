@@ -1,0 +1,49 @@
+<html lang="en">
+<body>
+Makes sure the variable value is defined.
+<p>
+    Although DQL variables are supported in Dynatrace Dashboards, where the user can provide definitions for them,
+    the default Dynatrace DQL execution environment does not allow defining variables, causing the
+    <code>$ isn't allowed here</code> error.
+    Because the plugin uses such non-variable environment, all variables would be reported as errors, especially when
+    using the live validations mode with the connection to a Dynatrace tenant.
+</p>
+<p>
+    To avoid this problem, the plugin supports defining the <code>dql-variables.json</code> JSON file containing
+    mappings <code>variable name</code>: <code>variable value</code>. Multiple files are supported, and they are loaded
+    using the hierarchical order ("my directory first, then check the parent directory"). This approach allows the user
+    to share common variables between different scripts.
+</p>
+<p>
+    The <code>dql-variables.json</code> file contains <strong>placeholder values</strong> - the plugin replaces variable
+    expressions used in the query with the data loaded from the file.
+<p>
+    For example, consider the following DQL query and <code>dql-variables.json</code> file:
+</p>
+<pre><code>
+data $myData
+| fieldsAdd {
+    contains_array = in($myArray, "value1", "value2"),
+    contains_string = contains(message, $myMessage),
+    count_equals = count == $myCount
+}
+</code></pre>
+<pre><code>
+{
+    "myData": {"message" : "test message", "count": 5, "bool": true},
+    "myArray": ["value1", "value3"],
+    "myMessage": "test",
+    "myCount": 2
+}
+</code></pre>
+<p>Will result with the following DQL query:</p>
+<pre><code>
+data record(message = "test message", count = 5.0, bool = true)
+| fieldsAdd {
+    contains_array = in(array("value1", "value3"), "value1", "value2"),
+    contains_string = contains(message, "test"),
+    count_equals = count == 2
+}
+</code></pre>
+</body>
+</html>

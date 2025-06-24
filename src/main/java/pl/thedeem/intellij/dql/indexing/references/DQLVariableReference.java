@@ -2,25 +2,36 @@ package pl.thedeem.intellij.dql.indexing.references;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.PsiElementResolveResult;
+import com.intellij.psi.PsiPolyVariantReferenceBase;
+import com.intellij.psi.ResolveResult;
+import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public final class DQLVariableReference extends PsiReferenceBase<DQLVariableExpression> {
+public final class DQLVariableReference extends PsiPolyVariantReferenceBase<DQLVariableExpression> {
     public DQLVariableReference(@NotNull DQLVariableExpression element) {
         super(element, TextRange.from(0, element.getTextLength()));
     }
 
     @Override
-    public @Nullable PsiElement resolve() {
-        return null;
+    public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
+        List<ResolveResult> results = new ArrayList<>();
+        String name = getElement().getName();
+        if (StringUtil.isNotEmpty(name)) {
+            List<PsiElement> variableDefinitions = DQLUtil.findVariablesDefinitions(getElement().getProject(), name, getElement().getContainingFile());
+
+            for (PsiElement variable : variableDefinitions) {
+                results.add(new PsiElementResolveResult(variable));
+            }
+        }
+        return results.toArray(new ResolveResult[0]);
     }
 
     @Override

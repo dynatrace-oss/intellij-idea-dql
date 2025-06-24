@@ -1,22 +1,36 @@
 package pl.thedeem.intellij.dql.psi.elements.impl;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import com.intellij.json.psi.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
+import com.intellij.psi.util.CachedValue;
+import com.intellij.psi.util.CachedValueProvider;
+import com.intellij.psi.util.CachedValuesManager;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLIcon;
+import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLElementFactory;
 import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 import pl.thedeem.intellij.dql.psi.elements.VariableElement;
-import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
+import pl.thedeem.intellij.dql.variables.DQLVariablesDefinition;
 
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public abstract class VariableElementImpl extends ASTWrapperPsiElement implements VariableElement {
+    private CachedValue<PsiElement> reference;
+
     public VariableElementImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -24,7 +38,8 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
     @Override
     public String getName() {
         PsiElement nameIdentifier = this.getNameIdentifier();
-        return Objects.requireNonNullElse(nameIdentifier, this).getText();
+        String text = Objects.requireNonNullElse(nameIdentifier, this).getText();
+        return StringUtil.isNotEmpty(text) ? text.substring(1) : null;
     }
 
     @Override
@@ -66,5 +81,83 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
     @Override
     public boolean accessesData() {
         return false;
+    }
+
+    @Override
+    public Set<DQLDataType> getDataType() {
+        PsiElement definition = getDefinition();
+        if (definition instanceof JsonProperty jsonProperty && jsonProperty.getValue() != null) {
+            return switch (jsonProperty.getValue()) {
+                case JsonStringLiteral ignored -> Set.of(DQLDataType.STRING);
+                case JsonNumberLiteral ignored -> Set.of(DQLDataType.DOUBLE, DQLDataType.LONG);
+                case JsonNullLiteral ignored -> Set.of(DQLDataType.NULL);
+                case JsonBooleanLiteral ignored -> Set.of(DQLDataType.BOOLEAN);
+                case JsonObject ignored -> Set.of(DQLDataType.RECORD);
+                case JsonArray ignored -> Set.of(DQLDataType.ARRAY);
+                default -> Set.of(DQLDataType.ANY);
+            };
+        }
+        return Set.of(DQLDataType.ANY);
+    }
+
+    @Override
+    public @Nullable PsiElement getDefinition() {
+        if (reference == null) {
+            reference = CachedValuesManager.getManager(getProject()).createCachedValue(
+                    () -> {
+                        PsiElement dqlVariableReference = recalculateReference();
+                        if (dqlVariableReference != null) {
+                            return new CachedValueProvider.Result<>(dqlVariableReference, this, dqlVariableReference);
+                        }
+                        return new CachedValueProvider.Result<>(null, this);
+                    },
+                    false
+            );
+        }
+        return reference.getValue();
+    }
+
+    @Override
+    public @Nullable String getValue() {
+        PsiElement definition = getDefinition();
+        if (definition instanceof JsonProperty property) {
+            return DQLVariablesDefinition.getValue(property.getValue());
+        }
+        return null;
+    }
+
+    private PsiElement recalculateReference() {
+        String name = getName();
+        if (name != null) {
+            List<PsiElement> definitions = DQLUtil.findVariablesDefinitions(getProject(), name, getContainingFile());
+            if (!definitions.isEmpty()) {
+                return findClosestDefinition(definitions);
+            }
+        }
+        return null;
+    }
+
+    private @NotNull PsiElement findClosestDefinition(List<PsiElement> definitions) {
+        Path myFile = Path.of(getContainingFile().getVirtualFile().getPath()).normalize();
+        PsiElement closestDefinition = definitions.getFirst();
+        int commonSegments = -1;
+
+        for (PsiElement definition : definitions) {
+            Path itsFile = Path.of(definition.getContainingFile().getVirtualFile().getPath()).normalize();
+            if (itsFile.getNameCount() <= myFile.getNameCount()) {
+                int matchingSegments = 0;
+                for (int i = 0; i < itsFile.getNameCount(); i++) {
+                    if (itsFile.getName(i).equals(myFile.getName(i))) {
+                        matchingSegments++;
+                    }
+                }
+                if (matchingSegments > commonSegments) {
+                    closestDefinition = definition;
+                    commonSegments = matchingSegments;
+                }
+            }
+        }
+
+        return closestDefinition;
     }
 }

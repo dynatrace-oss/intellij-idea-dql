@@ -11,9 +11,12 @@ import com.intellij.execution.ui.ConsoleView;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.executing.DQLExecutionUtil;
+import pl.thedeem.intellij.dql.executing.DQLParsedQuery;
 import pl.thedeem.intellij.dql.executing.services.DQLServicesManager;
 import pl.thedeem.intellij.dql.sdk.model.DQLExecutePayload;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
@@ -21,7 +24,6 @@ import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -37,7 +39,12 @@ public class ExecuteDQLRunProfileState implements RunProfileState {
     }
 
     public DQLExecutePayload getPayload(ExecuteDQLRunConfigurationOptions options) throws IOException {
-        String dqlContent = Files.readString(Path.of(DQLExecutionUtil.getProjectAbsolutePath(options.getDqlPath(), project)));
+        PsiFile dqlFile = DQLUtil.openFile(project, Path.of(DQLExecutionUtil.getProjectAbsolutePath(options.getDqlPath(), project)).toString());
+        String dqlContent = "";
+        if (dqlFile != null) {
+            DQLParsedQuery parsedQuery = new DQLParsedQuery(dqlFile);
+            dqlContent = parsedQuery.getParsedQuery();
+        }
         DQLExecutePayload payload = new DQLExecutePayload(dqlContent);
         payload.setDefaultScanLimitGbytes(options.getDefaultScanLimit());
         payload.setMaxResultBytes(options.getMaxResultBytes());

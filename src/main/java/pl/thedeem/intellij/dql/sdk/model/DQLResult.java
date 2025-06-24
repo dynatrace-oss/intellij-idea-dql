@@ -1,9 +1,12 @@
 package pl.thedeem.intellij.dql.sdk.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DQLResult {
     DQLMetadata metadata;
     List<DQLRecord> records;
@@ -43,11 +46,13 @@ public class DQLResult {
         return result;
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class DQLMetadata {
         public DQLGrailMetadata grail;
         public List<DQLMetricMetadata> metrics;
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class DQLGrailMetadata {
         public String canonicalQuery;
         public String timezone;
@@ -124,6 +129,7 @@ public class DQLResult {
         }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class DQLNotification {
         public String severity;
         public String messageFormat;
@@ -131,6 +137,7 @@ public class DQLResult {
         public List<Object> arguments;
         public String notificationType;
         public String message;
+        public DQLSyntaxErrorPositionDetails syntaxPosition;
 
         public String getSeverity() {
             return severity;
@@ -155,7 +162,12 @@ public class DQLResult {
         public String getMessage() {
             return message;
         }
+
+        public DQLSyntaxErrorPositionDetails getSyntaxPosition() {
+            return syntaxPosition;
+        }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class DQLMetricMetadata extends HashMap<String, Object> {}
 }

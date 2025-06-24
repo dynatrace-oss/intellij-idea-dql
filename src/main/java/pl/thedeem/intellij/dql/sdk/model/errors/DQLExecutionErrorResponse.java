@@ -1,9 +1,11 @@
 package pl.thedeem.intellij.dql.sdk.model.errors;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import pl.thedeem.intellij.dql.sdk.model.DQLSyntaxErrorPositionDetails;
 
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DQLExecutionErrorResponse {
     public String message;
     public DQLErrorDetails details;

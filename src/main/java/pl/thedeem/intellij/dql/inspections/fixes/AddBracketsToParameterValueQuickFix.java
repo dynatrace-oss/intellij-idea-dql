@@ -15,11 +15,11 @@ import pl.thedeem.intellij.dql.definition.DQLParameterObject;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 
-public class AddBracketsToParameterValue implements LocalQuickFix {
+public class AddBracketsToParameterValueQuickFix implements LocalQuickFix {
     @SafeFieldForPreview
     private final DQLParameterObject parameter;
 
-    public AddBracketsToParameterValue(DQLParameterObject parameter) {
+    public AddBracketsToParameterValueQuickFix(DQLParameterObject parameter) {
         this.parameter = parameter;
     }
 
