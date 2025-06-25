@@ -18,6 +18,9 @@ import pl.thedeem.intellij.dql.DQLUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -123,6 +126,7 @@ public class DynatraceTenantsConfigurable implements Configurable {
     }
 
     private static class TenantDialog extends DialogWrapper {
+        private JBTextField name;
         private JBTextField urlField;
         private JPasswordField apiTokenField;
         private DynatraceTenant tenant;
@@ -140,16 +144,19 @@ public class DynatraceTenantsConfigurable implements Configurable {
 
         @Override
         protected @Nullable JComponent createCenterPanel() {
-            urlField = new JBTextField(30);
+            name = new JBTextField(30);
+            urlField = new JBTextField(100);
             apiTokenField = new JPasswordField(40);
 
             if (tenant != null) {
+                name.setText(tenant.getName());
                 urlField.setText(tenant.getUrl());
                 String storedToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
                 apiTokenField.setText(storedToken);
             }
 
             return FormBuilder.createFormBuilder()
+                    .addLabeledComponent(DQLBundle.message("settings.dql.tenants.form.name"), name)
                     .addLabeledComponent(DQLBundle.message("settings.dql.tenants.form.url"), urlField)
                     .addLabeledComponent(DQLBundle.message("settings.dql.tenants.form.token"), apiTokenField)
                     .getPanel();
@@ -171,15 +178,27 @@ public class DynatraceTenantsConfigurable implements Configurable {
                 setErrorText(DQLBundle.message("settings.dql.tenants.form.error.missingFields"));
                 return;
             }
+
+            try {
+                URL ignored = URI.create(urlField.getText()).toURL();
+            } catch (MalformedURLException | IllegalArgumentException e) {
+                setErrorText(DQLBundle.message("settings.dql.tenants.form.error.invalidTenantUrl", e.getMessage()));
+                return;
+            }
+
+            if (name.getText().isEmpty()) {
+                name.setText(urlField.getText());
+            }
+
             String credentialId;
             if (tenant != null && tenant.getCredentialId() != null) {
                 credentialId = tenant.getCredentialId();
             } else {
                 credentialId = UUID.randomUUID().toString();
             }
-            Credentials credentials = new Credentials(urlField.getText(), apiToken);
+            Credentials credentials = new Credentials(name.getText(), apiToken);
             PasswordSafe.getInstance().set(DQLUtil.createCredentialAttributes(credentialId), credentials);
-            tenant = new DynatraceTenant(urlField.getText(), credentialId);
+            tenant = new DynatraceTenant(name.getText(), urlField.getText(), credentialId);
             super.doOKAction();
         }
     }

@@ -58,7 +58,7 @@ public class ExecuteDQLRunProfileState implements RunProfileState {
     @Override
     public ExecutionResult execute(Executor executor, @NotNull ProgramRunner<?> runner) {
         String tenantName = configuration.getOptions().getSelectedTenant();
-        DynatraceTenant tenant = DynatraceTenantsService.getInstance().getTenantByUrl(tenantName);
+        DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(tenantName);
         DQLExecutePayload payload;
 
         try {

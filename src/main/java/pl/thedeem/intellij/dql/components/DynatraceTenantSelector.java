@@ -35,11 +35,11 @@ public class DynatraceTenantSelector<T extends JBPanel<?>> extends JBPanel<T> {
         add(addTenantButton);
     }
 
-    public void selectTenant(@Nullable String tenantUrl) {
-        if (tenantUrl != null && !tenantUrl.isEmpty()) {
+    public void selectTenant(@Nullable String tenantName) {
+        if (tenantName != null && !tenantName.isEmpty()) {
             for (int i = 0; i < comboBoxModel.getSize(); i++) {
                 DynatraceTenant tenant = comboBoxModel.getElementAt(i);
-                if (tenant != null && tenantUrl.equals(tenant.getUrl())) {
+                if (tenant != null && tenantName.equals(tenant.getName())) {
                     tenantComboBox.setSelectedItem(tenant);
                     return;
                 }
@@ -62,7 +62,7 @@ public class DynatraceTenantSelector<T extends JBPanel<?>> extends JBPanel<T> {
             comboBoxModel.addElement(tenant);
         }
         if (currentlySelected != null) {
-            selectTenant(currentlySelected.getUrl());
+            selectTenant(currentlySelected.getName());
         }
         else {
             tenantComboBox.setSelectedItem(null);

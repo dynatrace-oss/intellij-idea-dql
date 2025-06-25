@@ -44,7 +44,7 @@ public class DQLResultPanel extends JPanel {
 
     public void registerProgress(@NotNull DQLPollResponse dqlResponse) {
         progressBar.setIndeterminate(false);
-        updateProgressBar(dqlResponse.progress.intValue(), dqlResponse.state);
+        updateProgressBar(dqlResponse.progress != null? dqlResponse.progress.intValue() : 0, dqlResponse.state);
         if (dqlResponse.isFinished()) {
             resultsPanel.removeAll();
             resultsPanel.add(new DQLExecutionTableResults(dqlResponse.result), BorderLayout.CENTER);

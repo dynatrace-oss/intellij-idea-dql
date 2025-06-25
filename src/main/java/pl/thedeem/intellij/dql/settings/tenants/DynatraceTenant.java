@@ -1,16 +1,20 @@
 package pl.thedeem.intellij.dql.settings.tenants;
 
+import com.intellij.openapi.util.text.StringUtil;
+
 import java.util.Objects;
 
 public class DynatraceTenant {
+    private String name;
     private String url;
     private String credentialId;
 
     public DynatraceTenant() {
     }
 
-    public DynatraceTenant(String url, String credentialId) {
+    public DynatraceTenant(String name, String url, String credentialId) {
         this.url = url;
+        this.name = name != null ? name : url;
         this.credentialId = credentialId;
     }
 
@@ -30,9 +34,18 @@ public class DynatraceTenant {
         this.credentialId = credentialId;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public DynatraceTenant setName(String name) {
+        this.name = name;
+        return this;
+    }
+
     @Override
     public String toString() {
-        return url;
+        return StringUtil.isNotEmpty(name) ? name : url;
     }
 
     @Override
@@ -41,12 +54,13 @@ public class DynatraceTenant {
         if (o == null || getClass() != o.getClass()) return false;
         DynatraceTenant that = (DynatraceTenant) o;
         return Objects.equals(url, that.url)
+               && Objects.equals(name, that.name)
                 && Objects.equals(credentialId, that.credentialId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, credentialId);
+        return Objects.hash(url, credentialId, name);
     }
 }
  

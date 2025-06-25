@@ -48,12 +48,12 @@ public class DynatraceTenantsService implements PersistentStateComponent<Dynatra
         if (tenant.getCredentialId() != null) {
             PasswordSafe.getInstance().set(DQLUtil.createCredentialAttributes(tenant.getCredentialId()), null);
         }
-        myState.tenants.removeIf(t -> Objects.equals(t.getUrl(), tenant.getUrl()));
+        myState.tenants.removeIf(t -> Objects.equals(t.getName(), tenant.getName()));
     }
 
-    public DynatraceTenant getTenantByUrl(String tenantUrl) {
+    public @Nullable DynatraceTenant findTenant(@NotNull String tenant) {
         return getTenants().stream()
-                .filter(t -> tenantUrl.equals(t.getUrl()))
+                .filter(t -> tenant.equals(t.getName()))
                 .findFirst()
                 .orElse(null);
     }

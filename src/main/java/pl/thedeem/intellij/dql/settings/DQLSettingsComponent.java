@@ -76,6 +76,6 @@ public class DQLSettingsComponent {
 
     public String getDefaultLiveValidationsTenant() {
         DynatraceTenant selectedTenant = defaultLiveValidationsTenant.getSelectedTenant();
-        return selectedTenant != null ? selectedTenant.getUrl() : null;
+        return selectedTenant != null ? selectedTenant.getName() : null;
     }
 }

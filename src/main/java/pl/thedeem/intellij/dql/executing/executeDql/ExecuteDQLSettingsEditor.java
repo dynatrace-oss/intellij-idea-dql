@@ -75,7 +75,7 @@ public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfig
         DynatraceTenant selectedTenant = tenantSelector.getSelectedTenant();
 
         if (selectedTenant != null) {
-            runConfig.getOptions().setSelectedTenant(selectedTenant.getUrl());
+            runConfig.getOptions().setSelectedTenant(selectedTenant.getName());
         } else {
             runConfig.getOptions().setSelectedTenant(null);
         }

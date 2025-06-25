@@ -47,7 +47,7 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
             return new Result(new DQLVerifyResponse(), null);
         }
         String tenantName = findTenantName(input);
-        DynatraceTenant tenant = DynatraceTenantsService.getInstance().getTenantByUrl(tenantName);
+        DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(tenantName);
         if (tenant != null) {
             String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
             DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());

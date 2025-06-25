@@ -28,7 +28,7 @@ public class DynatraceRestClient {
 
     public DQLVerifyResponse verifyDQL(DQLVerifyPayload payload, String authToken) throws IOException, InterruptedException, DQLNotAuthorizedException, DQLErrorResponseException {
         try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:verify"))
+            HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:verify").normalize())
                     .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
@@ -42,7 +42,7 @@ public class DynatraceRestClient {
 
     public DQLExecuteResponse executeDQL(DQLExecutePayload payload, String authToken) throws IOException, InterruptedException, DQLNotAuthorizedException, DQLErrorResponseException {
         try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:execute?enrich=metric-metadata"))
+            HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:execute?enrich=metric-metadata").normalize())
                     .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
@@ -56,7 +56,7 @@ public class DynatraceRestClient {
 
     public DQLPollResponse pollDQLState(String requestToken, String authToken) throws IOException, InterruptedException, DQLNotAuthorizedException, DQLErrorResponseException {
         try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:poll?enrich=metric-metadata&request-token=" + URLEncoder.encode(requestToken, StandardCharsets.UTF_8)))
+            HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:poll?enrich=metric-metadata&request-token=" + URLEncoder.encode(requestToken, StandardCharsets.UTF_8)).normalize())
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + authToken)
