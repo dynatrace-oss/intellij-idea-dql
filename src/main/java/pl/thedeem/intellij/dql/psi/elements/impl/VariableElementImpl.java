@@ -86,14 +86,15 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
     @Override
     public Set<DQLDataType> getDataType() {
         PsiElement definition = getDefinition();
+        // we need to add the "any" because the variable has only a placeholder, so it's possible it'll have a different type
         if (definition instanceof JsonProperty jsonProperty && jsonProperty.getValue() != null) {
             return switch (jsonProperty.getValue()) {
-                case JsonStringLiteral ignored -> Set.of(DQLDataType.STRING);
-                case JsonNumberLiteral ignored -> Set.of(DQLDataType.DOUBLE, DQLDataType.LONG);
-                case JsonNullLiteral ignored -> Set.of(DQLDataType.NULL);
-                case JsonBooleanLiteral ignored -> Set.of(DQLDataType.BOOLEAN);
-                case JsonObject ignored -> Set.of(DQLDataType.RECORD);
-                case JsonArray ignored -> Set.of(DQLDataType.ARRAY);
+                case JsonStringLiteral ignored -> Set.of(DQLDataType.STRING, DQLDataType.ANY);
+                case JsonNumberLiteral ignored -> Set.of(DQLDataType.DOUBLE, DQLDataType.LONG, DQLDataType.ANY);
+                case JsonNullLiteral ignored -> Set.of(DQLDataType.NULL, DQLDataType.ANY);
+                case JsonBooleanLiteral ignored -> Set.of(DQLDataType.BOOLEAN, DQLDataType.ANY);
+                case JsonObject ignored -> Set.of(DQLDataType.RECORD, DQLDataType.ANY);
+                case JsonArray ignored -> Set.of(DQLDataType.ARRAY, DQLDataType.ANY);
                 default -> Set.of(DQLDataType.ANY);
             };
         }
