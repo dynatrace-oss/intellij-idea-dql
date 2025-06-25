@@ -176,7 +176,7 @@ jobs:
   verify:
     name: Verify plugin
     needs: [ build ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-xl
     steps:
 
       # Free GitHub Actions Environment Disk Space
@@ -212,7 +212,7 @@ jobs:
       - name: Run Plugin Verification tasks
         run: |
           chmod +x gradlew
-          ./gradlew verifyPlugin -Dplugin.verifier.home.dir=${{ needs.build.outputs.pluginVerifierHomeDir }} > /dev/null
+          ./gradlew verifyPlugin --no-daemon --console=plain -Dplugin.verifier.home.dir=${{ needs.build.outputs.pluginVerifierHomeDir }} > /dev/null
 
       # Collect Plugin Verifier Result
       - name: Collect Plugin Verifier Result
