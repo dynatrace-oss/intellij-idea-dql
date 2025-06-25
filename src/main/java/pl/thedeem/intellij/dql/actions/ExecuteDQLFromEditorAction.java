@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.dql.executing.actions;
+package pl.thedeem.intellij.dql.actions;
 
 import com.intellij.execution.ProgramRunnerUtil;
 import com.intellij.execution.RunManager;

@@ -369,12 +369,13 @@
 
     <actions resource-bundle="messages.DQLBundle">
         <group id="DQL">
-            <action id="DQL.ExecuteScript" class="pl.thedeem.intellij.dql.executing.actions.ExecuteDQLFromEditorAction" icon="AllIcons.Actions.Execute">
+            <action id="DQL.ExecuteScript" class="pl.thedeem.intellij.dql.actions.ExecuteDQLFromEditorAction" icon="AllIcons.Actions.Execute">
                 <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="RunnerActions"/>
                 <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="NewGroup"/>
                 <keyboard-shortcut keymap="$default"  first-keystroke="control alt E"/>
             </action>
         </group>
+        <action id="DQL.NewDQLFile" class="pl.thedeem.intellij.dql.actions.CreateNewDQLFile" icon="/icons/dynatrace.png"/>
     </actions>
     <resource-bundle>messages.DQLBundle</resource-bundle>
 </idea-plugin>
