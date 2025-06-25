@@ -82,8 +82,9 @@ public class DQLExecutionService {
                             }
                             result = client.pollDQLState(executedResponse.getRequestToken(), apiToken);
                             resultPanel.registerProgress(result);
-                            indicator.setFraction(result.progress / 100.0);
+                            indicator.setFraction((result.progress != null ? result.progress : 0) / 100.0);
                             if (result.isFinished()) {
+                                indicator.setFraction(1);
                                 pollingFutureRef.get().cancel(false);
                             }
                         } catch (IOException | InterruptedException | DQLNotAuthorizedException |
