@@ -12,7 +12,7 @@ public class HighlightOperatorKeywords implements DQLAnnotatorEngine {
     public @NotNull AnnotationResult annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof DQLInExpression inExpression) {
             holder.newSilentAnnotation(HighlightOptions.HIGHLIGHT_SEVERITY)
-                    .range(inExpression.getInExpressionOperand().getTextRange())
+                    .range(inExpression.getInExpressionOperator().getTextRange())
                     .textAttributes(DQLColorScheme.OPERATOR_KEYWORDS)
                     .create();
             return AnnotationResult.STOP_FOR_SAME_TYPE;

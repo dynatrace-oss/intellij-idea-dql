@@ -190,12 +190,12 @@ subquery_expression ::= ARRAY_OPEN subquery_expression_content? ARRAY_CLOSE {
 }
 private subquery_expression_content ::= query {recoverWhile=recover_array_content}
 
-in_expression ::= expression in_expression_operand subquery_expression {
+in_expression ::= expression in_expression_operator subquery_expression {
     pin=2
     mixin="pl.thedeem.intellij.dql.psi.elements.impl.InExpressionImpl"
     implements="pl.thedeem.intellij.dql.psi.elements.InExpression"
 }
-in_expression_operand ::= "in" {
+in_expression_operator ::= "in" {
    mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
 }
 
