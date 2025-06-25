@@ -180,7 +180,7 @@ public class DQLUtil {
 
     public static String getCurrentTimeTimestamp() {
         LocalDateTime now = LocalDateTime.now();
-        return "\"" + formatter.format(now) + "\"";
+        return formatter.format(now);
     }
 
     public static boolean containsAny(Collection<?> collection, Collection<?> other) {

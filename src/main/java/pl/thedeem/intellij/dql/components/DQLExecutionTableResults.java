@@ -72,7 +72,7 @@ public class DQLExecutionTableResults extends JPanel {
 
                     result.setFont(label.getFont().deriveFont(Font.BOLD));
                     result.setHorizontalAlignment(SwingConstants.CENTER);
-                    result.setBorder(TableResults.DEFAULT_BORDER);
+                    result.setBorder(DQLComponentUtils.DEFAULT_BORDER);
                     return result;
                 }
                 return c;
@@ -191,7 +191,7 @@ public class DQLExecutionTableResults extends JPanel {
                 tableResults.getModel().getRowCount(),
                 result.getGrailMetadata().executionTimeMilliseconds
         ), AllIcons.General.Information, JLabel.LEFT);
-        tableSummary.setBorder(TableResults.DEFAULT_BORDER);
+        tableSummary.setBorder(DQLComponentUtils.DEFAULT_BORDER);
         tableResults.getModel().addTableModelListener(e -> tableSummary.setText(DQLBundle.message(
                 "components.dqlResults.summary.description",
                 tableResults.getModel().getRowCount(),

@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 public class TableResults<T> extends JBTable {
-    public static final Border DEFAULT_BORDER = BorderFactory.createEmptyBorder(5, 5, 5, 5);
-
     protected final static ObjectMapper mapper = new ObjectMapper();
 
     public TableResults(ListTableModel<T> model) {
@@ -37,7 +35,7 @@ public class TableResults<T> extends JBTable {
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 if (c instanceof JComponent jc && value != null) {
-                    jc.setBorder(DEFAULT_BORDER);
+                    jc.setBorder(DQLComponentUtils.DEFAULT_BORDER);
                 }
                 return c;
             }
@@ -72,7 +70,7 @@ public class TableResults<T> extends JBTable {
     protected JMenuItem getCopyRowAction() {
         JMenuItem action = new JMenuItem(DQLBundle.message("components.tableResults.actions.copySelectedRows"));
         action.setIcon(AllIcons.General.Copy);
-        action.setBorder(DEFAULT_BORDER);
+        action.setBorder(DQLComponentUtils.DEFAULT_BORDER);
         action.addActionListener(e -> {
             int row = getSelectedRow();
             int count = getSelectedRowCount();
@@ -87,7 +85,7 @@ public class TableResults<T> extends JBTable {
     protected JMenuItem getOpenValueAction() {
         JMenuItem action = new JMenuItem(DQLBundle.message("components.tableResults.actions.openCellDetails"));
         action.setIcon(AllIcons.General.OpenInToolWindow);
-        action.setBorder(DEFAULT_BORDER);
+        action.setBorder(DQLComponentUtils.DEFAULT_BORDER);
         action.addActionListener(e -> {
             int row = getSelectedRow();
             int col = getSelectedColumn();

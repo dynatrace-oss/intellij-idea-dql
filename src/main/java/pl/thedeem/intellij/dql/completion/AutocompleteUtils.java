@@ -163,7 +163,7 @@ public class AutocompleteUtils {
     }
 
     public static void autocompleteCurrentTimestamp(CompletionResultSet result) {
-        String currentTimestamp = DQLUtil.getCurrentTimeTimestamp();
+        String currentTimestamp = "\"" + DQLUtil.getCurrentTimeTimestamp() + "\"";
 
         result.addElement(AutocompleteUtils.createLookupElement(
                         currentTimestamp,
