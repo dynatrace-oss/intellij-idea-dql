@@ -4,6 +4,8 @@ This repository contains the plugin adding support for
 [Dynatrace Query Language (DQL)](https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-query-language)
 in IntelliJ IDEA.
 
+
+<!-- Plugin description -->
 > **Note**
 > This product is not officially supported by Dynatrace
 
@@ -135,6 +137,8 @@ Currently, the only way of authentication is providing a token. You can see more
 [in the official docs](https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/basics/dynatrace-api-authentication).
 By default, the token should include the `storage:buckets:read`, but you will also need to add permissions to the
 specific data types, like: `storage:logs:read`, `storage:spans:read`, or `storage:bizevents:read`.
+
+<!-- Plugin description end -->
 
 ## Building
 
