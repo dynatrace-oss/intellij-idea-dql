@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.executing.DQLExecutionUtil;
 import pl.thedeem.intellij.dql.executing.DQLParsedQuery;
-import pl.thedeem.intellij.dql.executing.executeDql.ExecuteDQLRunConfiguration;
+import pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.ExecuteDQLRunConfiguration;
 import pl.thedeem.intellij.dql.sdk.DynatraceRestClient;
 import pl.thedeem.intellij.dql.sdk.errors.DQLErrorResponseException;
 import pl.thedeem.intellij.dql.sdk.errors.DQLNotAuthorizedException;

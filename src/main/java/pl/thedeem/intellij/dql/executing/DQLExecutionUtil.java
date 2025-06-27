@@ -12,7 +12,7 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.executing.executeDql.ExecuteDQLRunConfiguration;
+import pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.ExecuteDQLRunConfiguration;
 
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;

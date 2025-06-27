@@ -22,7 +22,7 @@ import java.util.List;
 public class OpenQueryMetadataAction extends AnAction {
     private final DQLExecutionService service;
 
-    public OpenQueryMetadataAction(@Nullable String text, @Nullable String description, DQLExecutionService service) {
+    public OpenQueryMetadataAction(@Nullable String text, @Nullable String description, @NotNull DQLExecutionService service) {
         super(text, description, AllIcons.Nodes.DataSchema);
         this.service = service;
     }

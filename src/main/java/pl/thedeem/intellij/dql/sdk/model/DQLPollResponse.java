@@ -2,6 +2,8 @@ package pl.thedeem.intellij.dql.sdk.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DQLPollResponse {
     public String state;
@@ -21,7 +23,7 @@ public class DQLPollResponse {
     }
 
     public boolean isFinished() {
-        return !"RUNNING".equals(state);
+        return !List.of("RUNNING", "NOT_STARTED").contains(state);
     }
 }
 

@@ -1,11 +1,10 @@
-package pl.thedeem.intellij.dql.executing.executeDql;
+package pl.thedeem.intellij.dql.components;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ui.components.JBScrollPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.components.DQLExecutionTableResults;
 import pl.thedeem.intellij.dql.sdk.model.DQLExecuteResponse;
 import pl.thedeem.intellij.dql.sdk.model.DQLPollResponse;
 import pl.thedeem.intellij.dql.sdk.model.errors.DQLAuthErrorResponse;
@@ -77,6 +76,9 @@ public class DQLResultPanel extends JPanel {
                 }
                 message = DQLBundle.message("runConfiguration.executeDQL.errors.execution", details);
             }
+        }
+        else if (e instanceof InterruptedException) {
+            message = DQLBundle.message("runConfiguration.executeDQL.indicator.cancelled", e.getMessage());
         }
         errorPanel.setBorder(BorderFactory.createEmptyBorder());
         errorPanel.add(new JLabel(message, AllIcons.General.Error, JLabel.LEFT));

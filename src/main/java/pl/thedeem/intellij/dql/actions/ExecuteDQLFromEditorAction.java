@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import pl.thedeem.intellij.dql.executing.DQLExecutionUtil;
-import pl.thedeem.intellij.dql.executing.executeDql.ExecuteDQLConfigurationFactory;
-import pl.thedeem.intellij.dql.executing.executeDql.ExecuteDQLConfigurationType;
-import pl.thedeem.intellij.dql.executing.executeDql.ExecuteDQLRunConfiguration;
+import pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.ExecuteDQLConfigurationFactory;
+import pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.ExecuteDQLConfigurationType;
+import pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.ExecuteDQLRunConfiguration;
 
 public class ExecuteDQLFromEditorAction extends AnAction {
 

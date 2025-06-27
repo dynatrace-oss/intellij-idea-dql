@@ -1,15 +1,11 @@
 package pl.thedeem.intellij.dql.executing.executeDql;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.ide.ActivityTracker;
 import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.navigation.ItemPresentation;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
@@ -17,8 +13,10 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
+import pl.thedeem.intellij.dql.components.DQLResultPanel;
 import pl.thedeem.intellij.dql.components.actions.OpenQueryMetadataAction;
 import pl.thedeem.intellij.dql.components.actions.SaveAsFileAction;
+import pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.DQLProcessHandler;
 import pl.thedeem.intellij.dql.executing.services.DQLServicesManager;
 import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
 import pl.thedeem.intellij.dql.sdk.DynatraceRestClient;
@@ -28,7 +26,6 @@ import pl.thedeem.intellij.dql.sdk.model.DQLExecutePayload;
 import pl.thedeem.intellij.dql.sdk.model.DQLExecuteResponse;
 import pl.thedeem.intellij.dql.sdk.model.DQLPollResponse;
 import pl.thedeem.intellij.dql.sdk.model.DQLResult;
-import pl.thedeem.intellij.dql.sdk.model.errors.DQLErrorResponse;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 
 import javax.swing.*;
@@ -37,115 +34,236 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.intellij.openapi.diagnostic.Logger;
+
 public class DQLExecutionService {
-    private final static int POLL_INTERVAL = 1000;
+   private static final Logger logger = Logger.getInstance(DQLExecutionService.class);
+   private final static int POLL_INTERVAL = 200;
 
-    private final Project project;
-    private final DynatraceTenant tenant;
-    private final DQLExecutePayload payload;
-    private final DQLResultPanel resultPanel;
-    private final String name;
-    private final ActionGroup actionGroup;
-    private DQLPollResponse result;
+   private final DQLProcessHandler processHandler;
+   private final Project project;
+   private final DynatraceTenant tenant;
+   private final DQLExecutePayload payload;
+   private final DQLResultPanel resultPanel;
+   private final String name;
+   private final ActionGroup actionGroup;
+   private DQLPollResponse result;
+   private final AtomicReference<ScheduledFuture<?>> pollingFutureRef = new AtomicReference<>(null);
+   private final AtomicReference<Boolean> stopping = new AtomicReference<>(false);
+   private final AtomicReference<Boolean> loading = new AtomicReference<>(false);
+   private String requestToken;
 
-    public DQLExecutionService(@NotNull String name, @NotNull Project project, @NotNull DynatraceTenant tenant, @NotNull DQLExecutePayload payload) {
-        this.project = project;
-        this.tenant = tenant;
-        this.payload = payload;
-        this.resultPanel = new DQLResultPanel();
-        this.name = name;
+   public DQLExecutionService(
+       @NotNull DQLProcessHandler processHandler,
+       @NotNull String name,
+       @NotNull Project project,
+       @NotNull DynatraceTenant tenant,
+       @NotNull DQLExecutePayload payload
+   ) {
+      this.processHandler = processHandler;
+      this.project = project;
+      this.tenant = tenant;
+      this.payload = payload;
+      this.resultPanel = new DQLResultPanel();
+      this.name = name;
+      this.actionGroup = createActionsGroup();
+   }
 
-        actionGroup = createActionsGroup();
-    }
+   public void execute() {
+      String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
+      DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
 
-    public void execute(final AtomicReference<ScheduledFuture<?>> pollingFutureRef) {
-        String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
-        DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
+      logger.info(String.format("Executing a DQL query with hash %s on the tenant: %s", payload.getQuery().hashCode(), tenant.getName()));
+      this.executeApiCall(() -> {
+         this.loading.set(true);
+         DQLExecuteResponse executedResponse = client.executeDQL(payload, apiToken);
+         logger.info(String.format(
+             "The DQL query %s for the tenant %s was started to be executed and has a request token: %s (state: %s)",
+             payload.getQuery().hashCode(),
+             tenant.getName(),
+             executedResponse.getRequestToken(),
+             executedResponse.getState()
+         ));
 
-        ProgressManager.getInstance().run(new Task.Backgroundable(project, name) {
-            @Override
-            public void run(@NotNull ProgressIndicator indicator) {
-                try {
-                    if (myProject == null) {
-                        return;
-                    }
-                    indicator.setFraction(0.0);
-                    indicator.setText(DQLBundle.message("runConfiguration.executeDQL.indicator.starting", name));
-                    DQLExecuteResponse executedResponse = client.executeDQL(payload, apiToken);
-                    resultPanel.registerProgress(executedResponse);
-                    indicator.setText(DQLBundle.message("runConfiguration.executeDQL.indicator.awaiting", name));
-                    pollingFutureRef.set(AppExecutorUtil.getAppScheduledExecutorService().scheduleWithFixedDelay(() -> {
-                        try {
-                            if (indicator.isCanceled()) {
-                                pollingFutureRef.get().cancel(true);
-                                return;
-                            }
-                            result = client.pollDQLState(executedResponse.getRequestToken(), apiToken);
-                            resultPanel.registerProgress(result);
-                            indicator.setFraction((result.progress != null ? result.progress : 0) / 100.0);
-                            if (result.isFinished()) {
-                                indicator.setFraction(1);
-                                pollingFutureRef.get().cancel(false);
-                            }
-                        } catch (IOException | InterruptedException | DQLNotAuthorizedException |
-                                 DQLErrorResponseException e) {
-                            stopExecution(indicator, null, e);
-                        }
-                    }, 200, POLL_INTERVAL, TimeUnit.MILLISECONDS));
-                } catch (InterruptedException | IOException e) {
-                    stopExecution(indicator, null, e);
-                } catch (DQLNotAuthorizedException e) {
-                    stopExecution(indicator, e.getResponse(), e);
-                } catch (DQLErrorResponseException e) {
-                    stopExecution(indicator, e.getResponse(), e);
-                }
-            }
+         requestToken = executedResponse.getRequestToken();
+         resultPanel.registerProgress(executedResponse);
 
-            private void stopExecution(ProgressIndicator indicator, DQLErrorResponse<?> errorResponse, Exception exception) {
-                indicator.setFraction(1.0);
-                indicator.setText(DQLBundle.message("runConfiguration.executeDQL.indicator.cancelled", name));
-                if (pollingFutureRef.get() != null) {
-                    pollingFutureRef.get().cancel(true);
-                }
-                resultPanel.showError(errorResponse, exception);
-            }
-        });
-    }
+         pollingFutureRef.set(AppExecutorUtil.getAppScheduledExecutorService().scheduleWithFixedDelay(
+             () -> {
+                logger.info(String.format(
+                    "Verifying if the DQL query %s for the tenant %s with the request token %s has finished...",
+                    payload.getQuery().hashCode(),
+                    tenant.getName(),
+                    executedResponse.getRequestToken()
+                ));
+                this.executeApiCall(() -> {
+                   result = client.pollDQLState(executedResponse.getRequestToken(), apiToken);
+                   resultPanel.registerProgress(result);
 
-    public @Nullable DQLResult getResult() {
-        return result != null ? result.getResult() : null;
-    }
+                   logger.info(String.format(
+                       "Polling response for the DQL query %s for the tenant %s with the request token %s: state: %s, progress: %s",
+                       payload.getQuery().hashCode(),
+                       tenant.getName(),
+                       executedResponse.getRequestToken(),
+                       result.state,
+                       result.progress
+                   ));
 
-    public @Nullable JComponent getContentComponent() {
-        return this.resultPanel;
-    }
+                   if (result.isFinished()) {
+                      logger.info(String.format(
+                          "The DQL query %s - %s on the tenant %s was executed correctly.",
+                          payload.getQuery().hashCode(),
+                          requestToken,
+                          tenant.getName()
+                      ));
+                      pollingFutureRef.get().cancel(false);
+                      processHandler.notifyExecutionFinished();
+                      this.loading.set(false);
+                   }
+                });
+             },
+             200,
+             POLL_INTERVAL,
+             TimeUnit.MILLISECONDS)
+         );
+      });
+   }
 
-    public @Nullable ActionGroup getToolbarActions() {
-        return actionGroup;
-    }
+   public void stopExecution() {
+      stopping.set(true);
+      ScheduledFuture<?> scheduledFuture = pollingFutureRef.get();
+      if (scheduledFuture != null && !scheduledFuture.isCancelled() && !scheduledFuture.isDone() && this.requestToken != null) {
+         scheduledFuture.cancel(true);
+         String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
+         DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
+         logger.info(String.format(
+             "Stopping the query execution %s with the token %s for the DQL query %s (tenant %s)",
+             payload.getQuery().hashCode(),
+             requestToken,
+             payload.getQuery().hashCode(),
+             tenant.getName()
+         ));
+         this.executeApiCall(() -> {
+            DQLPollResponse result = client.cancelDQL(requestToken, apiToken);
+            logger.info(String.format(
+                "The query %s with ID %s was stopped on tenant %s. Returned: %s",
+                payload.getQuery().hashCode(),
+                requestToken,
+                tenant.getName(),
+                result != null
+            ));
+            processHandler.notifyExecutionFinished();
+         });
+      }
+      stopping.set(false);
+   }
 
-    public @NotNull ItemPresentation getPresentation() {
-        return new DQLItemPresentation(this.name, null, DQLIcon.DYNATRACE_LOGO);
-    }
+   public @Nullable DQLResult getResult() {
+      return result != null ? result.getResult() : null;
+   }
 
-    public ActionGroup createActionsGroup() {
-        DQLExecutionService service = this;
-        DefaultActionGroup group = new DefaultActionGroup();
-        group.add(new AnAction(DQLBundle.message("components.tableResults.actions.closeExecution"), null, AllIcons.Actions.Close) {
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-                DQLServicesManager.getInstance(project).stopExecution(service);
-            }
-        });
-        group.add(new AnAction(DQLBundle.message("components.tableResults.actions.refreshExecution"), null, AllIcons.Actions.Refresh) {
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-                service.execute(new AtomicReference<>());
-            }
-        });
-        group.addSeparator();
-        group.add(new SaveAsFileAction(DQLBundle.message("components.tableResults.actions.exportAsJson"), null, service));
-        group.add(new OpenQueryMetadataAction(DQLBundle.message("components.tableResults.actions.showMetadata"), null, service));
-        return group;
-    }
+   public @Nullable JComponent getContentComponent() {
+      return this.resultPanel;
+   }
+
+   public @Nullable ActionGroup getToolbarActions() {
+      return actionGroup;
+   }
+
+   public @NotNull ItemPresentation getPresentation() {
+      return new DQLItemPresentation(this.name, null, DQLIcon.DYNATRACE_LOGO);
+   }
+
+   public boolean isExecuting() {
+      ScheduledFuture<?> scheduledFuture = this.pollingFutureRef.get();
+      return scheduledFuture != null && !scheduledFuture.isCancelled() && !scheduledFuture.isDone();
+   }
+
+   public ActionGroup createActionsGroup() {
+      DQLExecutionService service = this;
+      DefaultActionGroup group = new DefaultActionGroup();
+      group.add(new AnAction(DQLBundle.message("components.tableResults.actions.stopExecution"), null, AllIcons.Actions.StopRefresh) {
+         @Override
+         public void actionPerformed(@NotNull AnActionEvent e) {
+            e.getPresentation().setEnabled(false);
+            ApplicationManager.getApplication().executeOnPooledThread(service::stopExecution);
+            ActivityTracker.getInstance().inc();
+         }
+
+         @Override
+         public void update(@NotNull AnActionEvent e) {
+            e.getPresentation().setEnabled(!stopping.get());
+            e.getPresentation().setVisible(isExecuting());
+         }
+
+         @Override
+         public @NotNull ActionUpdateThread getActionUpdateThread() {
+            return ActionUpdateThread.BGT;
+         }
+      });
+
+      group.add(new AnAction(DQLBundle.message("components.tableResults.actions.refreshExecution"), null, AllIcons.Actions.Refresh) {
+         @Override
+         public void actionPerformed(@NotNull AnActionEvent e) {
+            e.getPresentation().setEnabled(false);
+            DQLServicesManager.getInstance(project).startExecution(new DQLExecutionService(processHandler, name, project, tenant, payload));
+            ActivityTracker.getInstance().inc();
+         }
+
+         @Override
+         public void update(@NotNull AnActionEvent e) {
+            e.getPresentation().setEnabled(!loading.get());
+            e.getPresentation().setVisible(!isExecuting());
+         }
+
+         @Override
+         public @NotNull ActionUpdateThread getActionUpdateThread() {
+            return ActionUpdateThread.BGT;
+         }
+      });
+      group.addSeparator();
+      group.add(new SaveAsFileAction(DQLBundle.message("components.tableResults.actions.exportAsJson"), null, service));
+      group.add(new OpenQueryMetadataAction(DQLBundle.message("components.tableResults.actions.showMetadata"), null, service));
+      group.addSeparator();
+      group.add(new AnAction(DQLBundle.message("components.tableResults.actions.closeExecution"), null, AllIcons.Actions.Close) {
+         @Override
+         public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+            DQLServicesManager.getInstance(project).stopExecution(service);
+         }
+      });
+      return group;
+   }
+
+   private void executeApiCall(@NotNull ExecuteApiCall apiCall) {
+      try {
+         apiCall.execute();
+         ActivityTracker.getInstance().inc();
+      } catch (InterruptedException | IOException e) {
+         processHandler.notifyExecutionError(e.getMessage());
+         if (pollingFutureRef.get() != null) {
+            pollingFutureRef.get().cancel(true);
+         }
+         resultPanel.showError(null, e);
+      } catch (DQLNotAuthorizedException e) {
+         processHandler.notifyExecutionError(e.getMessage());
+         if (pollingFutureRef.get() != null) {
+            pollingFutureRef.get().cancel(true);
+         }
+         resultPanel.showError(e.getResponse(), e);
+      } catch (DQLErrorResponseException e) {
+         processHandler.notifyExecutionError(e.getMessage());
+         if (pollingFutureRef.get() != null) {
+            pollingFutureRef.get().cancel(true);
+         }
+         resultPanel.showError(e.getResponse(), e);
+      }
+      finally {
+         loading.set(false);
+         stopping.set(false);
+      }
+   }
+
+   private interface ExecuteApiCall {
+      void execute() throws InterruptedException, IOException, DQLNotAuthorizedException, DQLErrorResponseException;
+   }
 }

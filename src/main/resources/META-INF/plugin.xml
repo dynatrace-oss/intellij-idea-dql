@@ -248,7 +248,7 @@
         <!-- Services -->
         <applicationService serviceImplementation="pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService"/>
         <configurationType
-                implementation="pl.thedeem.intellij.dql.executing.executeDql.ExecuteDQLConfigurationType"/>
+                implementation="pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.ExecuteDQLConfigurationType"/>
         <programRunner implementation="pl.thedeem.intellij.dql.executing.DQLProgramRunner"/>
         <serviceViewContributor implementation="pl.thedeem.intellij.dql.executing.services.DQLServiceViewContributor"/>
     </extensions>

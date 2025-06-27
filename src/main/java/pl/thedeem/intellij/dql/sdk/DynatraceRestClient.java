@@ -54,6 +54,20 @@ public class DynatraceRestClient {
         }
     }
 
+    public DQLPollResponse cancelDQL(String requestToken, String authToken) throws IOException, InterruptedException, DQLNotAuthorizedException, DQLErrorResponseException {
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:cancel?request-token=" + URLEncoder.encode(requestToken, StandardCharsets.UTF_8) + "&enrich=metric-metadata").normalize())
+                .method("POST", HttpRequest.BodyPublishers.ofString(""))
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + authToken)
+                .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            return handleResponse(response, new TypeReference<>() {});
+        }
+    }
+
     public DQLPollResponse pollDQLState(String requestToken, String authToken) throws IOException, InterruptedException, DQLNotAuthorizedException, DQLErrorResponseException {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:poll?enrich=metric-metadata&request-token=" + URLEncoder.encode(requestToken, StandardCharsets.UTF_8)).normalize())

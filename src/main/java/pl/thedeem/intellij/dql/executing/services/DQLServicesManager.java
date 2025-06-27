@@ -4,6 +4,7 @@ import com.intellij.execution.services.ServiceEventListener;
 import com.intellij.execution.services.ServiceEventListener.ServiceEvent;
 import com.intellij.execution.services.ServiceViewManager;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
@@ -42,14 +43,25 @@ public final class DQLServicesManager implements Disposable {
         project.getMessageBus().syncPublisher(ServiceEventListener.TOPIC).handle(
                 ServiceEvent.createServiceAddedEvent(service, DQLServiceViewContributor.class, null)
         );
+        ApplicationManager.getApplication().executeOnPooledThread(service::execute);
     }
 
     public void stopExecution(@NotNull DQLExecutionService service) {
         DQLExecutionService existing = getService(getServiceId(service));
         if (existing != null) {
+            existing.stopExecution();
             services.remove(existing);
             project.getMessageBus().syncPublisher(ServiceEventListener.TOPIC).handle(
                     ServiceEvent.createEvent(ServiceEventListener.EventType.SERVICE_REMOVED, existing, DQLServiceViewContributor.class)
+            );
+        }
+    }
+
+    public void refreshExecution(@NotNull DQLExecutionService service) {
+        DQLExecutionService existing = getService(getServiceId(service));
+        if (existing != null) {
+            project.getMessageBus().syncPublisher(ServiceEventListener.TOPIC).handle(
+                ServiceEvent.createEvent(ServiceEventListener.EventType.SERVICE_CHANGED, existing, DQLServiceViewContributor.class)
             );
         }
     }

@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.dql.executing.executeDql;
+package pl.thedeem.intellij.dql.executing.executeDql.runConfiguration;
 
 import com.intellij.execution.configurations.RunConfigurationOptions;
 import com.intellij.openapi.components.StoredProperty;
