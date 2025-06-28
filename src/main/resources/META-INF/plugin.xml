@@ -65,6 +65,8 @@
                 implementationClass="pl.thedeem.intellij.dql.indexing.DQLVariableElementManipulator"/>
         <renameInputValidator implementation="pl.thedeem.intellij.dql.indexing.DQLRenameInputValidator"/>
         <renamePsiElementProcessor implementation="pl.thedeem.intellij.dql.indexing.DQLRenamePsiElementProcessor"/>
+        <gotoSymbolContributor
+                implementation="pl.thedeem.intellij.dql.indexing.DQLChooseByNameContributor"/>
 
         <!-- Completions -->
         <completion.contributor
