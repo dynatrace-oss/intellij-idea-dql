@@ -10,7 +10,9 @@ import pl.thedeem.intellij.dql.psi.*;
 import static com.intellij.patterns.PsiJavaPatterns.psiElement;
 
 public interface DQLPsiPatterns {
-    PsiJavaElementPattern.Capture<PsiElement> QUERY_KEYWORD = psiElement()
+   PsiJavaElementPattern.Capture<PsiElement> INSERTION_ERROR_ELEMENT = psiElement().withParent(psiElement(TokenType.ERROR_ELEMENT));
+
+   PsiJavaElementPattern.Capture<PsiElement> QUERY_KEYWORD = psiElement()
             .withParent(DQLQueryStatementKeyword.class)
             .withSuperParent(2, psiElement(DQLQueryStatement.class));
 
@@ -21,7 +23,7 @@ public interface DQLPsiPatterns {
             psiElement().withParent(DQLFieldExpression.class).withSuperParent(2, DQLQueryStatement.class),
             psiElement().withParent(psiElement(TokenType.ERROR_ELEMENT).with(
                     AutocompleteUtils.isAfterElementSkipping(
-                            psiElement(DQLParameterExpression.class).withParent(DQLQueryStatement.class),
+                            psiElement().withParent(DQLQueryStatement.class),
                             psiElement().whitespaceCommentEmptyOrError()
                     )
             ))
@@ -29,6 +31,9 @@ public interface DQLPsiPatterns {
 
     ElementPattern<PsiElement> SUGGEST_FIELD_VALUES = PlatformPatterns.or(
             psiElement().withParent(DQLFieldExpression.class)
+    );
+    ElementPattern<PsiElement> SUGGEST_FIELD_NAMES = PlatformPatterns.or(
+            psiElement().withParent(DQLFieldName.class)
     );
     ElementPattern<PsiElement> SUGGEST_FUNCTION_PARAMETERS = psiElement().withSuperParent(2, DQLFunctionCallExpression.class);
 
@@ -48,4 +53,9 @@ public interface DQLPsiPatterns {
             LAST_ELEMENT_IN_STATEMENT,
             psiElement().withParent(DQLQueryStatementKeyword.class)
     );
+
+   ElementPattern<PsiElement> SUGGEST_COMMAND_KEYWORDS = PlatformPatterns.or(
+       QUERY_COMMAND,
+       SUGGEST_QUERY_START
+   );
 }

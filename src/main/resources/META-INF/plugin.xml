@@ -69,7 +69,10 @@
         <!-- Completions -->
         <completion.contributor
                 language="DQL"
-                implementationClass="pl.thedeem.intellij.dql.completion.DQLCompletionContributor"/>
+                implementationClass="pl.thedeem.intellij.dql.completion.DQLLocalCompletionContributor"/>
+        <completion.contributor order="last"
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.completion.DQLExternalCompletionContributor"/>
 
         <!-- Styling -->
         <lang.formatter

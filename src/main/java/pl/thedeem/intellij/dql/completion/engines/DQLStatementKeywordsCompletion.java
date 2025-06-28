@@ -10,34 +10,27 @@ import pl.thedeem.intellij.dql.definition.DQLCommandDefinition;
 import pl.thedeem.intellij.dql.definition.DQLCommandsLoader;
 import org.jetbrains.annotations.NotNull;
 
-public class DQLStatementKeywordsCompletion implements DQLCompletionEngine {
-    @Override
-    public CompletionResult autocomplete(@NotNull CompletionParameters parameters, @NotNull PsiElement position, @NotNull CompletionResultSet result) {
-        if (DQLUtil.isPartialFile(position.getContainingFile())) {
-            if (DQLPsiPatterns.SUGGEST_QUERY_START.accepts(position)) {
-                for (DQLCommandDefinition command : DQLCommandsLoader.getCommands().values()) {
-                    AutocompleteUtils.autocompleteStatement(command, AutocompleteUtils.COMMAND, result);
-                }
+public class DQLStatementKeywordsCompletion {
+   public void autocomplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
+      PsiElement position = parameters.getPosition();
+      if (DQLUtil.isPartialFile(position.getContainingFile())) {
+         if (DQLPsiPatterns.SUGGEST_QUERY_START.accepts(position)) {
+            for (DQLCommandDefinition command : DQLCommandsLoader.getCommands().values()) {
+               AutocompleteUtils.autocompleteStatement(command, AutocompleteUtils.COMMAND, result);
             }
-            else if (DQLPsiPatterns.QUERY_COMMAND.accepts(position)) {
-                for (DQLCommandDefinition command : DQLCommandsLoader.getExtensionCommand()) {
-                    AutocompleteUtils.autocompleteStatement(command, AutocompleteUtils.COMMAND, result);
-                }
-                return CompletionResult.PASS;
-            }
-        }
-        else if (DQLPsiPatterns.SUGGEST_QUERY_START.accepts(position)) {
-            for (DQLCommandDefinition command : DQLCommandsLoader.getStartingCommand()) {
-                AutocompleteUtils.autocompleteStatement(command, AutocompleteUtils.QUERY_START, result);
-            }
-            return CompletionResult.FORCE_STOP;
-        } else if (DQLPsiPatterns.QUERY_COMMAND.accepts(position)) {
+         } else if (DQLPsiPatterns.QUERY_COMMAND.accepts(position)) {
             for (DQLCommandDefinition command : DQLCommandsLoader.getExtensionCommand()) {
-                AutocompleteUtils.autocompleteStatement(command, AutocompleteUtils.COMMAND, result);
+               AutocompleteUtils.autocompleteStatement(command, AutocompleteUtils.COMMAND, result);
             }
-            return CompletionResult.PASS;
-        }
-
-        return CompletionResult.PASS;
-    }
+         }
+      } else if (DQLPsiPatterns.SUGGEST_QUERY_START.accepts(position)) {
+         for (DQLCommandDefinition command : DQLCommandsLoader.getStartingCommand()) {
+            AutocompleteUtils.autocompleteStatement(command, AutocompleteUtils.QUERY_START, result);
+         }
+      } else if (DQLPsiPatterns.QUERY_COMMAND.accepts(position)) {
+         for (DQLCommandDefinition command : DQLCommandsLoader.getExtensionCommand()) {
+            AutocompleteUtils.autocompleteStatement(command, AutocompleteUtils.COMMAND, result);
+         }
+      }
+   }
 }

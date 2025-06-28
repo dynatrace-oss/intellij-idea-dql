@@ -9,15 +9,16 @@ import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.psi.*;
+import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 
 import java.util.Set;
 
 import static com.intellij.patterns.PsiJavaPatterns.psiElement;
 
-public class DQLConditionOperandCompletion implements DQLCompletionEngine {
-   @Override
-   public CompletionResult autocomplete(@NotNull CompletionParameters parameters, @NotNull PsiElement position, @NotNull CompletionResultSet result) {
+public class DQLConditionOperandCompletion {
+   public void autocomplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
+      PsiElement position = parameters.getPosition();
       PsiElement parent = position.getParent();
       if (parent != null && TokenType.ERROR_ELEMENT == parent.getNode().getElementType()) {
          PsiElement neighbour = DQLUtil.getDeepNeighbourElement(parent, PlatformPatterns.or(
@@ -27,8 +28,8 @@ public class DQLConditionOperandCompletion implements DQLCompletionEngine {
              psiElement(DQLConditionExpression.class),
              psiElement(DQLFunctionCallExpression.class)
          ));
-         if (neighbour instanceof DQLFunctionCallExpression function) {
-            Set<DQLDataType> dataType = function.getDataType();
+         if (neighbour instanceof BaseTypedElement typedElement) {
+            Set<DQLDataType> dataType = typedElement.getDataType();
             if (dataType.contains(DQLDataType.BOOLEAN) || dataType.contains(DQLDataType.ANY)) {
                AutocompleteUtils.autocompleteConditionOperands(result);
             }
@@ -36,6 +37,5 @@ public class DQLConditionOperandCompletion implements DQLCompletionEngine {
             AutocompleteUtils.autocompleteConditionOperands(result);
          }
       }
-      return CompletionResult.PASS;
    }
 }
