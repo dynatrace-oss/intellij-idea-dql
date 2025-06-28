@@ -3,6 +3,7 @@ package pl.thedeem.intellij.dql.sdk;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.sdk.errors.DQLErrorResponseException;
 import pl.thedeem.intellij.dql.sdk.errors.DQLNotAuthorizedException;
 import pl.thedeem.intellij.dql.sdk.model.*;
@@ -19,80 +20,99 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
 public class DynatraceRestClient {
-    private final static ObjectMapper mapper = new ObjectMapper();
-    private final String tenantUrl;
+   private final static ObjectMapper mapper = new ObjectMapper();
+   private final String tenantUrl;
 
-    public DynatraceRestClient(String tenantUrl) {
-        this.tenantUrl = tenantUrl;
-    }
+   public DynatraceRestClient(String tenantUrl) {
+      this.tenantUrl = tenantUrl;
+   }
 
-    public DQLVerifyResponse verifyDQL(DQLVerifyPayload payload, String authToken) throws IOException, InterruptedException, DQLNotAuthorizedException, DQLErrorResponseException {
-        try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:verify").normalize())
-                    .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer " + authToken)
-                    .build();
+   public DQLVerifyResponse verifyDQL(DQLVerifyPayload payload, String authToken) throws IOException, InterruptedException, DQLNotAuthorizedException, DQLErrorResponseException {
+      try (HttpClient client = HttpClient.newHttpClient()) {
+         HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:verify").normalize())
+             .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
+             .header("Accept", "application/json")
+             .header("Content-Type", "application/json")
+             .header("Authorization", "Bearer " + authToken)
+             .build();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            return handleResponse(response, new TypeReference<>() {});
-        }
-    }
+         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+         return handleResponse(response, new TypeReference<>() {
+         });
+      }
+   }
 
-    public DQLExecuteResponse executeDQL(DQLExecutePayload payload, String authToken) throws IOException, InterruptedException, DQLNotAuthorizedException, DQLErrorResponseException {
-        try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:execute?enrich=metric-metadata").normalize())
-                    .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer " + authToken)
-                    .build();
+   public DQLExecuteResponse executeDQL(DQLExecutePayload payload, String authToken) throws IOException, InterruptedException, DQLNotAuthorizedException, DQLErrorResponseException {
+      try (HttpClient client = HttpClient.newHttpClient()) {
+         HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:execute?enrich=metric-metadata").normalize())
+             .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
+             .header("Accept", "application/json")
+             .header("Content-Type", "application/json")
+             .header("Authorization", "Bearer " + authToken)
+             .build();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            return handleResponse(response, new TypeReference<>() {});
-        }
-    }
+         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+         return handleResponse(response, new TypeReference<>() {
+         });
+      }
+   }
 
-    public DQLPollResponse cancelDQL(String requestToken, String authToken) throws IOException, InterruptedException, DQLNotAuthorizedException, DQLErrorResponseException {
-        try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:cancel?request-token=" + URLEncoder.encode(requestToken, StandardCharsets.UTF_8) + "&enrich=metric-metadata").normalize())
-                .method("POST", HttpRequest.BodyPublishers.ofString(""))
-                .header("Accept", "application/json")
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + authToken)
-                .build();
+   public DQLPollResponse cancelDQL(String requestToken, String authToken) throws IOException, InterruptedException, DQLNotAuthorizedException, DQLErrorResponseException {
+      try (HttpClient client = HttpClient.newHttpClient()) {
+         HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:cancel?request-token=" + URLEncoder.encode(requestToken, StandardCharsets.UTF_8) + "&enrich=metric-metadata").normalize())
+             .method("POST", HttpRequest.BodyPublishers.ofString(""))
+             .header("Accept", "application/json")
+             .header("Content-Type", "application/json")
+             .header("Authorization", "Bearer " + authToken)
+             .build();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            return handleResponse(response, new TypeReference<>() {});
-        }
-    }
+         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+         return handleResponse(response, new TypeReference<>() {
+         });
+      }
+   }
 
-    public DQLPollResponse pollDQLState(String requestToken, String authToken) throws IOException, InterruptedException, DQLNotAuthorizedException, DQLErrorResponseException {
-        try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:poll?enrich=metric-metadata&request-token=" + URLEncoder.encode(requestToken, StandardCharsets.UTF_8)).normalize())
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer " + authToken)
-                    .build();
+   public DQLPollResponse pollDQLState(String requestToken, String authToken) throws IOException, InterruptedException, DQLNotAuthorizedException, DQLErrorResponseException {
+      try (HttpClient client = HttpClient.newHttpClient()) {
+         HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:poll?enrich=metric-metadata&request-token=" + URLEncoder.encode(requestToken, StandardCharsets.UTF_8)).normalize())
+             .header("Accept", "application/json")
+             .header("Content-Type", "application/json")
+             .header("Authorization", "Bearer " + authToken)
+             .build();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            return handleResponse(response, new TypeReference<>() {});
-        }
-    }
+         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+         return handleResponse(response, new TypeReference<>() {
+         });
+      }
+   }
 
-    private <T> T handleResponse(HttpResponse<String> response, TypeReference<T> typeRef) throws JsonProcessingException, DQLNotAuthorizedException, DQLErrorResponseException {
-        int status = response.statusCode();
-        if (status < 300) {
-            return mapper.readValue(response.body(), typeRef);
-        } else if (status == 401 || status == 403) {
-            TypeReference<DQLErrorResponse<DQLAuthErrorResponse>> errorRef = new TypeReference<>() {
-            };
-            throw new DQLNotAuthorizedException("Unauthorized", mapper.readValue(response.body(), errorRef));
-        } else {
-            TypeReference<DQLErrorResponse<DQLExecutionErrorResponse>> errorRef = new TypeReference<>() {
-            };
-            throw new DQLErrorResponseException("Error response", mapper.readValue(response.body(), errorRef));
-        }
-    }
+   public DQLAutocompleteResult autocomplete(@NotNull DQLAutocompletePayload payload, String authToken) throws IOException, InterruptedException, DQLNotAuthorizedException, DQLErrorResponseException {
+      try (HttpClient client = HttpClient.newHttpClient()) {
+         HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:autocomplete").normalize())
+             .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
+             .header("Accept", "application/json")
+             .header("Content-Type", "application/json")
+             .header("Authorization", "Bearer " + authToken)
+             .build();
+
+         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+         return handleResponse(response, new TypeReference<>() {
+         });
+      }
+   }
+
+   private <T> T handleResponse(HttpResponse<String> response, TypeReference<T> typeRef) throws JsonProcessingException, DQLNotAuthorizedException, DQLErrorResponseException {
+      int status = response.statusCode();
+      if (status < 300) {
+         return mapper.readValue(response.body(), typeRef);
+      } else if (status == 401 || status == 403) {
+         TypeReference<DQLErrorResponse<DQLAuthErrorResponse>> errorRef = new TypeReference<>() {
+         };
+         throw new DQLNotAuthorizedException("Unauthorized", mapper.readValue(response.body(), errorRef));
+      } else {
+         TypeReference<DQLErrorResponse<DQLExecutionErrorResponse>> errorRef = new TypeReference<>() {
+         };
+         throw new DQLErrorResponseException("Error response", mapper.readValue(response.body(), errorRef));
+      }
+   }
 }

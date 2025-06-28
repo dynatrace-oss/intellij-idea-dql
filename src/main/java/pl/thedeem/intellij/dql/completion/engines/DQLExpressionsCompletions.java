@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.completion.engines;
 
+import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +13,7 @@ import pl.thedeem.intellij.dql.psi.*;
 
 public class DQLExpressionsCompletions implements DQLCompletionEngine {
     @Override
-    public CompletionResult autocomplete(@NotNull PsiElement position, @NotNull CompletionResultSet result) {
+    public CompletionResult autocomplete(@NotNull CompletionParameters parameters, @NotNull PsiElement position, @NotNull CompletionResultSet result) {
         if (DQLPsiPatterns.SUGGEST_FIELD_VALUES.accepts(position)) {
             if (position.getParent().getParent() instanceof DQLExpression expr) {
                 return autocompleteExpression(expr, result);

@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.patterns.ElementPattern;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -143,6 +144,14 @@ public class DQLUtil {
             prev = prev.getPrevSibling();
         }
         return prev;
+    }
+
+    public static PsiElement getDeepNeighbourElement(PsiElement element, ElementPattern<PsiElement> pattern) {
+        PsiElement neighbour = DQLUtil.getPreviousElement(element);
+        while (neighbour != null && !pattern.accepts(neighbour)) {
+            neighbour = neighbour.getLastChild();
+        }
+        return neighbour;
     }
 
     public static PsiElement getNextElement(PsiElement element) {

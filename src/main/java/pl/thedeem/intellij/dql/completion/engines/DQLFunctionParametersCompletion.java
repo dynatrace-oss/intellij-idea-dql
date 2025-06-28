@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.completion.engines;
 
+import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionUtilCore;
 import com.intellij.psi.PsiElement;
@@ -17,13 +18,13 @@ import java.util.stream.Collectors;
 
 public class DQLFunctionParametersCompletion implements DQLCompletionEngine {
     @Override
-    public CompletionResult autocomplete(@NotNull PsiElement position, @NotNull CompletionResultSet result) {
+    public CompletionResult autocomplete(@NotNull CompletionParameters parameters, @NotNull PsiElement position, @NotNull CompletionResultSet result) {
         if (DQLPsiPatterns.SUGGEST_FUNCTION_PARAMETERS.accepts(position)) {
             List<PsiElement> parents = DQLUtil.getElementsUntilParent(position, DQLFunctionCallExpression.class);
             if (parents.getFirst() instanceof DQLFunctionCallExpression function) {
                 DQLFunctionDefinition definition = function.getDefinition();
                 if (definition != null) {
-                    Set<String> parameters = function.getParameters().stream()
+                    Set<String> functionParameters = function.getParameters().stream()
                             .filter(p -> p.getDefinition() != null)
                             .filter(p -> !CompletionUtilCore.DUMMY_IDENTIFIER_TRIMMED.equals(p.getExpression().getText()))
                             .map(p -> p.getDefinition().name)
@@ -31,11 +32,11 @@ public class DQLFunctionParametersCompletion implements DQLCompletionEngine {
                     Set<DQLParameterDefinition> available = definition
                             .getParameters(function)
                             .stream()
-                            .filter(p -> !parameters.contains(p.name))
+                            .filter(p -> !functionParameters.contains(p.name))
                             .collect(Collectors.toSet());
 
                     for (DQLParameterDefinition param : available) {
-                        AutocompleteUtils.autocompleteParameter(param, result, !parameters.isEmpty());
+                        AutocompleteUtils.autocompleteParameter(param, result, !functionParameters.isEmpty());
                     }
                     if (!available.isEmpty()) {
                         return CompletionResult.STOP;

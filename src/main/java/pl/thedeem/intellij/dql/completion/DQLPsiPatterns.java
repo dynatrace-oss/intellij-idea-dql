@@ -32,23 +32,6 @@ public interface DQLPsiPatterns {
     );
     ElementPattern<PsiElement> SUGGEST_FUNCTION_PARAMETERS = psiElement().withSuperParent(2, DQLFunctionCallExpression.class);
 
-    PsiJavaElementPattern.Capture<PsiElement> SUGGEST_CONDITION_OPERANDS = psiElement()
-            .withParent(
-                    psiElement(TokenType.ERROR_ELEMENT).with(
-                            AutocompleteUtils.isAfterElementSkipping(
-                                    psiElement().with(AutocompleteUtils.isDeepNeighbourOf(
-                                            PlatformPatterns.or(
-                                                    psiElement(DQLBoolean.class),
-                                                    psiElement(DQLComparisonExpression.class),
-                                                    psiElement(DQLEqualityExpression.class),
-                                                    psiElement(DQLConditionExpression.class)
-                                            )
-                                    )),
-                                    psiElement().whitespaceCommentEmptyOrError()
-                            )
-                    )
-            );
-
     PsiJavaElementPattern.Capture<PsiElement> SIBLING_OF_FIELD = psiElement()
             .withParent(
                     psiElement(TokenType.ERROR_ELEMENT).with(

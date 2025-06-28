@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.completion.engines;
 
+import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionUtilCore;
 import com.intellij.psi.PsiElement;
@@ -19,7 +20,7 @@ import java.util.Set;
 
 public class DQLStatementParamsCompletion implements DQLCompletionEngine {
     @Override
-    public CompletionResult autocomplete(@NotNull PsiElement position, @NotNull CompletionResultSet result) {
+    public CompletionResult autocomplete(@NotNull CompletionParameters parameters, @NotNull PsiElement position, @NotNull CompletionResultSet result) {
         if (DQLPsiPatterns.INSIDE_STATEMENT_PARAMETERS_LIST.accepts(position)) {
             DQLQueryStatement statement = PsiTreeUtil.getParentOfType(position, DQLQueryStatement.class);
             DQLCommandDefinition definition = statement != null ? DQLCommandsLoader.getCommand(statement) : null;

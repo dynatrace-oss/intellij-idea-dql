@@ -1,21 +1,17 @@
 package pl.thedeem.intellij.dql.inspections.external;
 
 import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.executing.DQLExecutionUtil;
 import pl.thedeem.intellij.dql.executing.DQLParsedQuery;
-import pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.ExecuteDQLRunConfiguration;
 import pl.thedeem.intellij.dql.sdk.DynatraceRestClient;
 import pl.thedeem.intellij.dql.sdk.errors.DQLErrorResponseException;
 import pl.thedeem.intellij.dql.sdk.errors.DQLNotAuthorizedException;
@@ -46,7 +42,7 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
         if (!canPerformExternalValidation(input)) {
             return new Result(new DQLVerifyResponse(), null);
         }
-        String tenantName = findTenantName(input);
+        String tenantName = DynatraceTenantsService.getInstance().findTenantName(input.file().getProject(), input.file());
         DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(tenantName);
         if (tenant != null) {
             String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
@@ -94,16 +90,5 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
             case "WARN", "WARNING" -> ProblemHighlightType.WARNING;
             default -> ProblemHighlightType.GENERIC_ERROR;
         };
-    }
-
-    private String findTenantName(Input input) {
-        RunnerAndConfigurationSettings existingSettings = DQLExecutionUtil.findExistingSettings(input.file().getProject(), input.file);
-        if (existingSettings != null && existingSettings.getConfiguration() instanceof ExecuteDQLRunConfiguration executeDQL) {
-            String tenant = executeDQL.getTenantName();
-            if (StringUtil.isNotEmpty(tenant)) {
-                return tenant;
-            }
-        }
-        return DQLSettings.getInstance().getDefaultLiveValidationsTenant();
     }
 }

@@ -31,7 +31,8 @@ public class DQLSettingsConfigurable implements Configurable {
         return mySettingsComponent.isCalculatingFieldsDataTypesEnabled() != mySettings.isCalculatingFieldsDataTypesEnabled()
                 || mySettingsComponent.isCalculatingExpressionDataTypesEnabled() != mySettings.isCalculatingExpressionDataTypesEnabled()
                 || mySettingsComponent.isPerformingLiveValidationEnabled() != mySettings.isPerformingLiveValidationEnabled()
-                || !Objects.equals(mySettingsComponent.getDefaultLiveValidationsTenant(), mySettings.getDefaultLiveValidationsTenant())
+                || mySettingsComponent.isUseDynatraceAutocompleteEnabled() != mySettings.isUseDynatraceAutocompleteEnabled()
+                || !Objects.equals(mySettingsComponent.getDefaultDynatraceTenant(), mySettings.getDefaultDynatraceTenant())
                 ;
     }
 
@@ -40,7 +41,8 @@ public class DQLSettingsConfigurable implements Configurable {
         mySettings.setCalculatingFieldsDataTypesEnabled(mySettingsComponent.isCalculatingFieldsDataTypesEnabled());
         mySettings.setCalculatingExpressionDataTypesEnabled(mySettingsComponent.isCalculatingExpressionDataTypesEnabled());
         mySettings.setPerformingLiveValidationEnabled(mySettingsComponent.isPerformingLiveValidationEnabled());
-        mySettings.setDefaultLiveValidationsTenant(mySettingsComponent.getDefaultLiveValidationsTenant());
+        mySettings.setUseDynatraceAutocompleteEnabled(mySettingsComponent.isUseDynatraceAutocompleteEnabled());
+        mySettings.setDefaultDynatraceTenant(mySettingsComponent.getDefaultDynatraceTenant());
     }
 
     @Override
@@ -48,7 +50,8 @@ public class DQLSettingsConfigurable implements Configurable {
         mySettingsComponent.setCalculatingFieldsDataTypesEnabled(mySettings.isCalculatingFieldsDataTypesEnabled());
         mySettingsComponent.setCalculatingExpressionDataTypesEnabled(mySettings.isCalculatingExpressionDataTypesEnabled());
         mySettingsComponent.setPerformingLiveValidationEnabled(mySettings.isPerformingLiveValidationEnabled());
-        mySettingsComponent.setDefaultLiveValidationsTenant(mySettings.getDefaultLiveValidationsTenant());
+        mySettingsComponent.setUseDynatraceAutocompleteEnabled(mySettings.isUseDynatraceAutocompleteEnabled());
+        mySettingsComponent.setDefaultDynatraceTenant(mySettings.getDefaultDynatraceTenant());
     }
 
     @Override

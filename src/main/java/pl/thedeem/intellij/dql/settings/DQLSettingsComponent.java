@@ -15,20 +15,22 @@ public class DQLSettingsComponent {
     private final JBCheckBox calculateFieldsDataType = new JBCheckBox(DQLBundle.message("settings.dql.features.calculateFieldsDataType"));
     private final JBCheckBox calculateExpressionsDataType = new JBCheckBox(DQLBundle.message("settings.dql.features.calculateExpressionDataType"));
     private final JBCheckBox performLiveValidations = new JBCheckBox(DQLBundle.message("settings.dql.features.performLiveValidations"));
-    private final DynatraceTenantSelector<?> defaultLiveValidationsTenant = new DynatraceTenantSelector<>(new FlowLayout(FlowLayout.LEFT, 0, 0));
+    private final JBCheckBox useDynatraceAutocomplete = new JBCheckBox(DQLBundle.message("settings.dql.features.useDynatraceAutocomplete"));
+    private final DynatraceTenantSelector<?> defaultDynatraceTenant = new DynatraceTenantSelector<>(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
     public DQLSettingsComponent(DQLSettings settings) {
         calculateFieldsDataType.setToolTipText(DQLBundle.message("settings.dql.features.calculateFieldsDataTypeDescription"));
         calculateExpressionsDataType.setToolTipText(DQLBundle.message("settings.dql.features.calculateExpressionDataTypeDescription"));
         JPanel tenantsSelectorPanel = FormBuilder.createFormBuilder()
-                .addLabeledComponent(DQLBundle.message("settings.dql.features.defaultLiveValidationsTenant"), defaultLiveValidationsTenant)
-                .addTooltip(DQLBundle.message("settings.dql.features.defaultLiveValidationsTenantDescription"))
+                .addLabeledComponent(DQLBundle.message("settings.dql.features.defaultDynatraceTenant"), defaultDynatraceTenant)
+                .addTooltip(DQLBundle.message("settings.dql.features.defaultDynatraceTenantDescription"))
                 .getPanel();
 
         myMainPanel = FormBuilder.createFormBuilder()
                 .addComponent(calculateFieldsDataType, 1)
                 .addComponent(calculateExpressionsDataType, 1)
                 .addComponent(performLiveValidations, 1)
+                .addComponent(useDynatraceAutocomplete, 1)
                 .addComponent(tenantsSelectorPanel, 1)
                 .addComponentFillVertically(new JBPanel<>(), 0)
                 .getPanel();
@@ -37,9 +39,11 @@ public class DQLSettingsComponent {
         calculateFieldsDataType.setSelected(settings.isCalculatingFieldsDataTypesEnabled());
         calculateExpressionsDataType.setSelected(settings.isCalculatingExpressionDataTypesEnabled());
         performLiveValidations.setSelected(settings.isPerformingLiveValidationEnabled());
-        performLiveValidations.addActionListener((actionEvent -> tenantsSelectorPanel.setVisible(performLiveValidations.isSelected())));
+        useDynatraceAutocomplete.setSelected(settings.isUseDynatraceAutocompleteEnabled());
+        performLiveValidations.addActionListener((actionEvent -> tenantsSelectorPanel.setVisible(performLiveValidations.isSelected() || useDynatraceAutocomplete.isSelected())));
+        useDynatraceAutocomplete.addActionListener((actionEvent -> tenantsSelectorPanel.setVisible(performLiveValidations.isSelected() || useDynatraceAutocomplete.isSelected())));
         tenantsSelectorPanel.setVisible(settings.isPerformingLiveValidationEnabled());
-        defaultLiveValidationsTenant.refreshTenantsComboBox();
+        defaultDynatraceTenant.refreshTenantsComboBox();
     }
 
     public JPanel getPanel() {
@@ -70,12 +74,20 @@ public class DQLSettingsComponent {
         performLiveValidations.setSelected(enabled);
     }
 
-    public void setDefaultLiveValidationsTenant(String tenant) {
-        defaultLiveValidationsTenant.selectTenant(tenant);
+    public boolean isUseDynatraceAutocompleteEnabled() {
+        return useDynatraceAutocomplete.isSelected();
     }
 
-    public String getDefaultLiveValidationsTenant() {
-        DynatraceTenant selectedTenant = defaultLiveValidationsTenant.getSelectedTenant();
+    public void setUseDynatraceAutocompleteEnabled(boolean enabled) {
+        useDynatraceAutocomplete.setSelected(enabled);
+    }
+
+    public void setDefaultDynatraceTenant(String tenant) {
+        defaultDynatraceTenant.selectTenant(tenant);
+    }
+
+    public String getDefaultDynatraceTenant() {
+        DynatraceTenant selectedTenant = defaultDynatraceTenant.getSelectedTenant();
         return selectedTenant != null ? selectedTenant.getName() : null;
     }
 }

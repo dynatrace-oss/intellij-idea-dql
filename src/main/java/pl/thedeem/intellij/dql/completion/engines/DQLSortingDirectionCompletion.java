@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.completion.engines;
 
+import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiErrorElement;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class DQLSortingDirectionCompletion implements DQLCompletionEngine {
     @Override
-    public CompletionResult autocomplete(@NotNull PsiElement position, @NotNull CompletionResultSet result) {
+    public CompletionResult autocomplete(@NotNull CompletionParameters parameters, @NotNull PsiElement position, @NotNull CompletionResultSet result) {
         if (position.getParent() instanceof PsiErrorElement error) {
             PsiElement previous = DQLUtil.getPreviousElement(error);
             if (previous != null) {

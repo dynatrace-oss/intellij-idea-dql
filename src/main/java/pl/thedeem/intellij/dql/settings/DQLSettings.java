@@ -49,11 +49,19 @@ public class DQLSettings implements PersistentStateComponent<DQLSettingsState> {
         myState.performLiveValidation = enabled;
     }
 
-    public String getDefaultLiveValidationsTenant() {
+    public boolean isUseDynatraceAutocompleteEnabled() {
+        return myState.useDynatraceAutocomplete;
+    }
+
+    public void setUseDynatraceAutocompleteEnabled(boolean enabled) {
+        myState.useDynatraceAutocomplete = enabled;
+    }
+
+    public String getDefaultDynatraceTenant() {
         return myState.defaultTenantUrl;
     }
 
-    public void setDefaultLiveValidationsTenant(String tenant) {
+    public void setDefaultDynatraceTenant(String tenant) {
         myState.defaultTenantUrl = tenant;
     }
 }
