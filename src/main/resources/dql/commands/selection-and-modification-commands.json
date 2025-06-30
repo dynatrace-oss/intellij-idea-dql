@@ -14,7 +14,7 @@
         "repetitive": true,
         "description": "The definition of the fields for the records to be returned",
         "type": [
-          "data object",
+          "identifier",
           "string",
           "number",
           "duration",
@@ -47,7 +47,7 @@
         "repetitive": true,
         "description": "The definition of the fields to be added to the returned records",
         "type": [
-          "data object",
+          "identifier",
           "string",
           "number",
           "duration",
@@ -80,7 +80,7 @@
         "repetitive": true,
         "description": "The definition of the fields for the records to be returned",
         "type": [
-          "data object",
+          "identifier",
           "read-only expression"
         ]
       }
@@ -101,7 +101,7 @@
         "repetitive": true,
         "description": "The definition of the fields to be removed from returned records",
         "type": [
-          "data object",
+          "identifier",
           "read-only expression"
         ]
       }

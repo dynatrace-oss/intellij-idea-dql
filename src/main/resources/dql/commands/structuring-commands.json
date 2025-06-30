@@ -13,7 +13,7 @@
         "required": true,
         "description": "The field definition used to expand records",
         "type": [
-          "data object",
+          "identifier",
           "assign expression"
         ]
       },
@@ -43,7 +43,7 @@
         "required": true,
         "nameAllowed": false,
         "type": [
-          "data object"
+          "identifier"
         ]
       },
       {

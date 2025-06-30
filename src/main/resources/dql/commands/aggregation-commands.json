@@ -14,7 +14,7 @@
         "nameAllowed": false,
         "repetitive": true,
         "type": [
-          "data object",
+          "identifier",
           "read-only expression"
         ]
       },

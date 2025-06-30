@@ -24,6 +24,8 @@ import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
 import java.io.IOException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DQLDynatraceAutocomplete {
    private static final Logger logger = Logger.getInstance(DQLDynatraceAutocomplete.class);
@@ -54,16 +56,26 @@ public class DQLDynatraceAutocomplete {
 
             if (autocomplete != null) {
                for (DQLSuggestion suggestion : autocomplete.getSuggestions()) {
-                  if (StringUtil.isNotEmpty(suggestion.getSuggestion()) && suggestion.getParts().stream().anyMatch(
-                      i -> "SIMPLE_IDENTIFIER".equals(i.getType())
-                  )) {
-                     result.addElement(AutocompleteUtils.createLookupElement(
-                         suggestion.getSuggestion(),
-                         DQLIcon.DQL_FIELD,
-                         AutocompleteUtils.DATA_REFERENCE,
-                         null,
-                         null
-                     ));
+                  if (StringUtil.isNotEmpty(suggestion.getSuggestion())) {
+                     Set<String> types = suggestion.getParts().stream().map(DQLSuggestion.DQLSuggestionPart::getType).collect(Collectors.toSet());
+                     if (types.contains("SIMPLE_IDENTIFIER")) {
+                        result.addElement(AutocompleteUtils.createLookupElement(
+                            suggestion.getSuggestion(),
+                            DQLIcon.DQL_FIELD,
+                            AutocompleteUtils.DATA_REFERENCE,
+                            null,
+                            null
+                        ));
+                     }
+                     else if (types.contains("DATA_OBJECT")){
+                        result.addElement(AutocompleteUtils.createLookupElement(
+                            suggestion.getSuggestion(),
+                            DQLIcon.DQL_FIELD,
+                            AutocompleteUtils.STATIC,
+                            null,
+                            null
+                        ));
+                     }
                   }
                }
             }

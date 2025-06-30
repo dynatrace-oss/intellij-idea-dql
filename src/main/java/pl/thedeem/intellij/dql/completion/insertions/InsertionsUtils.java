@@ -37,7 +37,7 @@ public class InsertionsUtils {
             template.addTextSegment("{ ");
             template.addVariable("bodyStatementExpression:" + name, new EmptyNode(), new EmptyNode(), true);
             template.addTextSegment(" }");
-        } else if (allowedValues.contains(DQLDataType.DATA_OBJECT)) {
+        } else if (allowedValues.contains(DQLDataType.IDENTIFIER)) {
             template.addVariable("bodyDataObject:" + name, new TextExpression("some.field"), new EmptyNode(), true);
         } else if (allowedValues.contains(DQLDataType.ASSIGN_EXPRESSION)) {
             template.addVariable("bodyDataAssignField:" + name, new TextExpression("some.field"), new EmptyNode(), true);

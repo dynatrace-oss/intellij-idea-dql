@@ -56,7 +56,7 @@
         "description": "The join condition.",
         "required": true,
         "type": [
-          "data object",
+          "identifier",
           "boolean",
           "list of expressions",
           "join condition"
@@ -134,7 +134,7 @@
         "description": "The join condition.",
         "required": true,
         "type": [
-          "data object",
+          "identifier",
           "boolean",
           "list of expressions",
           "join condition"
@@ -201,7 +201,7 @@
         "description": "The matching field on the source table (left side).",
         "required": false,
         "type": [
-          "data object"
+          "identifier"
         ],
         "disallows": []
       },
@@ -210,7 +210,7 @@
         "description": "The matching field on the lookup table (right side).",
         "required": true,
         "type": [
-          "data object"
+          "identifier"
         ],
         "disallows": []
       },

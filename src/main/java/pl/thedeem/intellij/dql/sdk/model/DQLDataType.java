@@ -30,6 +30,7 @@ public enum DQLDataType {
   TRUE("true", BOOLEAN),
   FALSE("false", BOOLEAN),
   DATA_OBJECT("data object"),
+  IDENTIFIER("identifier"),
   UID("uid"),
   IP("ip"),
   IP_ADDRESS("ip address", IP),

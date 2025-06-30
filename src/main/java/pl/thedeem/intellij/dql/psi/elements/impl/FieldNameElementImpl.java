@@ -122,14 +122,14 @@ public abstract class FieldNameElementImpl extends ASTWrapperPsiElement implemen
 
     private Set<DQLDataType> recalculateDataType() {
         if (!DQLSettings.getInstance().isCalculatingFieldsDataTypesEnabled()) {
-            return Set.of(DQLDataType.DATA_OBJECT, DQLDataType.ANY);
+            return Set.of(DQLDataType.IDENTIFIER, DQLDataType.ANY);
         }
         DQLAssignExpression definition = getAssignExpression();
         if (definition != null) {
             DQLExpression assignedValue = definition.getRightExpression();
             if (assignedValue instanceof BaseTypedElement value && value != this) {
                 Set<DQLDataType> dataTypes = new HashSet<>(value.getDataType());
-                dataTypes.add(DQLDataType.DATA_OBJECT);
+                dataTypes.add(DQLDataType.IDENTIFIER);
                 return dataTypes;
             }
         }

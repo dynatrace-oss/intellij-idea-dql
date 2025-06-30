@@ -14,7 +14,7 @@
         "nameAllowed": false,
         "type": [
           "string",
-          "data object"
+          "identifier"
         ],
         "disallows": []
       },

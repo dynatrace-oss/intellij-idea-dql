@@ -26,7 +26,12 @@ so valid DQL queries written using the plugin can still be invalid after executi
 
 ## Features
 
-### DQL customization
+### Local features
+
+Local features are covered completely by the plugin and do not require any kind of connection to the Dynatrace tenant.
+The features may not support all functionalities supported by Dynatrace Notebooks.
+
+#### DQL customization
 
 The plugin offers advanced and *customizable syntax highlighting* - within the code style settings page you can change
 most of the colors used for DQL tokens and keywords.
@@ -39,7 +44,7 @@ see which values belong to which parameter.
 
 ![An example DQL file](src/main/resources/docs/images/syntax-highlighting.png)
 
-### Detecting references
+#### Detecting references
 
 The plugin uses IntelliJ references to provide relations between **DQL fields, functions, statements,
 and parameters**. You can find usages of a specific field and see where in the query the value was set.
@@ -48,7 +53,7 @@ change a field name everywhere at once.
 
 ![An example DQL file](src/main/resources/docs/images/references.png)
 
-### Code completion
+#### Code completion
 
 Depending on the context of the DQL query, the completion contributor will show you available
 options. It works with:
@@ -63,7 +68,7 @@ options. It works with:
 
 ![An example code completion](src/main/resources/docs/images/code-completion.png)
 
-### DQL functions support
+#### DQL functions support
 
 The plugin contains the list of **all supported DQL functions**.
 
@@ -71,7 +76,7 @@ Unfortunately, because Dynatrace does not offer any REST API returning the list,
 page, making it possible to not have the latest-available set of functions. In case of using such an unknown function,
 the plugin will produce a weak warning but ignore its return values and parameters set.
 
-### Contextual issues detection
+#### Contextual issues detection
 
 Apart from just validating the DQL file syntax, the plugin is also automatically detecting contextual
 issues and - where possible - offering a quick fix to resolve them. It can detect:
@@ -86,10 +91,7 @@ issues and - where possible - offering a quick fix to resolve them. It can detec
 
 ![An example error detection](src/main/resources/docs/images/error-detection.png)
 
-The plugin **does not have** any validations related to field values because it does not connect to Dynatrace to get
-metadata.
-
-### Documentation tooltips
+#### Documentation tooltips
 
 You can hover over query parts to see more information about the element. The information is taken from the Dynatrace
 documentation page.
@@ -103,7 +105,7 @@ documentation page.
 
 The plugin also implements structure with navbar for IntelliJ, so it's very easy to track the context of the query.
 
-### Partial DQL support
+#### Partial DQL support
 
 If you store your DQLs in smaller chunks (and dynamically stitch them together), the query can report many errors due
 to the syntax not being properly validated.
@@ -113,14 +115,39 @@ For such cases, you can rename your file to `*.partial.dql` to use a much more r
 1. Start a query with a `|`
 2. Start a query with a command that would not normally be correct, like `summarize`.
 
-### DQL execution on a specific tenant
+#### DQL variables support
+
+Dynatrace Dashboards allow the user to specify global variables that can be injected into DQL queries.
+Unfortunately, those variable expressions are not supported outside Dynatrace Dashboards, making the written DQL query
+always fail with the `$` usage error. Because the Dynatrace REST API can only return a single error, this would mean
+that expressions defined after the variable would not be reported as errors, rendering the validation very limited.
+
+As a workaround for the problem, the plugin allows specifying variable placeholders in a special file,
+`dql-variables.json`. If the placeholder for the variable was defined, it will be replaced with it before sending the
+DQL query to the tenant.
+
+### Remote features
+
+Apart from local features, the plugin also allows to specify a connection to a set of Dynatrace tenants.
+After the connection to the tenant is added, the plugin uses 
+[official REST API](https://developer.dynatrace.com/develop/sdks/client-query/) to validate, execute and autocomplete
+DQLs.
+
+You can connect to the Dynatrace tenant in IntelliJ settings (`Tools` -> `Dynatrace Query Language` -> `Tenants`).
+Currently, the only supported authentication method is providing a token. You can see more about that
+[in the official docs](https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/basics/dynatrace-api-authentication).
+By default, the token should include the `storage:buckets:read`, but you will also need to add permissions to the
+specific data types, like: `storage:logs:read`, `storage:spans:read`, `storage:events:read`, `storage:bizevents:read`
+`storage:entities:read` etc., depending on your needs.
+
+#### DQL execution on a specific tenant
 
 The plugin adds support for Run Configurations allowing the user to execute the DQL file on a specified Dynatrace
 tenant.
 The results of the query execution will be presented as a table, allowing you to quickly verify if the written query
 returns the correct data.
 
-### Live validations
+#### Live validations
 
 If enabled, the plugin can execute external validations using Dynatrace REST API, showing you any kind of errors
 Dynatrace Notebooks could.
@@ -128,15 +155,13 @@ Dynatrace Notebooks could.
 By default, the feature is disabled, as it requires an authenticated connection to a Dynatrace tenant, which can be done
 in the plugin's settings.
 
-## Configuring connection to the Dynatrace tenant
+#### Live autocompletion
 
-The plugin allows providing a way to connect to a Dynatrace tenant. Apart from the tenant URL, you'll need to specify
-the authentication method.
+If enabled, the plugin will request the list of supported data field identifiers and data objects, using the specified
+tenant's REST API.
 
-Currently, the only way of authentication is providing a token. You can see more about that
-[in the official docs](https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/basics/dynatrace-api-authentication).
-By default, the token should include the `storage:buckets:read`, but you will also need to add permissions to the
-specific data types, like: `storage:logs:read`, `storage:spans:read`, or `storage:bizevents:read`.
+By default, the feature is disabled, as it requires an authenticated connection to a Dynatrace tenant, which can be done
+in the plugin's settings.
 
 <!-- Plugin description end -->
 
