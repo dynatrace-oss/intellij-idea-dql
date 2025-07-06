@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.ui.TableSpeedSearch;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.ColumnInfo;
@@ -132,6 +133,7 @@ public class DQLTableResultPanel extends JPanel {
       addCopyingCellValues(table, table);
       addCellRenderer(table);
       addHeaderRenderer(table);
+      TableSpeedSearch.installOn(table);
 
       TableColumnModel columnModel = table.getColumnModel();
       for (int i = 0; i < columnModel.getColumnCount(); i++) {
@@ -187,9 +189,55 @@ public class DQLTableResultPanel extends JPanel {
 
       JPopupMenu popupMenu = new JPopupMenu();
       popupMenu.add(createOpenValueAction(table));
+      popupMenu.add(createOpenDqlRecordDetailsAction(table));
       popupMenu.addSeparator();
       popupMenu.add(createCopyRowAction(table));
       table.setComponentPopupMenu(popupMenu);
+   }
+
+   @SuppressWarnings("unchecked")
+   protected JMenuItem createOpenDqlRecordDetailsAction(JTable table) {
+      JMenuItem action = new JMenuItem(DQLBundle.message("components.dqlRecordDetails.actionName"));
+      action.setIcon(AllIcons.Actions.Properties);
+      action.setBorder(DQLComponentUtils.DEFAULT_BORDER);
+      action.addActionListener(e -> {
+         int row = table.getSelectedRow();
+
+         Map<String, Object> rowValues = new HashMap<>();
+         for (int col = 0; col < table.getColumnCount(); col++) {
+            rowValues.put(table.getColumnName(col), prepareColumnValue(table.getValueAt(row, col)));
+         }
+
+         ColumnInfo<Map.Entry<String, Object>, Object>[] columnInfos = new ColumnInfo[2];
+         columnInfos[0] = new ColumnInfo<>(DQLBundle.message("components.dqlRecordDetails.columns.field")) {
+            @Override
+            public @Nullable Object valueOf(Map.Entry<String, Object> s) {
+               return s.getKey();
+            }
+         };
+         columnInfos[1] = new ColumnInfo<>(DQLBundle.message("components.dqlRecordDetails.columns.fieldValue")) {
+            @Override
+            public @Nullable Object valueOf(Map.Entry<String, Object> s) {
+               return s.getValue();
+            }
+         };
+
+         JBTable tableResults = new JBTable(new ListTableModel<>(columnInfos, rowValues.entrySet().stream().toList(), 0));
+         tableResults.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+         createOpenValueAction(tableResults);
+         TableSpeedSearch.installOn(tableResults);
+         addCellRenderer(tableResults);
+         JBScrollPane scroll = new JBScrollPane(tableResults);
+         scroll.setPreferredSize(new Dimension(600, 400));
+         JOptionPane.showMessageDialog(
+             this,
+             scroll,
+             DQLBundle.message("components.dqlRecordDetails.title"),
+             JOptionPane.INFORMATION_MESSAGE,
+             AllIcons.Actions.Properties
+         );
+      });
+      return action;
    }
 
    protected JMenuItem createCopyRowAction(JTable table) {
