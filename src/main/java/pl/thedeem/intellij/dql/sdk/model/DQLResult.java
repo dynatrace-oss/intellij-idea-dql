@@ -2,9 +2,7 @@ package pl.thedeem.intellij.dql.sdk.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DQLResult {
@@ -32,7 +30,21 @@ public class DQLResult {
         return types;
     }
 
-    public Map<String, String> getColumns() {
+    // The order is important, but so is the column uniqueness
+    public Set<String> getColumns() {
+        if (types == null) {
+            return Set.of();
+        }
+        Set<String> result = new LinkedHashSet<>();
+        for (DQLType type : types) {
+            for (Map.Entry<String, DQLType.DQLFieldType> entry : type.mappings.entrySet()) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
+    }
+
+    public Map<String, String> getColumnTypes() {
         if (types == null) {
             return Map.of();
         }

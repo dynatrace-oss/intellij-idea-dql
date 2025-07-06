@@ -21,6 +21,7 @@ public class DQLResultPanel extends JPanel {
 
     public DQLResultPanel() {
         setLayout(new BorderLayout());
+        setBorder(BorderFactory.createEmptyBorder());
 
         progressBar = new JProgressBar();
         progressBar.setString(DQLBundle.message("runConfiguration.executeDQL.panel.progress.start"));
@@ -46,7 +47,7 @@ public class DQLResultPanel extends JPanel {
         updateProgressBar(dqlResponse.progress != null? dqlResponse.progress.intValue() : 0, dqlResponse.state);
         if (dqlResponse.isFinished()) {
             resultsPanel.removeAll();
-            resultsPanel.add(new DQLExecutionTableResults(dqlResponse.result), BorderLayout.CENTER);
+            resultsPanel.add(new DQLTableResultPanel(dqlResponse.result), BorderLayout.CENTER);
             removeAll();
             add(resultsPanel, BorderLayout.CENTER);
         }

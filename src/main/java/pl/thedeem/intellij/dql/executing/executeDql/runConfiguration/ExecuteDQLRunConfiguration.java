@@ -5,25 +5,19 @@ import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.*;
 import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.executing.DQLExecutionUtil;
-import pl.thedeem.intellij.dql.executing.DQLParsedQuery;
 import pl.thedeem.intellij.dql.executing.executeDql.DQLExecutionService;
 import pl.thedeem.intellij.dql.executing.services.DQLServicesManager;
 import pl.thedeem.intellij.dql.sdk.model.DQLExecutePayload;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
-
-import java.nio.file.Path;
 
 public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLRunConfigurationOptions> {
     protected ExecuteDQLRunConfiguration(Project project,
@@ -65,11 +59,11 @@ public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLR
             DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(tenantName);
             DQLExecutePayload payload = getPayload(getOptions());
             DQLProcessHandler processHandler = new DQLProcessHandler();
-            if (payload == null || tenant == null || StringUtil.isEmpty(payload.getQuery())) {
+            if (payload == null || tenant == null) {
                 DQLExecutionUtil.openRunConfiguration(getProject());
                 return null;
             }
-            DQLExecutionService service = new DQLExecutionService(processHandler, getName(), getProject(), tenant, payload);
+            DQLExecutionService service = new DQLExecutionService(processHandler, getName(), getProject(), tenant, getOptions().getDqlPath(), payload);
             ProcessTerminatedListener.attach(processHandler);
             processHandler.startNotify();
             DQLServicesManager.getInstance(getProject()).startExecution(service);
@@ -88,13 +82,7 @@ public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLR
     }
 
     protected DQLExecutePayload getPayload(ExecuteDQLRunConfigurationOptions options) {
-        String dqlContent = "";
-        PsiFile dqlFile = DQLUtil.openFile(getProject(), Path.of(DQLExecutionUtil.getProjectAbsolutePath(options.getDqlPath(), getProject())).toString());
-        if (dqlFile != null) {
-            DQLParsedQuery parsedQuery = new DQLParsedQuery(dqlFile);
-            dqlContent = parsedQuery.getParsedQuery();
-        }
-        DQLExecutePayload payload = new DQLExecutePayload(dqlContent);
+        DQLExecutePayload payload = new DQLExecutePayload(null);
         payload.setDefaultScanLimitGbytes(options.getDefaultScanLimit());
         payload.setMaxResultBytes(options.getMaxResultBytes());
         payload.setMaxResultRecords(options.getMaxResultRecords());

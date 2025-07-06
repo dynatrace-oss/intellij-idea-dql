@@ -24,15 +24,19 @@ import pl.thedeem.intellij.dql.psi.*;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 
 import java.nio.file.Path;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class DQLUtil {
+   public final static DateTimeFormatter DQL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+   public final static DateTimeFormatter USER_FRIENDLY_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
    private final static String DQL_VARIABLES_FILE = "dql-variables.json";
    private final static String PARTIAL_DQL_SUFFIX = ".partial.dql";
    private final static String CREDENTIALS_SUFFIX = "pl.thedeem.intellij.dql/";
-   private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
    /**
     * The variable file must be defined either in the same directory or in one of the current file parents
@@ -219,7 +223,12 @@ public class DQLUtil {
 
    public static String getCurrentTimeTimestamp() {
       LocalDateTime now = LocalDateTime.now();
-      return formatter.format(now);
+      return DQL_DATE_FORMATTER.format(now);
+   }
+
+   public static ZonedDateTime getDateFromTimestamp(String timestamp) {
+      Instant instant = Instant.parse(timestamp);
+      return instant.atZone(ZoneId.systemDefault());
    }
 
    public static boolean containsAny(Collection<?> collection, Collection<?> other) {

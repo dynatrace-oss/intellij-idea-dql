@@ -6,12 +6,13 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.components.TableResults;
+import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.executing.executeDql.DQLExecutionService;
 import pl.thedeem.intellij.dql.sdk.model.DQLResult;
 
@@ -23,7 +24,7 @@ public class OpenQueryMetadataAction extends AnAction {
     private final DQLExecutionService service;
 
     public OpenQueryMetadataAction(@Nullable String text, @Nullable String description, @NotNull DQLExecutionService service) {
-        super(text, description, AllIcons.Nodes.DataSchema);
+        super(text, description, AllIcons.Nodes.DataTables);
         this.service = service;
     }
 
@@ -51,20 +52,21 @@ public class OpenQueryMetadataAction extends AnAction {
         };
 
         if (metadata != null) {
-            JBScrollPane scroll = prepareResultPanel(columnInfos, metadata);
+            JBScrollPane scroll = prepareResultPanel(columnInfos, metadata, service);
             scroll.setPreferredSize(new Dimension(600, 400));
             JOptionPane.showMessageDialog(
                     null,
                     scroll,
-                    DQLBundle.message("components.tableResults.cellDetails.title"),
+                    DQLBundle.message("components.tableResults.cellDetails.title", service.getName()),
                     JOptionPane.INFORMATION_MESSAGE,
                     AllIcons.Nodes.DataSchema
             );
         }
     }
 
-    private static @NotNull JBScrollPane prepareResultPanel(ColumnInfo<MetadataRow, Object>[] columnInfos, DQLResult.DQLGrailMetadata metadata) {
-        TableResults<MetadataRow> tableResults = new TableResults<>(new ListTableModel<>(columnInfos, List.of(
+    private static @NotNull JBScrollPane prepareResultPanel(ColumnInfo<MetadataRow, Object>[] columnInfos, DQLResult.DQLGrailMetadata metadata, DQLExecutionService service) {
+        JBTable tableResults = new JBTable(new ListTableModel<>(columnInfos, List.of(
+                new MetadataRow(DQLBundle.message("components.queryDetails.values.executionMoment"), service.getExecutionTime().format(DQLUtil.DQL_DATE_FORMATTER)),
                 new MetadataRow(DQLBundle.message("components.queryDetails.values.queryID"), metadata.getQueryId()),
                 new MetadataRow(DQLBundle.message("components.queryDetails.values.scannedRecords"), String.valueOf(metadata.getScannedRecords())),
                 new MetadataRow(DQLBundle.message("components.queryDetails.values.scannedDataPoints"), String.valueOf(metadata.getScannedDataPoints())),
@@ -76,7 +78,6 @@ public class OpenQueryMetadataAction extends AnAction {
                 new MetadataRow(DQLBundle.message("components.queryDetails.values.sampled"), String.valueOf(metadata.isSampled()))
         ), 0));
         tableResults.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        tableResults.setCopyCellValues();
         return new JBScrollPane(tableResults);
     }
 

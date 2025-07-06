@@ -4,18 +4,30 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.ActivityTracker;
 import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiFile;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
+import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import pl.thedeem.intellij.dql.components.DQLResultPanel;
 import pl.thedeem.intellij.dql.components.actions.OpenQueryMetadataAction;
 import pl.thedeem.intellij.dql.components.actions.SaveAsFileAction;
+import pl.thedeem.intellij.dql.executing.DQLExecutionUtil;
+import pl.thedeem.intellij.dql.executing.DQLParsedQuery;
 import pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.DQLProcessHandler;
 import pl.thedeem.intellij.dql.executing.services.DQLServicesManager;
 import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
@@ -30,11 +42,16 @@ import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.intellij.openapi.diagnostic.Logger;
+import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
 public class DQLExecutionService {
    private static final Logger logger = Logger.getInstance(DQLExecutionService.class);
@@ -42,22 +59,25 @@ public class DQLExecutionService {
 
    private final DQLProcessHandler processHandler;
    private final Project project;
-   private final DynatraceTenant tenant;
    private final DQLExecutePayload payload;
    private final DQLResultPanel resultPanel;
    private final String name;
    private final ActionGroup actionGroup;
-   private DQLPollResponse result;
    private final AtomicReference<ScheduledFuture<?>> pollingFutureRef = new AtomicReference<>(null);
    private final AtomicReference<Boolean> stopping = new AtomicReference<>(false);
    private final AtomicReference<Boolean> loading = new AtomicReference<>(false);
+   private final DynatraceTenant tenant;
+   private final String dqlFile;
    private String requestToken;
+   private DQLPollResponse result;
+   private final LocalDateTime executionTime;
 
    public DQLExecutionService(
        @NotNull DQLProcessHandler processHandler,
        @NotNull String name,
        @NotNull Project project,
        @NotNull DynatraceTenant tenant,
+       @Nullable String dqlFile,
        @NotNull DQLExecutePayload payload
    ) {
       this.processHandler = processHandler;
@@ -66,13 +86,38 @@ public class DQLExecutionService {
       this.payload = payload;
       this.resultPanel = new DQLResultPanel();
       this.name = name;
+      this.dqlFile = dqlFile;
       this.actionGroup = createActionsGroup();
+      this.executionTime = LocalDateTime.now();
+   }
+
+   public @NotNull String getName() {
+      return name;
+   }
+
+   public @NotNull LocalDateTime getExecutionTime() {
+      return executionTime;
    }
 
    public void execute() {
       String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
       DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
-
+      if (dqlFile != null) {
+         PsiFile psiFile = ReadAction.compute(() -> DQLUtil.openFile(project, Path.of(DQLExecutionUtil.getProjectAbsolutePath(this.dqlFile, project)).toString()));
+         if (psiFile != null) {
+            DQLParsedQuery parsedQuery = new DQLParsedQuery(psiFile);
+            payload.setQuery(parsedQuery.getParsedQuery());
+         }
+         else {
+            Notifications.Bus.notify(new Notification(
+                DynatraceQueryLanguage.DQL_ID,
+                DQLBundle.message("components.tableResults.actions.errors.missingFile.title"),
+                DQLBundle.message("components.tableResults.actions.errors.missingFile.description", dqlFile),
+                NotificationType.ERROR
+            ), project);
+            return;
+         }
+      }
       logger.info(String.format("Executing a DQL query with hash %s on the tenant: %s", payload.getQuery().hashCode(), tenant.getName()));
       this.executeApiCall(() -> {
          this.loading.set(true);
@@ -206,7 +251,7 @@ public class DQLExecutionService {
          @Override
          public void actionPerformed(@NotNull AnActionEvent e) {
             e.getPresentation().setEnabled(false);
-            DQLServicesManager.getInstance(project).startExecution(new DQLExecutionService(processHandler, name, project, tenant, payload));
+            DQLServicesManager.getInstance(project).startExecution(new DQLExecutionService(processHandler, name, project, tenant, dqlFile, payload));
             ActivityTracker.getInstance().inc();
          }
 
@@ -224,6 +269,58 @@ public class DQLExecutionService {
       group.addSeparator();
       group.add(new SaveAsFileAction(DQLBundle.message("components.tableResults.actions.exportAsJson"), null, service));
       group.add(new OpenQueryMetadataAction(DQLBundle.message("components.tableResults.actions.showMetadata"), null, service));
+      group.addSeparator();
+      group.add(new DefaultActionGroup(tenant.getName(), true) {
+         @Override
+         public void update(@NotNull AnActionEvent e) {
+            setPopup(true);
+            Presentation presentation = e.getPresentation();
+            presentation.setText(tenant.getName());
+            presentation.setIcon(DQLIcon.DYNATRACE_LOGO);
+            presentation.putClientProperty(ActionUtil.SHOW_TEXT_IN_TOOLBAR, true);
+            presentation.setDescription(DQLBundle.message("components.tableResults.actions.selectTenant"));
+            presentation.setEnabled(!loading.get() && !stopping.get());
+         }
+
+         @Override
+         public @NotNull ActionUpdateThread getActionUpdateThread() {
+            return ActionUpdateThread.BGT;
+         }
+
+         @Override
+         public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
+            List<DynatraceTenant> tenants = DynatraceTenantsService.getInstance().getTenants();
+            return tenants.stream()
+                .filter(option -> !Objects.equals(option.getName(), tenant.getName()))
+                .map(option -> new AnAction(option.getName()) {
+                   @Override
+                   public void actionPerformed(@NotNull AnActionEvent e) {
+                      DQLServicesManager.getInstance(project).startExecution(new DQLExecutionService(processHandler, name, project, option, dqlFile, payload));
+                      ActivityTracker.getInstance().inc();
+                   }
+                })
+                .toArray(AnAction[]::new);
+         }
+      });
+
+      if (dqlFile != null) {
+         group.add(new AnAction(DQLBundle.message("components.tableResults.actions.openRelatedFile"), dqlFile, AllIcons.Ide.ConfigFile) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+               PsiFile psiFile = DQLUtil.openFile(project, Path.of(DQLExecutionUtil.getProjectAbsolutePath(dqlFile, project)).toString());
+               Editor editor = psiFile != null ? FileEditorManager.getInstance(project).openTextEditor(new OpenFileDescriptor(project, psiFile.getVirtualFile(), 0), true) : null;
+               if (psiFile == null || editor == null ) {
+                  Notifications.Bus.notify(new Notification(
+                      DynatraceQueryLanguage.DQL_ID,
+                      DQLBundle.message("components.tableResults.actions.errors.missingFile.title"),
+                      DQLBundle.message("components.tableResults.actions.errors.missingFile.description", dqlFile),
+                      NotificationType.ERROR
+                  ), project);
+               }
+            }
+         });
+      }
+
       group.addSeparator();
       group.add(new AnAction(DQLBundle.message("components.tableResults.actions.closeExecution"), null, AllIcons.Actions.Close) {
          @Override
@@ -256,8 +353,7 @@ public class DQLExecutionService {
             pollingFutureRef.get().cancel(true);
          }
          resultPanel.showError(e.getResponse(), e);
-      }
-      finally {
+      } finally {
          loading.set(false);
          stopping.set(false);
       }
