@@ -24,12 +24,12 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import pl.thedeem.intellij.dql.components.DQLResultPanel;
-import pl.thedeem.intellij.dql.components.actions.OpenQueryMetadataAction;
 import pl.thedeem.intellij.dql.components.actions.SaveAsFileAction;
 import pl.thedeem.intellij.dql.executing.DQLExecutionUtil;
 import pl.thedeem.intellij.dql.executing.DQLParsedQuery;
 import pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.DQLProcessHandler;
 import pl.thedeem.intellij.dql.executing.services.DQLServicesManager;
+import pl.thedeem.intellij.dql.fileProviders.DQLMetadataVirtualFile;
 import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
 import pl.thedeem.intellij.dql.sdk.DynatraceRestClient;
 import pl.thedeem.intellij.dql.sdk.errors.DQLErrorResponseException;
@@ -84,7 +84,7 @@ public class DQLExecutionService {
       this.project = project;
       this.tenant = tenant;
       this.payload = payload;
-      this.resultPanel = new DQLResultPanel();
+      this.resultPanel = new DQLResultPanel(project);
       this.name = name;
       this.dqlFile = dqlFile;
       this.actionGroup = createActionsGroup();
@@ -268,7 +268,29 @@ public class DQLExecutionService {
       });
       group.addSeparator();
       group.add(new SaveAsFileAction(DQLBundle.message("components.tableResults.actions.exportAsJson"), null, service));
-      group.add(new OpenQueryMetadataAction(DQLBundle.message("components.tableResults.actions.showMetadata"), null, service));
+      group.add(new AnAction(DQLBundle.message("components.tableResults.actions.showMetadata"), null, AllIcons.Nodes.DataTables) {
+         @Override
+         public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+            FileEditorManager.getInstance(project).openFile(new DQLMetadataVirtualFile(
+                    DQLBundle.message("components.queryDetails.fileName", getName()),
+                    result.getResult().getGrailMetadata(),
+                    getExecutionTime()
+                ), true
+            );
+         }
+
+         @Override
+         public void update(@NotNull AnActionEvent e) {
+            Presentation presentation = e.getPresentation();
+            presentation.setEnabledAndVisible(service.getResult() != null);
+         }
+
+         @Override
+         public @NotNull ActionUpdateThread getActionUpdateThread() {
+            return ActionUpdateThread.EDT;
+         }
+      });
+
       group.addSeparator();
       group.add(new DefaultActionGroup(tenant.getName(), true) {
          @Override

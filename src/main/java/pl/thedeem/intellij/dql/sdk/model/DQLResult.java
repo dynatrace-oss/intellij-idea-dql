@@ -51,7 +51,12 @@ public class DQLResult {
         Map<String, String> result = new HashMap<>();
         for (DQLType type : types) {
             for (Map.Entry<String, DQLType.DQLFieldType> entry : type.mappings.entrySet()) {
-                result.put(entry.getKey(), entry.getValue().getType());
+                if ("undefined".equals(entry.getValue().getType())) {
+                    result.putIfAbsent(entry.getKey(), "undefined");
+                }
+                else {
+                    result.put(entry.getKey(), entry.getValue().getType());
+                }
             }
         }
 

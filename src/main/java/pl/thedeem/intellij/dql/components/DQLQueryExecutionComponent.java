@@ -72,9 +72,7 @@ public class DQLQueryExecutionComponent {
     JMenuItem currentTimestampAction = new JMenuItem(DQLBundle.message("components.queryExecution.actions.getCurrentTimestamp"));
     currentTimestampAction.setIcon(AllIcons.General.SelectIn);
     currentTimestampAction.setBorder(DQLComponentUtils.DEFAULT_BORDER);
-    currentTimestampAction.addActionListener(e -> {
-        field.setText(DQLUtil.getCurrentTimeTimestamp());
-    });
+    currentTimestampAction.addActionListener(e -> field.setText(DQLUtil.getCurrentTimeTimestamp()));
 
     popupMenu.add(currentTimestampAction);
     return popupMenu;

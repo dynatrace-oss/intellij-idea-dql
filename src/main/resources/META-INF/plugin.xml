@@ -256,6 +256,8 @@
                 implementation="pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.ExecuteDQLConfigurationType"/>
         <programRunner implementation="pl.thedeem.intellij.dql.executing.DQLProgramRunner"/>
         <serviceViewContributor implementation="pl.thedeem.intellij.dql.executing.services.DQLServiceViewContributor"/>
+
+        <fileEditorProvider implementation="pl.thedeem.intellij.dql.fileProviders.DQLFileEditorProvider"/>
     </extensions>
 
     <actions resource-bundle="messages.DQLBundle">

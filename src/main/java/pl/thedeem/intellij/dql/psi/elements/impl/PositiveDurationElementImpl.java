@@ -12,7 +12,6 @@ import pl.thedeem.intellij.dql.psi.elements.DurationElement;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.sdk.model.DQLDurationType;
 
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

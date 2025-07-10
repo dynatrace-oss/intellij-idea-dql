@@ -42,7 +42,7 @@ public class DQLDynatraceAutocomplete {
                       // TODO: Find a way to parse the query without causing the process cancelled issue  DQLParsedQuery query = new DQLParsedQuery(parameters.getOriginalFile());
                       String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
                       return client.autocomplete(
-                          new DQLAutocompletePayload(parameters.getOriginalFile().getText(), (long) parameters.getPosition().getTextOffset()),
+                          new DQLAutocompletePayload(ReadAction.compute(() -> parameters.getOriginalFile().getText()), (long) parameters.getPosition().getTextOffset()),
                           apiToken
                       );
                    } catch (IOException | InterruptedException | DQLNotAuthorizedException |
