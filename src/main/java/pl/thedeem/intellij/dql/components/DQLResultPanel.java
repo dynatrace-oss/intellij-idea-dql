@@ -51,7 +51,15 @@ public class DQLResultPanel extends JPanel {
       updateProgressBar(dqlResponse.progress != null ? dqlResponse.progress.intValue() : 0, dqlResponse.state);
       if (dqlResponse.isFinished()) {
          resultsPanel.removeAll();
-         resultsPanel.add(new DQLExecutionTablePanel(project, dqlResponse.result), BorderLayout.CENTER);
+         if (dqlResponse.getResult() != null && !dqlResponse.getResult().getRecords().isEmpty()) {
+            resultsPanel.add(new DQLExecutionTablePanel(project, dqlResponse.result), BorderLayout.CENTER);
+         }
+         else {
+            resultsPanel.add(new JBScrollPane(createInformationComponent(
+                DQLBundle.message("runConfiguration.executeDQL.infos.emptyRecords"),
+                AllIcons.General.Information
+            )), BorderLayout.CENTER);
+         }
          removeAll();
          add(resultsPanel, BorderLayout.CENTER);
       }
@@ -65,7 +73,6 @@ public class DQLResultPanel extends JPanel {
    }
 
    public void showError(@Nullable DQLErrorResponse<?> response, Exception e) {
-      JPanel errorPanel = new JPanel(new GridBagLayout());
       String message = DQLBundle.message("runConfiguration.executeDQL.errors.unknown", e.getMessage());
       if (response != null) {
          if (response.error instanceof DQLAuthErrorResponse error) {
@@ -84,11 +91,17 @@ public class DQLResultPanel extends JPanel {
       } else if (e instanceof InterruptedException) {
          message = DQLBundle.message("runConfiguration.executeDQL.indicator.cancelled", e.getMessage());
       }
-      errorPanel.setBorder(BorderFactory.createEmptyBorder());
-      errorPanel.add(new JLabel(message, AllIcons.General.Error, JLabel.LEFT));
+
       resultsPanel.removeAll();
-      resultsPanel.add(new JBScrollPane(errorPanel), BorderLayout.CENTER);
+      resultsPanel.add(new JBScrollPane(createInformationComponent(message, AllIcons.General.Error)), BorderLayout.CENTER);
       removeAll();
       add(resultsPanel, BorderLayout.CENTER);
+   }
+
+   private JComponent createInformationComponent(@NotNull String message, @NotNull Icon icon) {
+      JPanel panel = new JPanel(new GridBagLayout());
+      panel.setBorder(BorderFactory.createEmptyBorder());
+      panel.add(new JLabel(message, icon, JLabel.LEFT));
+      return panel;
    }
 }
