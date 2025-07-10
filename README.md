@@ -42,16 +42,12 @@ You will now be able to ensure a common style for all `.dql` files stored in you
 As a bonus, the plugin also adds support for IntelliJ _inlays_ for unnamed parameters, so it is now much easier to
 see which values belong to which parameter.
 
-![An example DQL file](src/main/resources/docs/images/syntax-highlighting.png)
-
 #### Detecting references
 
 The plugin uses IntelliJ references to provide relations between **DQL fields, functions, statements,
 and parameters**. You can find usages of a specific field and see where in the query the value was set.
 There is also **support for code refactoring**, which makes it straightforward to - for example -
 change a field name everywhere at once.
-
-![An example DQL file](src/main/resources/docs/images/references.png)
 
 #### Code completion
 
@@ -146,6 +142,8 @@ The plugin adds support for Run Configurations allowing the user to execute the 
 tenant.
 The results of the query execution will be presented as a table, allowing you to quickly verify if the written query
 returns the correct data.
+
+![An example DQL execution](src/main/resources/docs/images/dql-execution.png)
 
 #### Live validations
 

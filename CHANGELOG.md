@@ -16,6 +16,7 @@
 - Added an option to connect to a Dynatrace tenant, which allows to:
     - perform live validations on all DQL files (meaning detecting the same issues as in Dynatrace Notebooks)
     - execute DQL queries and show results as a table directly in IntelliJ IDEA
+    - autocomplete DQL fields
 
 - Partial files support `NAME.partial.dql`:
     - disables live validations and inspections related to query completeness (like missing the data source command or

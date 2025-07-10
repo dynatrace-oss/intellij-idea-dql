@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>pl.thedeem.intellij.dql</id>
+    <id>pl.thedeem.dql</id>
     <name>Dynatrace Query Language</name>
     <vendor url="https://www.dynatrace.com">(unofficial) Dynatrace</vendor>
 

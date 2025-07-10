@@ -267,7 +267,7 @@ public class DQLExecutionService {
          }
       });
       group.addSeparator();
-      group.add(new SaveAsFileAction(DQLBundle.message("components.tableResults.actions.exportAsJson"), null, service));
+      group.add(new SaveAsFileAction(DQLBundle.message("components.tableResults.actions.exportAsJson"), null, service, project));
       group.add(new AnAction(DQLBundle.message("components.tableResults.actions.showMetadata"), null, AllIcons.Nodes.DataTables) {
          @Override
          public void actionPerformed(@NotNull AnActionEvent anActionEvent) {

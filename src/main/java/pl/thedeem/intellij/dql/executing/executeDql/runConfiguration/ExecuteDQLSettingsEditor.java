@@ -1,6 +1,6 @@
 package pl.thedeem.intellij.dql.executing.executeDql.runConfiguration;
 
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -17,64 +17,65 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfiguration> {
-  private final TextFieldWithBrowseButton dqlFilePath;
-  private final DynatraceTenantSelector<?> tenantSelector;
-  private final JPanel myPanel;
-  private final DQLQueryExecutionComponent queryParameters;
+   private final TextFieldWithBrowseButton dqlFilePath;
+   private final DynatraceTenantSelector<?> tenantSelector;
+   private final JPanel myPanel;
+   private final DQLQueryExecutionComponent queryParameters;
 
-  public ExecuteDQLSettingsEditor(@NotNull Project project) {
-    dqlFilePath = new TextFieldWithBrowseButton();
-    dqlFilePath.addBrowseFolderListener(new TextBrowseFolderListener(
-        FileChooserDescriptorFactory
-            .singleFile()
-            .withExtensionFilter("dql")
-            .withRoots(ProjectRootManager.getInstance(project).getContentRoots())
-    ));
-    tenantSelector = new DynatraceTenantSelector<>(new FlowLayout(FlowLayout.LEFT, 0, 0));
-    queryParameters = new DQLQueryExecutionComponent();
-    myPanel = FormBuilder.createFormBuilder()
-        .addLabeledComponent(DQLBundle.message("runConfiguration.executeDQL.settings.dqlFilePath"), dqlFilePath)
-        .addLabeledComponent(DQLBundle.message("runConfiguration.executeDQL.settings.selectedTenant"), tenantSelector)
-        .addSeparator()
-        .addComponent(queryParameters.getPanel())
-        .getPanel();
-  }
+   public ExecuteDQLSettingsEditor(@NotNull Project project) {
+      dqlFilePath = new TextFieldWithBrowseButton();
 
-  @Override
-  protected void resetEditorFrom(ExecuteDQLRunConfiguration runConfig) {
-    dqlFilePath.setText(runConfig.getDQLFile());
-    tenantSelector.refreshTenantsComboBox();
-    String selectedTenantName = runConfig.getOptions().getSelectedTenant();
-    tenantSelector.selectTenant(selectedTenantName);
+      FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, false, false, false, false);
+      dqlFilePath.addBrowseFolderListener(new TextBrowseFolderListener(
+          descriptor
+              .withExtensionFilter("dql")
+              .withRoots(ProjectRootManager.getInstance(project).getContentRoots())
+      ));
+      tenantSelector = new DynatraceTenantSelector<>(new FlowLayout(FlowLayout.LEFT, 0, 0));
+      queryParameters = new DQLQueryExecutionComponent();
+      myPanel = FormBuilder.createFormBuilder()
+          .addLabeledComponent(DQLBundle.message("runConfiguration.executeDQL.settings.dqlFilePath"), dqlFilePath)
+          .addLabeledComponent(DQLBundle.message("runConfiguration.executeDQL.settings.selectedTenant"), tenantSelector)
+          .addSeparator()
+          .addComponent(queryParameters.getPanel())
+          .getPanel();
+   }
 
-    queryParameters.setDefaultScanLimit(runConfig.getOptions().getDefaultScanLimit());
-    queryParameters.setMaxResultBytes(runConfig.getOptions().getMaxResultBytes());
-    queryParameters.setMaxResultRecords(runConfig.getOptions().getMaxResultRecords());
-    queryParameters.setTimeframeStart(runConfig.getOptions().getTimeframeStart());
-    queryParameters.setTimeframeEnd(runConfig.getOptions().getTimeframeEnd());
-  }
+   @Override
+   protected void resetEditorFrom(ExecuteDQLRunConfiguration runConfig) {
+      dqlFilePath.setText(runConfig.getDQLFile());
+      tenantSelector.refreshTenantsComboBox();
+      String selectedTenantName = runConfig.getOptions().getSelectedTenant();
+      tenantSelector.selectTenant(selectedTenantName);
 
-  @Override
-  protected void applyEditorTo(@NotNull ExecuteDQLRunConfiguration runConfig) {
-    runConfig.setDQLFile(dqlFilePath.getText());
-    DynatraceTenant selectedTenant = tenantSelector.getSelectedTenant();
+      queryParameters.setDefaultScanLimit(runConfig.getOptions().getDefaultScanLimit());
+      queryParameters.setMaxResultBytes(runConfig.getOptions().getMaxResultBytes());
+      queryParameters.setMaxResultRecords(runConfig.getOptions().getMaxResultRecords());
+      queryParameters.setTimeframeStart(runConfig.getOptions().getTimeframeStart());
+      queryParameters.setTimeframeEnd(runConfig.getOptions().getTimeframeEnd());
+   }
 
-    if (selectedTenant != null) {
-      runConfig.getOptions().setSelectedTenant(selectedTenant.getName());
-    } else {
-      runConfig.getOptions().setSelectedTenant(null);
-    }
+   @Override
+   protected void applyEditorTo(@NotNull ExecuteDQLRunConfiguration runConfig) {
+      runConfig.setDQLFile(dqlFilePath.getText());
+      DynatraceTenant selectedTenant = tenantSelector.getSelectedTenant();
 
-    runConfig.getOptions().setDefaultScanLimit(queryParameters.getDefaultScanLimit());
-    runConfig.getOptions().setMaxResultBytes(queryParameters.getMaxResultBytes());
-    runConfig.getOptions().setMaxResultRecords(queryParameters.getMaxResultRecords());
-    runConfig.getOptions().setTimeframeStart(queryParameters.getTimeframeStart());
-    runConfig.getOptions().setTimeframeEnd(queryParameters.getTimeframeEnd());
-  }
+      if (selectedTenant != null) {
+         runConfig.getOptions().setSelectedTenant(selectedTenant.getName());
+      } else {
+         runConfig.getOptions().setSelectedTenant(null);
+      }
 
-  @NotNull
-  @Override
-  protected JComponent createEditor() {
-    return myPanel;
-  }
+      runConfig.getOptions().setDefaultScanLimit(queryParameters.getDefaultScanLimit());
+      runConfig.getOptions().setMaxResultBytes(queryParameters.getMaxResultBytes());
+      runConfig.getOptions().setMaxResultRecords(queryParameters.getMaxResultRecords());
+      runConfig.getOptions().setTimeframeStart(queryParameters.getTimeframeStart());
+      runConfig.getOptions().setTimeframeEnd(queryParameters.getTimeframeEnd());
+   }
+
+   @NotNull
+   @Override
+   protected JComponent createEditor() {
+      return myPanel;
+   }
 }
