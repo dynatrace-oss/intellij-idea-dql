@@ -7,7 +7,6 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.fileChooser.FileSaverDescriptor;
 import com.intellij.openapi.fileChooser.FileSaverDialog;
@@ -24,6 +23,7 @@ import pl.thedeem.intellij.dql.sdk.model.DQLResult;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 
 public class SaveAsFileAction extends AnAction {
    protected final static ObjectMapper mapper = new ObjectMapper();
@@ -42,10 +42,20 @@ public class SaveAsFileAction extends AnAction {
       if (result == null) {
          return;
       }
-      FileChooserDescriptor chooser = new FileChooserDescriptor(true, false, false, false, false, false)
-          .withTitle(DQLBundle.message("components.actions.saveAsFile.title"))
-          .withExtensionFilter("json");
-      FileSaverDescriptor descriptor = new FileSaverDescriptor(chooser);
+
+      FileSaverDescriptor descriptor = getFileSaver(
+          DQLBundle.message("components.actions.saveAsFile.title"),
+          DQLBundle.message("components.actions.saveAsFile.description")
+      );
+
+      if (descriptor == null) {
+         Messages.showErrorDialog(
+             DQLBundle.message("components.actions.saveAsFile.error.incompatibleVersion"),
+             DQLBundle.message("components.actions.saveAsFile.error.title")
+         );
+         return;
+      }
+
       FileSaverDialog dialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, project);
       VirtualFileWrapper fileWrapper = dialog.save(service.getPresentation().getPresentableText() + ".json");
       try {
@@ -79,5 +89,28 @@ public class SaveAsFileAction extends AnAction {
    @Override
    public @NotNull ActionUpdateThread getActionUpdateThread() {
       return ActionUpdateThread.EDT;
+   }
+
+   // This method exists due to combability issues with older versions of IntelliJ
+   private FileSaverDescriptor getFileSaver(String title, String description) {
+      try {
+         Constructor<FileSaverDescriptor> ctor = FileSaverDescriptor.class.getConstructor(String.class, String.class, String.class);
+         return ctor.newInstance(
+             title,
+             description,
+             "json"
+         );
+      } catch (Exception ignored) {
+         try {
+            Constructor<FileSaverDescriptor> ctor = FileSaverDescriptor.class.getConstructor(String.class, String.class, String[].class);
+            return ctor.newInstance(
+                title,
+                description,
+                new String[]{"json"}
+            );
+         } catch (Exception ignored2) {
+            return null;
+         }
+      }
    }
 }
