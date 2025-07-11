@@ -176,7 +176,7 @@ jobs:
   verify:
     name: Verify plugin
     needs: [ build ]
-    runs-on: ubuntu-latest-xl
+    runs-on: ubuntu-latest
     steps:
       # Free GitHub Actions Environment Disk Space
       - name: Maximize Build Space
