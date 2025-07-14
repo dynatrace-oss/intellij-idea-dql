@@ -1,0 +1,2 @@
+fetch <caret>
+| filter isNotNull(content)

@@ -74,7 +74,7 @@ public class DQLLocalCompletionContributor extends CompletionContributor {
       result = result.withRelevanceSorter(CompletionSorter.emptySorter().weigh(new DQLCompletionWeigher()));
       PsiElement position = parameters.getPosition();
 
-      // inside comments we don't want any completions
+      // inside comments, we don't want any completions
       if (psiElement(DQLTypes.EOL_COMMENT).accepts(position)) {
          return;
       }

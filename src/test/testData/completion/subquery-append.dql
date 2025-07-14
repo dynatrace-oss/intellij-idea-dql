@@ -1,0 +1,4 @@
+data record()
+  | append [
+    <caret>
+]

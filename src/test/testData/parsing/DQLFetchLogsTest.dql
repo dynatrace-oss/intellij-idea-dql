@@ -1,0 +1,26 @@
+/*
+  This is an example DQL file created to test parsing tokens.
+*/
+fetch logs, from: now()@w - 22d, to: -5d, scanLimitGBytes: -1
+| filter isNotNull(content)
+  and matchesValue(content, "some example phrase", caseSensitive: true)
+| append [
+    // let's add subquery to test more functions
+    data record(some.field = 5, other.field = 10),
+        record(some.field = 15, other.field = 100)
+    | fieldsAdd {
+        math = 5 * (some.field / other.field),
+        condition = some.field > 1 or other.field < 90,
+        `an example complicated field` = other.field in [
+            data record(other.field = 5)
+        ]
+    }
+    | append [
+        data json: """
+        [{
+          "some.field": 22,
+          "other.field": 200
+        }]
+        """
+    ]
+]
