@@ -30,8 +30,8 @@ public class AggregationFunctionParameterInspection extends BaseInspection {
                     if (definition == null || !definition.getDQLTypes().contains(DQLDataType.AGGREGATION_FUNCTION)) {
                         return;
                     }
-
-                    Set<String> allowedFunctions = DQLFunctionsLoader.getFunctionNamesByGroups(Set.of(DQLFunctionGroup.AGGREGATE));
+                    DQLDefinitionService service = DQLDefinitionService.getInstance(expression.getProject());
+                    Set<String> allowedFunctions = service.getFunctionNamesByGroups(Set.of(DQLFunctionGroup.AGGREGATE));
                     for (PsiElement invalidValue : getInvalidValues(expression, new ListOfFunctionsParameterValidator(allowedFunctions))) {
                         holder.registerProblem(
                                 invalidValue,

@@ -48,7 +48,7 @@ public class DQLFunctionDefinition {
     }
 
     @PostConstruct
-    private void initialize() {
+    public void initialize() {
         dqlTypes = this.returns != null ? this.returns.stream().map(DQLDataType::getType).collect(Collectors.toSet()) : Set.of();
         this.functionGroup = DQLFunctionGroup.getGroup(this.group);
         if (parameters != null) {
@@ -63,9 +63,13 @@ public class DQLFunctionDefinition {
         }
     }
 
+    public String getName() {
+        return name;
+    }
+
     public List<DQLParameterDefinition> getParameters(DQLFunctionCallExpression context) {
         List<DQLParameterDefinition> result = new ArrayList<>(parameters);
-        result.addAll(getTimeseriesParameters(context));
+        result.addAll(getTimeSeriesParameters(context));
         return List.copyOf(result);
     }
 
@@ -77,11 +81,11 @@ public class DQLFunctionDefinition {
         return functionGroup;
     }
 
-    public List<DQLParameterDefinition> getTimeseriesParameters(DQLFunctionCallExpression functionCall) {
+    public List<DQLParameterDefinition> getTimeSeriesParameters(DQLFunctionCallExpression functionCall) {
         DQLQueryStatement statement = PsiTreeUtil.getParentOfType(functionCall, DQLQueryStatement.class);
         if (statement != null && statement.getDefinition() != null) {
             if (statement.getDefinition().shouldInjectMetricParameters()) {
-                return DQLFunctionsLoader.getTimeseriesParams();
+                return DQLDefinitionService.getInstance(functionCall.getProject()).getTimeSeriesParameters();
             }
         }
         return List.of();

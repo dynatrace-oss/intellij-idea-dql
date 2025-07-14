@@ -7,9 +7,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLUtil;
+import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLOperationTarget;
-import pl.thedeem.intellij.dql.definition.DQLOperationsLoader;
 import pl.thedeem.intellij.dql.inspections.parameters.parameterValidators.ParameterValidator;
 import pl.thedeem.intellij.dql.psi.*;
 import pl.thedeem.intellij.dql.psi.elements.BaseElement;
@@ -88,7 +89,11 @@ public abstract class BaseInspection extends LocalInspectionTool {
     }
 
     protected @NotNull Map<BaseElement, Set<DQLDataType>> findInvalidSidesForExpression(@NotNull TwoSidesExpression expression) {
-        DQLOperationTarget targetType = DQLOperationsLoader.getTargetType(expression.getOperator());
+        ExpressionOperatorImpl operator = expression.getOperator();
+        if (operator == null) {
+            return Map.of();
+        }
+        DQLOperationTarget targetType = DQLDefinitionService.getInstance(operator.getProject()).getTargetType(operator);
         if (targetType != null) {
             DQLExpression left = expression.getLeftExpression();
             DQLExpression right = expression.getRightExpression();

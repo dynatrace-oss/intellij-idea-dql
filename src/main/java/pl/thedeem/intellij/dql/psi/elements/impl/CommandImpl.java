@@ -101,8 +101,9 @@ public abstract class CommandImpl extends ASTWrapperPsiElement implements Comman
     @Override
     public @Nullable DQLCommandDefinition getDefinition() {
         if (definition == null) {
+            DQLDefinitionService service = DQLDefinitionService.getInstance(getProject());
             definition = CachedValuesManager.getManager(getProject()).createCachedValue(
-                    () -> new CachedValueProvider.Result<>(DQLCommandsLoader.getCommand(this.getName()), this),
+                    () -> new CachedValueProvider.Result<>(service.getCommand(this.getName()), this),
                     false
             );
         }

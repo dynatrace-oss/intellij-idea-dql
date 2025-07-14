@@ -10,9 +10,9 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
+import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.definition.DQLOperationsLoader;
 import pl.thedeem.intellij.dql.psi.DQLComparisonOperator;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
@@ -72,7 +72,7 @@ public abstract class ComparisonExpressionImpl extends TwoSidesExpressionImpl im
         dataType.add(DQLDataType.EXPRESSION);
         dataType.add(DQLDataType.BOOLEAN);
         if (DQLSettings.getInstance().isCalculatingExpressionDataTypesEnabled()) {
-            dataType.addAll(DQLOperationsLoader.getResultType(getOperator(), getLeftExpression(), getRightExpression()));
+            dataType.addAll(DQLDefinitionService.getInstance(getProject()).getResultType(getOperator(), getLeftExpression(), getRightExpression()));
         }
         return Collections.unmodifiableSet(dataType);
     }

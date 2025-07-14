@@ -7,28 +7,29 @@ import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.dql.completion.DQLPsiPatterns;
 import pl.thedeem.intellij.dql.definition.DQLCommandDefinition;
-import pl.thedeem.intellij.dql.definition.DQLCommandsLoader;
 import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 
 public class DQLStatementKeywordsCompletion {
    public void autocomplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
       PsiElement position = parameters.getPosition();
+      DQLDefinitionService service = DQLDefinitionService.getInstance(position.getProject());
       if (DQLUtil.isPartialFile(position.getContainingFile())) {
          if (DQLPsiPatterns.SUGGEST_QUERY_START.accepts(position)) {
-            for (DQLCommandDefinition command : DQLCommandsLoader.getCommands().values()) {
+            for (DQLCommandDefinition command : service.getCommands().values()) {
                AutocompleteUtils.autocompleteStatement(command, AutocompleteUtils.COMMAND, result);
             }
          } else if (DQLPsiPatterns.QUERY_COMMAND.accepts(position)) {
-            for (DQLCommandDefinition command : DQLCommandsLoader.getExtensionCommand()) {
+            for (DQLCommandDefinition command : service.getExtensionCommands()) {
                AutocompleteUtils.autocompleteStatement(command, AutocompleteUtils.COMMAND, result);
             }
          }
       } else if (DQLPsiPatterns.SUGGEST_QUERY_START.accepts(position)) {
-         for (DQLCommandDefinition command : DQLCommandsLoader.getStartingCommand()) {
+         for (DQLCommandDefinition command : service.getStartingCommands()) {
             AutocompleteUtils.autocompleteStatement(command, AutocompleteUtils.QUERY_START, result);
          }
       } else if (DQLPsiPatterns.QUERY_COMMAND.accepts(position)) {
-         for (DQLCommandDefinition command : DQLCommandsLoader.getExtensionCommand()) {
+         for (DQLCommandDefinition command : service.getExtensionCommands()) {
             AutocompleteUtils.autocompleteStatement(command, AutocompleteUtils.COMMAND, result);
          }
       }

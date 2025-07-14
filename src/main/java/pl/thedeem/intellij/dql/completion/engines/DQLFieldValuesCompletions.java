@@ -2,6 +2,7 @@ package pl.thedeem.intellij.dql.completion.engines;
 
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
@@ -46,25 +47,26 @@ public class DQLFieldValuesCompletions {
                AutocompleteUtils.autocompleteStaticValue(suggestedValue, result);
             }
          }
-         suggestValues(paramDefinition.getDQLTypes(), result);
+         suggestValues(parameter.getExpression().getProject(), paramDefinition.getDQLTypes(), result);
       }
    }
 
-   private void suggestValues(Set<DQLDataType> types, CompletionResultSet result) {
+   private void suggestValues(Project project, Set<DQLDataType> types, CompletionResultSet result) {
       if (types == null) {
          types = Set.of();
       }
       Collection<DQLFunctionDefinition> availableFunctions;
+      DQLDefinitionService service = DQLDefinitionService.getInstance(project);
       if (types.contains(DQLDataType.RECORDS_LIST)) {
-         Set<String> list = DQLFunctionsLoader.getFunctionNamesByGroups(Set.of(DQLFunctionGroup.RECORDS_LIST));
-         availableFunctions = DQLFunctionsLoader.getFunctionByNames(list);
+         Set<String> list = service.getFunctionNamesByGroups(Set.of(DQLFunctionGroup.RECORDS_LIST));
+         availableFunctions = service.getFunctionByNames(list);
       } else if (types.contains(DQLDataType.AGGREGATION_FUNCTION)) {
-         Set<String> list = DQLFunctionsLoader.getFunctionNamesByGroups(Set.of(DQLFunctionGroup.AGGREGATE));
-         availableFunctions = DQLFunctionsLoader.getFunctionByNames(list);
+         Set<String> list = service.getFunctionNamesByGroups(Set.of(DQLFunctionGroup.AGGREGATE));
+         availableFunctions = service.getFunctionByNames(list);
       } else if (types.isEmpty() || types.contains(DQLDataType.ANY) || types.contains(DQLDataType.EXPRESSION)) {
-         availableFunctions = DQLFunctionsLoader.getFunctions().values();
+         availableFunctions = service.getFunctions().values();
       } else {
-         availableFunctions = DQLFunctionsLoader.getFunctionByTypes(types);
+         availableFunctions = service.getFunctionByTypes(types);
       }
       for (DQLFunctionDefinition function : availableFunctions) {
          AutocompleteUtils.autocompleteFunction(function, result);

@@ -6,8 +6,8 @@ import com.intellij.psi.util.CachedValue;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
-import pl.thedeem.intellij.dql.definition.DQLOperationsLoader;
 import pl.thedeem.intellij.dql.psi.elements.ArithmeticalExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
@@ -51,7 +51,7 @@ public abstract class ArithmeticalExpressionImpl extends TwoSidesExpressionImpl 
       dataType.addAll(Set.of(DQLDataType.LONG, DQLDataType.DURATION, DQLDataType.DOUBLE, DQLDataType.TIMESTAMP));
     }
     else {
-      dataType.addAll(DQLOperationsLoader.getResultType(getOperator(), getLeftExpression(), getRightExpression()));
+      dataType.addAll(DQLDefinitionService.getInstance(getProject()).getResultType(getOperator(), getLeftExpression(), getRightExpression()));
     }
     return Collections.unmodifiableSet(dataType);
   }

@@ -32,6 +32,10 @@ public class DQLCommandDefinition {
         }
     }
 
+    public String getName() {
+        return name;
+    }
+
     public DQLParameterDefinition getParameter(String name) {
         return name != null ? paramsByName.get(name.toLowerCase()) : null;
     }

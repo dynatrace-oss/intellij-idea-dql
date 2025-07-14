@@ -109,8 +109,9 @@ public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement im
     @Override
     public DQLFunctionDefinition getDefinition() {
         if (definition == null) {
+            DQLDefinitionService service = DQLDefinitionService.getInstance(getProject());
             definition = CachedValuesManager.getManager(getProject()).createCachedValue(
-                    () -> new CachedValueProvider.Result<>(DQLFunctionsLoader.getFunction(this.getName()), this),
+                    () -> new CachedValueProvider.Result<>(service.getFunction(this.getName()), this),
                     false
             );
         }

@@ -30,8 +30,8 @@ public class RecordsListParameterInspection extends BaseInspection {
                     if (definition == null || !definition.getDQLTypes().contains(DQLDataType.RECORDS_LIST)) {
                         return;
                     }
-
-                    Set<String> allowedFunctions = DQLFunctionsLoader.getFunctionNamesByGroups(Set.of(DQLFunctionGroup.RECORDS_LIST));
+                    DQLDefinitionService service = DQLDefinitionService.getInstance(expression.getProject());
+                    Set<String> allowedFunctions = service.getFunctionNamesByGroups(Set.of(DQLFunctionGroup.RECORDS_LIST));
                     for (PsiElement invalidValue : getInvalidValues(expression, new ListOfFunctionsParameterValidator(allowedFunctions))) {
                         holder.registerProblem(
                                 invalidValue,
