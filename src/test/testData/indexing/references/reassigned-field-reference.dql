@@ -1,0 +1,3 @@
+data record(test = "first")
+  | fields test = "second"
+  | filter isNotNull(te<caret>st)

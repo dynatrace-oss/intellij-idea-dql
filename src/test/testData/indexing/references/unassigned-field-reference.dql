@@ -1,0 +1,2 @@
+data record(test)
+| filter isNotNull(te<caret>st)
