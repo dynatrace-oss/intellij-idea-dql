@@ -14,16 +14,14 @@ import com.intellij.psi.util.CachedValuesManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLElementFactory;
 import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 import pl.thedeem.intellij.dql.psi.elements.VariableElement;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
-import pl.thedeem.intellij.dql.variables.DQLVariablesDefinition;
+import pl.thedeem.intellij.dql.variables.DQLVariablesService;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -122,7 +120,8 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
     public @Nullable String getValue() {
         PsiElement definition = getDefinition();
         if (definition instanceof JsonProperty property) {
-            return DQLVariablesDefinition.getValue(property.getValue());
+            DQLVariablesService service = DQLVariablesService.getInstance(getProject());
+            return service.getVariableValue(property.getValue());
         }
         return null;
     }
@@ -130,35 +129,12 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
     private PsiElement recalculateReference() {
         String name = getName();
         if (name != null) {
-            List<PsiElement> definitions = DQLUtil.findVariablesDefinitions(getProject(), name, getContainingFile());
+            DQLVariablesService service = DQLVariablesService.getInstance(getProject());
+            List<PsiElement> definitions = service.findVariableDefinitionFiles(name, getContainingFile());
             if (!definitions.isEmpty()) {
-                return findClosestDefinition(definitions);
+                return service.findClosestDefinition(getContainingFile().getVirtualFile(), definitions);
             }
         }
         return null;
-    }
-
-    private @NotNull PsiElement findClosestDefinition(List<PsiElement> definitions) {
-        Path myFile = Path.of(getContainingFile().getVirtualFile().getPath()).normalize();
-        PsiElement closestDefinition = definitions.getFirst();
-        int commonSegments = -1;
-
-        for (PsiElement definition : definitions) {
-            Path itsFile = Path.of(definition.getContainingFile().getVirtualFile().getPath()).normalize();
-            if (itsFile.getNameCount() <= myFile.getNameCount()) {
-                int matchingSegments = 0;
-                for (int i = 0; i < itsFile.getNameCount(); i++) {
-                    if (itsFile.getName(i).equals(myFile.getName(i))) {
-                        matchingSegments++;
-                    }
-                }
-                if (matchingSegments > commonSegments) {
-                    closestDefinition = definition;
-                    commonSegments = matchingSegments;
-                }
-            }
-        }
-
-        return closestDefinition;
     }
 }

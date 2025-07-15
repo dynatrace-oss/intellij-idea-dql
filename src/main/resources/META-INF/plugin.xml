@@ -252,6 +252,12 @@
 
         <!-- Services -->
         <applicationService serviceImplementation="pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService"/>
+        <projectService serviceImplementation="pl.thedeem.intellij.dql.variables.DQLVariablesServiceImpl"
+                        serviceInterface="pl.thedeem.intellij.dql.variables.DQLVariablesService"/>
+        <projectService serviceImplementation="pl.thedeem.intellij.dql.definition.DQLDefinitionServiceImpl"
+                        serviceInterface="pl.thedeem.intellij.dql.definition.DQLDefinitionService"/>
+        <applicationService serviceImplementation="pl.thedeem.intellij.dql.definition.DQLLocalDefinitionLoader"
+                        serviceInterface="pl.thedeem.intellij.dql.definition.DQLDefinitionLoader"/>
         <configurationType
                 implementation="pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.ExecuteDQLConfigurationType"/>
         <programRunner implementation="pl.thedeem.intellij.dql.executing.DQLProgramRunner"/>

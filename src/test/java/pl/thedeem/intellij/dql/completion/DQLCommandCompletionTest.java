@@ -1,9 +1,10 @@
 package pl.thedeem.intellij.dql.completion;
 
 import com.intellij.codeInsight.completion.CompletionType;
-import com.intellij.openapi.project.Project;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.testFramework.ServiceContainerUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixture4TestCase;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -20,7 +21,7 @@ import java.util.List;
 
 public class DQLCommandCompletionTest extends LightPlatformCodeInsightFixture4TestCase {
    @Mock
-   private DQLDefinitionLoader loaderMock = mock(DQLDefinitionLoader.class);
+   private DQLDefinitionLoader loaderMock;
 
    @Override
    protected String getTestDataPath() {
@@ -29,8 +30,19 @@ public class DQLCommandCompletionTest extends LightPlatformCodeInsightFixture4Te
 
    @Before
    public void createService() {
-      Project project = myFixture.getProject();
-      ServiceContainerUtil.registerServiceInstance(project, DQLDefinitionService.class, new DQLDefinitionService(project, loaderMock));
+      loaderMock = mock(DQLDefinitionLoader.class);
+      ServiceContainerUtil.registerOrReplaceServiceInstance(
+          ApplicationManager.getApplication(),
+          DQLDefinitionLoader.class,
+          loaderMock,
+          getTestRootDisposable()
+      );
+   }
+
+   @After
+   public void cleanup() {
+      DQLDefinitionService service = myFixture.getProject().getService(DQLDefinitionService.class);
+      service.invalidateCache();
    }
 
    @Test

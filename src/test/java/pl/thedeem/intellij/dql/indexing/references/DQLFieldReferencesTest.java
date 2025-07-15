@@ -15,8 +15,8 @@ public class DQLFieldReferencesTest extends LightPlatformCodeInsightFixture4Test
    @Test
    public void testFieldReferenceWhenFieldHasAssignedValue() {
       PsiReference referenceAtCaret = myFixture.getReferenceAtCaretPositionWithAssertion("assigned-field-reference.dql");
-      final DQLFieldExpression resolvedSimpleProperty = assertInstanceOf(referenceAtCaret.resolve(), DQLFieldExpression.class);
-      DQLAssignExpression assignExpression = resolvedSimpleProperty.getAssignExpression();
+      final DQLFieldExpression resolved = assertInstanceOf(referenceAtCaret.resolve(), DQLFieldExpression.class);
+      DQLAssignExpression assignExpression = resolved.getAssignExpression();
       assertNotNull(assignExpression);
       assertEquals("\"hello there\"", assignExpression.getExpressionList().getLast().getText());
    }
@@ -24,8 +24,7 @@ public class DQLFieldReferencesTest extends LightPlatformCodeInsightFixture4Test
    @Test
    public void testFieldReferenceWhenFieldValueWasReassigned() {
       PsiReference referenceAtCaret = myFixture.getReferenceAtCaretPositionWithAssertion("reassigned-field-reference.dql");
-      assertInstanceOf(referenceAtCaret.getElement(), DQLFieldExpression.class);
-      DQLFieldExpression element = (DQLFieldExpression) referenceAtCaret.getElement();
+      DQLFieldExpression element = assertInstanceOf(referenceAtCaret.getElement(), DQLFieldExpression.class);
       assertNotNull(element);
       DQLAssignExpression assignExpression = element.getAssignExpression();
       assertNotNull(assignExpression);

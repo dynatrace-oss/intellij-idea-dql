@@ -28,8 +28,8 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
+import pl.thedeem.intellij.dql.variables.DQLVariablesService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,7 +44,7 @@ public class AddMissingVariableDefinitionQuickFix implements LocalQuickFix {
             return;
         }
         String name = variable.getName();
-        Path filePath = DQLUtil.getDefaultVariablesFile(variable);
+        Path filePath = DQLVariablesService.getInstance(project).getDefaultVariablesFile(variable);
         
         if (name == null || filePath == null) {
             return;

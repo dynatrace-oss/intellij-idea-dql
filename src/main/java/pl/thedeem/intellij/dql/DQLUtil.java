@@ -2,10 +2,6 @@ package pl.thedeem.intellij.dql;
 
 import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.credentialStore.CredentialAttributes;
-import com.intellij.json.JsonFileType;
-import com.intellij.json.psi.JsonFile;
-import com.intellij.json.psi.JsonProperty;
-import com.intellij.json.psi.JsonValue;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -23,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.psi.*;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 
-import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -34,49 +29,9 @@ import java.util.*;
 public class DQLUtil {
    public final static DateTimeFormatter DQL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
    public final static DateTimeFormatter USER_FRIENDLY_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-   private final static String DQL_VARIABLES_FILE = "dql-variables.json";
+
    private final static String PARTIAL_DQL_SUFFIX = ".partial.dql";
    private final static String CREDENTIALS_SUFFIX = "pl.thedeem.intellij.dql/";
-
-   /**
-    * The variable file must be defined either in the same directory or in one of the current file parents
-    */
-   public static List<PsiElement> findVariablesDefinitions(@NotNull Project project, @NotNull String variableName, @NotNull PsiFile file) {
-      Collection<VirtualFile> virtualFiles = FileTypeIndex.getFiles(JsonFileType.INSTANCE, GlobalSearchScope.allScope(project));
-      List<PsiElement> result = new ArrayList<>();
-      Path currentPath = Path.of(file.getVirtualFile().getPath()).normalize();
-      for (VirtualFile virtualFile : virtualFiles) {
-         if (DQL_VARIABLES_FILE.equals(virtualFile.getName())) {
-            Path variablePath = Path.of(virtualFile.getPath()).normalize();
-            if (!currentPath.startsWith(variablePath.getParent())) {
-               continue;
-            }
-            JsonFile jsonFile = (JsonFile) PsiManager.getInstance(project).findFile(virtualFile);
-            if (jsonFile != null) {
-               JsonValue topLevelValue = jsonFile.getTopLevelValue();
-               if (topLevelValue != null) {
-                  for (PsiElement child : topLevelValue.getChildren()) {
-                     if (child instanceof JsonProperty property) {
-                        if (variableName.equals(property.getName())) {
-                           result.add(property);
-                        }
-                     }
-                  }
-               }
-            }
-         }
-      }
-      return result;
-   }
-
-   public static Path getDefaultVariablesFile(PsiElement element) {
-      VirtualFile virtualFile = element.getContainingFile().getVirtualFile();
-      if (virtualFile == null) {
-         return null;
-      }
-      String directory = Path.of(virtualFile.getPath()).getParent().toString();
-      return Path.of(directory + "/" + DQL_VARIABLES_FILE).normalize();
-   }
 
    public static @Nullable PsiFile openFile(@NotNull Project project, @NotNull String path) {
       VirtualFile file = LocalFileSystem.getInstance().findFileByPath(path);

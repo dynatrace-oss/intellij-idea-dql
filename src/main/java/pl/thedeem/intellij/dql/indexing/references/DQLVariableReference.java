@@ -12,6 +12,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
+import pl.thedeem.intellij.dql.variables.DQLVariablesService;
 
 import java.util.*;
 
@@ -25,7 +26,8 @@ public final class DQLVariableReference extends PsiPolyVariantReferenceBase<DQLV
         List<ResolveResult> results = new ArrayList<>();
         String name = getElement().getName();
         if (StringUtil.isNotEmpty(name)) {
-            List<PsiElement> variableDefinitions = DQLUtil.findVariablesDefinitions(getElement().getProject(), name, getElement().getContainingFile());
+            DQLVariablesService service = DQLVariablesService.getInstance(getElement().getProject());
+            List<PsiElement> variableDefinitions = service.findVariableDefinitionFiles(name, getElement().getContainingFile());
 
             for (PsiElement variable : variableDefinitions) {
                 results.add(new PsiElementResolveResult(variable));
