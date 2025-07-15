@@ -65,8 +65,8 @@ public final class DQLVariablesServiceImpl implements DQLVariablesService {
    }
 
    @Override
-   public @NotNull PsiElement findClosestDefinition(@NotNull VirtualFile file, @NotNull List<PsiElement> definitions) {
-      Path myFile = Path.of(file.getPath()).normalize();
+   public @NotNull PsiElement findClosestDefinition(@NotNull String path, @NotNull List<PsiElement> definitions) {
+      Path myFile = Path.of(path).normalize();
       PsiElement closestDefinition = definitions.getFirst();
       int commonSegments = -1;
 

@@ -132,7 +132,7 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
             DQLVariablesService service = DQLVariablesService.getInstance(getProject());
             List<PsiElement> definitions = service.findVariableDefinitionFiles(name, getContainingFile());
             if (!definitions.isEmpty()) {
-                return service.findClosestDefinition(getContainingFile().getVirtualFile(), definitions);
+                return service.findClosestDefinition(getContainingFile().getVirtualFile().getPath(), definitions);
             }
         }
         return null;

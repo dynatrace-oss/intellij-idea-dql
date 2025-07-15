@@ -64,7 +64,7 @@ public class DQLColorSettingsPage implements ColorSettingsPage {
                     <dataField>size</dataField> = <function>stringLength</function>(<dataField>my.favourite.language</dataField>),
                     <dataField>other_example</dataField> = 10 * <function>power</function>(10, 100),
                     <dataField>`Can you have named fields?`</dataField> = true,
-                    <dataField>variable_value</dataField> = $someVariable
+                    <dataField>variable_value</dataField> = $someVariable,
                     <dataField>duration_value</dataField> = <duration>12w</duration>,
                     <dataField>empty_value</dataField> = null
                 }
