@@ -2,7 +2,15 @@
 
 ## [Unreleased]
 
+### Bug fixes
+
+- #3: Fixing the
+  `Resolving the Legacy configurable id calculation mode from localizable name will be used for configurable class`
+  error that started appearing in IDEA 2025.2
+
 ## [1.0.1] - 2025-08-11
+
+### Bug fixes
 
 - Fixing the
   `Cannot invoke "java.util.Set.iterator()" because the return value of "pl.thedeem.intellij.dql.definition.DQLOperationTarget.getOperatorType()" is null`

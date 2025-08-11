@@ -3,3 +3,7 @@ MD013: false
 
 # punctuation in headings
 MD026: false
+
+# duplicated headers - in changelog they can be duplicated
+MD024:
+  siblings_only: true
