@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.0.1] - 2025-08-11
+
 - Fixing the
   `Cannot invoke "java.util.Set.iterator()" because the return value of "pl.thedeem.intellij.dql.definition.DQLOperationTarget.getOperatorType()" is null`
   error
@@ -34,6 +36,6 @@
     - the file supports specifying `record` (JSON object), `array` (JSON array), `string`, `boolean`, `number`, and
       `null` types.
 
-[Unreleased]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.0...HEAD
-
+[Unreleased]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/dynatrace-oss/intellij-idea-dql/commits/v1.0.0
