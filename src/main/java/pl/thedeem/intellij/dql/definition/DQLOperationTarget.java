@@ -104,7 +104,7 @@ public class DQLOperationTarget {
             case MODULO -> Set.of(DQLTypes.MODULO);
             case EQUALITY -> Set.of(DQLTypes.EQUALS, DQLTypes.NOT_EQUALS);
             case COMPARISON -> Set.of(DQLTypes.GREATER_THAN, DQLTypes.GREATER_OR_EQUALS_THAN, DQLTypes.LESSER_THAN, DQLTypes.LESSER_OR_EQUALS_THAN);
-            default -> null;
+            default -> Set.of();
         };
     }
 
