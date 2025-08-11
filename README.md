@@ -18,9 +18,9 @@ are available in `logs` or metrics, so it **cannot validate the whole query** as
 When **a connection to the Dynatrace tenant is configured**, the plugin can execute DQL scripts and show the results.
 It can also use the connection to show any kind of validation offered by Dynatrace Notebooks.
 
-The plugin **does not aim to replace Dynatrace Notebooks** - it should still be your primary choice when writing DQLs!
+The plugin **does not aim to replace Dynatrace Notebooks** — it should still be your primary choice when writing DQLs!
 The main goal is to provide a good enough environment to work within IntelliJ when storing your DQLs in Git.
-In the local-only mode, it does not have nearly as many validations as the real notebook environment,
+In the local-only mode, it does not have nearly as many validations as the real notebook environment;
 so valid DQL queries written using the plugin can still be invalid after executing them on Notebooks
 (although errors should be rather minor).
 
@@ -33,10 +33,10 @@ The features may not support all functionalities supported by Dynatrace Notebook
 
 #### DQL customization
 
-The plugin offers advanced and *customizable syntax highlighting* - within the code style settings page you can change
+The plugin offers advanced and *customizable syntax highlighting* — within the code style settings page you can change
 most of the colors used for DQL tokens and keywords.
 
-The plugin also provides a lot of code style settings related to indents, spaces and line breaks between DQL tokens.
+The plugin also provides a lot of code style settings related to indents, spaces, and line breaks between DQL tokens.
 You will now be able to ensure a common style for all `.dql` files stored in your repository.
 
 As a bonus, the plugin also adds support for IntelliJ _inlays_ for unnamed parameters, so it is now much easier to
@@ -46,7 +46,7 @@ see which values belong to which parameter.
 
 The plugin uses IntelliJ references to provide relations between **DQL fields, functions, statements,
 and parameters**. You can find usages of a specific field and see where in the query the value was set.
-There is also **support for code refactoring**, which makes it straightforward to - for example -
+There is also **support for code refactoring**, which makes it straightforward to — for example —
 change a field name everywhere at once.
 
 #### Code completion
@@ -56,13 +56,13 @@ options. It works with:
 
 - **DQL Commands**, with distinction for query-starting commands and operations on the data set.
 - **Statement parameters**, with automatically fulfilling their default values.
-- **DQL fields** - You'll see all fields used in the query, and if the field's value was overwritten.
+- **DQL fields** — You'll see all fields used in the query, and if the field's value was overwritten.
   It will also show the value within the completion tooltip.
 - **DQL functions and their parameters**, with automatically filtering out functions that do not provide a proper
   return value for the current context.
-- **DQL subqueries**, for commands offering joining functionality.
+- **DQL subqueries**, for commands offering to join functionality.
 
-![An example code completion](src/main/resources/docs/images/code-completion.png)
+![An example code completion](https://plugins.jetbrains.com/files/28135/screenshot_03be2e47-d3d2-4685-b383-d5c3c134bcd6)
 
 #### DQL functions support
 
@@ -75,7 +75,7 @@ the plugin will produce a weak warning but ignore its return values and paramete
 #### Contextual issues detection
 
 Apart from just validating the DQL file syntax, the plugin is also automatically detecting contextual
-issues and - where possible - offering a quick fix to resolve them. It can detect:
+issues and — where possible — offering a quick fix to resolve them. It can detect:
 
 - Invalid commands
 - Invalid command parameters: invalid names and values, missing and duplicated parameters, conflicts with other
@@ -85,7 +85,7 @@ issues and - where possible - offering a quick fix to resolve them. It can detec
 - Other smaller issues like static values being used in expressions or not-constant values provided where they are
   required
 
-![An example error detection](src/main/resources/docs/images/error-detection.png)
+![An example error detection](https://plugins.jetbrains.com/files/28135/screenshot_74491594-f2e7-4c1f-aa3d-f13f5ee2d147)
 
 #### Documentation tooltips
 
@@ -97,9 +97,10 @@ documentation page.
 - Parameters documentation (for statements and functions): description, possible values
 - Context information for other elements, like DQL fields, variables, boolean types, etc.
 
-![An example documentation tooltips](src/main/resources/docs/images/documentation-tooltips.png)
+![An example documentation tooltips](https://plugins.jetbrains.com/files/28135/screenshot_8826dab6-8014-4bb2-9ce4-2a2e836f1ac3)
 
-The plugin also implements structure with navbar for IntelliJ, so it's very easy to track the context of the query.
+The plugin also implements structure with navbar for IntelliJ, so it's straightforward to track the context of the
+query.
 
 #### Partial DQL support
 
@@ -125,7 +126,7 @@ DQL query to the tenant.
 ### Remote features
 
 Apart from local features, the plugin also allows to specify a connection to a set of Dynatrace tenants.
-After the connection to the tenant is added, the plugin uses 
+After the connection to the tenant is added, the plugin uses
 [official REST API](https://developer.dynatrace.com/develop/sdks/client-query/) to validate, execute and autocomplete
 DQLs.
 
@@ -143,7 +144,7 @@ tenant.
 The results of the query execution will be presented as a table, allowing you to quickly verify if the written query
 returns the correct data.
 
-![An example DQL execution](src/main/resources/docs/images/dql-execution.png)
+![An example DQL execution](https://plugins.jetbrains.com/files/28135/screenshot_34653d24-43cd-4c28-a917-6a1cd1dac0b5)
 
 #### Live validations
 
