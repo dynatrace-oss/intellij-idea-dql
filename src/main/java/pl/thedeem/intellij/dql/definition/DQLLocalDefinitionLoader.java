@@ -88,6 +88,7 @@ public class DQLLocalDefinitionLoader implements DQLDefinitionLoader {
          DQLOperationTarget target = loadDefinition(path, new TypeReference<>() {
          });
          if (target != null) {
+            target.initialize();
             for (IElementType type : target.getOperatorType()) {
                result.put(type, target);
             }

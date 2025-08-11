@@ -34,11 +34,11 @@ public class DQLOperationTarget {
         this.defaultType = StringUtil.isNotEmpty(defaultValue) ? DQLDataType.getType(defaultValue) : DQLDataType.UNKNOWN;
     }
 
-    public Set<IElementType> getOperatorType() {
-        return operatorTypes;
+    public @NotNull Set<IElementType> getOperatorType() {
+        return operatorTypes == null ? Set.of() : operatorTypes;
     }
 
-    public Set<DQLDataType> getMapping(@NotNull Set<DQLDataType> leftSide, @NotNull Set<DQLDataType> rightSide) {
+    public @NotNull Set<DQLDataType> getMapping(@NotNull Set<DQLDataType> leftSide, @NotNull Set<DQLDataType> rightSide) {
         if (leftSide.contains(DQLDataType.ANY) || rightSide.contains(DQLDataType.ANY)) {
             return Set.of(DQLDataType.ANY);
         }
@@ -68,7 +68,7 @@ public class DQLOperationTarget {
         return result;
     }
 
-    public @NotNull Map<BaseElement, Set<DQLDataType>> getInvalidSides(BaseElement left, BaseElement right) {
+    public @NotNull Map<BaseElement, Set<DQLDataType>> getInvalidSides(@NotNull BaseElement left, @NotNull BaseElement right) {
         Map<BaseElement, Set<DQLDataType>> invalidSides = new HashMap<>();
 
         Set<DQLDataType> leftReturns = left.getDataType();
@@ -95,7 +95,7 @@ public class DQLOperationTarget {
         return invalidSides;
     }
 
-    private Set<IElementType> calculateOperatorType() {
+    private @NotNull Set<IElementType> calculateOperatorType() {
         return switch (operator) {
             case ADDITION -> Set.of(DQLTypes.ADD);
             case SUBTRACT -> Set.of(DQLTypes.SUBTRACT);
@@ -108,7 +108,7 @@ public class DQLOperationTarget {
         };
     }
 
-    private Map<DQLDataType, Map<DQLDataType, DQLDataType>> calculateDataTypes() {
+    private @NotNull Map<DQLDataType, Map<DQLDataType, DQLDataType>> calculateDataTypes() {
         if (mapping == null) {
             return Map.of();
         }
