@@ -4,7 +4,6 @@ This repository contains the plugin adding support for
 [Dynatrace Query Language (DQL)](https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-query-language)
 in IntelliJ IDEA.
 
-
 <!-- Plugin description -->
 > **Note**
 > This product is not officially supported by Dynatrace
@@ -39,7 +38,7 @@ most of the colors used for DQL tokens and keywords.
 The plugin also provides a lot of code style settings related to indents, spaces, and line breaks between DQL tokens.
 You will now be able to ensure a common style for all `.dql` files stored in your repository.
 
-As a bonus, the plugin also adds support for IntelliJ _inlays_ for unnamed parameters, so it is now much easier to
+As a bonus, the plugin also adds support for IntelliJ *inlays* for unnamed parameters, so it is now much easier to
 see which values belong to which parameter.
 
 #### Detecting references
@@ -169,4 +168,3 @@ in the plugin's settings.
 This plugin uses the [GrammarKit](https://github.com/JetBrains/Grammar-Kit/tree/master) plugin to generate all
 necessary PSI resources.
 You'll need to generate them for both `.flex` and `.bnf` files from the [grammar](src/main/grammar)package.
-
