@@ -8,6 +8,10 @@
   `Resolving the Legacy configurable id calculation mode from localizable name will be used for configurable class`
   error that started appearing in IDEA 2025.2
 
+### Other
+
+- Rebranded the plugin from "unofficial" to "community-driven open-source" Dynatrace plugin
+
 ## [1.0.1] - 2025-08-11
 
 ### Bug fixes
