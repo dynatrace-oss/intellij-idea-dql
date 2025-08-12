@@ -6,7 +6,8 @@ in IntelliJ IDEA.
 
 <!-- Plugin description -->
 > **Note**
-> This product is not officially supported by Dynatrace
+> This product is a community-driven open-source plugin, helping users write and execute DQL statements within JetBrains IDEs.
+> It's not officially supported by Dynatrace, please report any errors directly via [GitHub Issues](https://github.com/dynatrace-oss/intellij-idea-dql/issues).
 
 This is an *unofficial* plugin offering tools for effective writing of DQL files. It offers similar functionality
 to the Dynatrace Notebooks, but can work fully locally.

@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>pl.thedeem.dql</id>
     <name>Dynatrace Query Language</name>
-    <vendor url="https://www.dynatrace.com">(unofficial) Dynatrace</vendor>
+    <vendor url="https://github.com/dynatrace-oss">Dynatrace OSS (community driven)</vendor>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
