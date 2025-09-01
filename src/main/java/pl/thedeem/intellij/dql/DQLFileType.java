@@ -8,7 +8,7 @@ import javax.swing.*;
 public class DQLFileType extends LanguageFileType {
     public static final DQLFileType INSTANCE = new DQLFileType();
     public static final String DQL_FILE_EXTENSION = ".dql";
-    public static final String DQL_FILE_DESCRIPTION = "Dynatrace query language file";
+    public static final String DQL_FILE_DESCRIPTION = "Dynatrace Query Language file";
 
     private DQLFileType() {
         super(DynatraceQueryLanguage.INSTANCE);
