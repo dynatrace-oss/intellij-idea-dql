@@ -89,7 +89,7 @@ public class DynatraceRestClient {
 
    public DQLAutocompleteResult autocomplete(@NotNull DQLAutocompletePayload payload, String authToken) throws IOException, InterruptedException, DQLApiException {
       try (HttpClient client = HttpClient.newHttpClient()) {
-         HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform22/storage/query/v1/query:autocomplete").normalize())
+         HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:autocomplete").normalize())
              .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
              .header("Accept", "application/json")
              .header("Content-Type", "application/json")
