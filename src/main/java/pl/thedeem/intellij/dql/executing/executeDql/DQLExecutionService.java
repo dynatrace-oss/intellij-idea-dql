@@ -32,8 +32,7 @@ import pl.thedeem.intellij.dql.executing.services.DQLServicesManager;
 import pl.thedeem.intellij.dql.fileProviders.DQLMetadataVirtualFile;
 import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
 import pl.thedeem.intellij.dql.sdk.DynatraceRestClient;
-import pl.thedeem.intellij.dql.sdk.errors.DQLErrorResponseException;
-import pl.thedeem.intellij.dql.sdk.errors.DQLNotAuthorizedException;
+import pl.thedeem.intellij.dql.sdk.errors.DQLApiException;
 import pl.thedeem.intellij.dql.sdk.model.DQLExecutePayload;
 import pl.thedeem.intellij.dql.sdk.model.DQLExecuteResponse;
 import pl.thedeem.intellij.dql.sdk.model.DQLPollResponse;
@@ -357,24 +356,13 @@ public class DQLExecutionService {
       try {
          apiCall.execute();
          ActivityTracker.getInstance().inc();
-      } catch (InterruptedException | IOException e) {
+      } catch (InterruptedException | IOException | DQLApiException e) {
+         logger.warn("An error was found when executing the API call to the DT tenant. Cancelling the execution...", e);
          processHandler.notifyExecutionError(e.getMessage());
          if (pollingFutureRef.get() != null) {
             pollingFutureRef.get().cancel(true);
          }
-         resultPanel.showError(null, e);
-      } catch (DQLNotAuthorizedException e) {
-         processHandler.notifyExecutionError(e.getMessage());
-         if (pollingFutureRef.get() != null) {
-            pollingFutureRef.get().cancel(true);
-         }
-         resultPanel.showError(e.getResponse(), e);
-      } catch (DQLErrorResponseException e) {
-         processHandler.notifyExecutionError(e.getMessage());
-         if (pollingFutureRef.get() != null) {
-            pollingFutureRef.get().cancel(true);
-         }
-         resultPanel.showError(e.getResponse(), e);
+         resultPanel.showError(e);
       } finally {
          loading.set(false);
          stopping.set(false);
@@ -382,6 +370,6 @@ public class DQLExecutionService {
    }
 
    private interface ExecuteApiCall {
-      void execute() throws InterruptedException, IOException, DQLNotAuthorizedException, DQLErrorResponseException;
+      void execute() throws InterruptedException, IOException, DQLApiException;
    }
 }

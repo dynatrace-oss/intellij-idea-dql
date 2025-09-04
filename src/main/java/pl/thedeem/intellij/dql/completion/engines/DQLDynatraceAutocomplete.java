@@ -15,8 +15,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.dql.sdk.DynatraceRestClient;
-import pl.thedeem.intellij.dql.sdk.errors.DQLErrorResponseException;
-import pl.thedeem.intellij.dql.sdk.errors.DQLNotAuthorizedException;
+import pl.thedeem.intellij.dql.sdk.errors.DQLApiException;
 import pl.thedeem.intellij.dql.sdk.model.DQLAutocompletePayload;
 import pl.thedeem.intellij.dql.sdk.model.DQLAutocompleteResult;
 import pl.thedeem.intellij.dql.sdk.model.DQLSuggestion;
@@ -45,8 +44,7 @@ public class DQLDynatraceAutocomplete {
                           new DQLAutocompletePayload(ReadAction.compute(() -> parameters.getOriginalFile().getText()), (long) parameters.getPosition().getTextOffset()),
                           apiToken
                       );
-                   } catch (IOException | InterruptedException | DQLNotAuthorizedException |
-                            DQLErrorResponseException e) {
+                   } catch (IOException | InterruptedException | DQLApiException e) {
                       logger.warn("Something went wrong when getting autocomplete results from Dynatrace: " + e.getMessage());
                       return null;
                    }
