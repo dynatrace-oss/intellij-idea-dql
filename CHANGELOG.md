@@ -6,6 +6,8 @@
   `ClassCastException: PsiPlainTextFileImpl cannot be cast to class pl.thedeem.intellij.dql.DQLFile`
   error that occurred when injecting DQL into other types of files like Markdown (DQL blocks) or Java 
   (`/* language=DQL */` injections).
+- Improving error handling for Dynatrace REST API calls. The user will now see more details for errors like an invalid
+  url or an unknown HTML response. Errors will now also be logged, which will be helpful when supporting users
 
 ## [1.0.2] - 2025-08-12
 
