@@ -46,10 +46,10 @@ public class DQLUtil {
       return name.endsWith(PARTIAL_DQL_SUFFIX);
    }
 
-   public static List<DQLFieldExpression> findFieldsInFile(PsiFile dqlFile, String key) {
+   public static List<DQLFieldExpression> findFieldsInFile(PsiFile file, String key) {
       List<DQLFieldExpression> result = new ArrayList<>();
-      if (dqlFile != null) {
-         Collection<DQLFieldExpression> fields = PsiTreeUtil.findChildrenOfType(dqlFile, DQLFieldExpression.class);
+      if (file != null) {
+         Collection<DQLFieldExpression> fields = PsiTreeUtil.findChildrenOfType(file, DQLFieldExpression.class);
          if (!fields.isEmpty()) {
             for (DQLFieldExpression field : fields) {
                if (key.equals(field.getName())) {
@@ -61,10 +61,10 @@ public class DQLUtil {
       return result;
    }
 
-   public static List<DQLFieldExpression> findFieldsInFile(PsiFile dqlFile) {
+   public static List<DQLFieldExpression> findFieldsInFile(PsiFile file) {
       List<DQLFieldExpression> result = new ArrayList<>();
-      if (dqlFile != null) {
-         Collection<DQLFieldExpression> fields = PsiTreeUtil.findChildrenOfType(dqlFile, DQLFieldExpression.class);
+      if (file != null) {
+         Collection<DQLFieldExpression> fields = PsiTreeUtil.findChildrenOfType(file, DQLFieldExpression.class);
          if (!fields.isEmpty()) {
             Collections.addAll(result, fields.toArray(new DQLFieldExpression[0]));
          }
@@ -76,7 +76,7 @@ public class DQLUtil {
       List<DQLFieldExpression> result = new ArrayList<>();
       Collection<VirtualFile> virtualFiles = FileTypeIndex.getFiles(DQLFileType.INSTANCE, GlobalSearchScope.allScope(project));
       for (VirtualFile virtualFile : virtualFiles) {
-         DQLFile file = (DQLFile) PsiManager.getInstance(project).findFile(virtualFile);
+         PsiFile file = PsiManager.getInstance(project).findFile(virtualFile);
          if (file != null) {
             Collection<DQLFieldExpression> properties = PsiTreeUtil.findChildrenOfType(file, DQLFieldExpression.class);
             result.addAll(properties);
@@ -89,7 +89,7 @@ public class DQLUtil {
       List<DQLFieldExpression> result = new ArrayList<>();
       Collection<VirtualFile> virtualFiles = FileTypeIndex.getFiles(DQLFileType.INSTANCE, GlobalSearchScope.allScope(project));
       for (VirtualFile virtualFile : virtualFiles) {
-         DQLFile file = (DQLFile) PsiManager.getInstance(project).findFile(virtualFile);
+         PsiFile file = PsiManager.getInstance(project).findFile(virtualFile);
          if (file != null) {
             Collection<DQLFieldExpression> properties = PsiTreeUtil.findChildrenOfType(file, DQLFieldExpression.class);
             for (DQLFieldExpression property : properties) {
