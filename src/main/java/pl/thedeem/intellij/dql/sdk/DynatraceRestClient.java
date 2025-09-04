@@ -3,6 +3,7 @@ package pl.thedeem.intellij.dql.sdk;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.sdk.errors.*;
 import pl.thedeem.intellij.dql.sdk.model.*;
@@ -19,6 +20,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
 public class DynatraceRestClient {
+   private static final Logger logger = Logger.getInstance(DynatraceRestClient.class);
    private final static ObjectMapper mapper = new ObjectMapper();
    private final String tenantUrl;
 
@@ -107,17 +109,22 @@ public class DynatraceRestClient {
          if (status < 300) {
             return mapper.readValue(body, typeRef);
          } else if (status == 301 || status == 302) {
-            throw new DQLResponseRedirectedException("The request was redirected", response.headers().firstValue("location").orElse(null));
+            String location = response.headers().firstValue("location").orElse(null);
+            logger.warn(String.format("Could not get the correct response; the API call was redirected to %s. Response: %s", location, body));
+            throw new DQLResponseRedirectedException("The request was redirected", location);
          } else if (status == 401 || status == 403) {
+            logger.warn(String.format("Could not authorize the user. Reason: %s", body));
             TypeReference<DQLErrorResponse<DQLAuthErrorResponse>> errorRef = new TypeReference<>() {
             };
             throw new DQLNotAuthorizedException("Unauthorized", mapper.readValue(body, errorRef));
          } else {
+            logger.warn(String.format("Could not execute the query. Reason: %s", body));
             TypeReference<DQLErrorResponse<DQLExecutionErrorResponse>> errorRef = new TypeReference<>() {
             };
             throw new DQLErrorResponseException("Error response", mapper.readValue(body, errorRef));
          }
       } catch (JsonProcessingException jsonError) {
+         logger.warn(String.format("The response returned by Dynatrace was not a JSON. String response: %s", body), jsonError);
          throw new DQLResponseParsingException("Response parsing error", body);
       }
    }

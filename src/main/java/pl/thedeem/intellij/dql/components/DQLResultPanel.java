@@ -74,9 +74,24 @@ public class DQLResultPanel extends JPanel {
       progressBar.setString(state);
    }
 
-   public void showError(Exception exception) {
+   public void showError(@NotNull Exception exception) {
+      String message = getErrorMessage(exception);
+      resultsPanel.removeAll();
+      resultsPanel.add(new JBScrollPane(createInformationComponent(message, AllIcons.General.Error)), BorderLayout.CENTER);
+      removeAll();
+      add(resultsPanel, BorderLayout.CENTER);
+   }
+
+   private JComponent createInformationComponent(@NotNull String message, @NotNull Icon icon) {
+      JPanel panel = new JPanel(new GridBagLayout());
+      panel.setBorder(BorderFactory.createEmptyBorder());
+      panel.add(new JLabel(message, icon, JLabel.LEFT));
+      return panel;
+   }
+
+   private String getErrorMessage(@NotNull Exception exception) {
       String details = DQLBundle.message("runConfiguration.executeDQL.errors.noDetails");
-      String message = switch (exception) {
+      return switch (exception) {
          case DQLErrorResponseException error -> {
             if (error.getResponse() != null) {
                DQLExecutionErrorResponse reason = error.getResponse().error;
@@ -112,17 +127,5 @@ public class DQLResultPanel extends JPanel {
          case InterruptedException ignored -> DQLBundle.message("runConfiguration.executeDQL.indicator.cancelled", exception.getMessage());
          default -> DQLBundle.message("runConfiguration.executeDQL.errors.unknown", exception.getMessage());
       };
-
-      resultsPanel.removeAll();
-      resultsPanel.add(new JBScrollPane(createInformationComponent(message, AllIcons.General.Error)), BorderLayout.CENTER);
-      removeAll();
-      add(resultsPanel, BorderLayout.CENTER);
-   }
-
-   private JComponent createInformationComponent(@NotNull String message, @NotNull Icon icon) {
-      JPanel panel = new JPanel(new GridBagLayout());
-      panel.setBorder(BorderFactory.createEmptyBorder());
-      panel.add(new JLabel(message, icon, JLabel.LEFT));
-      return panel;
    }
 }

@@ -357,6 +357,7 @@ public class DQLExecutionService {
          apiCall.execute();
          ActivityTracker.getInstance().inc();
       } catch (InterruptedException | IOException | DQLApiException e) {
+         logger.warn("An error was found when executing the API call to the DT tenant. Cancelling the execution...", e);
          processHandler.notifyExecutionError(e.getMessage());
          if (pollingFutureRef.get() != null) {
             pollingFutureRef.get().cancel(true);
