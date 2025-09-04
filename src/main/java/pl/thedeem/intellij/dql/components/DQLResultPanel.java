@@ -4,13 +4,15 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBScrollPane;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.components.execution.DQLExecutionTablePanel;
+import pl.thedeem.intellij.dql.sdk.errors.DQLErrorResponseException;
+import pl.thedeem.intellij.dql.sdk.errors.DQLNotAuthorizedException;
+import pl.thedeem.intellij.dql.sdk.errors.DQLResponseParsingException;
+import pl.thedeem.intellij.dql.sdk.errors.DQLResponseRedirectedException;
 import pl.thedeem.intellij.dql.sdk.model.DQLExecuteResponse;
 import pl.thedeem.intellij.dql.sdk.model.DQLPollResponse;
 import pl.thedeem.intellij.dql.sdk.model.errors.DQLAuthErrorResponse;
-import pl.thedeem.intellij.dql.sdk.model.errors.DQLErrorResponse;
 import pl.thedeem.intellij.dql.sdk.model.errors.DQLExecutionErrorResponse;
 
 import javax.swing.*;
@@ -72,25 +74,44 @@ public class DQLResultPanel extends JPanel {
       progressBar.setString(state);
    }
 
-   public void showError(@Nullable DQLErrorResponse<?> response, Exception e) {
-      String message = DQLBundle.message("runConfiguration.executeDQL.errors.unknown", e.getMessage());
-      if (response != null) {
-         if (response.error instanceof DQLAuthErrorResponse error) {
-            String details = error.message;
-            if (error.details.get("errorMessage") instanceof String msg) {
-               details = msg;
+   public void showError(Exception exception) {
+      String details = DQLBundle.message("runConfiguration.executeDQL.errors.noDetails");
+      String message = switch (exception) {
+         case DQLErrorResponseException error -> {
+            if (error.getResponse() != null) {
+               DQLExecutionErrorResponse reason = error.getResponse().error;
+               details = reason.message;
+               if (reason.details.errorMessage instanceof String msg) {
+                  details = msg;
+               }
             }
-            message = DQLBundle.message("runConfiguration.executeDQL.errors.unauthorized", details);
-         } else if (response.error instanceof DQLExecutionErrorResponse error) {
-            String details = error.message;
-            if (error.details.errorMessage instanceof String msg) {
-               details = msg;
-            }
-            message = DQLBundle.message("runConfiguration.executeDQL.errors.execution", details);
+            yield  DQLBundle.message("runConfiguration.executeDQL.errors.execution", details);
          }
-      } else if (e instanceof InterruptedException) {
-         message = DQLBundle.message("runConfiguration.executeDQL.indicator.cancelled", e.getMessage());
-      }
+         case DQLNotAuthorizedException error -> {
+            if (error.getResponse() != null) {
+               DQLAuthErrorResponse reason = error.getResponse().error;
+               details = reason.message;
+               if (reason.details.get("errorMessage") instanceof String msg) {
+                  details = msg;
+               }
+            }
+            yield DQLBundle.message("runConfiguration.executeDQL.errors.unauthorized", details);
+         }
+         case DQLResponseParsingException error -> {
+            if (error.getResponse() != null) {
+               details = error.getResponse();
+            }
+            yield DQLBundle.message("runConfiguration.executeDQL.errors.parsing", details);
+         }
+         case DQLResponseRedirectedException error -> {
+            if (error.getRedirectionUrl() != null) {
+               details = error.getRedirectionUrl();
+            }
+            yield DQLBundle.message("runConfiguration.executeDQL.errors.redirected", details);
+         }
+         case InterruptedException ignored -> DQLBundle.message("runConfiguration.executeDQL.indicator.cancelled", exception.getMessage());
+         default -> DQLBundle.message("runConfiguration.executeDQL.errors.unknown", exception.getMessage());
+      };
 
       resultsPanel.removeAll();
       resultsPanel.add(new JBScrollPane(createInformationComponent(message, AllIcons.General.Error)), BorderLayout.CENTER);

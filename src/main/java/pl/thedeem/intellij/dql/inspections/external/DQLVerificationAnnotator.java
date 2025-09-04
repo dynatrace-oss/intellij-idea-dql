@@ -13,8 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.executing.DQLParsedQuery;
 import pl.thedeem.intellij.dql.sdk.DynatraceRestClient;
-import pl.thedeem.intellij.dql.sdk.errors.DQLErrorResponseException;
-import pl.thedeem.intellij.dql.sdk.errors.DQLNotAuthorizedException;
+import pl.thedeem.intellij.dql.sdk.errors.DQLApiException;
 import pl.thedeem.intellij.dql.sdk.model.DQLSyntaxErrorPositionDetails;
 import pl.thedeem.intellij.dql.sdk.model.DQLVerifyPayload;
 import pl.thedeem.intellij.dql.sdk.model.DQLVerifyResponse;
@@ -51,7 +50,7 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
                 DQLParsedQuery parsedQuery = new DQLParsedQuery(input.file);
                 DQLVerifyResponse response = client.verifyDQL(new DQLVerifyPayload(parsedQuery.getParsedQuery()), apiToken);
                 return new Result(response, parsedQuery);
-            } catch (IOException | InterruptedException | DQLNotAuthorizedException | DQLErrorResponseException e) {
+            } catch (IOException | InterruptedException | DQLApiException e) {
                 return new Result(new DQLVerifyResponse(), null);
             }
         }
