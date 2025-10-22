@@ -152,5 +152,33 @@
         ]
       }
     ]
+  },
+  "load": {
+    "name": "load",
+    "description": "Loads data from the specified resource. The load command is used with lookup data.",
+    "type": "data-source-commands",
+    "syntax": [
+      "load tabularFile [, offset]"
+    ],
+    "parameters": [
+      {
+        "name": "tabularFile",
+        "description": "The name of the tabular file to load.",
+        "required": true,
+        "constant": true,
+        "type": [
+          "string"
+        ]
+      },
+      {
+        "name": "offset",
+        "description": "The number of skipped records.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "long"
+        ]
+      }
+    ]
   }
 }
