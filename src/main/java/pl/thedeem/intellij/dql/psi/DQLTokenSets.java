@@ -4,7 +4,7 @@ import com.intellij.psi.tree.TokenSet;
 
 public interface DQLTokenSets {
     TokenSet COMMENTS = TokenSet.create(DQLTypes.EOL_COMMENT, DQLTypes.ML_COMMENT);
-    TokenSet ALL_OPERATORS = TokenSet.create(DQLTypes.EQUALS, DQLTypes.NOT_EQUALS, DQLTypes.GREATER_THAN,
+    TokenSet ALL_OPERATORS = TokenSet.create(DQLTypes.EQUALS, DQLTypes.NOT_EQUALS, DQLTypes.NOT_EQUALS_LG, DQLTypes.GREATER_THAN,
             DQLTypes.GREATER_OR_EQUALS_THAN, DQLTypes.LESSER_THAN, DQLTypes.LESSER_OR_EQUALS_THAN, DQLTypes.PIPE,
             DQLTypes.ADD, DQLTypes.SUBTRACT, DQLTypes.MULTIPLY, DQLTypes.DIVIDE, DQLTypes.MODULO, DQLTypes.AT);
     TokenSet WORD_EXPRESSION_OPERATORS = TokenSet.create(

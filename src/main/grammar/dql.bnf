@@ -32,6 +32,7 @@
         PIPE = '|'
         EQUALS = '=='
         NOT_EQUALS = '!='
+        NOT_EQUALS_LG = '<>'
         GREATER_OR_EQUALS_THAN = '>='
         LESSER_OR_EQUALS_THAN = '<='
         GREATER_THAN = '>'
@@ -119,7 +120,7 @@ equality_expression ::= expression equality_operator expression {
     mixin="pl.thedeem.intellij.dql.psi.elements.impl.EqualityExpressionImpl"
     implements="pl.thedeem.intellij.dql.psi.elements.EqualityExpression"
 }
-equality_operator ::= EQUALS | NOT_EQUALS {
+equality_operator ::= EQUALS | NOT_EQUALS | NOT_EQUALS_LG {
     mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
 }
 

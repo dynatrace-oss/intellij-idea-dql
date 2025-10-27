@@ -102,7 +102,7 @@ public class DQLOperationTarget {
             case MULTIPLY -> Set.of(DQLTypes.MULTIPLY);
             case DIVIDE -> Set.of(DQLTypes.DIVIDE);
             case MODULO -> Set.of(DQLTypes.MODULO);
-            case EQUALITY -> Set.of(DQLTypes.EQUALS, DQLTypes.NOT_EQUALS);
+            case EQUALITY -> Set.of(DQLTypes.EQUALS, DQLTypes.NOT_EQUALS, DQLTypes.NOT_EQUALS_LG);
             case COMPARISON -> Set.of(DQLTypes.GREATER_THAN, DQLTypes.GREATER_OR_EQUALS_THAN, DQLTypes.LESSER_THAN, DQLTypes.LESSER_OR_EQUALS_THAN);
             default -> Set.of();
         };
