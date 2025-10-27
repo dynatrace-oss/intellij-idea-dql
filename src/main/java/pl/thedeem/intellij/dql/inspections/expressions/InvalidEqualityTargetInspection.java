@@ -11,8 +11,7 @@ import java.util.Set;
 public class InvalidEqualityTargetInspection extends BaseInspection {
     public static final Set<Class<?>> ALLOWED_EXPRESSIONS = Set.of(
             DQLConditionExpression.class,
-            DQLAdditiveExpression.class,
-            DQLMultiplicativeExpression.class,
+            DQLArithmeticalExpression.class,
             DQLEqualityExpression.class,
             DQLComparisonExpression.class,
             DQLUnaryExpression.class,

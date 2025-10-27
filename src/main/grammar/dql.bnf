@@ -84,26 +84,48 @@ multiline_comment ::= ML_COMMENT { pin=1 extends=comment }
 // Supported expression types
 expression ::=
     assign_expression |
-    condition_expression |
-    comparison_expression |
     unary_expression |
-    multiplicative_expression |
-    additive_expression |
+    condition_expression |
     equality_expression |
-    bracket_expression |
-    negative_value_expression |
-    array_expression |
-    parameter_expression |
+    comparison_expression |
+    arithmetical_expression |
+    primary_expression
+
+private primary_expression ::=
     parenthesised_expression |
-    in_expression |
+    function_call_expression |
+    negative_value_expression |
+    field_expression |
+    variable_expression |
+    array_expression |
     time_alignment_now_expression |
     time_alignment_at_expression |
     sort_expression |
-    function_call_expression |
     subquery_expression |
-    variable_expression |
-    field_expression |
+    in_expression |
+    parameter_expression |
+    bracket_expression |
     simple_expression
+
+simple_expression ::=
+    boolean |
+    string |
+    number |
+    duration |
+    null
+
+arithmetical_expression ::= expression (additive_operator | multiplicative_operator) expression {
+   pin=2
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.ArithmeticalExpressionImpl"
+   implements="pl.thedeem.intellij.dql.psi.elements.ArithmeticalExpression"
+   rightAssociative=true
+}
+multiplicative_operator ::= MULTIPLY | DIVIDE | MODULO {
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
+}
+additive_operator ::= ADD | SUBTRACT {
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
+}
 
 condition_expression ::= expression condition_operator expression {
     pin=2
@@ -129,24 +151,6 @@ comparison_expression ::= expression comparison_operator expression {
     implements="pl.thedeem.intellij.dql.psi.elements.ComparisonExpression"
 }
 comparison_operator ::= GREATER_THAN | GREATER_OR_EQUALS_THAN | LESSER_THAN | LESSER_OR_EQUALS_THAN {
-   mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
-}
-
-multiplicative_expression ::= expression multiplicative_operator expression {
-   pin=2
-   mixin="pl.thedeem.intellij.dql.psi.elements.impl.MultiplicativeExpressionImpl"
-   implements="pl.thedeem.intellij.dql.psi.elements.ArithmeticalExpression"
-}
-multiplicative_operator ::= MULTIPLY | DIVIDE | MODULO {
-   mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
-}
-
-additive_expression ::= expression additive_operator expression {
-   pin=2
-   mixin="pl.thedeem.intellij.dql.psi.elements.impl.AdditiveExpressionImpl"
-   implements="pl.thedeem.intellij.dql.psi.elements.ArithmeticalExpression"
-}
-additive_operator ::= ADD | SUBTRACT {
    mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
 }
 
@@ -246,14 +250,8 @@ array_expression_accessor ::= expression { extends=expression }
 negative_value_expression ::= SUBTRACT expression {
     mixin="pl.thedeem.intellij.dql.psi.elements.impl.NegativeValueExpressionImpl"
     implements="pl.thedeem.intellij.dql.psi.elements.NegativeValueExpression"
+    rightAssociative=true
 }
-
-simple_expression ::=
-    boolean |
-    string |
-    number |
-    duration |
-    null
 
 // Field types
 field_expression ::= field_name | escaped_field_name {

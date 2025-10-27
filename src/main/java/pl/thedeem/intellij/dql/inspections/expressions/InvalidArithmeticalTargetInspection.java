@@ -15,8 +15,7 @@ public class InvalidArithmeticalTargetInspection extends BaseInspection {
             DQLDuration.class,
             DQLFieldExpression.class,
             DQLVariableExpression.class,
-            DQLAdditiveExpression.class,
-            DQLMultiplicativeExpression.class,
+            DQLArithmeticalExpression.class,
             DQLFunctionCallExpression.class,
             DQLArrayExpression.class,
             DQLTimeAlignmentNowExpression.class,
@@ -29,14 +28,8 @@ public class InvalidArithmeticalTargetInspection extends BaseInspection {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitMultiplicativeExpression(@NotNull DQLMultiplicativeExpression expression) {
-                super.visitMultiplicativeExpression(expression);
-                validateArithmeticalTarget(holder, expression.getExpressionList());
-            }
-
-            @Override
-            public void visitAdditiveExpression(@NotNull DQLAdditiveExpression expression) {
-                super.visitAdditiveExpression(expression);
+            public void visitArithmeticalExpression(@NotNull DQLArithmeticalExpression expression) {
+                super.visitArithmeticalExpression(expression);
                 validateArithmeticalTarget(holder, expression.getExpressionList());
             }
         };

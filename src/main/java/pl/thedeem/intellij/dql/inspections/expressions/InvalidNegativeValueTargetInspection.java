@@ -12,8 +12,7 @@ public class InvalidNegativeValueTargetInspection extends BaseInspection {
     public static final Set<Class<?>> ALLOWED_EXPRESSIONS = Set.of(
             DQLDuration.class,
             DQLNumber.class,
-            DQLAdditiveExpression.class,
-            DQLMultiplicativeExpression.class,
+            DQLArithmeticalExpression.class,
             DQLFieldExpression.class,
             DQLVariableExpression.class,
             DQLNegativeValueExpression.class,
