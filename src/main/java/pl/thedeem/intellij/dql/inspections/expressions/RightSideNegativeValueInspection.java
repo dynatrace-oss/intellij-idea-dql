@@ -16,15 +16,8 @@ public class RightSideNegativeValueInspection extends LocalInspectionTool {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitMultiplicativeExpression(@NotNull DQLMultiplicativeExpression expression) {
-                super.visitMultiplicativeExpression(expression);
-                List<DQLExpression> expressions = expression.getExpressionList();
-                handleExpressions(expressions.getFirst(), expressions.getLast(), holder);
-            }
-
-            @Override
-            public void visitAdditiveExpression(@NotNull DQLAdditiveExpression expression) {
-                super.visitAdditiveExpression(expression);
+            public void visitArithmeticalExpression(@NotNull DQLArithmeticalExpression expression) {
+                super.visitArithmeticalExpression(expression);
                 List<DQLExpression> expressions = expression.getExpressionList();
                 handleExpressions(expressions.getFirst(), expressions.getLast(), holder);
             }
@@ -34,7 +27,7 @@ public class RightSideNegativeValueInspection extends LocalInspectionTool {
     private void handleExpressions(DQLExpression leftSide, DQLExpression rightSide, @NotNull ProblemsHolder holder) {
         if (leftSide instanceof DQLNegativeValueExpression) {
             PsiElement parent = leftSide.getParent();
-            if (parent instanceof DQLAdditiveExpression || parent instanceof DQLMultiplicativeExpression) {
+            if (parent instanceof DQLArithmeticalExpression) {
                 holder.registerProblem(
                         leftSide,
                         DQLBundle.message("inspection.rightSideNegativeValue.shouldBeParenthesized"),

@@ -4,11 +4,10 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.psi.DQLArithmeticalExpression;
 import pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.inspections.BaseInspection;
-import pl.thedeem.intellij.dql.psi.DQLAdditiveExpression;
-import pl.thedeem.intellij.dql.psi.DQLMultiplicativeExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 import pl.thedeem.intellij.dql.psi.elements.ArithmeticalExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseElement;
@@ -21,14 +20,8 @@ public class UnsupportedArithmeticalTypeInspection extends BaseInspection {
   public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
     return new DQLVisitor() {
       @Override
-      public void visitMultiplicativeExpression(@NotNull DQLMultiplicativeExpression expression) {
-        super.visitMultiplicativeExpression(expression);
-        validateArithmeticalType(holder, expression);
-      }
-
-      @Override
-      public void visitAdditiveExpression(@NotNull DQLAdditiveExpression expression) {
-        super.visitAdditiveExpression(expression);
+      public void visitArithmeticalExpression(@NotNull DQLArithmeticalExpression expression) {
+        super.visitArithmeticalExpression(expression);
         validateArithmeticalType(holder, expression);
       }
     };

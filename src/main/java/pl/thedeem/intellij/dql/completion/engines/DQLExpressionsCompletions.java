@@ -21,12 +21,7 @@ public class DQLExpressionsCompletions {
    private void autocompleteExpression(DQLExpression expression, CompletionResultSet result) {
       DQLDefinitionService service = DQLDefinitionService.getInstance(expression.getProject());
       switch (expression) {
-         case DQLAdditiveExpression ignored -> {
-            for (DQLFunctionDefinition function : service.getFunctionByTypes(DQLDataType.NUMERICAL_TYPES)) {
-               AutocompleteUtils.autocompleteFunction(function, result);
-            }
-         }
-         case DQLMultiplicativeExpression ignored -> {
+         case DQLArithmeticalExpression ignored -> {
             for (DQLFunctionDefinition function : service.getFunctionByTypes(DQLDataType.NUMERICAL_TYPES)) {
                AutocompleteUtils.autocompleteFunction(function, result);
             }

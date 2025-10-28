@@ -150,16 +150,14 @@ public class DQLBlock extends AbstractBlock {
             return Wrap.createWrap(WrapType.NONE, true);
         }
         if (settings.WRAP_LONG_EXPRESSIONS) {
-            if (
-                    DQLTypes.MULTIPLICATIVE_EXPRESSION == elementType
-                            || DQLTypes.ADDITIVE_EXPRESSION == elementType
-                            || DQLTypes.QUERY_STATEMENT == elementType
-                            || DQLTypes.CONDITION_EXPRESSION == elementType
-                            || DQLTypes.PARENTHESISED_EXPRESSION == elementType
-                            || DQLTypes.FUNCTION_CALL_EXPRESSION == elementType
-                            || DQLTypes.COMPARISON_EXPRESSION == elementType
-                            || DQLTypes.ASSIGN_EXPRESSION == elementType
-                            || DQLTypes.EQUALITY_EXPRESSION == elementType
+            if (DQLTypes.ARITHMETICAL_EXPRESSION == elementType
+                    || DQLTypes.QUERY_STATEMENT == elementType
+                    || DQLTypes.CONDITION_EXPRESSION == elementType
+                    || DQLTypes.PARENTHESISED_EXPRESSION == elementType
+                    || DQLTypes.FUNCTION_CALL_EXPRESSION == elementType
+                    || DQLTypes.COMPARISON_EXPRESSION == elementType
+                    || DQLTypes.ASSIGN_EXPRESSION == elementType
+                    || DQLTypes.EQUALITY_EXPRESSION == elementType
             ) {
                 return Wrap.createWrap(WrapType.CHOP_DOWN_IF_LONG, true);
             }
@@ -191,16 +189,15 @@ public class DQLBlock extends AbstractBlock {
     }
 
     private boolean isExpressionWithOperands(PsiElement element) {
-        return element instanceof DQLAdditiveExpression
-               || element instanceof DQLMultiplicativeExpression
-               || element instanceof DQLUnaryExpression
-               || element instanceof DQLComparisonExpression
-               || element instanceof DQLConditionExpression
-               || element instanceof DQLEqualityExpression
-               || element instanceof DQLAssignExpression
-               || element instanceof DQLInExpression
-               || element instanceof DQLTimeAlignmentNowExpression
-               || element instanceof DQLTimeAlignmentAtExpression
-               || element instanceof DQLSortExpression;
+        return element instanceof DQLArithmeticalExpression
+                || element instanceof DQLUnaryExpression
+                || element instanceof DQLComparisonExpression
+                || element instanceof DQLConditionExpression
+                || element instanceof DQLEqualityExpression
+                || element instanceof DQLAssignExpression
+                || element instanceof DQLInExpression
+                || element instanceof DQLTimeAlignmentNowExpression
+                || element instanceof DQLTimeAlignmentAtExpression
+                || element instanceof DQLSortExpression;
     }
 }
