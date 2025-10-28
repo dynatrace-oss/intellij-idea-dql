@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.0.4] - 2025-10-28
+
 ### Bug fixes
 
 - #11: Fixed the issue with an invalid expressions precedences
@@ -73,7 +75,8 @@
   - the file supports specifying `record` (JSON object), `array` (JSON array), `string`, `boolean`, `number`, and
     `null` types.
 
-[Unreleased]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.3...HEAD
+[Unreleased]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.4...HEAD
+[1.0.4]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.0...v1.0.1
