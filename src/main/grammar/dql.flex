@@ -82,6 +82,7 @@ ML_COMMENT_FINISH="*/"
   "|"                              { return DQLTypes.PIPE; }
   "=="                             { return DQLTypes.EQUALS; }
   "!="                             { return DQLTypes.NOT_EQUALS; }
+  "<>"                             { return DQLTypes.NOT_EQUALS_LG; }
   ">="                             { return DQLTypes.GREATER_OR_EQUALS_THAN; }
   "<="                             { return DQLTypes.LESSER_OR_EQUALS_THAN; }
   ">"                              { return DQLTypes.GREATER_THAN; }
