@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Bug fixes
+
+- #11: Fixed the issue with an invalid expressions precedences
+
+### Other
+
+- #12: Adding support for the `load` command
+- Added support for the `<>` operator which is an alternative to `!=`
+
 ## [1.0.3] - 2025-09-04
 
 ### Bug fixes
