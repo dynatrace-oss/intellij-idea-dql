@@ -23,7 +23,8 @@ public class InvalidNegationTargetInspection extends BaseInspection {
             DQLFunctionCallExpression.class,
             DQLArrayExpression.class,
             DQLParenthesisedExpression.class,
-            DQLInExpression.class
+            DQLInExpression.class,
+            DQLSearchExpression.class
     );
 
     public static final Set<DQLDataType> ALLOWED_DATA_TYPES = Set.of(DQLDataType.BOOLEAN);

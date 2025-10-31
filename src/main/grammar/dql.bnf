@@ -57,6 +57,7 @@
         XOR = 'xor'
         NOT = 'not'
         AT = '@'
+        SEARCH = '~'
       ]
 }
 
@@ -106,6 +107,7 @@ private primary_expression ::=
     in_expression |
     parameter_expression |
     bracket_expression |
+    search_expression |
     simple_expression
 
 simple_expression ::=
@@ -188,6 +190,14 @@ bracket_expression ::= L_BRACE bracket_expression_content? R_BRACE {
 private bracket_expression_content ::=  bracket_expression_item (COMMA bracket_expression_item)*
 private bracket_expression_item ::= expression { recoverWhile=recover_bracket_content }
 
+search_expression ::= expression search_operator expression {
+    pin=2
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.SearchExpressionImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.SearchExpression"
+}
+search_operator ::= SEARCH {
+  mixin="pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl"
+}
 subquery_expression ::= ARRAY_OPEN subquery_expression_content? ARRAY_CLOSE {
     pin=1
     mixin="pl.thedeem.intellij.dql.psi.elements.impl.SubqueryExpressionImpl"
