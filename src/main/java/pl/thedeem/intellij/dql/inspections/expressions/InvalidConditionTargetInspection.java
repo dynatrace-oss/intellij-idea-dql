@@ -23,7 +23,8 @@ public class InvalidConditionTargetInspection extends BaseInspection {
             DQLFunctionCallExpression.class,
             DQLParenthesisedExpression.class,
             DQLArrayExpression.class,
-            DQLInExpression.class
+            DQLInExpression.class,
+            DQLSearchExpression.class
     );
 
     public static final Set<DQLDataType> ALLOWED_DATA_TYPES = Set.of(DQLDataType.BOOLEAN);
