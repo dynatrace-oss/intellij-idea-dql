@@ -103,6 +103,7 @@ ML_COMMENT_FINISH="*/"
   "/"                              { return DQLTypes.DIVIDE; }
   "%"                              { return DQLTypes.MODULO; }
   "@"                              { return DQLTypes.AT; }
+  "~"                              { return DQLTypes.SEARCH; }
   "$"{IDENTIFIER}                  { return DQLTypes.VARIABLE; }
   {NUMBERED_IDENTIFIER}            { return DQLTypes.NUMBERED_IDENTIFIER; }
   {POSITIVE_LONG}                  { return DQLTypes.POSITIVE_LONG; }

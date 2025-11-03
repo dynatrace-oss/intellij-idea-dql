@@ -18,6 +18,7 @@ public class InvalidEqualityTargetInspection extends BaseInspection {
             DQLArrayExpression.class,
             DQLSimpleExpression.class,
             DQLInExpression.class,
+            DQLSearchExpression.class,
             DQLTimeAlignmentNowExpression.class,
             DQLTimeAlignmentAtExpression.class,
             DQLFieldExpression.class,

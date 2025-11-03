@@ -27,7 +27,8 @@ public class InvalidAssignTargetInspection extends BaseInspection {
             DQLArrayExpression.class,
             DQLParenthesisedExpression.class,
             DQLFunctionCallExpression.class,
-            DQLNegativeValueExpression.class
+            DQLNegativeValueExpression.class,
+            DQLSearchExpression.class
     );
 
     @Override
