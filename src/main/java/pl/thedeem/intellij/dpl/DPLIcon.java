@@ -7,7 +7,7 @@ import javax.swing.*;
 
 public interface DPLIcon {
     Icon DYNATRACE_LOGO = IconLoader.getIcon("/icons/dynatrace.png", DPLIcon.class);
-    Icon CONFIGURATION = AllIcons.General.Menu;
+    Icon CONFIGURATION = AllIcons.Actions.Edit;
     Icon QUANTIFIER = AllIcons.General.Note;
     Icon CONFIGURATION_PARAMETER = AllIcons.Nodes.Parameter;
     Icon COMMAND = AllIcons.Nodes.Class;
@@ -17,7 +17,7 @@ public interface DPLIcon {
     Icon LITERAL = AllIcons.Nodes.Word;
     Icon EXPRESSION = AllIcons.Nodes.Method;
     Icon NUMBER = AllIcons.Nodes.PropertyReadStatic;
-    Icon LOOKAROUND = AllIcons.General.RefreshAuto;
+    Icon LOOKAROUND = AllIcons.Actions.Redo;
     Icon NULL = AllIcons.Nodes.C_private;
     Icon MATCHERS = AllIcons.Json.Object;
     Icon KEY = AllIcons.Nodes.AbstractMethod;

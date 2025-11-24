@@ -18,5 +18,5 @@ public interface ExpressionElement extends PsiElement {
 
     @Nullable DPLFieldName getMemberName();
 
-    public boolean isMembersListExpression();
+    boolean isMembersListExpression();
 }

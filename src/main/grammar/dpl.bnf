@@ -139,20 +139,18 @@ command_matchers ::= L_BRACE command_matchers_content? R_BRACE {
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.CommandMatchersElementImpl"
 }
 
-command_matchers_content ::= parameters_matchers_list | members_list_matchers | expression_matchers_list {
-    pin=1
-    recoverWhile=recover_matchers_content
-}
-expression_matchers_list ::= expression_definition+ {
+command_matchers_content ::= parameters_matchers_list | members_list_matchers | expression_matchers_list
+expression_matchers_list ::= matcher_item+ {
     extends=command_matchers_content
 }
 parameters_matchers_list ::= matcher (COMMA matcher)* {
     extends=command_matchers_content
 }
-members_list_matchers ::= expression_definition COMMA expression_definition (COMMA expression_definition)* {
+members_list_matchers ::= matcher_item COMMA matcher_item (COMMA matcher_item)* {
     pin=2
     extends=command_matchers_content
 }
+private matcher_item ::= expression_definition
 matcher ::= matcher_name SET simple_expression {
     pin=2
     implements="pl.thedeem.intellij.dpl.psi.elements.MatcherElement"
@@ -270,7 +268,6 @@ variable ::= VARIABLE_NAME {
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.VariableElementImpl"
 }
 
-private recover_matchers_content ::= !(SET|COMMA|R_BRACE)
 private recover_configuration_content ::= !(SET|COMMA|R_PAREN)
 private recover_sequence_content ::= !(R_PAREN)
 private recover_alternative_content ::= !(OR|R_PAREN)

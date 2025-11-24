@@ -107,9 +107,6 @@ public abstract class ExpressionElementImpl extends ASTWrapperPsiElement impleme
 
     @Override
     public boolean isMembersListExpression() {
-        if (getParent() instanceof DPLMembersListMatchers) {
-            return true;
-        }
         if (getParent() instanceof DPLCommandMatchersContent matchers) {
             DPLCommandExpression parentExpression = PsiTreeUtil.getParentOfType(matchers, DPLCommandExpression.class);
             if (parentExpression == null) {
