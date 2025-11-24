@@ -5,7 +5,7 @@
 ### Features
 
 - Added support for other JetBrains tools (like WebStorm)
-- Added support for Dynatrace Pattern Language files (`.dql`)
+- Added support for Dynatrace Pattern Language files (`.dpl`)
   - The support is also automatically added to the DQL `parse` command
   - Customizable syntax highlighting
   - Local code inspections with quick fixes if possible
