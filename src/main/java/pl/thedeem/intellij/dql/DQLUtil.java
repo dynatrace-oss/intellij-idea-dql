@@ -1,9 +1,7 @@
 package pl.thedeem.intellij.dql;
 
-import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.credentialStore.CredentialAttributes;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.patterns.ElementPattern;
@@ -111,20 +109,6 @@ public class DQLUtil {
          }
       }
       return result;
-   }
-
-   public static Character getLastNonEmptyCharacterFromDocument(InsertionContext context) {
-      int i = context.getStartOffset();
-      String result;
-      do {
-         result = getStringFromDocument(context, i - 1, i);
-         i--;
-      } while (result.isBlank() && !result.isEmpty());
-      return !result.isEmpty() ? result.charAt(0) : null;
-   }
-
-   public static String getStringFromDocument(InsertionContext context, int startOffset, int endOffset) {
-      return context.getDocument().getText(new TextRange(Math.max(0, startOffset), Math.max(0, endOffset)));
    }
 
    public static PsiElement getPreviousElement(PsiElement element) {

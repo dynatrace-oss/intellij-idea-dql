@@ -1,0 +1,16 @@
+<html lang="en">
+<body>
+Verifies the usage of supported expression configuration.
+
+<p>
+    This inspection reports an error if it detects an unknown parameter for an expression.
+</p>
+
+<pre><code>
+'// This reports an error, because the unknownParameter is not a valid configuration option'
+DATA(charset="ISO-8859-1", unknownParameter=true)
+</code></pre>
+
+After applying the quick fix, the unknown option will be dropped.
+</body>
+</html>

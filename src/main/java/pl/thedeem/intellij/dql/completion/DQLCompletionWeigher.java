@@ -2,6 +2,7 @@ package pl.thedeem.intellij.dql.completion;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementWeigher;
+import pl.thedeem.intellij.common.completion.CompletionUtils;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +16,7 @@ public class DQLCompletionWeigher extends LookupElementWeigher {
     }
 
     public @Nullable Comparable<?> weigh(@NotNull LookupElement element) {
-        String userData = element.getUserData(AutocompleteUtils.LOOKUP_ELEMENT_KIND_KEY);
+        String userData = element.getUserData(CompletionUtils.LOOKUP_ELEMENT_KIND_KEY);
         if (userData != null) {
             if (List.of(AutocompleteUtils.STATIC, AutocompleteUtils.BOOLEAN, AutocompleteUtils.QUERY_START).contains(userData)) {
                 return 0;

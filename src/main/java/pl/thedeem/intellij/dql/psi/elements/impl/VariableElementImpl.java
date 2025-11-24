@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLElementFactory;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 import pl.thedeem.intellij.dql.psi.elements.VariableElement;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
@@ -68,7 +68,7 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(this.getName(), this, DQLIcon.DQL_VARIABLE);
+        return new StandardItemPresentation(this.getName(), this, DQLIcon.DQL_VARIABLE);
     }
 
     @Override

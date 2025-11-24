@@ -8,12 +8,13 @@ import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.*;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
 import pl.thedeem.intellij.dql.psi.DQLFunctionName;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.FunctionCallExpression;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
@@ -131,7 +132,7 @@ public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement im
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(getName(), this, DQLIcon.DQL_FUNCTION);
+        return new StandardItemPresentation(getName(), this, DQLIcon.DQL_FUNCTION);
     }
 
     @Override
@@ -142,6 +143,11 @@ public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement im
                 .addPart(getFunctionArguments(), ",")
                 .addPart(")")
                 .getFieldName();
+    }
+
+    @Override
+    public @Nullable DQLParameterObject findParameter(@NotNull String name) {
+        return getParameters().stream().filter(p -> name.equals(p.getName())).findFirst().orElse(null);
     }
 
     private List<DQLParameterObject> recalculateParameters() {

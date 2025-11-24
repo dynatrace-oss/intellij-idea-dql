@@ -7,7 +7,7 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.template.Template;
 import com.intellij.codeInsight.template.TemplateManager;
 import com.intellij.openapi.editor.Editor;
-import pl.thedeem.intellij.dql.DQLUtil;
+import pl.thedeem.intellij.common.LangUtils;
 import pl.thedeem.intellij.dql.definition.DQLCommandDefinition;
 import pl.thedeem.intellij.dql.definition.DQLCommandGroup;
 import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
@@ -31,7 +31,7 @@ public class DQLStatementInsertionHandler implements InsertHandler<LookupElement
         Template template = templateManager.createTemplate("", "");
         template.setToReformat(true);
 
-        Character lastNonEmptyCharacter = DQLUtil.getLastNonEmptyCharacterFromDocument(context);
+        Character lastNonEmptyCharacter = LangUtils.getPreviousNonEmptyCharacterFromDocument(context);
         if ((lastNonEmptyCharacter == null || lastNonEmptyCharacter != '|') && !DQLCommandGroup.STARTING_COMMAND_TYPES.contains(definition.getCommandGroup())) {
             template.addTextSegment("| ");
         }

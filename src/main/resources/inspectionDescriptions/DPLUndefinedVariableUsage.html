@@ -1,0 +1,18 @@
+<html lang="en">
+<body>
+Ensures all used variables are defined.
+
+<p>
+    This inspection will report an error if it discovers a variable usage that wasn't defined in the pattern.
+</p>
+
+<pre><code>
+'// We are defining the $variable'
+$variable = INT:i;
+'// This is an error: we are using $variable2, which was not defined'
+LONG:l $variable2
+</code></pre>
+
+After applying the quick fix, the unused variable will be dropped or a definition for the variable will be added.
+</body>
+</html>

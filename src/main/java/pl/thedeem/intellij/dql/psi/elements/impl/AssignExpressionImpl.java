@@ -10,7 +10,7 @@ import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.DQLSubqueryExpression;
 import pl.thedeem.intellij.dql.psi.elements.AssignExpression;
 
@@ -36,7 +36,7 @@ public abstract class AssignExpressionImpl extends TwoSidesExpressionImpl implem
     public ItemPresentation getPresentation() {
         DQLExpression leftExpression = getLeftExpression();
         String text = leftExpression != null ? leftExpression.getText() : getText();
-        return new DQLItemPresentation(DQLBundle.message("presentation.assignExpression", text), this, DQLIcon.DQL_EXPRESSION);
+        return new StandardItemPresentation(DQLBundle.message("presentation.assignExpression", text), this, DQLIcon.DQL_EXPRESSION);
     }
 
     @Override

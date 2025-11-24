@@ -1,0 +1,1 @@
+INT:i LONG:l ',' ENUM{'success'=0, 'error'=1}?:<caret>myField

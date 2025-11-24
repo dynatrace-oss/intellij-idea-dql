@@ -13,7 +13,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.psi.elements.ArithmeticalExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
@@ -54,7 +54,7 @@ public class ArithmeticalExpressionImpl extends TwoSidesExpressionImpl implement
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(DQLBundle.message("presentation.arithmeticalExpression"), this, DQLIcon.DQL_EXPRESSION);
+        return new StandardItemPresentation(DQLBundle.message("presentation.arithmeticalExpression"), this, DQLIcon.DQL_EXPRESSION);
     }
 
     @Override

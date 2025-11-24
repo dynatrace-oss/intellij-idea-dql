@@ -7,7 +7,7 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.template.Template;
 import com.intellij.codeInsight.template.TemplateManager;
 import com.intellij.openapi.editor.Editor;
-import pl.thedeem.intellij.dql.DQLUtil;
+import pl.thedeem.intellij.common.LangUtils;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,7 +37,7 @@ public class DQLNamedParameterInsertionHandler implements InsertHandler<LookupEl
         template.setToReformat(true);
 
         if (addComma) {
-            Character lastNonEmptyCharacter = DQLUtil.getLastNonEmptyCharacterFromDocument(context);
+            Character lastNonEmptyCharacter = LangUtils.getPreviousNonEmptyCharacterFromDocument(context);
             if (lastNonEmptyCharacter != null && !VALID_CHARACTERS_BEHIND.contains(lastNonEmptyCharacter)) {
                 template.addTextSegment(", ");
             }

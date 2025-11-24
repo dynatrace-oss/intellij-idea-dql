@@ -7,7 +7,7 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.elements.CommandKeyword;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +23,7 @@ public abstract class CommandKeywordImpl extends ASTWrapperPsiElement implements
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(getName(), this, DQLIcon.DQL_QUERY_COMMAND);
+        return new StandardItemPresentation(getName(), this, DQLIcon.DQL_QUERY_COMMAND);
     }
 
     @Override

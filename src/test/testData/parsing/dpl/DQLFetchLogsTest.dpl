@@ -1,0 +1,4 @@
+$macro1 = (INT* 'some string' DIGIT{1,10})?:sequence;$macro2 = (LD | ENUM{'success'=1, 'error'=2}):alternative_group;
+JSON{ IPADDR:"ip",INT:"port",TIMESTAMP('yyyy-MM-dd HH:mm:ss Z'):"client time" }(greedy='other members'):host
+KVP{ [a-z]:key '='{2} INT:value ' '? }:attr TIMESTAMP:date_time ','{,1} IPADDR:ip           ','+ LD:username         ','{1,} LD
+!<<IPADDR:ip_addr <<INT(min=50,max=100) EOL

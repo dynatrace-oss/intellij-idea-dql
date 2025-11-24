@@ -1,0 +1,2 @@
+$macro = INT;
+INT $macro $m<caret>acro;

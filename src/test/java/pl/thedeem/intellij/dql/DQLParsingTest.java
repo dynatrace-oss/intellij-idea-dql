@@ -13,7 +13,7 @@ public class DQLParsingTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "src/test/testData/parsing";
+        return "src/test/testData/parsing/dql";
     }
 
     @Override

@@ -1,5 +1,7 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
+import org.jetbrains.grammarkit.tasks.GenerateLexerTask
+import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
@@ -115,10 +117,24 @@ changelog {
 
 grammarKit {
     tasks {
+        register<GenerateParserTask>("generateDplParser") {
+            sourceFile.set(File("src/main/grammar/dpl.bnf"))
+            targetRootOutputDir.set(File("src/main/gen"))
+            pathToParser.set("pl/thedeem/intellij/dpl/DPLParser.java")
+            pathToPsiRoot.set("pl/thedeem/intellij/dql/psi")
+            purgeOldFiles.set(true)
+        }
+
+        register<GenerateLexerTask>("generateDplLexer") {
+            sourceFile.set(File("src/main/grammar/dpl.flex"))
+            targetOutputDir.set(File("src/main/gen/pl/thedeem/intellij/dpl/psi"))
+            dependsOn(named("generateDplParser"))
+        }
+
         generateLexer {
             sourceFile.set(File("src/main/grammar/dql.flex"))
             targetOutputDir.set(File("src/main/gen/pl/thedeem/intellij/dql/psi"))
-            dependsOn(generateParser)
+            dependsOn(generateParser, named("generateDplLexer"))
         }
 
         generateParser {
@@ -127,6 +143,7 @@ grammarKit {
             pathToParser.set("pl/thedeem/intellij/dql/DQLParser.java")
             pathToPsiRoot.set("pl/thedeem/intellij/dql/psi")
             purgeOldFiles.set(true)
+            dependsOn(named("generateDplParser"))
         }
     }
 }

@@ -8,7 +8,7 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.elements.SortingExpression;
 
 import java.util.Set;
@@ -29,6 +29,6 @@ public abstract class SortingExpressionImpl extends ASTWrapperPsiElement impleme
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(DQLBundle.message("presentation.sortingExpression", getChildren().length), this, DQLIcon.DQL_EXPRESSION);
+        return new StandardItemPresentation(DQLBundle.message("presentation.sortingExpression", getChildren().length), this, DQLIcon.DQL_EXPRESSION);
     }
 }

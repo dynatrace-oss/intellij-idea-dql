@@ -1,0 +1,16 @@
+<html lang="en">
+<body>
+Ensures quantifiers are correctly defined.
+
+<p>
+    This inspection will report an error if it detects a quantifier without defining either maximum or minimum amount.
+</p>
+
+<pre><code>
+'// Will produce an error, because {} is an empty quantifier'
+DATA{}:data
+</code></pre>
+
+After applying the quick fix, the quantifiers configuration will be dropped.
+</body>
+</html>

@@ -6,7 +6,7 @@ import com.intellij.navigation.ItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.elements.NumberElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +29,7 @@ public abstract class PositiveNumberElementImpl extends ASTWrapperPsiElement imp
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(this.getName(), this, DQLIcon.DQL_NUMBER);
+        return new StandardItemPresentation(this.getName(), this, DQLIcon.DQL_NUMBER);
     }
 
     @Override

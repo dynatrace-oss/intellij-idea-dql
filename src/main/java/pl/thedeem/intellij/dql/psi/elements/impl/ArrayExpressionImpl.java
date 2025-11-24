@@ -12,7 +12,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.elements.ArrayExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 
@@ -48,7 +48,7 @@ public abstract class ArrayExpressionImpl extends TwoSidesExpressionImpl impleme
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(DQLBundle.message("presentation.arrayExpression"), this, DQLIcon.DQL_EXPRESSION);
+        return new StandardItemPresentation(DQLBundle.message("presentation.arrayExpression"), this, DQLIcon.DQL_EXPRESSION);
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.common.completion.CompletionUtils;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
@@ -57,7 +58,7 @@ public class DQLDynatraceAutocomplete {
                   if (StringUtil.isNotEmpty(suggestion.getSuggestion())) {
                      Set<String> types = suggestion.getParts().stream().map(DQLSuggestion.DQLSuggestionPart::getType).collect(Collectors.toSet());
                      if (types.contains("SIMPLE_IDENTIFIER")) {
-                        result.addElement(AutocompleteUtils.createLookupElement(
+                        result.addElement(CompletionUtils.createLookupElement(
                             suggestion.getSuggestion(),
                             DQLIcon.DQL_FIELD,
                             AutocompleteUtils.DATA_REFERENCE,
@@ -66,7 +67,7 @@ public class DQLDynatraceAutocomplete {
                         ));
                      }
                      else if (types.contains("DATA_OBJECT")){
-                        result.addElement(AutocompleteUtils.createLookupElement(
+                        result.addElement(CompletionUtils.createLookupElement(
                             suggestion.getSuggestion(),
                             DQLIcon.DQL_FIELD,
                             AutocompleteUtils.STATIC,

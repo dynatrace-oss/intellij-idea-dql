@@ -20,64 +20,64 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DQLCommandParametersCompletionTest extends LightPlatformCodeInsightFixture4TestCase {
-   @Mock
-   private DQLDefinitionLoader loaderMock;
+    @Mock
+    private DQLDefinitionLoader loaderMock;
 
-   @Override
-   protected String getTestDataPath() {
-      return "src/test/testData/completion";
-   }
+    @Override
+    protected String getTestDataPath() {
+        return "src/test/testData/completion/dql";
+    }
 
-   @Before
-   public void createService() {
-      loaderMock = mock(DQLDefinitionLoader.class);
-      ServiceContainerUtil.registerOrReplaceServiceInstance(
-          ApplicationManager.getApplication(),
-          DQLDefinitionLoader.class,
-          loaderMock,
-          getTestRootDisposable()
-      );
-   }
+    @Before
+    public void createService() {
+        loaderMock = mock(DQLDefinitionLoader.class);
+        ServiceContainerUtil.registerOrReplaceServiceInstance(
+                ApplicationManager.getApplication(),
+                DQLDefinitionLoader.class,
+                loaderMock,
+                getTestRootDisposable()
+        );
+    }
 
-   @After
-   public void cleanup() {
-      DQLDefinitionService service = myFixture.getProject().getService(DQLDefinitionService.class);
-      service.invalidateCache();
-   }
+    @After
+    public void cleanup() {
+        DQLDefinitionService service = myFixture.getProject().getService(DQLDefinitionService.class);
+        service.invalidateCache();
+    }
 
-   @Test
-   public void testAtTheEndOfCommandShouldSuggestCommandParameters() {
-      when(loaderMock.loadCommands()).thenReturn(DQLTestsUtils.createMockedCommands(List.of(
-          DQLTestsUtils.createCommand("fetch", DQLCommandGroup.DATA_SOURCE, List.of(
-              DQLTestsUtils.createParameter("source", List.of(DQLDataType.DATA_OBJECT), true, List.of(), List.of(), List.of(), null, false),
-              DQLTestsUtils.createParameter("from", List.of(DQLDataType.TIMESTAMP)),
-              DQLTestsUtils.createParameter("to", List.of(DQLDataType.TIMESTAMP))
-          ))
-      )));
-      myFixture.configureByFiles("command-without-parameters.dql");
-      myFixture.complete(CompletionType.BASIC);
+    @Test
+    public void testAtTheEndOfCommandShouldSuggestCommandParameters() {
+        when(loaderMock.loadCommands()).thenReturn(DQLTestsUtils.createMockedCommands(List.of(
+                DQLTestsUtils.createCommand("fetch", DQLCommandGroup.DATA_SOURCE, List.of(
+                        DQLTestsUtils.createParameter("source", List.of(DQLDataType.DATA_OBJECT), true, List.of(), List.of(), List.of(), null, false),
+                        DQLTestsUtils.createParameter("from", List.of(DQLDataType.TIMESTAMP)),
+                        DQLTestsUtils.createParameter("to", List.of(DQLDataType.TIMESTAMP))
+                ))
+        )));
+        myFixture.configureByFiles("command-without-parameters.dql");
+        myFixture.complete(CompletionType.BASIC);
 
-      List<String> lookupElementStrings = myFixture.getLookupElementStrings();
+        List<String> lookupElementStrings = myFixture.getLookupElementStrings();
 
-      assertNotNull(lookupElementStrings);
-      assertSameElements(lookupElementStrings, "from", "to");
-   }
+        assertNotNull(lookupElementStrings);
+        assertSameElements(lookupElementStrings, "from", "to");
+    }
 
-   @Test
-   public void testInsideCommandShouldNotSuggestAlreadyProvidedParameters() {
-      when(loaderMock.loadCommands()).thenReturn(DQLTestsUtils.createMockedCommands(List.of(
-          DQLTestsUtils.createCommand("fetch", DQLCommandGroup.DATA_SOURCE, List.of(
-              DQLTestsUtils.createParameter("source", List.of(DQLDataType.DATA_OBJECT), true, List.of(), List.of(), List.of(), null, false),
-              DQLTestsUtils.createParameter("from", List.of(DQLDataType.TIMESTAMP)),
-              DQLTestsUtils.createParameter("to", List.of(DQLDataType.TIMESTAMP))
-          ))
-      )));
-      myFixture.configureByFiles("command-with-some-parameters.dql");
-      myFixture.complete(CompletionType.BASIC);
+    @Test
+    public void testInsideCommandShouldNotSuggestAlreadyProvidedParameters() {
+        when(loaderMock.loadCommands()).thenReturn(DQLTestsUtils.createMockedCommands(List.of(
+                DQLTestsUtils.createCommand("fetch", DQLCommandGroup.DATA_SOURCE, List.of(
+                        DQLTestsUtils.createParameter("source", List.of(DQLDataType.DATA_OBJECT), true, List.of(), List.of(), List.of(), null, false),
+                        DQLTestsUtils.createParameter("from", List.of(DQLDataType.TIMESTAMP)),
+                        DQLTestsUtils.createParameter("to", List.of(DQLDataType.TIMESTAMP))
+                ))
+        )));
+        myFixture.configureByFiles("command-with-some-parameters.dql");
+        myFixture.complete(CompletionType.BASIC);
 
-      List<String> lookupElementStrings = myFixture.getLookupElementStrings();
+        List<String> lookupElementStrings = myFixture.getLookupElementStrings();
 
-      assertNotNull(lookupElementStrings);
-      assertSameElements(lookupElementStrings, "to");
-   }
+        assertNotNull(lookupElementStrings);
+        assertSameElements(lookupElementStrings, "to");
+    }
 }

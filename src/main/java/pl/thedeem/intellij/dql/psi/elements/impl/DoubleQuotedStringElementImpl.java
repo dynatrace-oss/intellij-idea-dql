@@ -4,15 +4,18 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.LiteralTextEscaper;
+import com.intellij.psi.PsiLanguageInjectionHost;
 import com.intellij.psi.util.CachedValue;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.common.StandardItemPresentation;
+import pl.thedeem.intellij.common.code.StringLiteralEscaper;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
 import pl.thedeem.intellij.dql.psi.elements.StringElement;
+import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -39,7 +42,7 @@ public abstract class DoubleQuotedStringElementImpl extends ASTWrapperPsiElement
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(this.getName(), this, DQLIcon.DQL_STRING);
+        return new StandardItemPresentation(this.getName(), this, DQLIcon.DQL_STRING);
     }
 
     @Override
@@ -67,7 +70,22 @@ public abstract class DoubleQuotedStringElementImpl extends ASTWrapperPsiElement
 
     @Override
     public TextRange getHostTextRange() {
-        return new TextRange(1, getTextLength() - 1);
+        return new TextRange(1, Math.max(1, getTextLength() - 1));
+    }
+
+    @Override
+    public boolean isValidHost() {
+        return true;
+    }
+
+    @Override
+    public PsiLanguageInjectionHost updateText(@NotNull String s) {
+        return this;
+    }
+
+    @Override
+    public @NotNull LiteralTextEscaper<? extends PsiLanguageInjectionHost> createLiteralTextEscaper() {
+        return new StringLiteralEscaper<>(this);
     }
 
     private Set<DQLDataType> recalculateDataType() {

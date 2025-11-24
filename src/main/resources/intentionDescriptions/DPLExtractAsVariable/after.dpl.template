@@ -1,0 +1,2 @@
+$newVariable =  ENUM{'success'=0, 'error'=1}?:myField;
+INT:i LONG:l ',' $newVariable

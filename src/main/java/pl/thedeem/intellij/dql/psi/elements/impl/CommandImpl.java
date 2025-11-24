@@ -10,6 +10,7 @@ import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.*;
@@ -36,7 +37,7 @@ public abstract class CommandImpl extends ASTWrapperPsiElement implements Comman
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(DQLBundle.message("presentation.command", getName()), this, DQLIcon.DQL_QUERY_COMMAND);
+        return new StandardItemPresentation(DQLBundle.message("presentation.command", getName()), this, DQLIcon.DQL_QUERY_COMMAND);
     }
 
     @Override
@@ -131,6 +132,11 @@ public abstract class CommandImpl extends ASTWrapperPsiElement implements Comman
             );
         }
         return parameterMapping.getValue().get(parameter);
+    }
+
+    @Override
+    public @Nullable DQLParameterObject findParameter(@NotNull String name) {
+        return getParameters().stream().filter(p -> name.equals(p.getName())).findFirst().orElse(null);
     }
 
     public List<DQLExpression> getParameterArguments() {

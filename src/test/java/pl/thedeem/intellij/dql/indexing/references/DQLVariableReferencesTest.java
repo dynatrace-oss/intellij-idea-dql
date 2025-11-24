@@ -7,22 +7,22 @@ import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixture4TestC
 import org.junit.Test;
 
 public class DQLVariableReferencesTest extends LightPlatformCodeInsightFixture4TestCase {
-   @Override
-   protected String getTestDataPath() {
-      return "src/test/testData/indexing/references";
-   }
+    @Override
+    protected String getTestDataPath() {
+        return "src/test/testData/indexing/references/dql";
+    }
 
-   @Test
-   public void testVariableReferenceWhenVariableHasAssignedValue() {
-      PsiReference referenceAtCaret = myFixture.getReferenceAtCaretPositionWithAssertion("assigned-variable-reference.dql", "dql-variables.json");
-      final JsonProperty resolved = assertInstanceOf(referenceAtCaret.resolve(), JsonProperty.class);
-      final JsonStringLiteral value = assertInstanceOf(resolved.getValue(), JsonStringLiteral.class);
-      assertEquals("\"logs\"", value.getText());
-   }
+    @Test
+    public void testVariableReferenceWhenVariableHasAssignedValue() {
+        PsiReference referenceAtCaret = myFixture.getReferenceAtCaretPositionWithAssertion("assigned-variable-reference.dql", "dql-variables.json");
+        final JsonProperty resolved = assertInstanceOf(referenceAtCaret.resolve(), JsonProperty.class);
+        final JsonStringLiteral value = assertInstanceOf(resolved.getValue(), JsonStringLiteral.class);
+        assertEquals("\"logs\"", value.getText());
+    }
 
-   @Test
-   public void testVariableReferenceForUnassignedVariable() {
-      PsiReference referenceAtCaret = myFixture.getReferenceAtCaretPositionWithAssertion("unassigned-variable-reference.dql", "dql-variables.json");
-      assertNull(referenceAtCaret.resolve());
-   }
+    @Test
+    public void testVariableReferenceForUnassignedVariable() {
+        PsiReference referenceAtCaret = myFixture.getReferenceAtCaretPositionWithAssertion("unassigned-variable-reference.dql", "dql-variables.json");
+        assertNull(referenceAtCaret.resolve());
+    }
 }

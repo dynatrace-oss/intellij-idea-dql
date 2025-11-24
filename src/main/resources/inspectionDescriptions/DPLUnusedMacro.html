@@ -1,0 +1,17 @@
+<html lang="en">
+<body>
+Ensures all macros are used at least once.
+
+<p>
+    This inspection will report a warning if it discovers a macro definition that was not used anywhere.
+</p>
+
+<pre><code>
+'// The macro "$macro" is not used in the DPL, so it will report a warning'
+$macro = INT:i;
+LONG:l
+</code></pre>
+
+After applying the quick fix, the macro definition will be dropped.
+</body>
+</html>
