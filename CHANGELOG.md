@@ -9,8 +9,7 @@
   - The support is also automatically added to the DQL `parse` command
   - Customizable syntax highlighting
   - Local code inspections with quick fixes if possible
-  - Customizable code style support — enforcing indents, line breaking and spaces around elements (only in separate
-    files)
+  - Customizable code style support — enforcing indents, line breaking and spaces around elements
   - Advanced code completion
   - Hover documentation
   - Useful intentions for managing DPL expressions

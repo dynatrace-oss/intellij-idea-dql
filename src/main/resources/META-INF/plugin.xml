@@ -367,6 +367,7 @@
                 implementation="pl.thedeem.intellij.dpl.style.DPLCodeStyleSettingsProvider"/>
         <langCodeStyleSettingsProvider
                 implementation="pl.thedeem.intellij.dpl.style.DPLLanguageCodeStyleSettingsProvider"/>
+        <postFormatProcessor implementation="pl.thedeem.intellij.dpl.style.DQLPostFormatProcessor"/>
 
         <!-- References -->
         <psi.referenceContributor
