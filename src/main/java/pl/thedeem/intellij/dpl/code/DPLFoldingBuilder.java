@@ -41,24 +41,28 @@ public class DPLFoldingBuilder extends FoldingBuilderEx implements DumbAware {
     @Override
     public String getPlaceholderText(@NotNull ASTNode node) {
         PsiElement element = node.getPsi();
-        if (element instanceof DPLDpl query) {
-            List<DPLExpressionDefinition> list = query.getExpressionDefinitionList();
-            return !list.isEmpty() ? list.getFirst().getText() : "";
-        } else if (element instanceof DPLCommandMatchers matchers) {
-            DPLCommandMatchersContent content = matchers.getCommandMatchersContent();
-            if (content != null) {
-                int elements = switch (content) {
-                    case DPLParametersMatchersList params -> params.getMatcherList().size();
-                    case DPLMembersListMatchers params -> params.getExpressionDefinitionList().size();
-                    case DPLExpressionMatchersList params -> params.getExpressionDefinitionList().size();
-                    default -> 0;
-                };
-                return DPLBundle.message("folding.elements", elements);
+        return switch (element) {
+            case DPLDpl query -> {
+                List<DPLExpressionDefinition> list = query.getExpressionDefinitionList();
+                yield !list.isEmpty() ? list.getFirst().getText() : "";
             }
-        } else if (element instanceof DPLMacroDefinitionExpression macro) {
-            return DPLBundle.message("folding.variable", macro.getVariable().getText());
-        }
-        return null;
+            case DPLCommandMatchers matchers -> {
+                DPLCommandMatchersContent content = matchers.getCommandMatchersContent();
+                if (content != null) {
+                    int elements = switch (content) {
+                        case DPLParametersMatchersList params -> params.getMatcherList().size();
+                        case DPLMembersListMatchers params -> params.getExpressionDefinitionList().size();
+                        case DPLExpressionMatchersList params -> params.getExpressionDefinitionList().size();
+                        default -> 0;
+                    };
+                    yield DPLBundle.message("folding.elements", elements);
+                }
+                yield null;
+            }
+            case DPLMacroDefinitionExpression macro ->
+                    DPLBundle.message("folding.variable", macro.getVariable().getText());
+            default -> null;
+        };
     }
 
     @Override

@@ -7,15 +7,12 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class StandardItemPresentation implements ItemPresentation {
-
     private final String name;
     private final PsiElement element;
     private final Icon icon;
 
     public StandardItemPresentation(String name, Icon icon) {
-        this.name = name;
-        this.element = null;
-        this.icon = icon;
+        this(name, null, icon);
     }
 
     public StandardItemPresentation(String name, PsiElement element, Icon icon) {

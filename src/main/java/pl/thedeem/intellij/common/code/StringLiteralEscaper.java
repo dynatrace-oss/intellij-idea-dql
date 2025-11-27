@@ -23,8 +23,7 @@ public class StringLiteralEscaper<T extends PsiLanguageInjectionHost> extends Li
             return true;
         }
         this.outSourceOffsets = new int[injected.length() + 1];
-        CodeInsightUtilCore.parseStringCharacters(injected, out, outSourceOffsets, false);
-        return true;
+        return CodeInsightUtilCore.parseStringCharacters(injected, out, outSourceOffsets, false);
     }
 
     @Override
@@ -32,8 +31,10 @@ public class StringLiteralEscaper<T extends PsiLanguageInjectionHost> extends Li
         if (isTextBlock(myHost.getText())) {
             return textRange.getStartOffset() + offset;
         }
-        int result = offset < this.outSourceOffsets.length ? this.outSourceOffsets[offset] : -1;
-        return result == -1 ? -1 : Math.min(result, textRange.getLength()) + textRange.getStartOffset();
+        if (offset >= this.outSourceOffsets.length) {
+            return -1;
+        }
+        return Math.min(this.outSourceOffsets[offset], textRange.getLength()) + textRange.getStartOffset();
     }
 
     @Override
@@ -47,7 +48,7 @@ public class StringLiteralEscaper<T extends PsiLanguageInjectionHost> extends Li
         if (isTextBlock(myHost.getText())) {
             return TextRange.from(3, Math.max(3, text.length() - 3));
         }
-        return TextRange.from(1, text.length() - 1);
+        return TextRange.from(1, Math.max(1, text.length() - 1));
     }
 
     private boolean isTextBlock(String text) {
