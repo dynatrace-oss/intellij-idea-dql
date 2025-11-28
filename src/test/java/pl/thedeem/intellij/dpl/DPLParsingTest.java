@@ -7,7 +7,11 @@ public class DPLParsingTest extends ParsingTestCase {
         super("", "dpl", new DPLParserDefinition());
     }
 
-    public void testDQLFetchLogsTest() {
+    public void testDPLFormattingTest() {
+        doTest(true);
+    }
+
+    public void testDPLConfigurationParameters() {
         doTest(true);
     }
 

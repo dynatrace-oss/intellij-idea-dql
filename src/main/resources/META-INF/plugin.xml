@@ -426,6 +426,10 @@
                          enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dpl" key="inspection.missingExportedField.display.name"
                          implementationClass="pl.thedeem.intellij.dpl.inspections.MissingExportedFieldInspection"/>
+        <localInspection language="DPL" bundle="messages.DPLBundle" shortName="DPLDuplicatedExportedField"
+                         enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dpl" key="inspection.duplicatedExportedField.display.name"
+                         implementationClass="pl.thedeem.intellij.dpl.inspections.DuplicatedExportedFieldInspection"/>
         <localInspection language="DPL" bundle="messages.DPLBundle" shortName="DPLEmptyExpressionsList"
                          enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dpl" key="inspection.emptyExpressionsList.display.name"
@@ -478,6 +482,15 @@
                          enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dpl" key="inspection.unknownConfiguration.display.name"
                          implementationClass="pl.thedeem.intellij.dpl.inspections.configuration.UnknownConfigurationInspection"/>
+        <localInspection language="DPL" bundle="messages.DPLBundle" shortName="DPLDuplicatedConfiguration"
+                         enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dpl" key="inspection.duplicatedConfiguration.display.name"
+                         implementationClass="pl.thedeem.intellij.dpl.inspections.configuration.DuplicatedConfigurationInspection"/>
+
+        <localInspection language="DPL" bundle="messages.DPLBundle" shortName="DPLInvalidConfiguration"
+                         enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dpl" key="inspection.invalidParameter.display.name"
+                         implementationClass="pl.thedeem.intellij.dpl.inspections.configuration.InvalidConfigurationInspection"/>
 
         <!--- Quantifier inspections-->
         <localInspection language="DPL" bundle="messages.DPLBundle" shortName="DPLQuantifierNotSupported"

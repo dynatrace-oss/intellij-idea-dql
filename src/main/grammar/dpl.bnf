@@ -161,21 +161,33 @@ matcher_name ::= string {
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.MatcherNameElementImpl"
 }
 
-configuration ::= L_PAREN (string | configuration_list) R_PAREN {
-    pin = 2
+configuration ::= L_PAREN configuration_content R_PAREN {
     implements="pl.thedeem.intellij.dpl.psi.elements.ConfigurationElement"
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.ConfigurationElementImpl"
 }
-private configuration_list ::= parameter (COMMA parameter)* {
-    pin = 1
-}
-
-parameter ::= parameter_name SET simple_expression {
-    pin=2
+private configuration_content ::= (configuration_list | parameter) invalid_parameter? {
     recoverWhile=recover_configuration_content
-    implements="pl.thedeem.intellij.dpl.psi.elements.ParameterElement"
-    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.ParameterElementImpl"
 }
+private configuration_list ::= parameter COMMA parameter (COMMA parameter)* {
+   pin=2
+}
+parameter ::= unnamed_parameter | named_parameter {
+    implements="pl.thedeem.intellij.dpl.psi.elements.ParameterElement"
+}
+invalid_parameter ::= COMMA? IDENTIFIER
+unnamed_parameter ::= parameter_value {
+    extends=parameter
+    implements="pl.thedeem.intellij.dpl.psi.elements.ParameterElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.UnnamedParameterElementImpl"
+}
+named_parameter ::= parameter_name SET parameter_value {
+    pin=2
+    extends=parameter
+    implements="pl.thedeem.intellij.dpl.psi.elements.ParameterElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.NamedParameterElementImpl"
+    recoverWhile=recover_configuration_item
+}
+parameter_value ::= simple_expression
 parameter_name ::= IDENTIFIER {
     implements="pl.thedeem.intellij.dpl.psi.elements.ParameterNameElement"
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.ParameterNameElementImpl"
@@ -218,7 +230,6 @@ quantifier_limit ::= LONG {
 // Other definitions
 simple_expression ::=
     string |
-    IDENTIFIER |
     boolean |
     number |
     null
@@ -268,6 +279,7 @@ variable ::= VARIABLE_NAME {
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.VariableElementImpl"
 }
 
-private recover_configuration_content ::= !(SET|COMMA|R_PAREN)
+private recover_configuration_content ::= !(IDENTIFIER|OR|R_PAREN)
+private recover_configuration_item ::= !(IDENTIFIER|OR|SET|COMMA|R_PAREN)
 private recover_sequence_content ::= !(R_PAREN)
 private recover_alternative_content ::= !(OR|R_PAREN)

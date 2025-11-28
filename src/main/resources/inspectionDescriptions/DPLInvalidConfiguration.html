@@ -1,0 +1,16 @@
+<html lang="en">
+<body>
+Verifies the correct structure for configuration parameters.
+
+<p>
+    This inspection reports an error if it detects a parameter that does not follow the proper syntax.
+</p>
+
+<pre><code>
+'// This will report an error, "invalid_parameter" is not a valid configuration
+timestamp('yyyy-MM-dd HH:mm:ss.S', invalid_parameter)
+</code></pre>
+
+After applying the quick fix, the error element will be removed.
+</body>
+</html>
