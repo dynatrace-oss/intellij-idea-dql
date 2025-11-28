@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.dpl.style;
+package pl.thedeem.intellij.dql.style;
 
 import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.editor.Document;

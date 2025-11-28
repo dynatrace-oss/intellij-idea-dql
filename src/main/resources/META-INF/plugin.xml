@@ -86,6 +86,7 @@
                 implementation="pl.thedeem.intellij.dql.style.DQLCodeStyleSettingsProvider"/>
         <langCodeStyleSettingsProvider
                 implementation="pl.thedeem.intellij.dql.style.DQLLanguageCodeStyleSettingsProvider"/>
+        <postFormatProcessor implementation="pl.thedeem.intellij.dql.style.DQLPostFormatProcessor"/>
 
         <!-- Structure -->
         <lang.psiStructureViewFactory
@@ -367,7 +368,6 @@
                 implementation="pl.thedeem.intellij.dpl.style.DPLCodeStyleSettingsProvider"/>
         <langCodeStyleSettingsProvider
                 implementation="pl.thedeem.intellij.dpl.style.DPLLanguageCodeStyleSettingsProvider"/>
-        <postFormatProcessor implementation="pl.thedeem.intellij.dpl.style.DQLPostFormatProcessor"/>
 
         <!-- References -->
         <psi.referenceContributor
