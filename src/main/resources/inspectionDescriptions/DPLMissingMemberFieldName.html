@@ -1,0 +1,21 @@
+<html lang="en">
+<body>
+Ensures member fields are specified in the members list matcher.
+
+<p>
+    This inspection reports an error if it encounters an expression inside members list matchers without specifying
+    its name.
+</p>
+
+<pre><code>
+'// Long will report an error because it is missing the field name definition'
+JSON {
+    int:"number field",
+    ld:string_field,
+    long
+}
+</code></pre>
+
+After applying the quick fix, the member field name template will be created for the user to fulfil.
+</body>
+</html>

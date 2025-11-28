@@ -11,6 +11,7 @@ import java.util.Set;
 
 public interface DQLParametersOwner {
     @NotNull List<DQLParameterObject> getParameters();
+    @Nullable DQLParameterObject findParameter(@NotNull String name);
     @NotNull Set<DQLParameterDefinition> getDefinedParameters();
     @NotNull Set<String> getDefinedParameterNames();
     @NotNull List<DQLParameterDefinition> getMissingRequiredParameters();

@@ -30,7 +30,7 @@ import pl.thedeem.intellij.dql.executing.DQLParsedQuery;
 import pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.DQLProcessHandler;
 import pl.thedeem.intellij.dql.executing.services.DQLServicesManager;
 import pl.thedeem.intellij.dql.fileProviders.DQLMetadataVirtualFile;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.sdk.DynatraceRestClient;
 import pl.thedeem.intellij.dql.sdk.errors.DQLApiException;
 import pl.thedeem.intellij.dql.sdk.model.DQLExecutePayload;
@@ -215,7 +215,7 @@ public class DQLExecutionService {
    }
 
    public @NotNull ItemPresentation getPresentation() {
-      return new DQLItemPresentation(this.name, null, DQLIcon.DYNATRACE_LOGO);
+      return new StandardItemPresentation(this.name, null, DQLIcon.DYNATRACE_LOGO);
    }
 
    public boolean isExecuting() {

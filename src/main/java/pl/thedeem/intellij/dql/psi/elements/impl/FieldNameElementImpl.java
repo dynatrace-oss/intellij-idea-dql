@@ -12,6 +12,7 @@ import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
@@ -80,7 +81,7 @@ public abstract class FieldNameElementImpl extends ASTWrapperPsiElement implemen
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(getName(), this, DQLIcon.DQL_FIELD);
+        return new StandardItemPresentation(getName(), this, DQLIcon.DQL_FIELD);
     }
 
     @Override

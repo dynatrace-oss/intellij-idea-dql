@@ -1,0 +1,19 @@
+<html lang="en">
+<body>
+Ensures quantifiers are provided for an expression that supports them.
+
+<p>
+    Not all DPL expressions support quantifiers.
+    This inspection will report an error if quantifiers were provided for an expression that does not allow them.
+</p>
+
+<pre><code>
+'// The DATA command supports quantifiers'
+DATA{1, 10}:data
+'// This is an error: the ENUM command does not support quantifiers'
+ENUM{''=-3, 'success'=0}{1, 2}:result
+</code></pre>
+
+After applying the quick fix, the quantifiers configuration will be dropped.
+</body>
+</html>

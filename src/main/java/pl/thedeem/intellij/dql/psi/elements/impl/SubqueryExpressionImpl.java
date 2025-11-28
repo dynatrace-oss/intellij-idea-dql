@@ -8,7 +8,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.elements.SubqueryExpression;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,6 +35,6 @@ public abstract class SubqueryExpressionImpl extends ASTWrapperPsiElement implem
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(DQLBundle.message("presentation.subqueryExpression"), this, DQLIcon.DQL_SUBQUERY);
+        return new StandardItemPresentation(DQLBundle.message("presentation.subqueryExpression"), this, DQLIcon.DQL_SUBQUERY);
     }
 }

@@ -1,0 +1,19 @@
+<html lang="en">
+<body>
+Ensures the configuration is applied to an expression that allows it.
+
+<p>
+    Not all DPL expressions have a configuration defined. This inspection makes sure that only expression with at least
+    one parameter can be provided.
+</p>
+
+<pre><code>
+'// This is a valid configuration provided for the expression (FLOAT command supports parameters)'
+FLOAT(min=1, max=3)?:f
+'// This is an invalid configuration provided for the expression (EOL command does not support parameters)'
+EOL(someParameter=true)
+</code></pre>
+
+After applying the quick fix, the configuration will be dropped.
+</body>
+</html>

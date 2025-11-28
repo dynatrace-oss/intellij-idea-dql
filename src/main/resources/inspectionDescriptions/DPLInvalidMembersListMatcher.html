@@ -1,0 +1,18 @@
+<html lang="en">
+<body>
+Verifies the correct structure for members list matchers.
+
+<p>
+    This inspection reports an error if it detects a command that expects a comma-separated list of members,
+    but the user defined another type of the matcher.
+</p>
+
+<pre><code>
+'// This will report an error, because "JSON" expects to have matchers of comma-separated members list'
+JSON{
+ INT IPADDR
+}
+</code></pre>
+
+</body>
+</html>

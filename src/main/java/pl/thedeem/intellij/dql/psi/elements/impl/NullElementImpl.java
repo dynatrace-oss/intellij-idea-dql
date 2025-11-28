@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.elements.NullElement;
 
 import java.util.Set;
@@ -34,7 +34,7 @@ public abstract class NullElementImpl extends ASTWrapperPsiElement implements Nu
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(this.getName(), this, DQLIcon.NULL);
+        return new StandardItemPresentation(this.getName(), this, DQLIcon.NULL);
     }
 
     @Override

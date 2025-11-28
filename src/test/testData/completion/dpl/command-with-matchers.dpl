@@ -1,0 +1,4 @@
+JSON {
+  INT:i,
+  <caret>
+}

@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementResolveResult;
 import com.intellij.psi.PsiPolyVariantReferenceBase;
 import com.intellij.psi.ResolveResult;
+import pl.thedeem.intellij.common.completion.CompletionUtils;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
@@ -47,7 +48,7 @@ public class DQLFieldReference extends PsiPolyVariantReferenceBase<DQLFieldExpre
 
         List<LookupElement> result = new ArrayList<>();
         for (ReferenceVariantsCalculator.VariantNode value : variants) {
-            LookupElementBuilder lookupElement = AutocompleteUtils.createLookupElement(
+            LookupElementBuilder lookupElement = CompletionUtils.createLookupElement(
                     value.field.getText(),
                     DQLIcon.DQL_FIELD,
                     AutocompleteUtils.DATA_REFERENCE,
@@ -66,7 +67,7 @@ public class DQLFieldReference extends PsiPolyVariantReferenceBase<DQLFieldExpre
         boolean isReference = super.isReferenceTo(element);
         if (!isReference) {
             if (element instanceof DQLFieldExpression field) {
-                return Objects.equals(myElement.getName(), field.getName());
+                return Objects.equals(entityFieldName, field.getName());
             }
             return false;
         }

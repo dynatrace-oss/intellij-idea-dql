@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.elements.DurationElement;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.sdk.model.DQLDurationType;
@@ -62,7 +62,7 @@ public abstract class PositiveDurationElementImpl extends ASTWrapperPsiElement i
     public ItemPresentation getPresentation() {
         DQLDurationType type = getDurationType();
         Number numberPart = getNumberPart();
-        return new DQLItemPresentation(getDurationRepresentation(type, numberPart), this, DQLIcon.DQL_NUMBER);
+        return new StandardItemPresentation(getDurationRepresentation(type, numberPart), this, DQLIcon.DQL_NUMBER);
     }
 
     private String getDurationRepresentation(DQLDurationType type, Number numberPart) {

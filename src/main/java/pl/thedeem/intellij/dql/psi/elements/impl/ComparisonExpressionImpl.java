@@ -15,7 +15,7 @@ import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLComparisonOperator;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.ComparisonExpression;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
@@ -55,7 +55,7 @@ public abstract class ComparisonExpressionImpl extends TwoSidesExpressionImpl im
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(DQLBundle.message("presentation.comparisonExpression"), this, DQLIcon.DQL_EXPRESSION);
+        return new StandardItemPresentation(DQLBundle.message("presentation.comparisonExpression"), this, DQLIcon.DQL_EXPRESSION);
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.intellij.psi.PsiElementResolveResult;
 import com.intellij.psi.PsiPolyVariantReferenceBase;
 import com.intellij.psi.ResolveResult;
 import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.common.completion.CompletionUtils;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
@@ -44,7 +45,7 @@ public final class DQLVariableReference extends PsiPolyVariantReferenceBase<DQLV
         Set<String> alreadyVisited = new HashSet<>();
         for (DQLVariableExpression variable : variables) {
             if (alreadyVisited.add(variable.getName())) {
-                variants.add(AutocompleteUtils.createLookupElement(
+                variants.add(CompletionUtils.createLookupElement(
                         variable.getName(),
                         DQLIcon.DQL_VARIABLE,
                         AutocompleteUtils.VARIABLE,

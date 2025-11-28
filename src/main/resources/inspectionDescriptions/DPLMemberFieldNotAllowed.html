@@ -1,0 +1,16 @@
+<html lang="en">
+<body>
+Ensures member fields are specified in a correct context.
+
+<p>
+    This inspection reports an error if it encounters member field names specified outside the members list matchers.
+</p>
+
+<pre><code>
+'// Double field names can be only specified when defining the member field lists, for example in JSON command'
+EOL:"some member name":fieldName
+</code></pre>
+
+After applying the quick fix, the member field name will be dropped.
+</body>
+</html>

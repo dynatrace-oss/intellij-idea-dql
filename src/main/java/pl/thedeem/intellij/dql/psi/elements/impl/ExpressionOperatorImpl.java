@@ -7,7 +7,7 @@ import com.intellij.psi.tree.IElementType;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 import pl.thedeem.intellij.dql.psi.elements.BaseNamedElement;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +19,7 @@ public abstract class ExpressionOperatorImpl extends ASTWrapperPsiElement implem
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(getOperatorName(), this, DQLIcon.DQL_OPERATOR);
+        return new StandardItemPresentation(getOperatorName(), this, DQLIcon.DQL_OPERATOR);
     }
 
     @Override

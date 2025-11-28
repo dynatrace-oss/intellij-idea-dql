@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Features
+
+- Added support for other JetBrains tools (like WebStorm)
+- Added support for Dynatrace Pattern Language files (`.dpl`)
+  - The support is also automatically added to the DQL `parse` command
+  - Customizable syntax highlighting
+  - Local code inspections with quick fixes if possible
+  - Customizable code style support — enforcing indents, line breaking and spaces around elements
+  - Advanced code completion
+  - Hover documentation
+  - Useful intentions for managing DPL expressions
+
 ## [1.0.4] - 2025-10-28
 
 ### Bug fixes
@@ -76,8 +88,13 @@
     `null` types.
 
 [Unreleased]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.4...HEAD
+
 [1.0.4]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.3...v1.0.4
+
 [1.0.3]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.2...v1.0.3
+
 [1.0.2]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.1...v1.0.2
+
 [1.0.1]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.0...v1.0.1
+
 [1.0.0]: https://github.com/dynatrace-oss/intellij-idea-dql/commits/v1.0.0

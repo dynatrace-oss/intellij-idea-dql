@@ -1,0 +1,15 @@
+<html lang="en">
+<body>
+Ensures the DPL defines at least one expression.
+
+<p>
+    This inspection reports an error if it encounters a DPL definition without at least expression defined.
+</p>
+
+<pre><code>
+'// Will fail because the DPL only contains macro definitions and no expressions'
+$myVariable = INT:i ',' LDATA:text;
+</code></pre>
+
+</body>
+</html>

@@ -8,7 +8,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.DQLParameterName;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.ParameterExpression;
@@ -54,6 +54,6 @@ public abstract class ParameterExpressionImpl extends ASTWrapperPsiElement imple
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(DQLBundle.message("presentation.parameterExpression", getName()), this, DQLIcon.DQL_STATEMENT_PARAMETER);
+        return new StandardItemPresentation(DQLBundle.message("presentation.parameterExpression", getName()), this, DQLIcon.DQL_STATEMENT_PARAMETER);
     }
 }

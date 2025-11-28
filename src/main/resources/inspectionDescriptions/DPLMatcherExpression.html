@@ -1,0 +1,16 @@
+<html lang="en">
+<body>
+Verifies the correct structure for expression-type matchers.
+
+<p>
+    This inspection reports an error if it detects a command that defines other types of matchers where expression is
+    expected.
+</p>
+
+<pre><code>
+'// This will report an error, because "STRUCTURE" expects to define an expression type of matcher'
+STRUCTURE{ INT:i, LONG:'b' }
+</code></pre>
+
+</body>
+</html>

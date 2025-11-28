@@ -1,0 +1,273 @@
+{
+    parserClass="pl.thedeem.intellij.dpl.DPLParser"
+    extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+    psiClassPrefix="DPL"
+    psiImplClassSuffix="Impl"
+    psiPackage="pl.thedeem.intellij.dpl.psi"
+    psiImplPackage="pl.thedeem.intellij.dpl.impl"
+
+    elementTypeHolderClass="pl.thedeem.intellij.dpl.psi.DPLTypes"
+    elementTypeClass="pl.thedeem.intellij.dpl.psi.DPLElementType"
+    tokenTypeClass="pl.thedeem.intellij.dpl.psi.DPLTokenType"
+
+    psiImplUtilClass="pl.thedeem.intellij.dpl.psi.DPLPsiImplUtil"
+
+    consumeTokenMethod(".*")="consumeTokenFast"
+
+    tokens=[
+        IDENTIFIER = 'regexp:[A-Za-z_][A-Za-z0-9_]*'
+        LONG = 'regexp:-?[0-9]+'
+        DOUBLE = 'regexp:-?[0-9]+\.[0-9]+'
+        SET = '='
+        L_BRACE = '{'
+        R_BRACE = '}'
+        L_PAREN = '('
+        R_PAREN = ')'
+        L_BRACKET = '['
+        R_BRACKET = ']'
+        COMMA = ','
+        COLON = ':'
+        NULL_TYPE = 'null'
+        TRUE = 'true'
+        FALSE = 'false'
+        OPTIONAL = '?'
+        SUBTRACT = '-'
+        ADD = '+'
+        MULTIPLY = '*'
+        PLA = '>>'
+        PLB = '<<'
+        OR = '|'
+        SEMICOLON = ';'
+        NEGATION='!'
+    ]
+}
+
+root ::= dpl
+dpl ::= macro_definition_expression* expression_definition* expression_end?
+
+expression_definition ::= lookaround? expression configuration? quantifier? nullable? (COLON field_name)? (COLON field_name)? {
+    implements="pl.thedeem.intellij.dpl.psi.elements.ExpressionElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.ExpressionElementImpl"
+}
+nullable ::= OPTIONAL
+expression_end ::= SEMICOLON
+
+lookaround ::= NEGATION? (PLA | PLB) {
+    pin=2
+    implements="pl.thedeem.intellij.dpl.psi.elements.LookaroundElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.LookaroundElementImpl"
+}
+
+expression ::=
+    command_expression |
+    literal_expression |
+    variable_usage_expression |
+    group_expression |
+    character_group_expression
+
+literal_expression ::= string {
+    extends=expression
+    pin=1
+}
+variable_usage_expression ::= variable {
+    extends=expression
+    pin=1
+}
+macro_definition_expression ::= variable SET expression_definition+ expression_end {
+    pin=2
+    extends=expression
+    implements="pl.thedeem.intellij.dpl.psi.elements.MacroExpressionElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.MacroExpressionElementImpl"
+}
+
+// Groups
+group_expression ::= (
+    empty_group_expression |
+    alternative_group_expression |
+    sequence_group_expression
+){
+    extends=expression
+}
+
+empty_group_expression ::= L_PAREN R_PAREN {
+    extends=group_expression
+}
+sequence_group_expression ::= L_PAREN sequence_group_content R_PAREN {
+    extends=group_expression
+    implements="pl.thedeem.intellij.dpl.psi.elements.SequenceElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.SequenceElementImpl"
+}
+private sequence_group_content ::= expression_definition+ {
+    recoverWhile=recover_sequence_content
+}
+alternative_group_expression ::= L_PAREN alternative_group_content R_PAREN {
+    extends=group_expression
+    implements="pl.thedeem.intellij.dpl.psi.elements.AlternativesGroupElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.AlternativesGroupElementImpl"
+}
+private alternative_group_content ::=  expression_definition OR expression_definition (OR expression_definition)* {
+    pin=2
+    recoverWhile=recover_alternative_content
+}
+
+// Character groups
+character_group_expression ::= L_BRACKET character_group_content R_BRACKET {
+    pin=1
+    extends=expression
+    implements="pl.thedeem.intellij.dpl.psi.elements.CharacterGroupExpressionElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.CharacterGroupExpressionElementImpl"
+}
+character_group_content ::= CHARACTER_CLASS {
+    implements="pl.thedeem.intellij.dpl.psi.elements.CharacterGroupContentElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.CharacterGroupContentElementImpl"
+}
+
+// Commands
+command_expression ::= command_keyword command_matchers? {
+    extends=expression
+    pin=1
+    implements="pl.thedeem.intellij.dpl.psi.elements.CommandElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.CommandElementImpl"
+}
+command_keyword ::= IDENTIFIER {
+    implements="pl.thedeem.intellij.dpl.psi.elements.CommandKeywordElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.CommandKeywordElementImpl"
+}
+command_matchers ::= L_BRACE command_matchers_content? R_BRACE {
+    implements="pl.thedeem.intellij.dpl.psi.elements.CommandMatchersElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.CommandMatchersElementImpl"
+}
+
+command_matchers_content ::= parameters_matchers_list | members_list_matchers | expression_matchers_list
+expression_matchers_list ::= matcher_item+ {
+    extends=command_matchers_content
+}
+parameters_matchers_list ::= matcher (COMMA matcher)* {
+    extends=command_matchers_content
+}
+members_list_matchers ::= matcher_item COMMA matcher_item (COMMA matcher_item)* {
+    pin=2
+    extends=command_matchers_content
+}
+private matcher_item ::= expression_definition
+matcher ::= matcher_name SET simple_expression {
+    pin=2
+    implements="pl.thedeem.intellij.dpl.psi.elements.MatcherElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.MatcherElementImpl"
+}
+matcher_name ::= string {
+    implements="pl.thedeem.intellij.dpl.psi.elements.MatcherNameElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.MatcherNameElementImpl"
+}
+
+configuration ::= L_PAREN (string | configuration_list) R_PAREN {
+    pin = 2
+    implements="pl.thedeem.intellij.dpl.psi.elements.ConfigurationElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.ConfigurationElementImpl"
+}
+private configuration_list ::= parameter (COMMA parameter)* {
+    pin = 1
+}
+
+parameter ::= parameter_name SET simple_expression {
+    pin=2
+    recoverWhile=recover_configuration_content
+    implements="pl.thedeem.intellij.dpl.psi.elements.ParameterElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.ParameterElementImpl"
+}
+parameter_name ::= IDENTIFIER {
+    implements="pl.thedeem.intellij.dpl.psi.elements.ParameterNameElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.ParameterNameElementImpl"
+}
+
+// Quantifiers
+quantifier ::= empty_quantifier | limited_quantifier | simple_quantifier {
+ implements="pl.thedeem.intellij.dpl.psi.elements.QuantifierElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.QuantifierElementImpl"
+}
+empty_quantifier ::= L_BRACE R_BRACE {
+    extends=quantifier
+}
+simple_quantifier ::= ADD | MULTIPLY {
+    pin=1
+    extends=quantifier
+}
+limited_quantifier ::= L_BRACE limited_quantifier_ranges R_BRACE {
+    extends=quantifier
+    pin=1
+}
+limited_quantifier_ranges ::= min_max_quantifier | min_quantifier | max_quantifier | exact_quantifier
+min_max_quantifier ::= quantifier_limit COMMA quantifier_limit {
+    extends=limited_quantifier_ranges
+}
+min_quantifier ::= quantifier_limit COMMA {
+    extends=limited_quantifier_ranges
+}
+max_quantifier ::= COMMA quantifier_limit {
+    extends=limited_quantifier_ranges
+}
+exact_quantifier ::= quantifier_limit {
+    extends=limited_quantifier_ranges
+}
+quantifier_limit ::= LONG {
+    implements="pl.thedeem.intellij.dpl.psi.elements.QuantifierLimitElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.QuantifierLimitElementImpl"
+}
+
+// Other definitions
+simple_expression ::=
+    string |
+    IDENTIFIER |
+    boolean |
+    number |
+    null
+
+field_name ::= DOTTED_IDENTIFIER | IDENTIFIER | string {
+    implements="pl.thedeem.intellij.dpl.psi.elements.FieldNameElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.FieldNameElementImpl"
+}
+
+string ::= double_quoted_string | single_quoted_string {
+    extends=simple_expression
+}
+double_quoted_string ::= DOUBLE_QUOTE string_content_element? DOUBLE_QUOTE {
+    pin=1
+    extends=string
+    implements="pl.thedeem.intellij.dpl.psi.elements.StringElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.StringElementImpl"
+}
+single_quoted_string ::= SINGLE_QUOTE string_content_element? SINGLE_QUOTE {
+    pin=1
+    extends=string
+    implements="pl.thedeem.intellij.dpl.psi.elements.StringElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.StringElementImpl"
+}
+string_content_element ::= STRING_CONTENT {
+    implements="pl.thedeem.intellij.dpl.psi.elements.StringElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.StringElementImpl"
+}
+
+boolean ::= TRUE | FALSE {
+   extends=simple_expression
+   implements="pl.thedeem.intellij.dpl.psi.elements.BooleanElement"
+   mixin="pl.thedeem.intellij.dpl.psi.elements.impl.BooleanElementImpl"
+}
+null ::= NULL_TYPE {
+   extends=simple_expression
+   implements="pl.thedeem.intellij.dpl.psi.elements.NullElement"
+   mixin="pl.thedeem.intellij.dpl.psi.elements.impl.NullElementImpl"
+}
+number ::= LONG | DOUBLE {
+   extends=simple_expression
+   implements="pl.thedeem.intellij.dpl.psi.elements.NumberElement"
+   mixin="pl.thedeem.intellij.dpl.psi.elements.impl.NumberElementImpl"
+}
+variable ::= VARIABLE_NAME {
+    implements="pl.thedeem.intellij.dpl.psi.elements.VariableElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.VariableElementImpl"
+}
+
+private recover_configuration_content ::= !(SET|COMMA|R_PAREN)
+private recover_sequence_content ::= !(R_PAREN)
+private recover_alternative_content ::= !(OR|R_PAREN)

@@ -14,7 +14,7 @@ import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.ParenthesizedExpression;
 
@@ -51,7 +51,7 @@ public abstract class ParenthesizedExpressionImpl extends ASTWrapperPsiElement i
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(DQLBundle.message("presentation.parenthesisExpression"), this, DQLIcon.DQL_EXPRESSION);
+        return new StandardItemPresentation(DQLBundle.message("presentation.parenthesisExpression"), this, DQLIcon.DQL_EXPRESSION);
     }
     private Set<DQLDataType> recalculateDataType() {
         PsiElement psiElement = DQLUtil.unpackParenthesis(this);

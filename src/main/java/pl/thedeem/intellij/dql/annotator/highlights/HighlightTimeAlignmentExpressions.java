@@ -3,13 +3,14 @@ package pl.thedeem.intellij.dql.annotator.highlights;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.dql.annotator.DQLAnnotatorEngine;
+import pl.thedeem.intellij.common.annotator.AnnotatorEngine;
+import pl.thedeem.intellij.common.annotator.HighlightOptions;
 import pl.thedeem.intellij.dql.highlighting.DQLColorScheme;
 import pl.thedeem.intellij.dql.psi.elements.TimeAlignmentExpression;
 
 import java.util.Objects;
 
-public class HighlightTimeAlignmentExpressions implements DQLAnnotatorEngine {
+public class HighlightTimeAlignmentExpressions implements AnnotatorEngine {
     @Override
     public @NotNull AnnotationResult annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof TimeAlignmentExpression timeAlignmentExpression) {

@@ -6,7 +6,7 @@ import com.intellij.navigation.ItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.elements.BaseNamedElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +29,7 @@ public abstract class StringContentElementImpl extends ASTWrapperPsiElement impl
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(this.getName(), this, DQLIcon.DQL_STRING);
+        return new StandardItemPresentation(this.getName(), this, DQLIcon.DQL_STRING);
     }
 
     @Override

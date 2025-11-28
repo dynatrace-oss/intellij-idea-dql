@@ -1,0 +1,964 @@
+{
+  "posix": {
+    "alnum": "A-Za-z0-9",
+    "alpha": "A-Za-z",
+    "blank": "\\x20\\t",
+    "cntrl": "\\x01-\\x1F\\x7F",
+    "digit": "0-9",
+    "graph": "\\x21-\\x7E",
+    "lower": "a-z",
+    "print": "\\x20-\\x7E",
+    "punct": "!\"#$%&'()*+,\\-./:;<=>?@[\\]^_`{|}~|",
+    "space": "\\t\\n\\v\\f\\r\\x20",
+    "upper": "A-Z",
+    "xdigit": "A-Fa-f0-9",
+    "ascii": "\\x00-\\x7F",
+    "word": "A-Za-z0-9_",
+    "any": "\\x00-\\xFF"
+  },
+  "commands": {
+    "enum": {
+      "name": "enum",
+      "output": "integer",
+      "description": "Enum constructor allows matching for a set of predefined strings and converts them into respectively assigned integer values. The strings and respective integer values are declared as series of key-value pairs, separated by commas and enclosed in curly brackets.",
+      "matchers": {
+        "type": "kvp",
+        "key": "string",
+        "value": "integer",
+        "required": true
+      },
+      "configuration": {
+        "cis": {
+          "type": "boolean",
+          "name": "cis",
+          "defaultValue": "false",
+          "description": "Allows matching string values case insensitively. Default false."
+        },
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "json": {
+      "name": "json",
+      "aliases": [
+        "json_object"
+      ],
+      "output": "variant_object",
+      "description": "Parses Json objects (structure of name-value pairs enclosed in curly brackets) according to RFC 8259",
+      "matchers": {
+        "type": "members_list"
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        },
+        "greedy": {
+          "type": "string",
+          "name": "greedy",
+          "description": "string representing name for variant_object capturing unspecified members."
+        },
+        "flat": {
+          "type": "boolean",
+          "name": "flat",
+          "description": "\"true\" causes explicitly specified members exported as resultset columns (as opposed to tuple fields)."
+        },
+        "maxlen": {
+          "type": "integer",
+          "name": "maxlen",
+          "defaultValue": "128000",
+          "description": "numeric value representing the maximum byte size of a JSON object. Allows parsing large JSON objects (exceeding default size of 128000 bytes)"
+        },
+        "strict": {
+          "type": "boolean",
+          "name": "strict",
+          "defaultValue": "true",
+          "description": "\"false\" allows parsing objects not following JSON specification. Unquoted JSON names and string values consisting of one word can be parsed"
+        }
+      }
+    },
+    "json_array": {
+      "name": "json_array",
+      "output": "variant_array",
+      "description": "JSON syntax allows constructing arrays in a variety of ways. They can range from very simple primitive type members to very complex nested object members. A JSON array can contain members of a different type. And it is perfectly valid that they can appear also outside of a JSON object. JSON_ARRAY is meant to handle all of them.",
+      "matchers": {
+        "type": "simple_expression"
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        },
+        "typed": {
+          "type": "boolean",
+          "name": "typed",
+          "defaultValue": false,
+          "description": "Boolean value, allowing to control JSON_ARRAY output type: \"true\" sets the output type to ARRAY, \"false\" sets output type to VARIANT_ARRAY"
+        },
+        "strict": {
+          "type": "boolean",
+          "name": "strict",
+          "defaultValue": true,
+          "description": "Boolean value. \"false\" allows parsing arrays not following JSON specification. Unquoted JSON names and string values consisting of one word can be parsed. Default is \"true\". See parsing_json_nstrict."
+        },
+        "maxlen": {
+          "type": "integer",
+          "name": "maxlen",
+          "defaultValue": "128000",
+          "description": "numeric value representing the maximum byte size of a JSON object. Allows parsing large JSON objects (exceeding default size of 128000 bytes)"
+        }
+      }
+    },
+    "json_value": {
+      "name": "json_value",
+      "output": "variant",
+      "description": "Parses JSON elements like an array, string, number, boolean, null which are not enclosed in a JSON object. This is perfectly valid and allowed by JSON Grammar.",
+      "matchers": {
+        "type": "simple_expression"
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        },
+        "typed": {
+          "type": "boolean",
+          "name": "typed",
+          "description": "Boolean value, allowing to control JSON_VALUE output type: \"false\" sets the output to variant type, \"true\" sets output directly to explicitly selected conversion type. Effective only when used with the explicit conversion."
+        },
+        "strict": {
+          "type": "boolean",
+          "name": "strict",
+          "defaultValue": true,
+          "description": "Boolean value. \"false\" allows parsing arrays not following JSON specification. Unquoted JSON names and string values consisting of one word can be parsed. Default is \"true\". See parsing_json_nstrict."
+        },
+        "maxlen": {
+          "type": "integer",
+          "name": "maxlen",
+          "defaultValue": "128000",
+          "description": "numeric value representing the maximum byte size of a JSON object. Allows parsing large JSON objects (exceeding default size of 128000 bytes)"
+        }
+      }
+    },
+    "kvp": {
+      "name": "kvp",
+      "output": "variant_object",
+      "description": "Parses a list of unordered, variable-length key-value pairs according to the supplied pattern.",
+      "quantifier": {
+        "defaultMax": 128,
+        "max": 32768
+      },
+      "matchers": {
+        "type": "matcher_expr"
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "array": {
+      "name": "array",
+      "output": "array",
+      "description": "The ARRAY allows parsing repeated sequences of variable number data elements, specified by a pattern supplied as an argument.",
+      "quantifier": {
+        "required": true,
+        "max": 32768
+      },
+      "matchers": {
+        "type": "matcher_expr"
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "structure": {
+      "name": "structure",
+      "output": "tuple",
+      "description": "The STRUCTURE allows capturing any sequence of matchers in tuple data type.",
+      "matchers": {
+        "type": "matcher_expr"
+      }
+    },
+    "eol": {
+      "name": "eol",
+      "aliases": [
+        "lf"
+      ],
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "description": "Matches the single line feed character (ASCII 0xa)."
+    },
+    "cr": {
+      "name": "cr",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "description": "Matches single carriage return character (ASCII 0xd)."
+    },
+    "eolwin": {
+      "name": "eolwin",
+      "aliases": [
+        "wineol"
+      ],
+      "quantifier": {
+        "defaultMin": 2,
+        "defaultMax": 2
+      },
+      "description": "Matches two characters: line feed followed by the carriage return (ASCII 0xd 0xa)"
+    },
+    "ld": {
+      "name": "ld",
+      "output": "string",
+      "aliases": [
+        "ldata"
+      ],
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 4096
+      },
+      "description": "Matches any characters until the next non-optional matcher in the scope of a line.",
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "data": {
+      "name": "data",
+      "output": "string",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 4096
+      },
+      "description": "Matches any characters until the next non-optional matcher of pattern expression.",
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "sqs": {
+      "name": "sqs",
+      "output": "string",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 4096
+      },
+      "description": "Matches string enclosed between single quotes (ASCII 0x27). Any single quote inside the string must be escaped by backslash character \"\".",
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "dqs": {
+      "name": "dqs",
+      "output": "string",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 4096
+      },
+      "description": "Matches string enclosed between double-quote characters (ASCII 0x22). Any double quote inside the string must be escaped by a backslash character (ASCII 0x5c).",
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "csvsqs": {
+      "name": "csvsqs",
+      "output": "string",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 4096
+      },
+      "description": "Matches string enclosed between single quotes (ASCII 0x27). Any single quote inside the string must be escaped by single quote character (CSV style).",
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "csvdqs": {
+      "name": "csvdqs",
+      "output": "string",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 4096
+      },
+      "description": "Matches string enclosed between double-quote characters (ASCII 0x22). Any double quote inside the string must be escaped by double-quote character (CSV style).",
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "alnum": {
+      "name": "alnum",
+      "output": "string",
+      "description": "POSIX notation: [:alnum:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "blank": {
+      "name": "blank",
+      "output": "string",
+      "description": "POSIX notation: [:blank:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "cntrl": {
+      "name": "cntrl",
+      "output": "string",
+      "description": "POSIX notation: [:cntrl:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "digit": {
+      "name": "digit",
+      "output": "integer",
+      "description": "POSIX notation: [:digit:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "graph": {
+      "name": "graph",
+      "output": "string",
+      "description": "POSIX notation: [:graph:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "lower": {
+      "name": "lower",
+      "output": "string",
+      "description": "POSIX notation: [:lower:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "upper": {
+      "name": "upper",
+      "output": "string",
+      "description": "POSIX notation: [:upper:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "print": {
+      "name": "print",
+      "output": "string",
+      "description": "POSIX notation: [:print:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "punct": {
+      "name": "punct",
+      "output": "string",
+      "description": "POSIX notation: [:punct:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "space": {
+      "name": "space",
+      "output": "string",
+      "description": "POSIX notation: [:space:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "nspace": {
+      "name": "nspace",
+      "output": "string",
+      "description": "POSIX notation: [!:space:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "xdigit": {
+      "name": "xdigit",
+      "output": "string",
+      "description": "POSIX notation: [:xdigit:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "ascii": {
+      "name": "ascii",
+      "output": "string",
+      "description": "POSIX notation: [:ascii:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "word": {
+      "name": "word",
+      "output": "string",
+      "description": "POSIX notation: [:word:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "boolean": {
+      "name": "boolean",
+      "output": "boolean",
+      "description": "Matches case insensitive strings true and false"
+    },
+    "float": {
+      "name": "float",
+      "output": "float",
+      "description": "Matches floating point numbers in the form of [+|-]?[0-9]+[.0-9]* (dot \".\" separated) or [+|-]?[0-9]+[E|e0-9]* (scientific notation)",
+      "configuration": {
+        "min": {
+          "type": "float",
+          "name": "min",
+          "description": "The minimum of parsed value. If the value is less then parsing fails and the output is set to NULL."
+        },
+        "max": {
+          "type": "float",
+          "name": "max",
+          "description": "The maximum of parsed value. If the value is greater then parsing fails and the output is set to NULL."
+        }
+      }
+    },
+    "cfloat": {
+      "name": "cfloat",
+      "output": "float",
+      "description": "Same as FLOAT, but with separator comma \",\" : [+|-]?[0-9]+[,0-9]* or [+|-]?[0-9]+[E|e0-9]*",
+      "configuration": {
+        "min": {
+          "type": "float",
+          "name": "min",
+          "description": "The minimum of parsed value. If the value is less then parsing fails and the output is set to NULL."
+        },
+        "max": {
+          "type": "float",
+          "name": "max",
+          "description": "The maximum of parsed value. If the value is greater then parsing fails and the output is set to NULL."
+        }
+      }
+    },
+    "double": {
+      "name": "double",
+      "output": "double",
+      "description": "Matches floating point numbers in the form of [+|-]?[0-9]+[.0-9]* (dot \".\" separated) or [+|-]?[0-9]+[E|e0-9]* (scientific notation)",
+      "configuration": {
+        "min": {
+          "type": "double",
+          "name": "min",
+          "description": "The minimum of parsed value. If the value is less then parsing fails and the output is set to NULL."
+        },
+        "max": {
+          "type": "double",
+          "name": "max",
+          "description": "The maximum of parsed value. If the value is greater then parsing fails and the output is set to NULL."
+        }
+      }
+    },
+    "cdouble": {
+      "name": "cdouble",
+      "output": "double",
+      "description": "Same as DOUBLE, but with separator comma: [+|-]?[0-9]+[,0-9]* or [+|-]?[0-9]+[E|e0-9]*",
+      "configuration": {
+        "min": {
+          "type": "double",
+          "name": "min",
+          "description": "The minimum of parsed value. If the value is less then parsing fails and the output is set to NULL."
+        },
+        "max": {
+          "type": "double",
+          "name": "max",
+          "description": "The maximum of parsed value. If the value is greater then parsing fails and the output is set to NULL."
+        }
+      }
+    },
+    "int": {
+      "name": "int",
+      "aliases": [
+        "integer"
+      ],
+      "output": "integer",
+      "description": "Matches integral numbers in the range -2147483648 to 2147483647",
+      "configuration": {
+        "min": {
+          "type": "integer",
+          "name": "min",
+          "description": "The minimum of parsed value. If the value is less then parsing fails and the output is set to NULL."
+        },
+        "max": {
+          "type": "integer",
+          "name": "max",
+          "description": "The maximum of parsed value. If the value is greater then parsing fails and the output is set to NULL."
+        }
+      }
+    },
+    "hexint": {
+      "name": "hexint",
+      "output": "integer",
+      "description": "Matches integral numbers in the range -2147483648 to 2147483647",
+      "configuration": {
+        "min": {
+          "type": "integer",
+          "name": "min",
+          "description": "The minimum of parsed value. If the value is less then parsing fails and the output is set to NULL."
+        },
+        "max": {
+          "type": "integer",
+          "name": "max",
+          "description": "The maximum of parsed value. If the value is greater then parsing fails and the output is set to NULL."
+        }
+      }
+    },
+    "long": {
+      "name": "long",
+      "output": "long",
+      "description": "Matches integral numbers in the range -18446744073709551615 to 18446744073709551614",
+      "configuration": {
+        "min": {
+          "type": "long",
+          "name": "min",
+          "description": "The minimum of parsed value. If the value is less then parsing fails and the output is set to NULL."
+        },
+        "max": {
+          "type": "long",
+          "name": "max",
+          "description": "The maximum of parsed value. If the value is greater then parsing fails and the output is set to NULL."
+        }
+      }
+    },
+    "hexlong": {
+      "name": "hexlong",
+      "output": "long",
+      "description": "Matches integral numbers in the hexadecimal notation: [+|-]?0?x?[0-9a-fA-F]+ with values in the range -18446744073709551615 to 18446744073709551614",
+      "configuration": {
+        "min": {
+          "type": "long",
+          "name": "min",
+          "description": "The minimum of parsed value. If the value is less then parsing fails and the output is set to NULL."
+        },
+        "max": {
+          "type": "long",
+          "name": "max",
+          "description": "The maximum of parsed value. If the value is greater then parsing fails and the output is set to NULL."
+        }
+      }
+    },
+    "iso8601": {
+      "name": "iso8601",
+      "output": "timestamp",
+      "description": "Matches timestamp in the form of yyyy-MM-ddTHH:mm:ssZ"
+    },
+    "httpdate": {
+      "name": "httpdate",
+      "output": "timestamp",
+      "description": "Matches timestamp in the form of dd/MMM/yyyy:HH:mm:ss Z"
+    },
+    "jsontimestamp": {
+      "name": "jsontimestamp",
+      "output": "timestamp",
+      "description": "Matches timestamp in the form of yyyy-MM-ddTHH:mm:ss.SSSZ"
+    },
+    "timestamp": {
+      "name": "timestamp",
+      "aliases": [
+        "time"
+      ],
+      "output": "timestamp",
+      "description": "Matches timestamp in the form of yyyy-MM-ddTHH:mm:ss.SSSZ",
+      "configuration": {
+        "format": {
+          "type": "string",
+          "name": "format",
+          "defaultValue": "yyyy-MM-dd HH:mm:ss",
+          "description": "String specifying the conversion pattern enclosed in single or double-quotes."
+        },
+        "timezone": {
+          "type": "string",
+          "name": "timezone",
+          "description": "String specifying timezone name (as defined in IANA Time Zone Database\uFEFF) enclosed in single quotes. Default value: as specified in the user properties."
+        },
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "creditcard": {
+      "name": "creditcard",
+      "output": "long",
+      "description": "Matches valid credit card numbers (i.e with valid Luhn checksum) in all varieties: lengths (depending on the credit card scheme), formattings (continuous, space-delimited), encodings (when submitted in the URL)."
+    },
+    "smartscapeid": {
+      "name": "smartscapeid",
+      "output": "SMARTSCAPEID",
+      "description": "The SMARTSCAPEID matches a string representation of a Smartscape ID and creates a Smartscape ID parser."
+    },
+    "ipaddr": {
+      "name": "ipaddr",
+      "output": "ipaddr",
+      "description": "Matches IPv4 addresses in dot-decimal notation and IPv6 addresses in hextet notation."
+    },
+    "ipv4": {
+      "name": "ipv4",
+      "aliases": [
+        "ipv4addr"
+      ],
+      "output": "ipaddr",
+      "description": "Matches IPv4 addresses in dot-decimal notation."
+    },
+    "ipv6": {
+      "name": "ipv6",
+      "aliases": [
+        "ipv6addr"
+      ],
+      "output": "ipaddr",
+      "description": "Matches IPv6 addresses in hextet notation."
+    }
+  },
+  "expressions": {
+    "sequence": {
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        },
+        "fs": {
+          "type": "string",
+          "name": "fs",
+          "description": "string (enclosed in single or double quotes) or matcher expression (enclosed in curly brackets) representing field separator"
+        }
+      }
+    },
+    "alternative_group": {
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    }
+  }
+}

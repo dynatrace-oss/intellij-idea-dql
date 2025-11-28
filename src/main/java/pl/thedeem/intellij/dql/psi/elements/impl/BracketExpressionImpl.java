@@ -9,7 +9,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.psi.DQLItemPresentation;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.BracketExpression;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +50,7 @@ public abstract class BracketExpressionImpl extends ASTWrapperPsiElement impleme
 
     @Override
     public ItemPresentation getPresentation() {
-        return new DQLItemPresentation(DQLBundle.message("presentation.bracketExpression", getChildren().length), this, DQLIcon.DQL_BOOLEAN);
+        return new StandardItemPresentation(DQLBundle.message("presentation.bracketExpression", getChildren().length), this, DQLIcon.DQL_BOOLEAN);
     }
 
     @Override

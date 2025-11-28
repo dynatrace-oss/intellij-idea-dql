@@ -1,0 +1,15 @@
+<html lang="en">
+<body>
+Verifies if the ENUM does not specify the same element twice.
+
+<p>
+    This inspection reports an error if it detects the enum key being enlisted more than once.
+</p>
+
+<pre><code>
+'// This will report an error, because "ENUM" expects to define keys only once'
+ENUM{ 'success'=0, 'success'=1 }
+</code></pre>
+
+</body>
+</html>
