@@ -13,7 +13,8 @@ public class PsiUtils {
         for (PsiElement prevSibling = psiElement.getPrevSibling(); prevSibling != null; prevSibling = prevSibling.getPrevSibling()) {
             if (toFind.isInstance(prevSibling)) {
                 return toFind.cast(prevSibling);
-            } else if (!PlatformPatterns.psiElement().whitespaceCommentEmptyOrError().accepts(prevSibling)) {
+            }
+            if (!PlatformPatterns.psiElement().whitespaceCommentEmptyOrError().accepts(prevSibling)) {
                 return null;
             }
         }

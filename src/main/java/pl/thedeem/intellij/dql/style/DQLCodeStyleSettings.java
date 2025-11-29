@@ -4,6 +4,11 @@ import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CustomCodeStyleSettings;
 
 public class DQLCodeStyleSettings extends CustomCodeStyleSettings {
+    public int INJECTED_FRAGMENT_INDENT_SIZE = 2;
+    public boolean SURROUND_INJECTED_FRAGMENTS_WITH_NEW_LINES = true;
+    public boolean KEEP_INDENT_FOR_INJECTED_FRAGMENTS = true;
+    public boolean REFORMAT_DPL_FRAGMENTS = true;
+    public boolean REFORMAT_JSON_FRAGMENTS = true;
     public boolean WRAP_LONG_EXPRESSIONS = true;
     public boolean SPACE_AFTER_PIPE = true;
     public boolean SPACE_BEFORE_PIPE = true;
