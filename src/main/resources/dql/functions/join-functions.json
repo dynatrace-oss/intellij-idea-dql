@@ -52,5 +52,78 @@
     "aliases": [
       "lookup"
     ]
+  },
+  "getNodeName": {
+    "group": "join-functions",
+    "name": "getNodeName",
+    "description": "Returns the Smartscape node name.",
+    "syntax": [
+      "getNodeName(expression)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The expression to determine the Smartscape node ID.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "string"
+    ],
+    "aliases": [
+      "getNodeName"
+    ]
+  },
+  "getNodeField": {
+    "group": "join-functions",
+    "name": "getNodeField",
+    "description": "Returns the field value for a Smartscape node.",
+    "longDescription": "Returns the field value for a Smartscape node.",
+    "syntax": [
+      "getNodeField(expression, name)"
+    ],
+    "parameters": [
+      {
+        "name": "expression",
+        "type": [
+          "string"
+        ],
+        "description": "The expression to determine the Smartscape node ID.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "name",
+        "type": [
+          "string"
+        ],
+        "description": "The Smartscape field name to be queried.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "boolean",
+      "long",
+      "double",
+      "timestamp",
+      "timeframe",
+      "duration",
+      "string",
+      "ip",
+      "uid",
+      "binary",
+      "array",
+      "record"
+    ],
+    "aliases": [
+      "getNodeField"
+    ]
   }
 }

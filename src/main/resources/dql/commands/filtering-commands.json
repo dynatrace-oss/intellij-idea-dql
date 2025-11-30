@@ -91,5 +91,77 @@
         "disallows": []
       }
     ]
+  },
+  "traverse": {
+    "name": "traverse",
+    "syntax": [
+      "traverse edgeType, …, targetType, … [, direction] [, fieldsKeep: field, …] [, nodeId]"
+    ],
+    "description": "Traverses source nodes to target nodes in the specified direction, following edge types defined by edgeTypes.\n\nThe traverse command follows the smartscapeNodes command. As an input for the source node, it takes records containing nodeId.",
+    "type": "filtering-commands",
+    "parameters": [
+      {
+        "name": "edgeTypes",
+        "description": "The type of the edge to be traversed (one or more).",
+        "repetitive": true,
+        "required": true,
+        "nameAllowed": true,
+        "singleUnnamed": true,
+        "type": [
+          "string",
+          "data object"
+        ],
+        "disallows": []
+      },
+      {
+        "name": "targetTypes",
+        "description": "The type of the target node (one or more).",
+        "repetitive": true,
+        "required": true,
+        "nameAllowed": true,
+        "singleUnnamed": true,
+        "type": [
+          "string",
+          "data object"
+        ],
+        "disallows": []
+      },
+      {
+        "name": "direction",
+        "description": "The traversal direction.",
+        "required": false,
+        "nameAllowed": true,
+        "constant": true,
+        "type": [
+          "enum"
+        ],
+        "defaultValue": "forward",
+        "enumValues": [
+          "backward",
+          "forward"
+        ]
+      },
+      {
+        "name": "nodeId",
+        "description": "The field that contains the id of the source node that should be traversed",
+        "required": false,
+        "nameAllowed": true,
+        "type": [
+          "data object"
+        ],
+        "defaultValue": "id"
+      },
+      {
+        "name": "fieldsKeep",
+        "description": "A list of fields from the source node that should be preserved in dt.traverse.history column.",
+        "required": false,
+        "repetitive": true,
+        "nameAllowed": true,
+        "type": [
+          "string",
+          "data object"
+        ]
+      }
+    ]
   }
 }

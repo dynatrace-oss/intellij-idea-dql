@@ -43,8 +43,7 @@ public class DQLParametersMapper {
                     missingParameters.remove(repetitive.name);
                     repetitive = null;
                 }
-            }
-            else if (repetitive != null) {
+            } else if (repetitive != null) {
                 parameterName = repetitive.name;
             } else if (!missingParameters.isEmpty()) {
                 parameterName = missingParameters.getFirst();
@@ -54,10 +53,13 @@ public class DQLParametersMapper {
                 DQLParameterDefinition definition = this.paramsByName.get(parameterName.toLowerCase());
                 if (definition == null) {
                     missingParameters.remove(parameterName);
-                } else if (definition.repetitive) {
+                } else if (definition.repetitive && !definition.singleUnnamed) {
                     repetitive = definition;
                 } else {
                     missingParameters.remove(parameterName);
+                    if (definition.singleUnnamed) {
+                        repetitive = null;
+                    }
                 }
 
                 mapping.putIfAbsent(parameterName, new ArrayList<>());
@@ -69,8 +71,7 @@ public class DQLParametersMapper {
                 if (parameter instanceof DQLBracketExpression || (parameter instanceof DQLParameterExpression named && named.getExpression() instanceof DQLBracketExpression)) {
                     repetitive = null;
                 }
-            }
-            else {
+            } else {
                 result.add(new DQLParameterObject(null, parameter, List.of()));
             }
         }
