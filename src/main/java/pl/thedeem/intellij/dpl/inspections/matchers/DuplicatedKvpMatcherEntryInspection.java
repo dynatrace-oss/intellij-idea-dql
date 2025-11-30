@@ -6,8 +6,8 @@ import pl.thedeem.intellij.dpl.DPLBundle;
 import pl.thedeem.intellij.dpl.definition.model.CommandMatcher;
 import pl.thedeem.intellij.dpl.inspections.fixes.DropKvpMatcherEntryQuickFix;
 import pl.thedeem.intellij.dpl.inspections.fixes.ReplaceMatcherNameQuickFix;
-import pl.thedeem.intellij.dpl.psi.DPLCommandExpression;
 import pl.thedeem.intellij.dpl.psi.DPLCommandMatchersContent;
+import pl.thedeem.intellij.dpl.psi.DPLExpressionDefinition;
 import pl.thedeem.intellij.dpl.psi.DPLMatcher;
 import pl.thedeem.intellij.dpl.psi.DPLParametersMatchersList;
 
@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class DuplicatedKvpMatcherEntryInspection extends AbstractInvalidMatcherInspection {
-    protected void validateMatcher(@NotNull DPLCommandMatchersContent definedMatchers, @NotNull DPLCommandExpression command, @NotNull CommandMatcher matchersDefinition, @NotNull ProblemsHolder holder) {
+    protected void validateMatcher(@NotNull DPLCommandMatchersContent definedMatchers, @NotNull DPLExpressionDefinition expression, @NotNull CommandMatcher matchersDefinition, @NotNull ProblemsHolder holder) {
         if (!"kvp".equals(matchersDefinition.type())) {
             return;
         }

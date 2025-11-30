@@ -8,9 +8,8 @@ import com.intellij.psi.util.CachedValue;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.dpl.definition.model.Command;
 import pl.thedeem.intellij.dpl.definition.model.DPLDefinition;
-import pl.thedeem.intellij.dpl.definition.model.Expression;
+import pl.thedeem.intellij.dpl.definition.model.ExpressionDescription;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,7 +25,7 @@ public class DPLDefinitionServiceImpl implements DPLDefinitionService {
     private final Project project;
     private final SimpleModificationTracker tracker;
     private CachedValue<DPLDefinition> definition;
-    private CachedValue<Map<String, Command>> commands;
+    private CachedValue<Map<String, ExpressionDescription>> commands;
 
     public DPLDefinitionServiceImpl(@NotNull Project project) {
         this.project = project;
@@ -44,7 +43,7 @@ public class DPLDefinitionServiceImpl implements DPLDefinitionService {
     }
 
     @Override
-    public @NotNull Map<String, Command> commands() {
+    public @NotNull Map<String, ExpressionDescription> commands() {
         if (this.commands == null) {
             commands = CachedValuesManager.getManager(project).createCachedValue(
                     () -> new CachedValueProvider.Result<>(loadCommands(), tracker),
@@ -55,7 +54,7 @@ public class DPLDefinitionServiceImpl implements DPLDefinitionService {
     }
 
     @Override
-    public @NotNull Map<String, Expression> expressions() {
+    public @NotNull Map<String, ExpressionDescription> expressions() {
         return getDefinition().expressions();
     }
 
@@ -82,14 +81,14 @@ public class DPLDefinitionServiceImpl implements DPLDefinitionService {
         return DPLDefinition.empty();
     }
 
-    private @NotNull Map<String, Command> loadCommands() {
+    private @NotNull Map<String, ExpressionDescription> loadCommands() {
         logger.info("Reloading commands");
-        Map<String, Command> result = new HashMap<>();
-        for (Command command : getDefinition().commands().values()) {
-            result.put(command.name().toUpperCase(), command);
-            if (command.aliases() != null) {
-                for (String alias : command.aliases()) {
-                    result.put(alias.toUpperCase(), command);
+        Map<String, ExpressionDescription> result = new HashMap<>();
+        for (ExpressionDescription description : getDefinition().commands().values()) {
+            result.put(description.name().toUpperCase(), description);
+            if (description.aliases() != null) {
+                for (String alias : description.aliases()) {
+                    result.put(alias.toUpperCase(), description);
                 }
             }
         }

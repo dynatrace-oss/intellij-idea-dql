@@ -2,6 +2,7 @@ package pl.thedeem.intellij.dpl.documentation.providers;
 
 import com.intellij.lang.documentation.DocumentationMarkup;
 import com.intellij.openapi.util.text.HtmlChunk;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dpl.DPLBundle;
@@ -22,8 +23,9 @@ public class DPLFieldNameDocumentationProvider {
         HtmlChunk.Element documentation = DocumentationMarkup.DEFINITION_ELEMENT
                 .child(buildHeader());
 
-        if (field.getParent() instanceof DPLExpressionDefinition expression) {
-            DPLExpressionDefinitionDocumentationProvider parent = new DPLExpressionDefinitionDocumentationProvider(expression);
+        DPLExpressionDefinition definition = PsiTreeUtil.getParentOfType(field, DPLExpressionDefinition.class);
+        if (definition != null) {
+            DPLExpressionDefinitionDocumentationProvider parent = new DPLExpressionDefinitionDocumentationProvider(definition);
             content = content
                     .child(HtmlChunk.hr())
                     .child(parent.buildDescription());

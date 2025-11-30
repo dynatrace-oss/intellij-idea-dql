@@ -1,0 +1,20 @@
+<html lang="en">
+<body>
+Verifies if the expression modifier was applied only once.
+
+<p>
+    This inspection reports an error if it detects an expression that already specified the type of modifier.
+</p>
+
+<pre><code>
+'// The INT expression provided two types of quantifiers: simple ("*") and limited ("{1,2})'
+INT{1,2}*
+'// The ENUM expression provided two matchers instead of just one'
+ENUM{'success'=0}{'error'=1}
+'// The INT expression provided two configuration blocks'
+INT(min=0)(max=1)
+</code></pre>
+
+After applying the quick fix, the duplicated modifier will be dropped.
+</body>
+</html>

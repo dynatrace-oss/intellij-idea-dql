@@ -5,9 +5,9 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dpl.DPLBundle;
-import pl.thedeem.intellij.dpl.definition.model.Command;
-import pl.thedeem.intellij.dpl.psi.DPLCommandExpression;
-import pl.thedeem.intellij.dpl.psi.DPLCommandMatchers;
+import pl.thedeem.intellij.dpl.definition.model.ExpressionDescription;
+import pl.thedeem.intellij.dpl.psi.DPLExpressionDefinition;
+import pl.thedeem.intellij.dpl.psi.DPLMatchersExpression;
 import pl.thedeem.intellij.dpl.psi.DPLVisitor;
 
 public class MissingMatchersInspection extends LocalInspectionTool {
@@ -15,19 +15,19 @@ public class MissingMatchersInspection extends LocalInspectionTool {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DPLVisitor() {
             @Override
-            public void visitCommandExpression(@NotNull DPLCommandExpression command) {
-                super.visitCommandExpression(command);
+            public void visitExpressionDefinition(@NotNull DPLExpressionDefinition expression) {
+                super.visitExpressionDefinition(expression);
 
-                Command definition = command.getDefinition();
+                ExpressionDescription definition = expression.getDefinition();
                 if (definition == null || definition.matchers() == null || !definition.matchers().required()) {
                     return;
                 }
 
-                DPLCommandMatchers matchers = command.getCommandMatchers();
+                DPLMatchersExpression matchers = expression.getMatchers();
                 if (matchers == null || matchers.getCommandMatchersContent() == null) {
                     holder.registerProblem(
-                            command,
-                            DPLBundle.message("inspection.command.missingMatchers", command.getName())
+                            expression,
+                            DPLBundle.message("inspection.command.missingMatchers")
                     );
                 }
             }

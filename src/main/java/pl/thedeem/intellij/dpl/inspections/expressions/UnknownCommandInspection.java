@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.dpl.inspections;
+package pl.thedeem.intellij.dpl.inspections.expressions;
 
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;

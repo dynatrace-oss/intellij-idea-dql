@@ -23,8 +23,8 @@ public abstract class MatcherNameElementImpl extends ASTWrapperPsiElement implem
     }
 
     @Override
-    public PsiElement setName(@NotNull String var1) throws IncorrectOperationException {
-        throw new IncorrectOperationException();//TODO
+    public PsiElement setName(@NotNull String newName) throws IncorrectOperationException {
+        throw new IncorrectOperationException();
     }
 
     @Override

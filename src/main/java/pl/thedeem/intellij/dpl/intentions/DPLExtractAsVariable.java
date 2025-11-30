@@ -20,9 +20,13 @@ import pl.thedeem.intellij.dpl.psi.DPLExpressionDefinition;
 import javax.swing.*;
 
 public class DPLExtractAsVariable extends PsiElementBaseIntentionAction implements Iconable {
+    public DPLExtractAsVariable() {
+        setText(DPLBundle.message("intention.exportAsMacro"));
+    }
+
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement psiElement) {
-        setText(DPLBundle.message("intention.exportAsMacro"));
+
         if (editor.getSelectionModel().getSelectionStart() != editor.getSelectionModel().getSelectionEnd()) {
             return true;
         }
@@ -41,8 +45,7 @@ public class DPLExtractAsVariable extends PsiElementBaseIntentionAction implemen
             selectionStart = getStartOffsetFromSelection(editor.getSelectionModel().getSelectionStart(), element);
             selectionEnd = getEndOffsetFromSelection(editor.getSelectionModel().getSelectionEnd(), element);
             macroDefinition = document.getText(new TextRange(selectionStart, selectionEnd));
-        }
-        else {
+        } else {
             DPLExpressionDefinition expression = PsiTreeUtil.getParentOfType(element, DPLExpressionDefinition.class);
             if (expression == null) {
                 return;

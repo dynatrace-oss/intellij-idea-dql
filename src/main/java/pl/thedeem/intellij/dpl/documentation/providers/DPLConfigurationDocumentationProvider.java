@@ -6,18 +6,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dpl.DPLBundle;
 import pl.thedeem.intellij.dpl.definition.model.Configuration;
-import pl.thedeem.intellij.dpl.psi.DPLConfiguration;
+import pl.thedeem.intellij.dpl.definition.model.ExpressionDescription;
 import pl.thedeem.intellij.dpl.psi.DPLExpressionDefinition;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class DPLConfigurationDocumentationProvider {
     @NotNull
     private final DPLExpressionDefinition expression;
-
-    public DPLConfigurationDocumentationProvider(@NotNull DPLConfiguration configuration) {
-        this.expression = (DPLExpressionDefinition) configuration.getParent();
-    }
 
     public DPLConfigurationDocumentationProvider(@NotNull DPLExpressionDefinition expression) {
         this.expression = expression;
@@ -39,7 +36,8 @@ public class DPLConfigurationDocumentationProvider {
     }
 
     public HtmlChunk buildDescription() {
-        Map<String, Configuration> configurationDefinition = expression.getConfigurationDefinition();
+        ExpressionDescription description = expression.getDefinition();
+        Map<String, Configuration> configurationDefinition = description != null ? Objects.requireNonNullElse(description.configuration(), Map.of()) : Map.of();
         if (!configurationDefinition.isEmpty()) {
             HtmlChunk.Element table = DocumentationMarkup.SECTIONS_TABLE
                     .child(HtmlChunk.tag("tr")

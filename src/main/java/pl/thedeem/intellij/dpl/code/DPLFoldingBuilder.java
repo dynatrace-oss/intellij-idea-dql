@@ -25,7 +25,7 @@ public class DPLFoldingBuilder extends FoldingBuilderEx implements DumbAware {
         root.accept(new PsiRecursiveElementVisitor() {
             @Override
             public void visitElement(@NotNull PsiElement element) {
-                if (element instanceof DPLDpl || element instanceof DPLCommandMatchers || element instanceof DPLMacroDefinitionExpression) {
+                if (element instanceof DPLExpressionsSequence || element instanceof DPLCommandMatchersContent || element instanceof DPLMacroDefinitionExpression || element instanceof DPLGroupExpression) {
                     if (element.getTextRange().getStartOffset() != element.getTextRange().getEndOffset()) {
                         descriptors.add(new FoldingDescriptor(element.getNode(), element.getTextRange()));
                     }
@@ -42,23 +42,20 @@ public class DPLFoldingBuilder extends FoldingBuilderEx implements DumbAware {
     public String getPlaceholderText(@NotNull ASTNode node) {
         PsiElement element = node.getPsi();
         return switch (element) {
-            case DPLDpl query -> {
-                List<DPLExpressionDefinition> list = query.getExpressionDefinitionList();
+            case DPLExpressionsSequence sequence -> {
+                List<DPLExpressionDefinition> list = sequence.getExpressionDefinitionList();
                 yield !list.isEmpty() ? list.getFirst().getText() : "";
             }
-            case DPLCommandMatchers matchers -> {
-                DPLCommandMatchersContent content = matchers.getCommandMatchersContent();
-                if (content != null) {
-                    int elements = switch (content) {
-                        case DPLParametersMatchersList params -> params.getMatcherList().size();
-                        case DPLMembersListMatchers params -> params.getExpressionDefinitionList().size();
-                        case DPLExpressionMatchersList params -> params.getExpressionDefinitionList().size();
-                        default -> 0;
-                    };
-                    yield DPLBundle.message("folding.elements", elements);
-                }
-                yield null;
-            }
+            case DPLParametersMatchersList content ->
+                    DPLBundle.message("folding.elements", content.getMatcherList().size());
+            case DPLMembersListMatchers content ->
+                    DPLBundle.message("folding.elements", content.getExpressionDefinitionList().size());
+            case DPLExpressionMatchersList content ->
+                    DPLBundle.message("folding.elements", content.getExpressionDefinitionList().size());
+            case DPLGroupExpression group when group.getAlternativesExpression() != null ->
+                    DPLBundle.message("folding.elements", group.getAlternativesExpression().getExpressionDefinitionList().size());
+            case DPLGroupExpression group when group.getExpressionsSequence() != null ->
+                    DPLBundle.message("folding.elements", group.getExpressionsSequence().getExpressionDefinitionList().size());
             case DPLMacroDefinitionExpression macro ->
                     DPLBundle.message("folding.variable", macro.getVariable().getText());
             default -> null;

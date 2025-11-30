@@ -36,9 +36,8 @@ public class DPLStructureViewModel extends StructureViewModelBase implements com
     @Override
     protected Class<?> @NotNull [] getSuitableClasses() {
         return new Class[]{
-                DPLExpressionDefinition.class,
                 DPLMacroDefinitionExpression.class,
-                DPLExpression.class
+                DPLExpressionDefinition.class
         };
     }
 }

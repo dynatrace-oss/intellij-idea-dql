@@ -2,10 +2,11 @@ package pl.thedeem.intellij.dpl.documentation.providers;
 
 import com.intellij.lang.documentation.DocumentationMarkup;
 import com.intellij.openapi.util.text.HtmlChunk;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dpl.DPLBundle;
-import pl.thedeem.intellij.dpl.definition.model.Command;
+import pl.thedeem.intellij.dpl.definition.model.ExpressionDescription;
 import pl.thedeem.intellij.dpl.psi.DPLCommandExpression;
 import pl.thedeem.intellij.dpl.psi.DPLExpressionDefinition;
 
@@ -21,7 +22,7 @@ public class DPLCommandDocumentationProvider {
     }
 
     public @Nullable String generateDocumentation() {
-        Command definition = command.getDefinition();
+        ExpressionDescription definition = command.getDefinition();
         HtmlChunk.Element content = DocumentationMarkup.CONTENT_ELEMENT;
         HtmlChunk.Element documentation = DocumentationMarkup.DEFINITION_ELEMENT
                 .child(buildHeader(definition));
@@ -30,9 +31,10 @@ public class DPLCommandDocumentationProvider {
         } else {
             content = content.child(buildDescription());
         }
-        if (command.getParent() instanceof DPLExpressionDefinition expression) {
-            content = content.child(new DPLConfigurationDocumentationProvider(expression).buildDescription());
-            DPLExpressionDefinitionDocumentationProvider parent = new DPLExpressionDefinitionDocumentationProvider(expression);
+        DPLExpressionDefinition def = PsiTreeUtil.getParentOfType(command, DPLExpressionDefinition.class);
+        if (def != null) {
+            content = content.child(new DPLConfigurationDocumentationProvider(def).buildDescription());
+            DPLExpressionDefinitionDocumentationProvider parent = new DPLExpressionDefinitionDocumentationProvider(def);
             content = content
                     .child(HtmlChunk.hr())
                     .child(parent.buildDescription());
@@ -42,7 +44,7 @@ public class DPLCommandDocumentationProvider {
                 .toString();
     }
 
-    private HtmlChunk buildHeader(@Nullable Command definition) {
+    private HtmlChunk buildHeader(@Nullable ExpressionDescription definition) {
         String name = Objects.requireNonNull(command.getCommandKeyword().getName());
         HtmlChunk.Element header = DocumentationMarkup.PRE_ELEMENT.child(
                 HtmlChunk.span()
@@ -55,7 +57,7 @@ public class DPLCommandDocumentationProvider {
     }
 
     private HtmlChunk buildDescription() {
-        Command definition = command.getDefinition();
+        ExpressionDescription definition = command.getDefinition();
         if (definition == null) {
             return HtmlChunk.empty();
         }

@@ -40,9 +40,9 @@ public class DPLFormattingModelBuilder implements FormattingModelBuilder {
         // command matchers
         if (langSettings.FORCE_SETTINGS_WITHIN_MATCHERS) {
             result = result
-                    .afterInside(DPLTypes.L_BRACE, DPLTypes.COMMAND_MATCHERS)
+                    .afterInside(DPLTypes.L_BRACE, DPLTypes.MATCHERS_EXPRESSION)
                     .lineBreakOrForceSpace(langSettings.LB_AROUND_BRACE_IN_MATCHER, langSettings.SPACE_AROUND_BRACE_IN_MATCHER)
-                    .beforeInside(DPLTypes.R_BRACE, DPLTypes.COMMAND_MATCHERS)
+                    .beforeInside(DPLTypes.R_BRACE, DPLTypes.MATCHERS_EXPRESSION)
                     .lineBreakOrForceSpace(langSettings.LB_AROUND_BRACE_IN_MATCHER, langSettings.SPACE_AROUND_BRACE_IN_MATCHER)
                     .afterInside(DPLTypes.COMMA, DPLTypes.MEMBERS_LIST_MATCHERS)
                     .lineBreakOrForceSpace(langSettings.LB_AROUND_EXPRESSIONS_IN_MATCHER, langSettings.SPACE_AROUND_EXPRESSIONS_IN_MATCHER)
@@ -53,13 +53,13 @@ public class DPLFormattingModelBuilder implements FormattingModelBuilder {
             ;
         } else {
             result = result
-                    .afterInside(DPLTypes.L_BRACE, DPLTypes.COMMAND_MATCHERS)
+                    .afterInside(DPLTypes.L_BRACE, DPLTypes.MATCHERS_EXPRESSION)
                     .lineBreakInCodeIf(langSettings.LB_AROUND_BRACE_IN_MATCHER)
-                    .beforeInside(DPLTypes.R_BRACE, DPLTypes.COMMAND_MATCHERS)
+                    .beforeInside(DPLTypes.R_BRACE, DPLTypes.MATCHERS_EXPRESSION)
                     .lineBreakInCodeIf(langSettings.LB_AROUND_BRACE_IN_MATCHER)
-                    .afterInside(DPLTypes.L_BRACE, DPLTypes.COMMAND_MATCHERS)
+                    .afterInside(DPLTypes.L_BRACE, DPLTypes.MATCHERS_EXPRESSION)
                     .spaceIf(langSettings.SPACE_AROUND_BRACE_IN_MATCHER)
-                    .beforeInside(DPLTypes.R_BRACE, DPLTypes.COMMAND_MATCHERS)
+                    .beforeInside(DPLTypes.R_BRACE, DPLTypes.MATCHERS_EXPRESSION)
                     .spaceIf(langSettings.SPACE_AROUND_BRACE_IN_MATCHER)
 
                     .afterInside(DPLTypes.COMMA, DPLTypes.MEMBERS_LIST_MATCHERS)
@@ -76,7 +76,7 @@ public class DPLFormattingModelBuilder implements FormattingModelBuilder {
 
         // defaults
         return result
-                .around(DPLTypes.COMMAND_MATCHERS)
+                .beforeInside(DPLTypes.L_BRACE, DPLTypes.MATCHERS_EXPRESSION)
                 .none()
                 .around(DPLTypes.COMMAND_KEYWORD)
                 .none();
@@ -99,29 +99,31 @@ public class DPLFormattingModelBuilder implements FormattingModelBuilder {
                 .lineBreakInCodeIf(langSettings.LB_AFTER_MACRO_DEFINITION)
 
                 // expression parameters
-                .aroundInside(DPLTypes.SET, DPLTypes.PARAMETER)
+                .aroundInside(DPLTypes.SET, DPLTypes.PARAMETER_EXPRESSION)
                 .spaceIf(langSettings.SPACE_AROUND_CONFIGURATION_SET)
-                .afterInside(DPLTypes.L_PAREN, DPLTypes.CONFIGURATION)
+                .afterInside(DPLTypes.L_PAREN, DPLTypes.CONFIGURATION_EXPRESSION)
                 .spaceIf(langSettings.SPACE_AROUND_CONFIGURATION_PARENTHESES)
-                .beforeInside(DPLTypes.R_PAREN, DPLTypes.CONFIGURATION)
+                .beforeInside(DPLTypes.R_PAREN, DPLTypes.CONFIGURATION_EXPRESSION)
                 .spaceIf(langSettings.SPACE_AROUND_CONFIGURATION_PARENTHESES)
-                .afterInside(DPLTypes.COMMA, DPLTypes.CONFIGURATION)
+                .afterInside(DPLTypes.COMMA, DPLTypes.CONFIGURATION_CONTENT)
                 .spaceIf(langSettings.SPACE_AFTER_CONFIGURATION_PARAMETERS)
-                .afterInside(DPLTypes.COMMA, DPLTypes.CONFIGURATION)
+                .afterInside(DPLTypes.COMMA, DPLTypes.CONFIGURATION_CONTENT)
                 .lineBreakInCodeIf(langSettings.LB_AFTER_CONFIGURATION_PARAMETERS)
 
                 // default spacing
                 .between(DPLTypes.EXPRESSION_DEFINITION, DPLTypes.EXPRESSION_DEFINITION)
                 .spaces(1)
-                .aroundInside(DPLTypes.COLON, DPLTypes.EXPRESSION_DEFINITION)
+                .aroundInside(DPLTypes.COLON, DPLTypes.EXPORT_NAME_EXPRESSION)
                 .none()
-                .around(DPLTypes.LOOKAROUND)
+                .around(DPLTypes.LOOKAROUND_EXPRESSION)
                 .none()
-                .around(DPLTypes.CONFIGURATION)
+                .beforeInside(DPLTypes.L_PAREN, DPLTypes.CONFIGURATION_EXPRESSION)
                 .none()
-                .around(DPLTypes.QUANTIFIER)
+                .beforeInside(DPLTypes.LIMITED_QUANTIFIER, DPLTypes.QUANTIFIER_EXPRESSION)
                 .none()
-                .around(DPLTypes.NULLABLE)
+                .beforeInside(DPLTypes.SIMPLE_QUANTIFIER, DPLTypes.QUANTIFIER_EXPRESSION)
+                .none()
+                .around(DPLTypes.NULLABLE_EXPRESSION)
                 .none()
                 ;
     }
@@ -130,46 +132,34 @@ public class DPLFormattingModelBuilder implements FormattingModelBuilder {
         SpacingBuilder result = base;
         if (langSettings.FORCE_SETTINGS_FOR_GROUPS) {
             result = result
-                    .afterInside(DPLTypes.L_PAREN, DPLTypes.SEQUENCE_GROUP_EXPRESSION)
+                    .afterInside(DPLTypes.L_PAREN, DPLTypes.GROUP_EXPRESSION)
                     .lineBreakOrForceSpace(langSettings.LB_AROUND_PARENTHESES_IN_GROUPS, langSettings.SPACE_AROUND_PARENTHESES_IN_GROUPS)
-                    .beforeInside(DPLTypes.R_PAREN, DPLTypes.SEQUENCE_GROUP_EXPRESSION)
+                    .beforeInside(DPLTypes.R_PAREN, DPLTypes.GROUP_EXPRESSION)
                     .lineBreakOrForceSpace(langSettings.LB_AROUND_PARENTHESES_IN_GROUPS, langSettings.SPACE_AROUND_PARENTHESES_IN_GROUPS)
-                    .afterInside(DPLTypes.L_PAREN, DPLTypes.ALTERNATIVE_GROUP_EXPRESSION)
-                    .lineBreakOrForceSpace(langSettings.LB_AROUND_PARENTHESES_IN_GROUPS, langSettings.SPACE_AROUND_PARENTHESES_IN_GROUPS)
-                    .beforeInside(DPLTypes.R_PAREN, DPLTypes.ALTERNATIVE_GROUP_EXPRESSION)
-                    .lineBreakOrForceSpace(langSettings.LB_AROUND_PARENTHESES_IN_GROUPS, langSettings.SPACE_AROUND_PARENTHESES_IN_GROUPS)
-                    .betweenInside(DPLTypes.EXPRESSION_DEFINITION, DPLTypes.EXPRESSION_DEFINITION, DPLTypes.SEQUENCE_GROUP_EXPRESSION)
+                    .betweenInside(DPLTypes.EXPRESSION_DEFINITION, DPLTypes.EXPRESSION_DEFINITION, DPLTypes.ALTERNATIVES_EXPRESSION)
                     .lineBreakOrForceSpace(langSettings.LB_BETWEEN_EXPRESSIONS_IN_GROUPS, true);
 
             result = result
-                    .beforeInside(DPLTypes.OR, DPLTypes.ALTERNATIVE_GROUP_EXPRESSION)
+                    .beforeInside(DPLTypes.OR, DPLTypes.ALTERNATIVES_EXPRESSION)
                     .lineBreakOrForceSpace(langSettings.LB_BETWEEN_EXPRESSIONS_IN_GROUPS, true);
         } else {
             result = result
-                    .afterInside(DPLTypes.L_PAREN, DPLTypes.SEQUENCE_GROUP_EXPRESSION)
+                    .afterInside(DPLTypes.L_PAREN, DPLTypes.GROUP_EXPRESSION)
                     .lineBreakInCodeIf(langSettings.LB_AROUND_PARENTHESES_IN_GROUPS)
-                    .afterInside(DPLTypes.L_PAREN, DPLTypes.SEQUENCE_GROUP_EXPRESSION)
+                    .afterInside(DPLTypes.L_PAREN, DPLTypes.GROUP_EXPRESSION)
                     .spaceIf(langSettings.SPACE_AROUND_PARENTHESES_IN_GROUPS)
-                    .beforeInside(DPLTypes.R_PAREN, DPLTypes.SEQUENCE_GROUP_EXPRESSION)
+                    .afterInside(DPLTypes.L_PAREN, DPLTypes.GROUP_EXPRESSION)
                     .lineBreakInCodeIf(langSettings.LB_AROUND_PARENTHESES_IN_GROUPS)
-                    .beforeInside(DPLTypes.R_PAREN, DPLTypes.SEQUENCE_GROUP_EXPRESSION)
-                    .spaceIf(langSettings.SPACE_AROUND_PARENTHESES_IN_GROUPS)
-                    .afterInside(DPLTypes.L_PAREN, DPLTypes.ALTERNATIVE_GROUP_EXPRESSION)
-                    .lineBreakInCodeIf(langSettings.LB_AROUND_PARENTHESES_IN_GROUPS)
-                    .afterInside(DPLTypes.L_PAREN, DPLTypes.ALTERNATIVE_GROUP_EXPRESSION)
-                    .spaceIf(langSettings.SPACE_AROUND_PARENTHESES_IN_GROUPS)
-                    .beforeInside(DPLTypes.R_PAREN, DPLTypes.ALTERNATIVE_GROUP_EXPRESSION)
-                    .lineBreakInCodeIf(langSettings.LB_AROUND_PARENTHESES_IN_GROUPS)
-                    .beforeInside(DPLTypes.R_PAREN, DPLTypes.ALTERNATIVE_GROUP_EXPRESSION)
-                    .spaceIf(langSettings.SPACE_AROUND_PARENTHESES_IN_GROUPS);
+                    .beforeInside(DPLTypes.R_PAREN, DPLTypes.GROUP_EXPRESSION)
+                    .lineBreakInCodeIf(langSettings.LB_AROUND_PARENTHESES_IN_GROUPS);
 
             result = result
-                    .beforeInside(DPLTypes.OR, DPLTypes.ALTERNATIVE_GROUP_EXPRESSION)
+                    .beforeInside(DPLTypes.OR, DPLTypes.ALTERNATIVES_EXPRESSION)
                     .lineBreakInCodeIf(langSettings.LB_BETWEEN_EXPRESSIONS_IN_GROUPS);
         }
 
         result = result
-                .aroundInside(DPLTypes.OR, DPLTypes.ALTERNATIVE_GROUP_EXPRESSION)
+                .aroundInside(DPLTypes.OR, DPLTypes.ALTERNATIVES_EXPRESSION)
                 .spaceIf(langSettings.SPACE_AROUND_GROUP_OR_OPERATOR);
         return result;
     }

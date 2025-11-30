@@ -21,15 +21,16 @@ public class DuplicatedConfigurationInspection extends LocalInspectionTool {
             public void visitExpressionDefinition(@NotNull DPLExpressionDefinition expression) {
                 super.visitExpressionDefinition(expression);
 
-                DPLConfiguration configuration = expression.getConfiguration();
+                DPLConfigurationExpression configuration = expression.getConfiguration();
                 if (configuration == null) {
                     return;
                 }
 
                 Set<String> usedParameters = new HashSet<>();
-                for (DPLParameter definedParameter : configuration.getParameterList()) {
-                    if (definedParameter instanceof DPLNamedParameter namedParameter) {
-                        String parameterName = Objects.requireNonNullElse(namedParameter.getParameterName().getName(), "").toLowerCase();
+                for (DPLParameterExpression definedParameter : configuration.getConfigurationContent().getParameterExpressionList()) {
+                    DPLParameterName paramName = definedParameter.getParameterName();
+                    if (paramName != null) {
+                        String parameterName = Objects.requireNonNullElse(paramName.getName(), "").toLowerCase();
                         Configuration parameterDefinition = expression.getParameterDefinition(parameterName);
                         if (parameterDefinition != null && !usedParameters.add(parameterDefinition.name())) {
                             holder.registerProblem(
@@ -39,7 +40,6 @@ public class DuplicatedConfigurationInspection extends LocalInspectionTool {
                             );
                         }
                     }
-
                 }
             }
         };

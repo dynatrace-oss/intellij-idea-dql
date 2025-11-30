@@ -1,0 +1,16 @@
+<html lang="en">
+<body>
+Ensures the parameters are specified only in the configuration context.
+
+<p>
+    This inspection reports an error if it discovers a parameter usage in places other than configuration blocks.
+</p>
+
+<pre><code>
+'// This is an error, because the "some_parameter" is used outside the configuration block'
+(INT:i | some_parameter=true | LONG:l)
+</code></pre>
+
+After applying the quick fix, the parameter will be dropped.
+</body>
+</html>

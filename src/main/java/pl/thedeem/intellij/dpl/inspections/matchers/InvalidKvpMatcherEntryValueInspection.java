@@ -8,7 +8,7 @@ import pl.thedeem.intellij.dpl.inspections.fixes.DropKvpMatcherEntryQuickFix;
 import pl.thedeem.intellij.dpl.psi.*;
 
 public class InvalidKvpMatcherEntryValueInspection extends AbstractInvalidMatcherInspection {
-    protected void validateMatcher(@NotNull DPLCommandMatchersContent definedMatchers, @NotNull DPLCommandExpression command, @NotNull CommandMatcher matchersDefinition, @NotNull ProblemsHolder holder) {
+    protected void validateMatcher(@NotNull DPLCommandMatchersContent definedMatchers, @NotNull DPLExpressionDefinition expression, @NotNull CommandMatcher matchersDefinition, @NotNull ProblemsHolder holder) {
         if (!"kvp".equals(matchersDefinition.type())) {
             return;
         }

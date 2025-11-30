@@ -4,8 +4,8 @@ import java.util.Map;
 
 public record DPLDefinition(
         Map<String, String> posix,
-        Map<String, Command> commands,
-        Map<String, Expression> expressions
+        Map<String, ExpressionDescription> commands,
+        Map<String, ExpressionDescription> expressions
 ) {
     public static DPLDefinition empty() {
         return new DPLDefinition(Map.of(), Map.of(), Map.of());

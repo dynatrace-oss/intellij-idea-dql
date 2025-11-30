@@ -12,11 +12,11 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dpl.DPLBundle;
 import pl.thedeem.intellij.dpl.DPLIcon;
-import pl.thedeem.intellij.dpl.impl.DPLParameterImpl;
+import pl.thedeem.intellij.dpl.impl.DPLDefinitionExpressionImpl;
 import pl.thedeem.intellij.dpl.psi.DPLParameterName;
 import pl.thedeem.intellij.dpl.psi.elements.ParameterElement;
 
-public abstract class NamedParameterElementImpl extends DPLParameterImpl implements ParameterElement, PsiNameIdentifierOwner {
+public abstract class NamedParameterElementImpl extends DPLDefinitionExpressionImpl implements ParameterElement, PsiNameIdentifierOwner {
     public NamedParameterElementImpl(@NotNull ASTNode node) {
         super(node);
     }

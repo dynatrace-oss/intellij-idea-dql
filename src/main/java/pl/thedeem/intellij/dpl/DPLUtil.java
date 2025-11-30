@@ -8,7 +8,8 @@ import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.dpl.psi.*;
+import pl.thedeem.intellij.dpl.psi.DPLFieldName;
+import pl.thedeem.intellij.dpl.psi.DPLVariable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,45 +67,4 @@ public class DPLUtil {
         Collection<DPLVariable> properties = PsiTreeUtil.findChildrenOfType(file, DPLVariable.class);
         return new ArrayList<>(properties);
     }
-    
-    public static  @NotNull String getExpressionName(@NotNull DPLExpression expression) {
-        return switch (expression) {
-            case DPLSequenceGroupExpression ignored -> "sequence";
-            case DPLAlternativeGroupExpression ignored -> "alternative_group";
-            default -> "unknown";
-        };
-    }
-
-    public static @NotNull MinMaxValues getMinMaxValues(@NotNull DPLQuantifier quantifier) {
-        long min = 0L;
-        Long max = null;
-
-        if (quantifier instanceof DPLSimpleQuantifier q) {
-            if (DPLTypes.ADD.equals(q.getFirstChild().getNode().getElementType())) {
-                min = 1L;
-            }
-        }
-        else if (quantifier instanceof DPLLimitedQuantifier q) {
-            DPLLimitedQuantifierRanges ranges = q.getLimitedQuantifierRanges();
-            switch (ranges) {
-                case DPLMinMaxQuantifier range -> {
-                    min = range.getQuantifierLimitList().getFirst().getLongValue();
-                    max = range.getQuantifierLimitList().getLast().getLongValue();
-                }
-                case DPLMinQuantifier range -> {
-                    min = range.getQuantifierLimit().getLongValue();
-                }
-                case DPLMaxQuantifier range -> {
-                    max = range.getQuantifierLimit().getLongValue();
-                }
-                case DPLExactQuantifier range -> {
-                    min = max = range.getQuantifierLimit().getLongValue();
-                }
-                case null, default -> {}
-            }
-        }
-        return new MinMaxValues(min, max);
-    }
-
-    public record MinMaxValues(Long min, Long max) {}
 }

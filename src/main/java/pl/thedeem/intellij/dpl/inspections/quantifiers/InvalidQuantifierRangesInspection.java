@@ -5,10 +5,10 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dpl.DPLBundle;
-import pl.thedeem.intellij.dpl.DPLUtil;
-import pl.thedeem.intellij.dpl.definition.model.Command;
+import pl.thedeem.intellij.dpl.definition.model.ExpressionDescription;
 import pl.thedeem.intellij.dpl.definition.model.Quantifier;
 import pl.thedeem.intellij.dpl.psi.*;
+import pl.thedeem.intellij.dpl.psi.elements.QuantifierElement;
 
 public class InvalidQuantifierRangesInspection extends LocalInspectionTool {
     @Override
@@ -18,7 +18,7 @@ public class InvalidQuantifierRangesInspection extends LocalInspectionTool {
             public void visitExpressionDefinition(@NotNull DPLExpressionDefinition expression) {
                 super.visitExpressionDefinition(expression);
 
-                DPLQuantifier quantifier = expression.getQuantifier();
+                DPLQuantifierExpression quantifier = expression.getQuantifier();
                 if (quantifier == null) {
                     return;
                 }
@@ -31,15 +31,15 @@ public class InvalidQuantifierRangesInspection extends LocalInspectionTool {
         };
     }
 
-    private void validateCommand(@NotNull DPLCommandExpression command, @NotNull DPLQuantifier quantifier, @NotNull ProblemsHolder holder) {
-        Command definition = command.getDefinition();
+    private void validateCommand(@NotNull DPLCommandExpression command, @NotNull DPLQuantifierExpression quantifier, @NotNull ProblemsHolder holder) {
+        ExpressionDescription definition = command.getDefinition();
         if (definition == null || definition.quantifier() == null) {
             return;
         }
         Quantifier quantifierDef = definition.quantifier();
 
         long minValue = quantifierDef.min() != null ? quantifierDef.min() : 0L;
-        DPLUtil.MinMaxValues minMaxValues = DPLUtil.getMinMaxValues(quantifier);
+        QuantifierElement.MinMaxValues minMaxValues = quantifier.getMinMaxValues();
 
         if (quantifierDef.max() != null && minMaxValues.max() != null && quantifierDef.max() < minMaxValues.max()) {
             holder.registerProblem(
@@ -54,8 +54,4 @@ public class InvalidQuantifierRangesInspection extends LocalInspectionTool {
             );
         }
     }
-
-
-
-
 }

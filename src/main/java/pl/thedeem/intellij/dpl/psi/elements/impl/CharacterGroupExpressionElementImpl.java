@@ -5,15 +5,16 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.LiteralTextEscaper;
 import com.intellij.psi.PsiLanguageInjectionHost;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.common.code.RegexLiteralEscaper;
 import pl.thedeem.intellij.dpl.DPLBundle;
 import pl.thedeem.intellij.dpl.DPLIcon;
 import pl.thedeem.intellij.dpl.definition.DPLDefinitionService;
-import pl.thedeem.intellij.dpl.impl.DPLExpressionImpl;
+import pl.thedeem.intellij.dpl.impl.DPLDefinitionExpressionImpl;
 import pl.thedeem.intellij.dpl.psi.elements.CharacterGroupExpressionElement;
 
-public abstract class CharacterGroupExpressionElementImpl extends DPLExpressionImpl implements CharacterGroupExpressionElement, PsiLanguageInjectionHost {
+public abstract class CharacterGroupExpressionElementImpl extends DPLDefinitionExpressionImpl implements CharacterGroupExpressionElement, PsiLanguageInjectionHost {
     public CharacterGroupExpressionElementImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -32,6 +33,11 @@ public abstract class CharacterGroupExpressionElementImpl extends DPLExpressionI
     public @NotNull LiteralTextEscaper<? extends PsiLanguageInjectionHost> createLiteralTextEscaper() {
         DPLDefinitionService service = DPLDefinitionService.getInstance(getProject());
         return new RegexLiteralEscaper<>(this, service.posixGroups());
+    }
+
+    @Override
+    public @Nullable String getExpressionName() {
+        return "character_class";
     }
 
     @Override

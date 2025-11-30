@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dpl.DPLBundle;
 import pl.thedeem.intellij.dpl.definition.model.Configuration;
+import pl.thedeem.intellij.dpl.definition.model.ExpressionDescription;
 import pl.thedeem.intellij.dpl.inspections.fixes.DropConfigurationParameterQuickFix;
 import pl.thedeem.intellij.dpl.psi.*;
 
@@ -19,14 +20,18 @@ public class UnknownConfigurationInspection extends LocalInspectionTool {
             public void visitExpressionDefinition(@NotNull DPLExpressionDefinition expression) {
                 super.visitExpressionDefinition(expression);
 
-                DPLConfiguration configuration = expression.getConfiguration();
+                DPLConfigurationExpression configuration = expression.getConfiguration();
                 if (configuration == null) {
                     return;
                 }
-
-                for (DPLParameter definedParameter : configuration.getParameterList()) {
-                    if (definedParameter instanceof DPLNamedParameter namedParameter) {
-                        String parameterName = Objects.requireNonNullElse(namedParameter.getParameterName().getName(), "").toLowerCase();
+                ExpressionDescription definition = expression.getDefinition();
+                if (definition == null || definition.configuration() == null) {
+                    return;
+                }
+                for (DPLParameterExpression definedParameter : configuration.getConfigurationContent().getParameterExpressionList()) {
+                    DPLParameterName paramName = definedParameter.getParameterName();
+                    if (paramName != null) {
+                        String parameterName = Objects.requireNonNullElse(paramName.getName(), "").toLowerCase();
                         Configuration parameterDefinition = expression.getParameterDefinition(parameterName);
                         if (parameterDefinition == null) {
                             holder.registerProblem(
@@ -36,7 +41,6 @@ public class UnknownConfigurationInspection extends LocalInspectionTool {
                             );
                         }
                     }
-
                 }
             }
         };
