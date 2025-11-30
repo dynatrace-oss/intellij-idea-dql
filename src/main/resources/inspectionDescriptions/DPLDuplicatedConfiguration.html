@@ -1,0 +1,16 @@
+<html lang="en">
+<body>
+Verifies if the configuration was defined only once.
+
+<p>
+    This inspection reports an error if it detects a parameter that was already set up.
+</p>
+
+<pre><code>
+'// This reports an error, because the parameter "tz" is an alias of "timezone", so it is duplicated
+TIMESTAMP("yyyy-MM-dd HH:mm:ss.S", tz="UTC", timezone="UTC")
+</code></pre>
+
+After applying the quick fix, the duplicated option will be dropped.
+</body>
+</html>

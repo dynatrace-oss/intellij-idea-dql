@@ -1,0 +1,16 @@
+<html lang="en">
+<body>
+Verifies if the export name is used only once.
+
+<p>
+    This inspection shows an issue if the export name was already used in the DPL definition.
+</p>
+
+<pre><code>
+'// The export name "i" was used twice, so the second one always overwrites the first one'
+INT:i LONG:i
+</code></pre>
+
+After applying the quick fix, the user can decide whether he should rename the field name or drop the export name.
+</body>
+</html>

@@ -18,7 +18,7 @@ public class DPLConfigurationDocumentationProvider {
     public DPLConfigurationDocumentationProvider(@NotNull DPLConfiguration configuration) {
         this.expression = (DPLExpressionDefinition) configuration.getParent();
     }
-    
+
     public DPLConfigurationDocumentationProvider(@NotNull DPLExpressionDefinition expression) {
         this.expression = expression;
     }
@@ -40,7 +40,7 @@ public class DPLConfigurationDocumentationProvider {
 
     public HtmlChunk buildDescription() {
         Map<String, Configuration> configurationDefinition = expression.getConfigurationDefinition();
-        if (configurationDefinition != null) {
+        if (!configurationDefinition.isEmpty()) {
             HtmlChunk.Element table = DocumentationMarkup.SECTIONS_TABLE
                     .child(HtmlChunk.tag("tr")
                             .child(DocumentationMarkup.SECTION_HEADER_CELL.addText(DPLBundle.message("documentation.configuration.name")))

@@ -6,9 +6,9 @@ import com.intellij.lang.Language;
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider;
+import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
-import org.jetbrains.annotations.NotNull;
 
 public class DQLLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettingsProvider {
     @NotNull
@@ -46,6 +46,11 @@ public class DQLLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
         } else if (settingsType == SettingsType.WRAPPING_AND_BRACES_SETTINGS) {
             consumer.showCustomOption(DQLCodeStyleSettings.class, "WRAP_LONG_EXPRESSIONS", DQLBundle.message("settings.style.wrapLongExpressions"), DQLBundle.message("settings.style.groups.default"));
 
+            consumer.showCustomOption(DQLCodeStyleSettings.class, "REFORMAT_DPL_FRAGMENTS", DQLBundle.message("settings.style.reformatDpl"), DQLBundle.message("settings.style.groups.injectedLanguages"));
+            consumer.showCustomOption(DQLCodeStyleSettings.class, "REFORMAT_JSON_FRAGMENTS", DQLBundle.message("settings.style.reformatJson"), DQLBundle.message("settings.style.groups.injectedLanguages"));
+            consumer.showCustomOption(DQLCodeStyleSettings.class, "SURROUND_INJECTED_FRAGMENTS_WITH_NEW_LINES", DQLBundle.message("settings.style.surroundFragmentsWithNewLines"), DQLBundle.message("settings.style.groups.injectedLanguages"));
+            consumer.showCustomOption(DQLCodeStyleSettings.class, "KEEP_INDENT_FOR_INJECTED_FRAGMENTS", DQLBundle.message("settings.style.keepIndentForInjectedFragments"), DQLBundle.message("settings.style.groups.injectedLanguages"));
+
             consumer.showCustomOption(DQLCodeStyleSettings.class, "FORCE_LB_SETTINGS_FOR_BRACKETS", DQLBundle.message("settings.style.forceLbSettingsForBrackets"), DQLBundle.message("settings.style.groups.bracket"));
             consumer.showCustomOption(DQLCodeStyleSettings.class, "LB_BEFORE_FIELDS_COMMA", DQLBundle.message("settings.style.lbBeforeFieldsComma"), DQLBundle.message("settings.style.groups.bracket"));
             consumer.showCustomOption(DQLCodeStyleSettings.class, "LB_AFTER_FIELDS_COMMA", DQLBundle.message("settings.style.lbAfterFieldsComma"), DQLBundle.message("settings.style.groups.bracket"));
@@ -63,8 +68,7 @@ public class DQLLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
 
             consumer.showCustomOption(DQLCodeStyleSettings.class, "LB_AFTER_ASSIGNMENT", DQLBundle.message("settings.style.lbAfterAssignment"), DQLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DQLCodeStyleSettings.class, "LB_SUBQUERY", DQLBundle.message("settings.style.lbInsideSubqueries"), DQLBundle.message("settings.style.groups.expressions"));
-        }
-        else if (settingsType == SettingsType.INDENT_SETTINGS) {
+        } else if (settingsType == SettingsType.INDENT_SETTINGS) {
             consumer.showStandardOptions("INDENT_SIZE", "CONTINUATION_INDENT_SIZE", "TAB_SIZE", "USE_TAB_CHARACTER");
         }
     }
@@ -89,6 +93,7 @@ public class DQLLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
                 | dedup my.favourite.language, sort: size desc
                 | append [
                     fetch logs, from: now() - 5d, to: now() - 1d
+                    | parse content, "TIMESTAMP:t ' ' UPPER:severity ' ' LDATA:message"
                 ]
                 """;
     }
@@ -105,7 +110,6 @@ public class DQLLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
 
     @Override
     public IndentOptionsEditor getIndentOptionsEditor() {
-       return new SmartIndentOptionsEditor();
+        return new SmartIndentOptionsEditor();
     }
-
 }

@@ -877,6 +877,9 @@
         "timezone": {
           "type": "string",
           "name": "timezone",
+          "aliases": [
+            "tz"
+          ],
           "description": "String specifying timezone name (as defined in IANA Time Zone Database\uFEFF) enclosed in single quotes. Default value: as specified in the user properties."
         },
         "locale": {
@@ -922,6 +925,155 @@
       ],
       "output": "ipaddr",
       "description": "Matches IPv6 addresses in hextet notation."
+    },
+    "bos": {
+      "name": "bos",
+      "aliases": [
+        "bof"
+      ],
+      "description": "Matches beginning of string"
+    },
+    "mos": {
+      "name": "mos",
+      "aliases": [
+        "mof"
+      ],
+      "description": "Matches any bytes in the middle of string"
+    },
+    "eos": {
+      "name": "eof",
+      "aliases": [
+        "eof"
+      ],
+      "description": "Matches end of string"
+    },
+    "uuidstring": {
+      "name": "uuidstring",
+      "output": "string",
+      "description": "Matches valid Universally Unique Identifiers (UUIDs), such as social security numbers. Creates a UUID string parser."
+    },
+    "xml": {
+      "name": "xml",
+      "output": "variant_object",
+      "description": "The XML matcher parses XML documents, creating a structure that adapts to the content of the XML document.",
+      "configuration": {
+        "rootTag": {
+          "type": "string",
+          "name": "rootTag",
+          "description": "string specifying the name of the XML element from which to parse content. The first occurrence is selected if multiple such elements exist. By default, the matcher parses the whole XML document"
+        },
+        "excludeRoot": {
+          "type": "boolean",
+          "name": "excludeRoot",
+          "defaultValue": "false",
+          "description": "\"true\" excludes the root element from the output. The default is false"
+        },
+        "ignoreNamespace": {
+          "type": "boolean",
+          "name": "ignoreNamespace",
+          "defaultValue": "false",
+          "description": "Boolean value. \"true\" removes namespace prefixes in the output. The default is false."
+        },
+        "maxlen": {
+          "type": "integer",
+          "name": "maxlen",
+          "defaultValue": "128000",
+          "description": "numeric value representing the maximum byte size of an XML document. Allows parsing large XML documents (exceeding default size of 128000 bytes)"
+        },
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "xml_plain": {
+      "name": "xml_plain",
+      "output": "variant_object",
+      "description": "With XML_PLAIN, you get a streamlined version of the XML data. The matcher discards attributes of XML elements. It can be helpful for cases where this information is unnecessary since it reduces the output structure's complexity, making it easier to work with the parsed data.",
+      "configuration": {
+        "rootTag": {
+          "type": "string",
+          "name": "rootTag",
+          "description": "string specifying the name of the XML element from which to parse content. The first occurrence is selected if multiple such elements exist. By default, the matcher parses the whole XML document"
+        },
+        "excludeRoot": {
+          "type": "boolean",
+          "name": "excludeRoot",
+          "defaultValue": "false",
+          "description": "\"true\" excludes the root element from the output. The default is false"
+        },
+        "ignoreNamespace": {
+          "type": "boolean",
+          "name": "ignoreNamespace",
+          "defaultValue": "false",
+          "description": "Boolean value. \"true\" removes namespace prefixes in the output. The default is false."
+        },
+        "maxlen": {
+          "type": "integer",
+          "name": "maxlen",
+          "defaultValue": "128000",
+          "description": "numeric value representing the maximum byte size of an XML document. Allows parsing large XML documents (exceeding default size of 128000 bytes)"
+        },
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "xml_verbose": {
+      "name": "xml_verbose",
+      "output": "variant_object",
+      "description": "You receive the most detailed and comprehensive data structure when parsing XML documents using the XML_VERBOSE matcher. In contrast to the XML matcher, the XML_VERBOSE matcher creates an output structure that is fixed and does not depend on the presence of element attributes or child elements.",
+      "configuration": {
+        "rootTag": {
+          "type": "string",
+          "name": "rootTag",
+          "description": "string specifying the name of the XML element from which to parse content. The first occurrence is selected if multiple such elements exist. By default, the matcher parses the whole XML document"
+        },
+        "excludeRoot": {
+          "type": "boolean",
+          "name": "excludeRoot",
+          "defaultValue": "false",
+          "description": "\"true\" excludes the root element from the output. The default is false"
+        },
+        "ignoreNamespace": {
+          "type": "boolean",
+          "name": "ignoreNamespace",
+          "defaultValue": "false",
+          "description": "Boolean value. \"true\" removes namespace prefixes in the output. The default is false."
+        },
+        "maxlen": {
+          "type": "integer",
+          "name": "maxlen",
+          "defaultValue": "128000",
+          "description": "numeric value representing the maximum byte size of an XML document. Allows parsing large XML documents (exceeding default size of 128000 bytes)"
+        },
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
     }
   },
   "expressions": {

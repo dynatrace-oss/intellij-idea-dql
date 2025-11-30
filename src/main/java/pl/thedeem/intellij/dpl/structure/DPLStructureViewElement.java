@@ -115,8 +115,12 @@ public class DPLStructureViewElement implements StructureViewTreeElement, Sortab
             case DPLConfiguration configuration -> result.addAll(convert(configuration.getParameterList()));
             case DPLParameter parameter -> {
                 List<PsiElement> elements = new ArrayList<>();
-                elements.add(parameter.getParameterName());
-                elements.add(parameter.getSimpleExpression());
+                if (parameter instanceof DPLNamedParameter namedParameter) {
+                    elements.add(namedParameter.getParameterName());
+                    elements.add(namedParameter.getParameterValue());
+                } else if (parameter instanceof DPLUnnamedParameter unnamedParameter) {
+                    elements.add(unnamedParameter.getParameterValue());
+                }
                 result.addAll(convert(elements));
             }
             case DPLLimitedQuantifier quantifier -> {

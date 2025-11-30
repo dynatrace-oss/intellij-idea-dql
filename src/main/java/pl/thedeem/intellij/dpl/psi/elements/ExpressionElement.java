@@ -12,7 +12,11 @@ import java.util.Set;
 public interface ExpressionElement extends PsiElement {
     @NotNull Set<String> getDefinedParameters();
 
-    @Nullable Map<String, Configuration> getConfigurationDefinition();
+    @NotNull Map<String, Configuration> getConfigurationDefinition();
+
+    @NotNull Set<Configuration> getAvailableConfiguration();
+
+    @Nullable Configuration getParameterDefinition(@NotNull String parameterName);
 
     @Nullable DPLFieldName getExportedName();
 

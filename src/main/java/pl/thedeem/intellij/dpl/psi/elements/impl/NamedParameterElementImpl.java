@@ -1,9 +1,9 @@
 package pl.thedeem.intellij.dpl.psi.elements.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
@@ -12,11 +12,12 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dpl.DPLBundle;
 import pl.thedeem.intellij.dpl.DPLIcon;
+import pl.thedeem.intellij.dpl.impl.DPLParameterImpl;
 import pl.thedeem.intellij.dpl.psi.DPLParameterName;
 import pl.thedeem.intellij.dpl.psi.elements.ParameterElement;
 
-public abstract class ParameterElementImpl extends ASTWrapperPsiElement implements ParameterElement {
-    public ParameterElementImpl(@NotNull ASTNode node) {
+public abstract class NamedParameterElementImpl extends DPLParameterImpl implements ParameterElement, PsiNameIdentifierOwner {
+    public NamedParameterElementImpl(@NotNull ASTNode node) {
         super(node);
     }
 

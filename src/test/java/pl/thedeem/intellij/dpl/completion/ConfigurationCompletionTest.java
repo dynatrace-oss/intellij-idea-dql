@@ -16,6 +16,7 @@ import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -65,8 +66,8 @@ public class ConfigurationCompletionTest extends LightPlatformCodeInsightFixture
     public void testInsideACommandWithEmptyConfigurationShouldSuggestCommandsAndParameters() {
         when(serviceMock.commands()).thenReturn(DPLTestsUtils.createMockedCommands(
                 new Command("INT", null, "integer", null, null, null, Map.of(
-                        "min", new Configuration("min", null, null, "integer"),
-                        "max", new Configuration("max", null, null, "integer")
+                        "min", new Configuration("min", null, null, "integer", Set.of(), Set.of()),
+                        "max", new Configuration("max", null, null, "integer", Set.of(), Set.of())
                 )),
                 new Command("LONG", null, "integer", null, null, null, null)
         ));
@@ -87,8 +88,8 @@ public class ConfigurationCompletionTest extends LightPlatformCodeInsightFixture
         ));
         when(serviceMock.expressions()).thenReturn(Map.of(
                 "sequence", new Expression(Map.of(
-                        "charset", new Configuration("charset", null, null, "integer"),
-                        "locale", new Configuration("locale", null, null, "integer")
+                        "charset", new Configuration("charset", null, null, "integer", Set.of(), Set.of()),
+                        "locale", new Configuration("locale", null, null, "integer", Set.of(), Set.of())
                 ))
         ));
         myFixture.configureByFiles("empty-expression-configuration.dpl");
@@ -104,8 +105,8 @@ public class ConfigurationCompletionTest extends LightPlatformCodeInsightFixture
     public void testInsideACommandWithFilledConfigurationShouldSuggestUnusedParameters() {
         when(serviceMock.commands()).thenReturn(DPLTestsUtils.createMockedCommands(
                 new Command("INT", null, "integer", null, null, null, Map.of(
-                        "min", new Configuration("min", null, null, "integer"),
-                        "max", new Configuration("max", null, null, "integer")
+                        "min", new Configuration("min", null, null, "integer", Set.of(), Set.of()),
+                        "max", new Configuration("max", null, null, "integer", Set.of(), Set.of())
                 )),
                 new Command("LONG", null, "integer", null, null, null, null)
         ));
@@ -122,7 +123,7 @@ public class ConfigurationCompletionTest extends LightPlatformCodeInsightFixture
     public void testInsideACommandWithConfigurationForAllParametersShouldNotSuggestAnything() {
         when(serviceMock.commands()).thenReturn(DPLTestsUtils.createMockedCommands(
                 new Command("INT", null, "integer", null, null, null, Map.of(
-                        "min", new Configuration("min", null, null, "integer")
+                        "min", new Configuration("min", null, null, "integer", Set.of(), Set.of())
                 )),
                 new Command("LONG", null, "integer", null, null, null, null)
         ));
@@ -139,8 +140,8 @@ public class ConfigurationCompletionTest extends LightPlatformCodeInsightFixture
     public void testInsideACommandConfigurationFinishedWithCommaShouldSuggestUnusedParameters() {
         when(serviceMock.commands()).thenReturn(DPLTestsUtils.createMockedCommands(
                 new Command("INT", null, "integer", null, null, null, Map.of(
-                        "min", new Configuration("min", null, null, "integer"),
-                        "max", new Configuration("max", null, null, "integer")
+                        "min", new Configuration("min", null, null, "integer", Set.of(), Set.of()),
+                        "max", new Configuration("max", null, null, "integer", Set.of(), Set.of())
                 )),
                 new Command("LONG", null, "integer", null, null, null, null)
         ));

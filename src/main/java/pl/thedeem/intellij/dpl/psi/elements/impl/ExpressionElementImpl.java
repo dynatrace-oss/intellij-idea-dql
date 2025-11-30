@@ -35,12 +35,19 @@ public abstract class ExpressionElementImpl extends ASTWrapperPsiElement impleme
     @Override
     public @NotNull Set<String> getDefinedParameters() {
         DPLConfiguration configuration = PsiTreeUtil.getChildOfType(this, DPLConfiguration.class);
-        DPLParameter[] parameters = PsiTreeUtil.getChildrenOfType(configuration, DPLParameter.class);
+        DPLParameter[] parameters = Objects.requireNonNullElse(PsiTreeUtil.getChildrenOfType(configuration, DPLParameter.class), new DPLParameter[0]);
         Set<String> result = new HashSet<>();
 
-        if (parameters != null) {
-            for (DPLParameter parameter : parameters) {
-                result.add(Objects.requireNonNull(parameter.getParameterName().getName()).toLowerCase());
+        Map<String, Configuration> configurationDefinition = getConfigurationDefinition();
+
+        for (DPLParameter parameter : parameters) {
+            if (parameter instanceof DPLNamedParameter namedParameter) {
+                String parameterName = Objects.requireNonNull(namedParameter.getParameterName().getName()).toLowerCase();
+                result.add(parameterName);
+                Configuration definition = configurationDefinition.get(parameterName);
+                if (definition != null && definition.aliases() != null) {
+                    result.addAll(definition.aliases());
+                }
             }
         }
 
@@ -48,7 +55,34 @@ public abstract class ExpressionElementImpl extends ASTWrapperPsiElement impleme
     }
 
     @Override
-    public @Nullable Map<String, Configuration> getConfigurationDefinition() {
+    public @NotNull Set<Configuration> getAvailableConfiguration() {
+        Set<String> definedParameters = getDefinedParameters();
+        Map<String, Configuration> allParameters = getConfigurationDefinition();
+        Set<Configuration> result = new HashSet<>();
+        for (Configuration parameter : allParameters.values()) {
+            Set<String> forbiddenNames = new HashSet<>(parameter.names());
+            forbiddenNames.addAll(Objects.requireNonNullElse(parameter.excludes(), Set.of()));
+            if (definedParameters.stream().noneMatch(forbiddenNames::contains)) {
+                result.add(parameter);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public @Nullable Configuration getParameterDefinition(@NotNull String parameterName) {
+        Map<String, Configuration> configurationDefinition = getConfigurationDefinition();
+        String searchedName = parameterName.toLowerCase();
+        for (Configuration value : configurationDefinition.values()) {
+            if (value.names().contains(searchedName)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public @NotNull Map<String, Configuration> getConfigurationDefinition() {
         if (configurationDefinition == null) {
             configurationDefinition = CachedValuesManager.getManager(getProject()).createCachedValue(
                     () -> new CachedValueProvider.Result<>(recalculateConfigurationDefinition(), this),
@@ -58,26 +92,26 @@ public abstract class ExpressionElementImpl extends ASTWrapperPsiElement impleme
         return configurationDefinition.getValue();
     }
 
-    private Map<String, Configuration> recalculateConfigurationDefinition() {
+    private @NotNull Map<String, Configuration> recalculateConfigurationDefinition() {
         DPLExpression expression = findChildByClass(DPLExpression.class);
         if (expression == null) {
-            return null;
+            return Map.of();
         }
         if (expression instanceof DPLCommandExpression command) {
             Command definition = command.getDefinition();
             if (definition == null) {
-                return null;
+                return Map.of();
             }
-            return definition.configuration();
+            return Objects.requireNonNullElse(definition.configuration(), Map.of());
         }
         DPLDefinitionService service = DPLDefinitionService.getInstance(getProject());
         Map<String, Expression> expressions = service.expressions();
         String expressionName = DPLUtil.getExpressionName(expression);
         Expression definition = expressions.get(expressionName);
-        if (definition == null || definition.configuration() == null) {
-            return null;
+        if (definition == null) {
+            return Map.of();
         }
-        return definition.configuration();
+        return Objects.requireNonNullElse(definition.configuration(), Map.of());
     }
 
     @Override

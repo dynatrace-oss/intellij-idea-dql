@@ -12,13 +12,15 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractAddElementQuickFix implements LocalQuickFix {
     @Override
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
         PsiElement element = descriptor.getPsiElement();
-        Document document = PsiDocumentManager.getInstance(project).getDocument(element.getContainingFile());
+        PsiFile file = element.getContainingFile();
+        Document document = PsiDocumentManager.getInstance(project).getDocument(file);
         Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
         if (document == null || editor == null) {
             return;
@@ -31,7 +33,7 @@ public abstract class AbstractAddElementQuickFix implements LocalQuickFix {
         Template template = prepareTemplate(element, templateManager);
         editor.getCaretModel().moveToOffset(hostCaretOffset);
         templateManager.startTemplate(editor, template);
-        AutoPopupController.getInstance(project).autoPopupParameterInfo(editor, element.getContainingFile());
+        AutoPopupController.getInstance(project).autoPopupParameterInfo(editor, file);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.common.psi;
 
+import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,21 +14,8 @@ public class PsiUtils {
             if (toFind.isInstance(prevSibling)) {
                 return toFind.cast(prevSibling);
             }
-        }
-        return null;
-    }
-
-    @Nullable
-    public static <T> T findDeepLastChildOfType(PsiElement psiElement, Class<T> toFind) {
-        if (psiElement == null) {
-            return null;
-        }
-        if (toFind.isInstance(psiElement)) {
-            return toFind.cast(psiElement);
-        }
-        for (PsiElement lastChild = psiElement.getLastChild(); lastChild != null; lastChild = lastChild.getLastChild()) {
-            if (toFind.isInstance(lastChild)) {
-                return toFind.cast(lastChild);
+            if (!PlatformPatterns.psiElement().whitespaceCommentEmptyOrError().accepts(prevSibling)) {
+                return null;
             }
         }
         return null;

@@ -9,9 +9,11 @@ import pl.thedeem.intellij.dpl.definition.model.Configuration;
 import pl.thedeem.intellij.dpl.inspections.fixes.DropConfigurationParameterQuickFix;
 import pl.thedeem.intellij.dpl.psi.*;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
-public class UnknownConfigurationInspection extends LocalInspectionTool {
+public class DuplicatedConfigurationInspection extends LocalInspectionTool {
     @Override
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DPLVisitor() {
@@ -24,14 +26,15 @@ public class UnknownConfigurationInspection extends LocalInspectionTool {
                     return;
                 }
 
+                Set<String> usedParameters = new HashSet<>();
                 for (DPLParameter definedParameter : configuration.getParameterList()) {
                     if (definedParameter instanceof DPLNamedParameter namedParameter) {
                         String parameterName = Objects.requireNonNullElse(namedParameter.getParameterName().getName(), "").toLowerCase();
                         Configuration parameterDefinition = expression.getParameterDefinition(parameterName);
-                        if (parameterDefinition == null) {
+                        if (parameterDefinition != null && !usedParameters.add(parameterDefinition.name())) {
                             holder.registerProblem(
                                     definedParameter,
-                                    DPLBundle.message("inspection.parameterUnknown", parameterName),
+                                    DPLBundle.message("inspection.duplicatedParameter", parameterName),
                                     new DropConfigurationParameterQuickFix()
                             );
                         }
@@ -41,5 +44,4 @@ public class UnknownConfigurationInspection extends LocalInspectionTool {
             }
         };
     }
-
 }

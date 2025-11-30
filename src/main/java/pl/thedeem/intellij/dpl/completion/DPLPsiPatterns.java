@@ -5,8 +5,7 @@ import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.TokenType;
 import pl.thedeem.intellij.common.psi.PsiPatternUtils;
-import pl.thedeem.intellij.dpl.psi.DPLGroupExpression;
-import pl.thedeem.intellij.dpl.psi.DPLTypes;
+import pl.thedeem.intellij.dpl.psi.*;
 
 public interface DPLPsiPatterns {
     ElementPattern<PsiElement> EMPTY_GROUP = PlatformPatterns.psiElement()
@@ -17,17 +16,9 @@ public interface DPLPsiPatterns {
             );
 
     ElementPattern<PsiElement> UNFINISHED_PARAMETERS_LIST = PlatformPatterns.psiElement()
-            .with(PsiPatternUtils.isAfterElementSkipping(
-                    PlatformPatterns.psiElement(DPLTypes.COMMA).with(PsiPatternUtils.isAfterElementSkipping(
-                            PlatformPatterns.psiElement(DPLTypes.DPL).with(PsiPatternUtils.isDeepNeighbourOf(PlatformPatterns.psiElement(DPLTypes.CONFIGURATION))),
-                            PlatformPatterns.psiElement().whitespaceCommentEmptyOrError()
-                    )),
-                    PlatformPatterns.psiElement().whitespaceCommentEmptyOrError())
-            );
-
-    ElementPattern<PsiElement> FINISHED_PARAMETERS_LIST = PlatformPatterns.psiElement()
-            .withParent(PlatformPatterns.psiElement(TokenType.ERROR_ELEMENT))
-            .withSuperParent(2, PlatformPatterns.psiElement(DPLTypes.PARAMETER));
+            .withParent(PlatformPatterns.psiElement(DPLInvalidParameter.class))
+            .withSuperParent(2, PlatformPatterns.psiElement(DPLConfiguration.class))
+            .withSuperParent(3, PlatformPatterns.psiElement(DPLExpressionDefinition.class));
 
     ElementPattern<PsiElement> COMMAND = PlatformPatterns.or(
             PlatformPatterns.psiElement()

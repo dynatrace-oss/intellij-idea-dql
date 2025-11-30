@@ -9,7 +9,9 @@ import pl.thedeem.intellij.dpl.definition.model.Command;
 import pl.thedeem.intellij.dpl.psi.DPLCommandExpression;
 import pl.thedeem.intellij.dpl.psi.DPLExpressionDefinition;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class DPLCommandDocumentationProvider {
     private final @NotNull DPLCommandExpression command;
@@ -26,9 +28,7 @@ public class DPLCommandDocumentationProvider {
         if (definition == null) {
             content = content.child(HtmlChunk.span().addText(DPLBundle.message("documentation.unknownCommand")));
         } else {
-            if (definition.description() != null) {
-                content = content.child(HtmlChunk.span().addText(definition.description()));
-            }
+            content = content.child(buildDescription());
         }
         if (command.getParent() instanceof DPLExpressionDefinition expression) {
             content = content.child(new DPLConfigurationDocumentationProvider(expression).buildDescription());
@@ -52,5 +52,30 @@ public class DPLCommandDocumentationProvider {
             header = header.child(DocumentationMarkup.GRAYED_ELEMENT.addText(definition.output()));
         }
         return header;
+    }
+
+    private HtmlChunk buildDescription() {
+        Command definition = command.getDefinition();
+        if (definition == null) {
+            return HtmlChunk.empty();
+        }
+        HtmlChunk.Element result = HtmlChunk.span();
+        if (definition.description() != null) {
+            result = result.child(HtmlChunk.span().addText(definition.description()));
+        }
+        if (definition.aliases() != null) {
+            Set<String> names = new HashSet<>(definition.aliases());
+            names.add(definition.name());
+            result = result.child(DocumentationMarkup.SECTIONS_TABLE
+                    .child(HtmlChunk.tag("tr")
+                            .child(DocumentationMarkup.SECTION_HEADER_CELL.addText(DPLBundle.message("documentation.command.aliases")))
+                    )
+                    .child(HtmlChunk.tag("tr")
+                            .child(DocumentationMarkup.SECTION_CONTENT_CELL.child(DocumentationMarkup.PRE_ELEMENT.addText(String.join(", ", names))))
+                    )
+            );
+
+        }
+        return result;
     }
 }
