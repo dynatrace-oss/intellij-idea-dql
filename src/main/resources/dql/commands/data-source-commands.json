@@ -95,7 +95,8 @@
       "data [ records ] [, json: json_string ]"
     ],
     "oneOfRequired": [
-      "records", "json"
+      "records",
+      "json"
     ],
     "parameters": [
       {
@@ -178,6 +179,130 @@
         "type": [
           "long"
         ]
+      }
+    ]
+  },
+  "smartscapeNodes": {
+    "name": "smartscapeNodes",
+    "description": "Loads Smartscape nodes using a type pattern (use * for all types).",
+    "type": "data-source-commands",
+    "syntax": [
+      "smartscapeNodes type [, from] [, to] [, timeframe], ..."
+    ],
+    "parameters": [
+      {
+        "name": "type",
+        "description": "The node type. You can filter types of nodes using patterns:\n- using * will match any node type.\n- specific node types can be specified without quotes (\"\").\n- patterns need to be wrapped in double quotes (\"\"). Patterns support prefix (...*) , postfix (*...) and contains notation (*...*).",
+        "required": true,
+        "constant": false,
+        "type": [
+          "string",
+          "data object",
+          "list of expressions"
+        ]
+      },
+      {
+        "name": "timeframe",
+        "description": "\nThe desired timeframe (if not specified, global timeframe is used).",
+        "required": false,
+        "constant": true,
+        "type": [
+          "timeframe"
+        ],
+        "disallows": [
+          "from",
+          "to"
+        ]
+      },
+      {
+        "name": "from",
+        "description": "The start time for fetching data.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "timestamp",
+          "duration"
+        ],
+        "disallows": [
+          "timeframe"
+        ],
+        "defaultValue": "-1h"
+      },
+      {
+        "name": "to",
+        "description": "The end time for fetching data.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "timestamp",
+          "duration"
+        ],
+        "disallows": [
+          "timeframe"
+        ],
+        "defaultValue": "now()"
+      }
+    ]
+  },
+  "smartscapeEdges": {
+    "name": "smartscapeEdges",
+    "description": "Loads Smartscape edges using an edge type pattern (use * for all types).",
+    "type": "data-source-commands",
+    "syntax": [
+      "smartscapeEdges type [, from] [, to] [, timeframe ,] ..."
+    ],
+    "parameters": [
+      {
+        "name": "type",
+        "description": "The edge type that represents the relationship between two nodes. You can filter the edge type using patterns:\n- using * will match any edge type.\n- specific edge types can be specified without quotes (\"\").\n- patterns need to be wrapped in double quotes (\"\"). Patterns support prefix (...*) , postfix (*...) and contains notation (*...*).",
+        "required": true,
+        "constant": false,
+        "type": [
+          "string",
+          "data object",
+          "list of expressions"
+        ]
+      },
+      {
+        "name": "timeframe",
+        "description": "\nThe desired timeframe (if not specified, global timeframe is used).",
+        "required": false,
+        "constant": true,
+        "type": [
+          "timeframe"
+        ],
+        "disallows": [
+          "from",
+          "to"
+        ]
+      },
+      {
+        "name": "from",
+        "description": "The start time for fetching data.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "timestamp",
+          "duration"
+        ],
+        "disallows": [
+          "timeframe"
+        ],
+        "defaultValue": "-1h"
+      },
+      {
+        "name": "to",
+        "description": "The end time for fetching data.",
+        "required": false,
+        "constant": true,
+        "type": [
+          "timestamp",
+          "duration"
+        ],
+        "disallows": [
+          "timeframe"
+        ],
+        "defaultValue": "now()"
       }
     ]
   }

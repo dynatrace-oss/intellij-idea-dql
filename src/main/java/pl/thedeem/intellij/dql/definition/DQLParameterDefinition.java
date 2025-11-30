@@ -15,6 +15,7 @@ public class DQLParameterDefinition {
     public Boolean nameAllowed;
     public Boolean allowsDuplicates;
     public Boolean constant;
+    public boolean singleUnnamed;
     public List<String> type;
     public List<String> disallows;
     public String defaultValue;

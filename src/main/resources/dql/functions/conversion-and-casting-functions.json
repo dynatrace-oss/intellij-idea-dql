@@ -1071,5 +1071,97 @@
     "aliases": [
       "uuid"
     ]
+  },
+  "smartscapeId": {
+    "group": "conversion-and-casting-functions",
+    "name": "smartscapeId",
+    "description": "Creates a smartscapeId from the given string and long expression.",
+    "syntax": [
+      "smartscapeId(type, numericId)"
+    ],
+    "parameters": [
+      {
+        "name": "type",
+        "type": [
+          "string"
+        ],
+        "description": "The type of smartscapeId as string.",
+        "required": true,
+        "repetitive": false
+      },
+      {
+        "name": "numericId",
+        "type": [
+          "long"
+        ],
+        "description": "The numeric id of smartscapeId as long.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "smartscapeId"
+    ],
+    "longDescription": "Creates a smartscapeId from the given string and long expression.",
+    "aliases": [
+      "smartscapeId"
+    ]
+  },
+  "asSmartscapeId": {
+    "group": "conversion-and-casting-functions",
+    "name": "asSmartscapeId",
+    "description": "Returns smartscapeId value if the value is smartscapeId, otherwise returns null.",
+    "syntax": [
+      "asSmartscapeId(value)"
+    ],
+    "parameters": [
+      {
+        "name": "value",
+        "type": [
+          "string",
+          "smartscapeID"
+        ],
+        "description": "The expression to cast as a smartscapeId.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "smartscapeId"
+    ],
+    "longDescription": "Returns smartscapeId value if the value is smartscapeId, otherwise returns null.",
+    "aliases": [
+      "asSmartscapeId"
+    ]
+  },
+  "toSmartscapeId": {
+    "group": "conversion-and-casting-functions",
+    "name": "toSmartscapeId",
+    "description": "Converts a value to smartscapeId if the value is of a suitable type. If the argument is an array, only the element at position 0 is converted.",
+    "syntax": [
+      "toSmartscapeId(value)"
+    ],
+    "parameters": [
+      {
+        "name": "value",
+        "type": [
+          "string",
+          "array"
+        ],
+        "description": "The expression to convert to a smartscapeId if possible.",
+        "required": true,
+        "repetitive": false
+      }
+    ],
+    "examples": [],
+    "returns": [
+      "smartscapeId"
+    ],
+    "longDescription": "Converts a value to smartscapeId if the value is of a suitable type. If the argument is an array, only the element at position 0 is converted.",
+    "aliases": [
+      "toSmartscapeId"
+    ]
   }
 }
