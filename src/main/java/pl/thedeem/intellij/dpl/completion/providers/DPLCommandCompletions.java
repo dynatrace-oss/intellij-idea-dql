@@ -8,10 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dpl.completion.DPLCompletions;
 import pl.thedeem.intellij.dpl.completion.DPLPsiPatterns;
 import pl.thedeem.intellij.dpl.definition.DPLDefinitionService;
-import pl.thedeem.intellij.dpl.definition.model.Command;
-import pl.thedeem.intellij.dpl.psi.DPLCommandExpression;
-import pl.thedeem.intellij.dpl.psi.DPLCommandMatchers;
+import pl.thedeem.intellij.dpl.definition.model.ExpressionDescription;
 import pl.thedeem.intellij.dpl.psi.DPLExpressionDefinition;
+import pl.thedeem.intellij.dpl.psi.DPLGroupExpression;
+import pl.thedeem.intellij.dpl.psi.DPLMatchersExpression;
 
 import java.util.Set;
 
@@ -27,20 +27,25 @@ public class DPLCommandCompletions {
         if (DPLPsiPatterns.COMMAND_MATCHERS.accepts(position) && !canAutocompleteMatchers(position)) {
             return;
         }
+        if (DPLPsiPatterns.INSIDE_GROUP.accepts(position)) {
+            DPLGroupExpression group = PsiTreeUtil.getParentOfType(position, DPLGroupExpression.class);
+            if (group != null && !group.getParameters().isEmpty()) {
+                return;
+            }
+        }
 
         DPLDefinitionService service = DPLDefinitionService.getInstance(position.getProject());
 
-        for (Command value : service.commands().values()) {
+        for (ExpressionDescription value : service.commands().values()) {
             result.addElement(DPLCompletions.createConfigurationParameterLookup(value));
         }
     }
 
     private boolean canAutocompleteMatchers(@NotNull PsiElement position) {
-        DPLCommandMatchers matchers = PsiTreeUtil.getParentOfType(position, DPLCommandMatchers.class);
-        if (matchers != null
-                && matchers.getParent().getParent() instanceof DPLExpressionDefinition exprDef
-                && exprDef.getExpression() instanceof DPLCommandExpression command) {
-            Command definition = command.getDefinition();
+        DPLMatchersExpression matchers = PsiTreeUtil.getParentOfType(position, DPLMatchersExpression.class);
+        if (matchers != null) {
+            DPLExpressionDefinition expression = PsiTreeUtil.getParentOfType(matchers, DPLExpressionDefinition.class);
+            ExpressionDescription definition = expression != null ? expression.getDefinition() : null;
             if (definition != null) {
                 return definition.matchers() != null && ALLOWED_MATCHERS.contains(definition.matchers().type());
             }

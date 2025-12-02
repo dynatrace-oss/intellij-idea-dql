@@ -15,24 +15,20 @@ import pl.thedeem.intellij.dpl.psi.DPLGroupExpression;
 public class DPLConfigurationParameterCompletion {
     public void autocomplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         PsiElement position = parameters.getPosition();
-        if (DPLPsiPatterns.EMPTY_GROUP.accepts(position)) {
+        if (DPLPsiPatterns.INSIDE_GROUP.accepts(position)) {
             DPLGroupExpression group = PsiTreeUtil.getParentOfType(position, DPLGroupExpression.class);
-            if (group != null && group.getParent() instanceof DPLExpressionDefinition currentExpr) {
+            if (group != null && group.isPotentiallyConfiguration(position)) {
+                DPLExpressionDefinition currentExpr = PsiTreeUtil.getParentOfType(group, DPLExpressionDefinition.class);
                 DPLExpressionDefinition prevExpression = PsiUtils.getPrevSiblingOfTypeSkippingWhitespaces(currentExpr, DPLExpressionDefinition.class);
                 if (prevExpression != null) {
-                    showConfigurationOptions(prevExpression, result);
+                    showConfigurationOptions(group, prevExpression, result);
                 }
-            }
-        } else if (DPLPsiPatterns.UNFINISHED_PARAMETERS_LIST.accepts(position)) {
-            DPLExpressionDefinition currentExpr = PsiTreeUtil.getParentOfType(position, DPLExpressionDefinition.class);
-            if (currentExpr != null) {
-                showConfigurationOptions(currentExpr, result);
             }
         }
     }
 
-    private void showConfigurationOptions(@NotNull DPLExpressionDefinition expression, @NotNull CompletionResultSet result) {
-        for (Configuration parameter : expression.getAvailableConfiguration()) {
+    private void showConfigurationOptions(@NotNull DPLGroupExpression group, @NotNull DPLExpressionDefinition expression, @NotNull CompletionResultSet result) {
+        for (Configuration parameter : expression.getAvailableConfiguration(group)) {
             result.addElement(DPLCompletions.createConfigurationParameterLookup(parameter));
         }
     }

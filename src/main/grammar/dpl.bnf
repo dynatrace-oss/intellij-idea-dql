@@ -44,69 +44,91 @@
 }
 
 root ::= dpl
-dpl ::= macro_definition_expression* expression_definition* expression_end?
-
-expression_definition ::= lookaround? expression configuration? quantifier? nullable? (COLON field_name)? (COLON field_name)? {
+dpl ::= macro_definition_expression* expressions_sequence? expression_end?
+expressions_sequence ::= expression_definition (COMMA? expression_definition)* {
+    implements="pl.thedeem.intellij.dpl.psi.elements.SequenceElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.SequenceElementImpl"
+}
+expression_definition ::= expression {
     implements="pl.thedeem.intellij.dpl.psi.elements.ExpressionElement"
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.ExpressionElementImpl"
 }
-nullable ::= OPTIONAL
-expression_end ::= SEMICOLON
-
-lookaround ::= NEGATION? (PLA | PLB) {
-    pin=2
-    implements="pl.thedeem.intellij.dpl.psi.elements.LookaroundElement"
-    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.LookaroundElementImpl"
-}
 
 expression ::=
-    command_expression |
+    modifier_expression |
+    definition_expression {
+    implements="pl.thedeem.intellij.dpl.psi.elements.BaseExpression"
+}
+
+private modifier_expression ::=
+    nullable_expression |
+    export_name_expression |
+    lookaround_expression |
+    quantifier_expression |
+    matchers_expression |
+    configuration_expression
+
+definition_expression ::=
     literal_expression |
     variable_usage_expression |
+    parameter_expression |
+    command_expression |
     group_expression |
-    character_group_expression
+    character_group_expression {
+    extends=expression
+    implements="pl.thedeem.intellij.dpl.psi.elements.BaseExpression"
+}
 
-literal_expression ::= string {
-    extends=expression
-    pin=1
-}
-variable_usage_expression ::= variable {
-    extends=expression
-    pin=1
-}
-macro_definition_expression ::= variable SET expression_definition+ expression_end {
+macro_definition_expression ::= variable SET expressions_sequence expression_end {
     pin=2
     extends=expression
     implements="pl.thedeem.intellij.dpl.psi.elements.MacroExpressionElement"
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.MacroExpressionElementImpl"
 }
+export_name_expression ::= expression COLON field_name {
+    extends=expression
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.ExportNameExpressionElementImpl"
+    implements="pl.thedeem.intellij.dpl.psi.elements.ExportNameExpressionElement"
+}
+lookaround_expression ::= lookaround expression {
+    pin=1
+    extends=expression
+    rightAssociative=true
+    implements="pl.thedeem.intellij.dpl.psi.elements.ModifierExpression"
+}
+nullable_expression ::= expression nullable {
+    extends=expression
+    implements="pl.thedeem.intellij.dpl.psi.elements.ModifierExpression"
+}
+nullable ::= OPTIONAL
+literal_expression ::= string {
+    extends=definition_expression
+    pin=1
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.LiteralExpressionElementImpl"
+    implements="pl.thedeem.intellij.dpl.psi.elements.LiteralExpressionElement"
+}
+variable_usage_expression ::= variable {
+    extends=definition_expression
+    pin=1
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.VariableUsageExpressionElementImpl"
+    implements="pl.thedeem.intellij.dpl.psi.elements.VariableUsageExpressionElement"
+}
 
 // Groups
-group_expression ::= (
-    empty_group_expression |
-    alternative_group_expression |
-    sequence_group_expression
-){
-    extends=expression
+group_expression ::= L_PAREN group_expression_content? R_PAREN{
+    pin=1
+    extends=definition_expression
+    implements="pl.thedeem.intellij.dpl.psi.elements.GroupElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.GroupElementImpl"
 }
-
-empty_group_expression ::= L_PAREN R_PAREN {
-    extends=group_expression
+private group_expression_content ::= alternatives_expression | expressions_sequence {
+    recoverWhile=recover_alternative_content
 }
-sequence_group_expression ::= L_PAREN sequence_group_content R_PAREN {
-    extends=group_expression
-    implements="pl.thedeem.intellij.dpl.psi.elements.SequenceElement"
-    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.SequenceElementImpl"
-}
-private sequence_group_content ::= expression_definition+ {
-    recoverWhile=recover_sequence_content
-}
-alternative_group_expression ::= L_PAREN alternative_group_content R_PAREN {
-    extends=group_expression
+alternatives_expression ::= alternative_group_content {
     implements="pl.thedeem.intellij.dpl.psi.elements.AlternativesGroupElement"
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.AlternativesGroupElementImpl"
 }
-private alternative_group_content ::=  expression_definition OR expression_definition (OR expression_definition)* {
+private alternative_group_content ::= expression_definition OR expression_definition (OR expression_definition)* {
     pin=2
     recoverWhile=recover_alternative_content
 }
@@ -114,7 +136,7 @@ private alternative_group_content ::=  expression_definition OR expression_defin
 // Character groups
 character_group_expression ::= L_BRACKET character_group_content R_BRACKET {
     pin=1
-    extends=expression
+    extends=definition_expression
     implements="pl.thedeem.intellij.dpl.psi.elements.CharacterGroupExpressionElement"
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.CharacterGroupExpressionElementImpl"
 }
@@ -124,8 +146,8 @@ character_group_content ::= CHARACTER_CLASS {
 }
 
 // Commands
-command_expression ::= command_keyword command_matchers? {
-    extends=expression
+command_expression ::= command_keyword {
+    extends=definition_expression
     pin=1
     implements="pl.thedeem.intellij.dpl.psi.elements.CommandElement"
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.CommandElementImpl"
@@ -134,11 +156,13 @@ command_keyword ::= IDENTIFIER {
     implements="pl.thedeem.intellij.dpl.psi.elements.CommandKeywordElement"
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.CommandKeywordElementImpl"
 }
-command_matchers ::= L_BRACE command_matchers_content? R_BRACE {
+
+// Matchers
+matchers_expression ::= expression L_BRACE command_matchers_content? R_BRACE {
+    extends=expression
     implements="pl.thedeem.intellij.dpl.psi.elements.CommandMatchersElement"
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.CommandMatchersElementImpl"
 }
-
 command_matchers_content ::= parameters_matchers_list | members_list_matchers | expression_matchers_list
 expression_matchers_list ::= matcher_item+ {
     extends=command_matchers_content
@@ -161,32 +185,29 @@ matcher_name ::= string {
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.MatcherNameElementImpl"
 }
 
-configuration ::= L_PAREN configuration_content R_PAREN {
+configuration_expression ::= expression L_PAREN configuration_content R_PAREN {
+    extends=expression
     implements="pl.thedeem.intellij.dpl.psi.elements.ConfigurationElement"
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.ConfigurationElementImpl"
 }
-private configuration_content ::= (configuration_list | parameter) invalid_parameter? {
+configuration_content ::= parameter_expression (COMMA parameter_expression)* {
     recoverWhile=recover_configuration_content
+    implements="pl.thedeem.intellij.dpl.psi.elements.ConfigurationContentElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.ConfigurationContentElementImpl"
 }
-private configuration_list ::= parameter COMMA parameter (COMMA parameter)* {
-   pin=2
-}
-parameter ::= unnamed_parameter | named_parameter {
-    implements="pl.thedeem.intellij.dpl.psi.elements.ParameterElement"
-}
-invalid_parameter ::= COMMA? IDENTIFIER
-unnamed_parameter ::= parameter_value {
-    extends=parameter
-    implements="pl.thedeem.intellij.dpl.psi.elements.ParameterElement"
-    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.UnnamedParameterElementImpl"
-}
-named_parameter ::= parameter_name SET parameter_value {
-    pin=2
-    extends=parameter
+parameter_expression ::= named_parameter | unnamed_parameter {
+    extends=expression
     implements="pl.thedeem.intellij.dpl.psi.elements.ParameterElement"
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.NamedParameterElementImpl"
-    recoverWhile=recover_configuration_item
 }
+private named_parameter ::= parameter_name SET parameter_value {
+    pin=2
+    extends=parameter_expression
+}
+private unnamed_parameter ::= parameter_value {
+    extends=parameter_expression
+}
+
 parameter_value ::= simple_expression
 parameter_name ::= IDENTIFIER {
     implements="pl.thedeem.intellij.dpl.psi.elements.ParameterNameElement"
@@ -194,20 +215,22 @@ parameter_name ::= IDENTIFIER {
 }
 
 // Quantifiers
-quantifier ::= empty_quantifier | limited_quantifier | simple_quantifier {
- implements="pl.thedeem.intellij.dpl.psi.elements.QuantifierElement"
+quantifier_expression ::= expression quantifier_content {
+    extends=expression
+    implements="pl.thedeem.intellij.dpl.psi.elements.QuantifierElement"
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.QuantifierElementImpl"
 }
-empty_quantifier ::= L_BRACE R_BRACE {
-    extends=quantifier
+quantifier_content ::= limited_quantifier | simple_quantifier {
+    implements="pl.thedeem.intellij.dpl.psi.elements.QuantifierContentElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.QuantifierContentElementImpl"
 }
+
 simple_quantifier ::= ADD | MULTIPLY {
+    extends=quantifier_content
     pin=1
-    extends=quantifier
 }
-limited_quantifier ::= L_BRACE limited_quantifier_ranges R_BRACE {
-    extends=quantifier
-    pin=1
+limited_quantifier ::= L_BRACE limited_quantifier_ranges? R_BRACE {
+    extends=quantifier_content
 }
 limited_quantifier_ranges ::= min_max_quantifier | min_quantifier | max_quantifier | exact_quantifier
 min_max_quantifier ::= quantifier_limit COMMA quantifier_limit {
@@ -279,7 +302,12 @@ variable ::= VARIABLE_NAME {
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.VariableElementImpl"
 }
 
+expression_end ::= SEMICOLON
+lookaround ::= NEGATION? (PLA | PLB) {
+    pin=2
+    implements="pl.thedeem.intellij.dpl.psi.elements.LookaroundElement"
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.LookaroundElementImpl"
+}
+
 private recover_configuration_content ::= !(IDENTIFIER|OR|R_PAREN)
-private recover_configuration_item ::= !(IDENTIFIER|OR|SET|COMMA|R_PAREN)
-private recover_sequence_content ::= !(R_PAREN)
 private recover_alternative_content ::= !(OR|R_PAREN)

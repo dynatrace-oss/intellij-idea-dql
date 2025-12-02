@@ -262,7 +262,8 @@
       "name": "ld",
       "output": "string",
       "aliases": [
-        "ldata"
+        "ldata",
+        "string"
       ],
       "quantifier": {
         "defaultMin": 1,
@@ -397,6 +398,28 @@
       "name": "alnum",
       "output": "string",
       "description": "POSIX notation: [:alnum:]",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "alpha": {
+      "name": "alpha",
+      "output": "string",
+      "description": "POSIX notation: [:alpha:]",
       "quantifier": {
         "defaultMin": 1,
         "defaultMax": 1
@@ -941,7 +964,7 @@
       "description": "Matches any bytes in the middle of string"
     },
     "eos": {
-      "name": "eof",
+      "name": "eos",
       "aliases": [
         "eof"
       ],
@@ -1078,6 +1101,8 @@
   },
   "expressions": {
     "sequence": {
+      "name": "DPL Sequence Group",
+      "output": "string",
       "configuration": {
         "locale": {
           "type": "string",
@@ -1097,7 +1122,9 @@
         }
       }
     },
-    "alternative_group": {
+    "alternatives": {
+      "name": "DPL Alternatives Group",
+      "output": "string",
       "configuration": {
         "locale": {
           "type": "string",
@@ -1111,6 +1138,51 @@
           "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
         }
       }
+    },
+    "literal": {
+      "name": "String constants",
+      "output": "string",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "character_class": {
+      "name": "Character Group",
+      "output": "string",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 1
+      },
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "variable": {
+      "name": "DPL Pattern Expression Macro usage"
     }
   }
 }

@@ -35,7 +35,7 @@ public class DPLBlock extends AbstractBlock {
 
     @Override
     protected List<Block> buildChildren() {
-        return  getBlocks();
+        return getBlocks();
     }
 
     /**
@@ -65,14 +65,16 @@ public class DPLBlock extends AbstractBlock {
         PsiElement parent = this.getNode().getPsi();
         PsiElement element = child.getPsi();
 
-        if (parent instanceof DPLExpressionDefinition) {
+        if (parent instanceof DPLExpressionsSequence) {
             return Indent.getNoneIndent();
         }
-        if (parent instanceof DPLGroupExpression || parent instanceof DPLConfiguration) {
+        if (parent instanceof DPLGroupExpression || parent instanceof DPLConfigurationExpression) {
             if (childType == DPLTypes.L_PAREN || childType == DPLTypes.R_PAREN) {
                 return Indent.getNoneIndent();
             }
-            return Indent.getNormalIndent();
+            if (childType == DPLTypes.CONFIGURATION_CONTENT) {
+                return Indent.getNormalIndent();
+            }
         }
         if (parent instanceof DPLCharacterGroupExpression) {
             if (childType == DPLTypes.L_BRACKET || childType == DPLTypes.R_BRACKET) {
@@ -80,23 +82,40 @@ public class DPLBlock extends AbstractBlock {
             }
             return Indent.getNormalIndent();
         }
-        if (parent instanceof DPLCommandMatchers || parent instanceof DPLLimitedQuantifier) {
+        if (parent instanceof DPLMatchersExpression) {
             if (childType == DPLTypes.L_BRACE || childType == DPLTypes.R_BRACE) {
                 return Indent.getNoneIndent();
             }
-            return Indent.getNormalIndent();
+            if (childType == DPLTypes.COMMAND_MATCHERS_CONTENT) {
+                return Indent.getNormalIndent();
+            }
+            return Indent.getNoneIndent();
         }
-        if (parent instanceof DPLCommandExpression) {
-            if (element instanceof DPLCommandKeyword) {
+        if (parent instanceof DPLLimitedQuantifier) {
+            if (childType == DPLTypes.L_BRACE || childType == DPLTypes.R_BRACE) {
                 return Indent.getNoneIndent();
             }
+            if (element instanceof DPLLimitedQuantifierRanges) {
+                return Indent.getNormalIndent();
+            }
+            return Indent.getNoneIndent();
+        }
+        if (parent instanceof DPLCommandMatchersContent) {
             return Indent.getNormalIndent();
         }
         if (parent instanceof DPLMacroDefinitionExpression) {
             if (childType == DPLTypes.SET) {
                 return Indent.getNormalIndent();
             }
-            if (element instanceof DPLExpressionDefinition) {
+            if (element instanceof DPLExpressionsSequence) {
+                return Indent.getContinuationIndent();
+            }
+        }
+        if (parent instanceof DPLExportNameExpression) {
+            if (childType == DPLTypes.COLON) {
+                return Indent.getNormalIndent();
+            }
+            if (childType == DPLTypes.FIELD_NAME) {
                 return Indent.getContinuationIndent();
             }
         }
@@ -106,7 +125,7 @@ public class DPLBlock extends AbstractBlock {
     private Wrap getChildWrap() {
         IElementType elementType = this.getNode().getElementType();
         if (settings.WRAP_LONG_EXPRESSIONS) {
-            if (DPLTypes.EXPRESSION_DEFINITION == elementType) {
+            if (DPLTypes.EXPRESSION == elementType || DPLTypes.EXPRESSIONS_SEQUENCE == elementType) {
                 return Wrap.createWrap(WrapType.CHOP_DOWN_IF_LONG, true);
             }
         }

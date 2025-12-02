@@ -11,8 +11,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.LangUtils;
-import pl.thedeem.intellij.dpl.definition.model.Command;
-import pl.thedeem.intellij.dpl.psi.DPLAlternativeGroupExpression;
+import pl.thedeem.intellij.dpl.definition.model.ExpressionDescription;
+import pl.thedeem.intellij.dpl.psi.DPLAlternativesExpression;
 import pl.thedeem.intellij.dpl.psi.DPLExpressionDefinition;
 
 import java.util.Set;
@@ -20,9 +20,9 @@ import java.util.Set;
 public class DPLCommandInsertionHandler implements InsertHandler<LookupElement> {
     private final static Set<Character> VALID_ALT_GROUP_CHARACTERS_BEHIND = Set.of('(', '|');
 
-    private final @NotNull Command definition;
+    private final @NotNull ExpressionDescription definition;
 
-    public DPLCommandInsertionHandler(@NotNull Command definition) {
+    public DPLCommandInsertionHandler(@NotNull ExpressionDescription definition) {
         this.definition = definition;
     }
 
@@ -31,7 +31,7 @@ public class DPLCommandInsertionHandler implements InsertHandler<LookupElement> 
         Editor editor = context.getEditor();
         int startOffset = context.getStartOffset();
         PsiElement psiElement = context.getFile().findElementAt(Math.max(0, context.getTailOffset() - 1));
-        DPLAlternativeGroupExpression group = PsiTreeUtil.getParentOfType(psiElement, DPLAlternativeGroupExpression.class);
+        DPLAlternativesExpression group = PsiTreeUtil.getParentOfType(psiElement, DPLAlternativesExpression.class);
 
         TemplateManager templateManager = TemplateManager.getInstance(context.getProject());
         Template template = templateManager.createTemplate("", "");

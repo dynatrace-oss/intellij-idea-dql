@@ -10,14 +10,14 @@ import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dpl.DPLBundle;
 import pl.thedeem.intellij.dpl.DPLIcon;
 import pl.thedeem.intellij.dpl.definition.DPLDefinitionService;
-import pl.thedeem.intellij.dpl.definition.model.Command;
-import pl.thedeem.intellij.dpl.impl.DPLExpressionImpl;
+import pl.thedeem.intellij.dpl.definition.model.ExpressionDescription;
+import pl.thedeem.intellij.dpl.impl.DPLDefinitionExpressionImpl;
 import pl.thedeem.intellij.dpl.psi.DPLCommandKeyword;
 import pl.thedeem.intellij.dpl.psi.elements.CommandElement;
 
 import java.util.Objects;
 
-public abstract class CommandElementImpl extends DPLExpressionImpl implements CommandElement {
+public abstract class CommandElementImpl extends DPLDefinitionExpressionImpl implements CommandElement {
     public CommandElementImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -34,14 +34,19 @@ public abstract class CommandElementImpl extends DPLExpressionImpl implements Co
     }
 
     @Override
-    public @Nullable Command getDefinition() {
+    public @Nullable ExpressionDescription getDefinition() {
         DPLDefinitionService service = DPLDefinitionService.getInstance(getProject());
         String name = Objects.requireNonNull(getName()).toUpperCase();
         return service.commands().get(name);
     }
 
     @Override
+    public @Nullable String getExpressionName() {
+        return "literal";
+    }
+
+    @Override
     public ItemPresentation getPresentation() {
-        return new StandardItemPresentation(DPLBundle.message("presentation.expression"), this, DPLIcon.EXPRESSION);
+        return new StandardItemPresentation(DPLBundle.message("presentation.commandExpression", getName()), this, DPLIcon.COMMAND);
     }
 }

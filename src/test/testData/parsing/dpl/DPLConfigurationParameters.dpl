@@ -1,5 +1,5 @@
-TIMESTAMP('yyyy-MM-dd HH:mm:ss.S'):f1 TIMESTAMP('yyyy-MM-dd HH:mm:ss.S', tz='UTC'):f2
-TIMESTAMP(format='yyyy-MM-dd HH:mm:ss.S'):f3 TIMESTAMP(format='yyyy-MM-dd HH:mm:ss.S', tz='UTC'):f4
-TIMESTAMP(tz='UTC', 'yyyy-MM-dd HH:mm:ss.S'):f5 ((TIMESTAMP)('yyyy-MM-dd HH:mm:ss.S')):f6
+TIMESTAMP('yyyy-MM-dd HH:mm:ss.S'):f1 TIMESTAMP('yyyy-MM-dd HH:mm:ss.S', tz = 'UTC'):f2
+TIMESTAMP(format = 'yyyy-MM-dd HH:mm:ss.S'):f3 TIMESTAMP(format = 'yyyy-MM-dd HH:mm:ss.S', tz = 'UTC'):f4
+TIMESTAMP(tz = 'UTC', 'yyyy-MM-dd HH:mm:ss.S'):f5 ((TIMESTAMP)('yyyy-MM-dd HH:mm:ss.S')):f6
 (TIMESTAMP (LONG INT)):f7 (int ("cron" | "interval" | "time"):f8)
-('[' INT:PID '] ')?:f9
+('[' INT:PID '] ')?:f9 INT ('-metadata' EOS):f10

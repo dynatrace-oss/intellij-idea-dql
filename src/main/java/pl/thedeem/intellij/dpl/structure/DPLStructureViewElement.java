@@ -11,6 +11,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dpl.DPLFile;
 import pl.thedeem.intellij.dpl.psi.*;
+import pl.thedeem.intellij.dpl.psi.elements.ExpressionElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,51 +58,68 @@ public class DPLStructureViewElement implements StructureViewTreeElement, Sortab
     @Override
     public @NotNull TreeElement[] getChildren() {
         List<TreeElement> result = new ArrayList<>();
+
         switch (element) {
             case DPLFile file -> {
                 DPLDpl dpl = PsiTreeUtil.getChildOfType(file, DPLDpl.class);
                 PsiElement[] macros = PsiTreeUtil.getChildrenOfType(dpl, DPLMacroDefinitionExpression.class);
-                PsiElement[] expressions = PsiTreeUtil.getChildrenOfType(dpl, DPLExpressionDefinition.class);
+                DPLExpressionsSequence[] expressions = PsiTreeUtil.getChildrenOfType(dpl, DPLExpressionsSequence.class);
                 List<PsiElement> elements = new ArrayList<>();
                 if (macros != null) {
                     elements.addAll(List.of(macros));
                 }
                 if (expressions != null) {
-                    elements.addAll(List.of(expressions));
+                    for (DPLExpressionsSequence expression : expressions) {
+                        elements.addAll(expression.getExpressionDefinitionList());
+                    }
                 }
                 result.addAll(convert(elements));
             }
+            case DPLExpressionsSequence sequence -> result.addAll(convert(sequence.getExpressionDefinitionList()));
             case DPLMacroDefinitionExpression macro -> {
                 List<PsiElement> elements = new ArrayList<>();
                 elements.add(macro.getVariable());
-                List<DPLExpressionDefinition> list = macro.getExpressionDefinitionList();
-                elements.addAll(list);
+                DPLExpressionsSequence sequence = macro.getExpressionsSequence();
+                if (sequence != null) {
+                    elements.addAll(sequence.getExpressionDefinitionList());
+                }
                 result.addAll(convert(elements));
             }
             case DPLExpressionDefinition expression -> {
+                ExpressionElement.ExpressionParts parts = expression.getExpressionParts();
                 List<PsiElement> elements = new ArrayList<>();
-                switch (expression.getExpression()) {
-                    case DPLCommandExpression command -> {
-                        elements.add(command.getCommandKeyword());
-                        elements.add(command.getCommandMatchers());
-                    }
-                    case DPLSequenceGroupExpression group -> elements.addAll(group.getExpressionDefinitionList());
-                    case DPLAlternativeGroupExpression group -> elements.addAll(group.getExpressionDefinitionList());
-                    case DPLCharacterGroupExpression group -> elements.add(group.getCharacterGroupContent());
-                    case DPLVariableUsageExpression variableUsage -> elements.add(variableUsage.getVariable());
-                    case DPLLiteralExpression literal -> elements.add(literal.getString());
-                    default -> {
+                if (expression.getDefinedExpression() != null) {
+                    switch (expression.getDefinedExpression()) {
+                        case DPLCommandExpression command -> elements.add(command.getCommandKeyword());
+                        case DPLGroupExpression group when group.getExpressionsSequence() != null ->
+                                elements.addAll(group.getExpressionsSequence().getExpressionDefinitionList());
+                        case DPLGroupExpression group when group.getAlternativesExpression() != null ->
+                                elements.addAll(group.getAlternativesExpression().getExpressionDefinitionList());
+                        case DPLCharacterGroupExpression group -> elements.add(group.getCharacterGroupContent());
+                        case DPLVariableUsageExpression variableUsage -> elements.add(variableUsage.getVariable());
+                        case DPLLiteralExpression literal -> elements.add(literal.getString());
+                        default -> {
+                        }
                     }
                 }
-                elements.add(expression.getLookaround());
-                elements.add(expression.getConfiguration());
-                elements.add(expression.getQuantifier());
-                elements.add(expression.getExportedName());
-                elements.add(expression.getMemberName());
-                elements.add(expression.getMemberName());
+                for (DPLLookaroundExpression lookaround : parts.lookarounds()) {
+                    elements.add(lookaround.getLookaround());
+                }
+                for (DPLConfigurationExpression configuration : parts.configurations()) {
+                    elements.add(configuration.getConfigurationContent());
+                }
+                for (DPLQuantifierExpression quantifier : parts.quantifiers()) {
+                    elements.add(quantifier.getQuantifierContent());
+                }
+                for (DPLExportNameExpression name : parts.names()) {
+                    elements.add(name.getFieldName());
+                }
+                elements.addAll(parts.matchers());
                 result.addAll(convert(elements));
             }
-            case DPLCommandMatchers commandMatchers -> {
+            case DPLExportNameExpression exportName when exportName.getFieldName() instanceof NavigatablePsiElement psi ->
+                    result.add(new DPLStructureViewElement(psi));
+            case DPLMatchersExpression commandMatchers -> {
                 switch (commandMatchers.getCommandMatchersContent()) {
                     case DPLParametersMatchersList matchers -> result.addAll(convert(matchers.getMatcherList()));
                     case DPLMembersListMatchers matchers ->
@@ -112,17 +130,11 @@ public class DPLStructureViewElement implements StructureViewTreeElement, Sortab
                     }
                 }
             }
-            case DPLConfiguration configuration -> result.addAll(convert(configuration.getParameterList()));
-            case DPLParameter parameter -> {
-                List<PsiElement> elements = new ArrayList<>();
-                if (parameter instanceof DPLNamedParameter namedParameter) {
-                    elements.add(namedParameter.getParameterName());
-                    elements.add(namedParameter.getParameterValue());
-                } else if (parameter instanceof DPLUnnamedParameter unnamedParameter) {
-                    elements.add(unnamedParameter.getParameterValue());
-                }
-                result.addAll(convert(elements));
-            }
+            case DPLQuantifierExpression quantifier when quantifier.getQuantifierContent() instanceof NavigatablePsiElement psi ->
+                    result.add(new DPLStructureViewElement(psi));
+            case DPLConfigurationExpression configuration ->
+                    result.addAll(convert(configuration.getConfigurationContent().getParameterExpressionList()));
+            case DPLConfigurationContent content -> result.addAll(convert(content.getParameterExpressionList()));
             case DPLLimitedQuantifier quantifier -> {
                 switch (quantifier.getLimitedQuantifierRanges()) {
                     case DPLMinMaxQuantifier ranges -> result.addAll(convert(ranges.getQuantifierLimitList()));

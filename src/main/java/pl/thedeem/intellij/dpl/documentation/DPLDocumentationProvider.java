@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.impl.PsiElementBase;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dpl.documentation.providers.*;
@@ -25,8 +26,10 @@ public class DPLDocumentationProvider extends AbstractDocumentationProvider {
             case DPLStringContentElement string -> new DPLStringDocumentationProvider(string).generateDocumentation();
             case DPLCharacterGroupContent regex ->
                     new DPLCharacterClassDocumentationProvider(regex).generateDocumentation();
-            case DPLParameterName parameter when parameter.getParent().getParent() instanceof DPLConfiguration configuration ->
-                    new DPLConfigurationDocumentationProvider(configuration).generateDocumentation();
+            case DPLParameterName parameter -> {
+                DPLExpressionDefinition definition = PsiTreeUtil.getParentOfType(parameter, DPLExpressionDefinition.class);
+                yield definition != null ? new DPLConfigurationDocumentationProvider(definition).generateDocumentation() : null;
+            }
             case PsiElementBase generic -> new BaseElementDocumentationProvider(generic).generateDocumentation();
             default -> null;
         };

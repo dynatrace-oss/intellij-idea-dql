@@ -5,12 +5,15 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dpl.DPLBundle;
-import pl.thedeem.intellij.dpl.definition.model.Command;
 import pl.thedeem.intellij.dpl.definition.model.Configuration;
+import pl.thedeem.intellij.dpl.definition.model.ExpressionDescription;
 import pl.thedeem.intellij.dpl.inspections.fixes.DropConfigurationQuickFix;
-import pl.thedeem.intellij.dpl.psi.*;
+import pl.thedeem.intellij.dpl.psi.DPLConfigurationExpression;
+import pl.thedeem.intellij.dpl.psi.DPLExpressionDefinition;
+import pl.thedeem.intellij.dpl.psi.DPLVisitor;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class ConfigurationNotSupportedInspection extends LocalInspectionTool {
     @Override
@@ -20,32 +23,20 @@ public class ConfigurationNotSupportedInspection extends LocalInspectionTool {
             public void visitExpressionDefinition(@NotNull DPLExpressionDefinition expression) {
                 super.visitExpressionDefinition(expression);
 
-                DPLConfiguration configuration = expression.getConfiguration();
+                DPLConfigurationExpression configuration = expression.getConfiguration();
                 if (configuration == null) {
                     return;
                 }
-
-                DPLExpression expr = expression.getExpression();
-                if (expr instanceof DPLCommandExpression command) {
-                    validateCommand(command, configuration, holder);
+                ExpressionDescription description = expression.getDefinition();
+                Map<String, Configuration> configurationDefinition = description != null ? Objects.requireNonNullElse(description.configuration(), Map.of()) : Map.of();
+                if (configurationDefinition.isEmpty()) {
+                    holder.registerProblem(
+                            configuration.getConfigurationContent(),
+                            DPLBundle.message("inspection.configurationNotAllowed"),
+                            new DropConfigurationQuickFix()
+                    );
                 }
             }
         };
-    }
-
-    private void validateCommand(@NotNull DPLCommandExpression command, @NotNull DPLConfiguration configuration, @NotNull ProblemsHolder holder) {
-        Command definition = command.getDefinition();
-        if (definition == null) {
-            return;
-        }
-        Map<String, Configuration> commandConfiguration = definition.configuration();
-
-        if (commandConfiguration == null) {
-            holder.registerProblem(
-                    configuration,
-                    DPLBundle.message("inspection.command.configurationNotAllowed", command.getName()),
-                    new DropConfigurationQuickFix()
-            );
-        }
     }
 }

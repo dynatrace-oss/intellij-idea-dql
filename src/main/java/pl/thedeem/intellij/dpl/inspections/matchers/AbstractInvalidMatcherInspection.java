@@ -4,20 +4,23 @@ import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.dpl.definition.model.Command;
 import pl.thedeem.intellij.dpl.definition.model.CommandMatcher;
-import pl.thedeem.intellij.dpl.psi.*;
+import pl.thedeem.intellij.dpl.definition.model.ExpressionDescription;
+import pl.thedeem.intellij.dpl.psi.DPLCommandMatchersContent;
+import pl.thedeem.intellij.dpl.psi.DPLExpressionDefinition;
+import pl.thedeem.intellij.dpl.psi.DPLMatchersExpression;
+import pl.thedeem.intellij.dpl.psi.DPLVisitor;
 
 public abstract class AbstractInvalidMatcherInspection extends LocalInspectionTool {
     @Override
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DPLVisitor() {
             @Override
-            public void visitCommandExpression(@NotNull DPLCommandExpression command) {
-                super.visitCommandExpression(command);
+            public void visitExpressionDefinition(@NotNull DPLExpressionDefinition expression) {
+                super.visitExpressionDefinition(expression);
 
-                Command definition = command.getDefinition();
-                DPLCommandMatchers matchers = command.getCommandMatchers();
+                DPLMatchersExpression matchers = expression.getMatchers();
+                ExpressionDescription definition = expression.getDefinition();
 
                 if (definition == null || definition.matchers() == null || matchers == null || matchers.getCommandMatchersContent() == null) {
                     return;
@@ -25,10 +28,10 @@ public abstract class AbstractInvalidMatcherInspection extends LocalInspectionTo
                 DPLCommandMatchersContent definedMatchers = matchers.getCommandMatchersContent();
                 CommandMatcher matchersDefinition = definition.matchers();
 
-                validateMatcher(definedMatchers, command, matchersDefinition, holder);
+                validateMatcher(definedMatchers, expression, matchersDefinition, holder);
             }
         };
     }
 
-    protected abstract void validateMatcher(@NotNull DPLCommandMatchersContent definedMatchers, @NotNull DPLCommandExpression command, @NotNull CommandMatcher matchersDefinition, @NotNull ProblemsHolder holder);
+    protected abstract void validateMatcher(@NotNull DPLCommandMatchersContent definedMatchers, @NotNull DPLExpressionDefinition expression, @NotNull CommandMatcher matchersDefinition, @NotNull ProblemsHolder holder);
 }

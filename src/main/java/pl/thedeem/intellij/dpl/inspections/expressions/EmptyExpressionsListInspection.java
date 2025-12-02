@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.dpl.inspections;
+package pl.thedeem.intellij.dpl.inspections.expressions;
 
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
@@ -16,7 +16,7 @@ public class EmptyExpressionsListInspection extends LocalInspectionTool {
             public void visitDpl(@NotNull DPLDpl dpl) {
                 super.visitDpl(dpl);
 
-                if (dpl.getExpressionDefinitionList().isEmpty() && (dpl.getExpressionEnd() != null || !dpl.getMacroDefinitionExpressionList().isEmpty())) {
+                if (dpl.getExpressionsSequence() == null && (dpl.getExpressionEnd() != null || !dpl.getMacroDefinitionExpressionList().isEmpty())) {
                     holder.registerProblem(dpl, DPLBundle.message("inspection.missingExpressionsList"));
                 }
             }

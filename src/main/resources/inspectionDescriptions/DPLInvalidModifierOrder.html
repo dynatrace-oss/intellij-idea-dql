@@ -1,0 +1,27 @@
+<html lang="en">
+<body>
+Verifies if the expression definition contains modifiers specified in a correct order.
+
+<p>
+    This inspection reports an error if it detects an expression that specifies modifiers in a wrong place.
+</p>
+
+<p>
+    <span>The correct order of modifiers:</span>
+</p>
+<ol>
+    <li>Lookaround</li>
+    <li>Base expression (command/group/character class etc.)</li>
+    <li>Matchers ({...})</li>
+    <li>Configuration (...)</li>
+    <li>Quantifiers (*, +, or {...})</li>
+    <li>Optional symbol (?)</li>
+</ol>
+<pre><code>
+'// The order of optionality, quantifier and configuration modifiers is wrong'
+INT?*(min=0)
+</code></pre>
+
+After applying the quick fix, the expression will reordered.
+</body>
+</html>

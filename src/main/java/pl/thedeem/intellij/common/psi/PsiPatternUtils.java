@@ -38,22 +38,6 @@ public class PsiPatternUtils {
         };
     }
 
-    public static PatternCondition<PsiElement> withNumberOfChildren(int number, ElementPattern<? extends PsiElement> skipping) {
-        return new PatternCondition<>("withNumberOfChildren") {
-            @Override
-            public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
-                PsiElement [] processed = element.getChildren();
-                int result = 0;
-                for (PsiElement child : processed) {
-                    if (skipping != null && !skipping.accepts(child, context)) {
-                        result++;
-                    }
-                }
-                return result == number;
-            }
-        };
-    }
-
     public static PatternCondition<PsiElement> isDeepNeighbourOf(ElementPattern<? extends PsiElement> expected) {
         return new PatternCondition<>("isDeepNeighbourOf") {
             @Override

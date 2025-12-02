@@ -5,6 +5,7 @@ import com.intellij.openapi.util.text.HtmlChunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dpl.DPLBundle;
+import pl.thedeem.intellij.dpl.psi.DPLExpressionsSequence;
 import pl.thedeem.intellij.dpl.psi.DPLMacroDefinitionExpression;
 import pl.thedeem.intellij.dpl.psi.DPLVariable;
 
@@ -37,7 +38,8 @@ public class DPLVariableDocumentationProvider {
 
     private HtmlChunk buildDescription() {
         DPLMacroDefinitionExpression definition = variable.getDefinition();
-        if (definition == null || definition.getExpressionDefinitionList().isEmpty()) {
+        DPLExpressionsSequence sequence = definition != null ? definition.getExpressionsSequence() : null;
+        if (definition == null || sequence == null || sequence.getExpressionDefinitionList().isEmpty()) {
             return HtmlChunk.span().addText(DPLBundle.message("documentation.variable.unknown"));
         }
         return HtmlChunk.empty();

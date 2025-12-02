@@ -7,8 +7,8 @@ import pl.thedeem.intellij.dpl.DPLBundle;
 import pl.thedeem.intellij.dpl.DPLIcon;
 import pl.thedeem.intellij.dpl.completion.insertions.DPLCommandInsertionHandler;
 import pl.thedeem.intellij.dpl.completion.insertions.DPLConfigurationInsertionHandler;
-import pl.thedeem.intellij.dpl.definition.model.Command;
 import pl.thedeem.intellij.dpl.definition.model.Configuration;
+import pl.thedeem.intellij.dpl.definition.model.ExpressionDescription;
 
 public class DPLCompletions {
     public static final String CONFIGURATION_PARAMETER = DPLBundle.message("completion.configurationParameter");
@@ -27,13 +27,13 @@ public class DPLCompletions {
     }
 
     @NotNull
-    public static LookupElementBuilder createConfigurationParameterLookup(@NotNull Command command) {
+    public static LookupElementBuilder createConfigurationParameterLookup(@NotNull ExpressionDescription description) {
         return CompletionUtils.createLookupElement(
-                command.name().toUpperCase(),
+                description.name().toUpperCase(),
                 DPLIcon.COMMAND,
                 COMMAND,
                 null,
-                new DPLCommandInsertionHandler(command)
+                new DPLCommandInsertionHandler(description)
         );
     }
 }
