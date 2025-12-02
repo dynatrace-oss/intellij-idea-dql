@@ -4,7 +4,7 @@
     "description": "Combines loading, filtering and aggregating metrics data into a time series output.",
     "type": "metric-commands",
     "syntax": [
-      "timeseries [column =] aggregation(metricKey [, filter:] [, default:] [, rollup:] [, rate:] [, scalar:]) [, [column =] aggregation(metricKey, ...), ...] [, by:] [, filter:] [, union:] [, nonempty:] [, interval: | bins:] [, from:] [, to:] [,timeframe:] [,shift:]"
+      "timeseries [column =] aggregation(metricKey [, filter:] [, default:] [, rollup:] [, rate:] [, scalar:]) [, [column =] aggregation(metricKey, ...), ...] [, by:] [, filter:] [, union:] [, nonempty:] [, interval: | bins:] [, from:] [, to:] [,timeframe:] [,shift:] [,bucket: bucket, …]"
     ],
     "injectMetricParameters": true,
     "parameters": [
@@ -144,6 +144,18 @@
         "type": [
           "boolean",
           "list of expressions"
+        ],
+        "disallows": []
+      },
+      {
+        "name": "bucket",
+        "description": "Allows to limit the data sources to a list of specified buckets, possibly improving the query performance.",
+        "required": false,
+        "constant": true,
+        "nameAllowed": true,
+        "repetitive": true,
+        "type": [
+          "string"
         ],
         "disallows": []
       }

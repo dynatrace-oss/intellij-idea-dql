@@ -6,6 +6,7 @@
 
 - Added support for Smartscape functions to DQL
 - Added support for other JetBrains tools (like WebStorm)
+- Added support for a `bucket` parameter inside DQL `fetch` and `timeseries` commands
 - Added support for Dynatrace Pattern Language files (`.dpl`)
   - The support is also automatically added to the DQL `parse` command
   - Customizable syntax highlighting

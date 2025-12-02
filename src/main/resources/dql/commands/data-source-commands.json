@@ -4,7 +4,7 @@
     "description": "Loads data from the specified resource.",
     "type": "data-source-commands",
     "syntax": [
-      "fetch dataObject [,timeframe:] [,from:] [,to:] [,samplingRatio:] [,scanLimitGBytes:]"
+      "fetch dataObject [, bucket: bucket, …] [, from] [, to] [, timeframe] [, samplingRatio] [, scanLimitGBytes]"
     ],
     "parameters": [
       {
@@ -84,6 +84,18 @@
         ],
         "disallows": [],
         "defaultValue": 500
+      },
+      {
+        "name": "bucket",
+        "description": "Allows to limit the data sources to a list of specified buckets, possibly improving the query performance.",
+        "required": false,
+        "constant": true,
+        "nameAllowed": true,
+        "repetitive": true,
+        "type": [
+          "string"
+        ],
+        "disallows": []
       }
     ]
   },
