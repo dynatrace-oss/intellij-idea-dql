@@ -166,6 +166,13 @@ in the plugin's settings.
 
 <!-- Plugin description end -->
 
+### DPL language support
+
+The plugin also adds similar support for
+the [Dynatrace Pattern Language](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail/dynatrace-pattern-language).
+It adds syntax highlighting, code style formatting, autocompletion, documentation, and a lot of inspections and
+intentions for both `.dpl` files and inside the DQL `parse` command.
+
 ## Building
 
 This plugin uses the [GrammarKit](https://github.com/JetBrains/Grammar-Kit/tree/master) plugin to generate all
