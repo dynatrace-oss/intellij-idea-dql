@@ -4,7 +4,6 @@ import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CustomCodeStyleSettings;
 
 public class DQLCodeStyleSettings extends CustomCodeStyleSettings {
-    public int INJECTED_FRAGMENT_INDENT_SIZE = 2;
     public boolean SURROUND_INJECTED_FRAGMENTS_WITH_NEW_LINES = true;
     public boolean KEEP_INDENT_FOR_INJECTED_FRAGMENTS = true;
     public boolean REFORMAT_DPL_FRAGMENTS = true;
@@ -44,6 +43,12 @@ public class DQLCodeStyleSettings extends CustomCodeStyleSettings {
     public boolean FORCE_LB_SETTINGS_FOR_BRACKETS = false;
     public boolean FORCE_LB_SETTINGS_FOR_COMMAND_PARAMETERS = false;
     public boolean FORCE_LB_SETTINGS_FOR_FUNCTION_PARAMETERS = false;
+
+    public boolean FORCE_SETTINGS_FOR_COMMENTS = false;
+    public boolean SPACE_BEFORE_INLINE_COMMENTS = true;
+    public boolean LB_BEFORE_INLINE_COMMENTS = false;
+    public boolean LB_AROUND_BLOCK_COMMENTS = false;
+    public boolean SPACES_BETWEEN_COMMENT_TOKENS = true;
 
     public boolean INDENT_BEFORE_PIPE = false;
 

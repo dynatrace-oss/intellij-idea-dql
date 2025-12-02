@@ -43,6 +43,9 @@ public class DQLLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
             consumer.showCustomOption(DQLCodeStyleSettings.class, "SPACE_AROUND_ASSIGNMENT", DQLBundle.message("settings.style.spaceAroundAssignmentOperator"), DQLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DQLCodeStyleSettings.class, "SPACE_INSIDE_SUBQUERY", DQLBundle.message("settings.style.spaceInsideSubquery"), DQLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DQLCodeStyleSettings.class, "SPACE_INSIDE_FUNCTION_PARENTHESES", DQLBundle.message("settings.style.spaceInsideFunction"), DQLBundle.message("settings.style.groups.expressions"));
+
+            consumer.showCustomOption(DQLCodeStyleSettings.class, "SPACE_BEFORE_INLINE_COMMENTS", DQLBundle.message("settings.style.spaceBeforeComments"), DQLBundle.message("settings.style.groups.comments"));
+            consumer.showCustomOption(DQLCodeStyleSettings.class, "SPACES_BETWEEN_COMMENT_TOKENS", DQLBundle.message("settings.style.spacesBetweenCommentTokens"), DQLBundle.message("settings.style.groups.comments"));
         } else if (settingsType == SettingsType.WRAPPING_AND_BRACES_SETTINGS) {
             consumer.showCustomOption(DQLCodeStyleSettings.class, "WRAP_LONG_EXPRESSIONS", DQLBundle.message("settings.style.wrapLongExpressions"), DQLBundle.message("settings.style.groups.default"));
 
@@ -68,6 +71,10 @@ public class DQLLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
 
             consumer.showCustomOption(DQLCodeStyleSettings.class, "LB_AFTER_ASSIGNMENT", DQLBundle.message("settings.style.lbAfterAssignment"), DQLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DQLCodeStyleSettings.class, "LB_SUBQUERY", DQLBundle.message("settings.style.lbInsideSubqueries"), DQLBundle.message("settings.style.groups.expressions"));
+
+            consumer.showCustomOption(DQLCodeStyleSettings.class, "FORCE_SETTINGS_FOR_COMMENTS", DQLBundle.message("settings.style.forceCommentsSettings"), DQLBundle.message("settings.style.groups.comments"));
+            consumer.showCustomOption(DQLCodeStyleSettings.class, "LB_BEFORE_INLINE_COMMENTS", DQLBundle.message("settings.style.lbBeforeInlineComment"), DQLBundle.message("settings.style.groups.comments"));
+            consumer.showCustomOption(DQLCodeStyleSettings.class, "LB_AROUND_BLOCK_COMMENTS", DQLBundle.message("settings.style.lbAroundBlockComments"), DQLBundle.message("settings.style.groups.comments"));
         } else if (settingsType == SettingsType.INDENT_SETTINGS) {
             consumer.showStandardOptions("INDENT_SIZE", "CONTINUATION_INDENT_SIZE", "TAB_SIZE", "USE_TAB_CHARACTER");
         }
@@ -75,7 +82,7 @@ public class DQLLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
 
     @Override
     public int getRightMargin(@NotNull SettingsType settingsType) {
-        return settingsType == LanguageCodeStyleSettingsProvider.SettingsType.WRAPPING_AND_BRACES_SETTINGS ? 80 : -1;
+        return settingsType == LanguageCodeStyleSettingsProvider.SettingsType.WRAPPING_AND_BRACES_SETTINGS ? 90 : -1;
     }
 
     @Override
@@ -86,11 +93,15 @@ public class DQLLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
                     size = stringLength(my.favourite.language),
                     other_example = 10 * power(10, 100),
                     `Can you have named fields?` = true,
-                    variable_value = $someVariable
+                    variable_value = $someVariable // dashboard variable
                 }
                 // and this is a comment
                 | filter (matchesValue(my.favourite.language, "*Dynatrace*", caseSensitive: false) and (55 * other_example) >= size) or (other_example == 10)
                 | dedup my.favourite.language, sort: size desc
+                /*
+                  Here is a multiline block comment
+                  You can specify here multiple lines
+                */
                 | append [
                     fetch logs, from: now() - 5d, to: now() - 1d
                     | parse content, "TIMESTAMP:t ' ' UPPER:severity ' ' LDATA:message"

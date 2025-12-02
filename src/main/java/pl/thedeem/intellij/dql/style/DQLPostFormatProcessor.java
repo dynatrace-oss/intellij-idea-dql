@@ -15,7 +15,9 @@ import com.intellij.psi.impl.source.codeStyle.PostFormatProcessor;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dpl.style.DPLCodeStyleSettings;
+import pl.thedeem.intellij.dql.psi.DQLElementFactory;
 import pl.thedeem.intellij.dql.psi.DQLMultilineString;
+import pl.thedeem.intellij.dql.psi.DQLTypes;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,12 +36,49 @@ public class DQLPostFormatProcessor implements PostFormatProcessor {
     @Override
     public @NotNull TextRange processText(@NotNull PsiFile hostFile, @NotNull TextRange range, @NotNull CodeStyleSettings settings) {
         Project project = hostFile.getProject();
+        DQLCodeStyleSettings dqlSettings = settings.getCustomSettings(DQLCodeStyleSettings.class);
+        final PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
+        processInjectedHosts(hostFile, range, settings, documentManager, project, dqlSettings);
+        processComments(hostFile, range, dqlSettings);
+        return range;
+    }
+
+    private void processComments(@NotNull PsiFile hostFile, @NotNull TextRange range, @NotNull DQLCodeStyleSettings dqlSettings) {
+        Collection<PsiComment> comments = PsiTreeUtil.findChildrenOfType(hostFile, PsiComment.class);
+        for (PsiComment comment : comments) {
+            if (comment.getTextRange().intersects(range)) {
+                if (comment.getNode().getElementType() == DQLTypes.EOL_COMMENT) {
+                    String text = comment.getText().replaceFirst("//", "");
+                    if (!text.startsWith(" ") && dqlSettings.SPACES_BETWEEN_COMMENT_TOKENS) {
+                        PsiComment updatedComment = DQLElementFactory.createInlineComment(hostFile.getProject(), " " + text);
+                        comment.replace(updatedComment);
+                    }
+                } else if (comment.getNode().getElementType() == DQLTypes.ML_COMMENT) {
+                    String text = comment.getText().replaceFirst("/\\*", "").replaceAll("\\*/$", "");
+                    if (!text.isEmpty() && dqlSettings.SPACES_BETWEEN_COMMENT_TOKENS) {
+                        boolean update = false;
+                        if (!Character.isWhitespace(text.charAt(0))) {
+                            text = " " + text;
+                            update = true;
+                        }
+                        if (!Character.isWhitespace(text.charAt(text.length() - 1))) {
+                            text = text + " ";
+                            update = true;
+                        }
+                        if (update) {
+                            PsiComment updatedComment = DQLElementFactory.createMultiLineComment(hostFile.getProject(), text);
+                            comment.replace(updatedComment);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void processInjectedHosts(@NotNull PsiFile hostFile, @NotNull TextRange range, @NotNull CodeStyleSettings settings, @NotNull PsiDocumentManager documentManager, @NotNull Project project, @NotNull DQLCodeStyleSettings dqlSettings) {
         InjectedLanguageManager injector = InjectedLanguageManager.getInstance(project);
         CodeStyleManager styleManager = CodeStyleManager.getInstance(project);
-        DQLCodeStyleSettings dqlSettings = settings.getCustomSettings(DQLCodeStyleSettings.class);
         Collection<PsiFile> injectedFiles = findInjectionHosts(hostFile, injector, range, settings);
-        final PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
-
         if (!injectedFiles.isEmpty()) {
             for (PsiFile host : injectedFiles) {
                 PsiLanguageInjectionHost injectionHost = injector.getInjectionHost(host);
@@ -57,7 +96,6 @@ public class DQLPostFormatProcessor implements PostFormatProcessor {
                 }
             }
         }
-        return range;
     }
 
     private @NotNull Collection<PsiFile> findInjectionHosts(@NotNull PsiFile file, @NotNull InjectedLanguageManager injector, @NotNull TextRange range, @NotNull CodeStyleSettings settings) {
