@@ -107,9 +107,9 @@ public class DQLBlock extends AbstractBlock {
         IElementType childType = child.getElementType();
         PsiElement parent = this.getNode().getPsi();
         PsiElement element = child.getPsi();
-        
+
         if (childType == DQLTypes.EOL_COMMENT || childType == DQLTypes.ML_COMMENT) {
-            if (parent instanceof DQLFile || !settings.INDENT_BEFORE_PIPE) {
+            if ((parent instanceof DQLFile || parent instanceof DQLQuery) && !settings.INDENT_BEFORE_PIPE) {
                 return Indent.getNoneIndent();
             }
             return Indent.getNormalIndent();

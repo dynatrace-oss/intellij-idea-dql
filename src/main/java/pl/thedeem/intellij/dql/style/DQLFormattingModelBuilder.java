@@ -100,7 +100,7 @@ public class DQLFormattingModelBuilder implements FormattingModelBuilder {
                     .spaceIf(dqlSettings.SPACE_BEFORE_PARAMETER);
         }
         return result
-                .after(DQLTypes.QUERY_STATEMENT)
+                .between(DQLTypes.QUERY_STATEMENT, DQLTypes.QUERY_STATEMENT)
                 .lineBreakInCodeIf(dqlSettings.LB_BEFORE_PIPE)
                 .after(DQLTypes.QUERY_STATEMENT)
                 .spaceIf(dqlSettings.SPACE_BEFORE_PIPE)
