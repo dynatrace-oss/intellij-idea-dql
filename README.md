@@ -164,6 +164,13 @@ tenant's REST API.
 By default, the feature is disabled, as it requires an authenticated connection to a Dynatrace tenant, which can be done
 in the plugin's settings.
 
+### DPL support
+
+The plugin introduces similar functionality for
+the [Dynatrace Pattern Language](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail/dynatrace-pattern-language),
+delivering syntax highlighting, code style formatting, autocompletion, on-hover documentation, and a wide range of
+inspections and intentions. These features are available for both `.dpl` files and within the DQL `parse` command.
+
 <!-- Plugin description end -->
 
 ## Building
