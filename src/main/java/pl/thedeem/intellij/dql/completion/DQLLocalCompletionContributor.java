@@ -1,13 +1,12 @@
 package pl.thedeem.intellij.dql.completion;
 
 import com.intellij.codeInsight.completion.*;
+import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.completion.engines.*;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
-
-import static com.intellij.patterns.PlatformPatterns.psiElement;
 
 public class DQLLocalCompletionContributor extends CompletionContributor {
     public DQLLocalCompletionContributor() {
@@ -75,7 +74,10 @@ public class DQLLocalCompletionContributor extends CompletionContributor {
         PsiElement position = parameters.getPosition();
 
         // inside comments, we don't want any completions
-        if (psiElement(DQLTypes.EOL_COMMENT).accepts(position)) {
+        if (PlatformPatterns.or(
+                PlatformPatterns.psiElement(DQLTypes.ML_COMMENT),
+                PlatformPatterns.psiElement(DQLTypes.EOL_COMMENT)
+        ).accepts(position)) {
             return;
         }
 

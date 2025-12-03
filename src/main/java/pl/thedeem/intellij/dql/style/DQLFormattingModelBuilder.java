@@ -2,10 +2,10 @@ package pl.thedeem.intellij.dql.style;
 
 import com.intellij.formatting.*;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
+import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import pl.thedeem.intellij.dql.psi.DQLTokenSets;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
-import org.jetbrains.annotations.NotNull;
 
 
 public class DQLFormattingModelBuilder implements FormattingModelBuilder {
@@ -148,7 +148,7 @@ public class DQLFormattingModelBuilder implements FormattingModelBuilder {
     }
 
     private static SpacingBuilder handleExpressionsSettings(SpacingBuilder builder, DQLCodeStyleSettings dqlSettings) {
-        return builder
+        SpacingBuilder result = builder
                 .before(DQLTypes.COLON)
                 .spaceIf(dqlSettings.SPACE_BEFORE_COLON)
                 .after(DQLTypes.COLON)
@@ -167,8 +167,24 @@ public class DQLFormattingModelBuilder implements FormattingModelBuilder {
                 .after(DQLTypes.ASSIGNMENT_OPERATOR)
                 .lineBreakOrForceSpace(dqlSettings.LB_AFTER_ASSIGNMENT, dqlSettings.SPACE_AROUND_ASSIGNMENT)
                 .afterInside(DQLTypes.ARRAY_OPEN, DQLTypes.SUBQUERY_EXPRESSION)
-                .lineBreakOrForceSpace(dqlSettings.LB_SUBQUERY, dqlSettings.SPACE_INSIDE_SUBQUERY)
-                ;
+                .lineBreakOrForceSpace(dqlSettings.LB_SUBQUERY, dqlSettings.SPACE_INSIDE_SUBQUERY);
+
+        if (dqlSettings.FORCE_SETTINGS_FOR_COMMENTS) {
+            result = result
+                    .before(DQLTypes.EOL_COMMENT)
+                    .lineBreakOrForceSpace(dqlSettings.LB_BEFORE_INLINE_COMMENTS, dqlSettings.SPACE_BEFORE_INLINE_COMMENTS)
+                    .around(DQLTypes.ML_COMMENT)
+                    .lineBreakOrForceSpace(dqlSettings.LB_BEFORE_INLINE_COMMENTS, dqlSettings.SPACE_BEFORE_INLINE_COMMENTS);
+        } else {
+            result = result
+                    .before(DQLTypes.EOL_COMMENT)
+                    .spaceIf(dqlSettings.SPACE_BEFORE_INLINE_COMMENTS)
+                    .before(DQLTypes.EOL_COMMENT)
+                    .lineBreakInCodeIf(dqlSettings.LB_BEFORE_INLINE_COMMENTS)
+                    .around(DQLTypes.ML_COMMENT)
+                    .lineBreakInCodeIf(dqlSettings.LB_AROUND_BLOCK_COMMENTS);
+        }
+        return result;
     }
 
     private static SpacingBuilder createEnforcedOptions(SpacingBuilder builder) {

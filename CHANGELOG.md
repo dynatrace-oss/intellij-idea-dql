@@ -4,6 +4,7 @@
 
 ### Features
 
+- Added support for DQL comments style settings
 - Added support for Smartscape functions to DQL
 - Added support for other JetBrains tools (like WebStorm)
 - Added support for Dynatrace Pattern Language files (`.dpl`)
