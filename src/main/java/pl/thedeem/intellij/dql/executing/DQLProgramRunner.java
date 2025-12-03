@@ -6,8 +6,8 @@ import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.configurations.RunnerSettings;
-import com.intellij.execution.process.ProcessAdapter;
 import com.intellij.execution.process.ProcessEvent;
+import com.intellij.execution.process.ProcessListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.execution.runners.RunContentBuilder;
@@ -44,7 +44,7 @@ public class DQLProgramRunner implements ProgramRunner<RunnerSettings> {
         final RunContentBuilder contentBuilder = new RunContentBuilder(result, environment);
 
         if (result.getProcessHandler() != null) {
-            result.getProcessHandler().addProcessListener(new ProcessAdapter() {
+            result.getProcessHandler().addProcessListener(new ProcessListener() {
                 @Override
                 public void processTerminated(@NotNull ProcessEvent event) {
                     contentBuilder.dispose();
