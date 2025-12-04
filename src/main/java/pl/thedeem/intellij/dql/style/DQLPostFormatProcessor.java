@@ -10,6 +10,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.impl.source.codeStyle.PostFormatProcessor;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -132,11 +133,10 @@ public class DQLPostFormatProcessor implements PostFormatProcessor {
             default -> false;
         };
     }
-
-    @SuppressWarnings("deprecation")
+    
     private @NotNull CodeStyleSettings createTemporarySettings(@NotNull CodeStyleSettings base, @NotNull PsiLanguageInjectionHost host) {
         boolean isCodeBlock = host instanceof DQLMultilineString;
-        CodeStyleSettings temp = base.clone(); // TODO: Find a non-deprecated way of cloning settings
+        CodeStyleSettings temp = CodeStyleSettingsManager.getInstance().cloneSettings(base);
 
         Language json = Language.findLanguageByID("JSON");
         Language dpl = Language.findLanguageByID("DPL");
