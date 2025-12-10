@@ -3,29 +3,38 @@ package pl.thedeem.intellij.dql.psi.elements.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.CachedValue;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.*;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
-import pl.thedeem.intellij.dql.psi.DQLFunctionName;
 import pl.thedeem.intellij.common.StandardItemPresentation;
+import pl.thedeem.intellij.common.psi.PsiUtils;
+import pl.thedeem.intellij.dql.DQLIcon;
+import pl.thedeem.intellij.dql.DQLUtil;
+import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
+import pl.thedeem.intellij.dql.definition.DQLParametersCalculatorService;
+import pl.thedeem.intellij.dql.definition.model.Function;
+import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
+import pl.thedeem.intellij.dql.definition.model.Signature;
+import pl.thedeem.intellij.dql.psi.DQLExpression;
+import pl.thedeem.intellij.dql.psi.DQLFunctionName;
+import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.FunctionCallExpression;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement implements FunctionCallExpression {
-    private CachedValue<List<DQLParameterObject>> parameters;
-    private CachedValue<DQLFunctionDefinition> definition;
-    private CachedValue<Map<DQLExpression, DQLParameterObject>> parameterMapping;
+    private CachedValue<List<MappedParameter>> parameters;
+    private CachedValue<Function> definition;
 
     public FunctionCallExpressionImpl(@NotNull ASTNode node) {
         super(node);
@@ -38,23 +47,16 @@ public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement im
     }
 
     @Override
-    public Set<DQLDataType> getDataType() {
-        DQLFunctionDefinition functionDefinition = getDefinition();
-        // for unknown functions, we do not to have errors
-        if (functionDefinition == null) {
-            return Set.of(DQLDataType.ANY);
+    public @NotNull Collection<String> getDataType() {
+        Signature signature = getSignature();
+        if (signature == null) {
+            return Set.of();
         }
-
-        Set<DQLDataType> result = new HashSet<>(functionDefinition.getDQLTypes());
-        DQLDataType groupType = DQLDataType.getType(functionDefinition.getFunctionGroup());
-        if (groupType != null) {
-            result.add(groupType);
-        }
-        return Collections.unmodifiableSet(result);
+        return signature.outputs();
     }
 
     @Override
-    public @NotNull List<DQLParameterObject> getParameters() {
+    public @NotNull List<MappedParameter> getParameters() {
         if (parameters == null) {
             parameters = CachedValuesManager.getManager(getProject()).createCachedValue(
                     () -> new CachedValueProvider.Result<>(recalculateParameters(), this),
@@ -70,54 +72,39 @@ public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement im
     }
 
     @Override
-    public @NotNull Set<DQLParameterDefinition> getDefinedParameters() {
-        return getParameters().stream()
-                .map(DQLParameterObject::getDefinition)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-    }
-
-    @Override
-    public @NotNull Set<String> getDefinedParameterNames() {
-        return getParameters().stream()
-                .filter(p -> p.getDefinition() != null)
-                .map(p -> p.getDefinition().name)
-                .collect(Collectors.toSet());
-    }
-
-    @Override
-    public @NotNull List<DQLParameterDefinition> getMissingRequiredParameters() {
-        DQLFunctionDefinition definition = getDefinition();
-        if (definition == null) {
+    public @NotNull Collection<Parameter> getMissingRequiredParameters() {
+        Signature signature = getSignature();
+        if (signature == null) {
             return List.of();
         }
-
-        Set<DQLParameterDefinition> definedDefinitions = getDefinedParameters();
-        return definition.getRequiredParameters().stream().filter(p -> !definedDefinitions.contains(p)).toList();
+        return DQLUtil.getMissingParameters(getParameters(), signature.requiredParameters());
     }
 
     @Override
-    public DQLParameterObject getParameter(@NotNull DQLExpression argument) {
-        if (parameterMapping == null) {
-            parameterMapping = CachedValuesManager.getManager(getProject()).createCachedValue(
-                    () -> new CachedValueProvider.Result<>(recalculateParameterMapping(), this, parameters),
-                    false
-            );
+    public @NotNull Collection<Parameter> getMissingParameters() {
+        Signature signature = getSignature();
+        if (signature == null) {
+            return List.of();
         }
-        return parameterMapping.getValue().get(argument);
+        return DQLUtil.getMissingParameters(getParameters(), signature.parameters());
     }
 
     @Override
-    public DQLFunctionDefinition getDefinition() {
+    public MappedParameter getParameter(@NotNull DQLExpression argument) {
+        return getParameters().stream().filter(m -> m.includes(argument)).findFirst().orElse(null);
+    }
+
+    @Override
+    public @Nullable Function getDefinition() {
         if (definition == null) {
-            DQLDefinitionService service = DQLDefinitionService.getInstance(getProject());
             definition = CachedValuesManager.getManager(getProject()).createCachedValue(
-                    () -> new CachedValueProvider.Result<>(service.getFunction(this.getName()), this),
+                    () -> new CachedValueProvider.Result<>(recalculateDefinition(), this),
                     false
             );
         }
         return definition.getValue();
     }
+
 
     @Override
     public boolean accessesData() {
@@ -146,24 +133,49 @@ public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement im
     }
 
     @Override
-    public @Nullable DQLParameterObject findParameter(@NotNull String name) {
-        return getParameters().stream().filter(p -> name.equals(p.getName())).findFirst().orElse(null);
+    public @Nullable MappedParameter findParameter(@NotNull String name) {
+        return getParameters().stream().filter(p -> name.equals(p.name())).findFirst().orElse(null);
     }
 
-    private List<DQLParameterObject> recalculateParameters() {
-        DQLFunctionDefinition definition = getDefinition();
-        List<DQLExpression> defined = getFunctionArguments();
-        DQLParametersMapper mapper = new DQLParametersMapper(
-                definition != null ? definition.getParameters((DQLFunctionCallExpression) this) : List.of()
-        );
-        return mapper.map(defined);
-    }
-
-    private Map<DQLExpression, DQLParameterObject> recalculateParameterMapping() {
-        Map<DQLExpression, DQLParameterObject> parameterMapping = new HashMap<>();
-        for (DQLParameterObject parameter : getParameters()) {
-            parameterMapping.put(parameter.getExpression(), parameter);
+    @Override
+    public @Nullable Signature getSignature() {
+        Function definition = getDefinition();
+        if (definition == null) {
+            return null;
         }
-        return Collections.unmodifiableMap(parameterMapping);
+        // currently, all functions have only one signature so we do not have to worry about finding the most matching one
+        return definition.signatures().isEmpty() ? null : definition.signatures().getFirst();
+    }
+
+    private List<MappedParameter> recalculateParameters() {
+        Signature signature = getSignature();
+        if (signature == null) {
+            return List.of();
+        }
+        List<DQLExpression> defined = getFunctionArguments();
+        List<Parameter> available = Objects.requireNonNullElse(signature.parameters(), List.of());
+        DQLParametersCalculatorService service = DQLParametersCalculatorService.getInstance(getProject());
+        return service.mapParameters(defined, available);
+    }
+
+    private @Nullable Function recalculateDefinition() {
+        DQLDefinitionService service = DQLDefinitionService.getInstance(getProject());
+        List<Function> definitions = service.getFunctionByName(Objects.requireNonNull(this.getName()));
+        if (definitions.isEmpty()) {
+            return null;
+        }
+        if (definitions.size() == 1) {
+            return definitions.getFirst();
+        }
+        List<PsiElement> parents = PsiUtils.getElementsUntilParent(this, DQLQueryStatement.class);
+        if (parents.getFirst() instanceof DQLQueryStatement statement && parents.get(1) instanceof DQLExpression expression) {
+            MappedParameter parameter = statement.getParameter(expression);
+            Parameter parameterDefinition = parameter != null ? parameter.definition() : null;
+            if (parameterDefinition != null) {
+                Collection<String> matchingCategories = service.getFunctionCategoriesForParameterTypes(parameterDefinition.parameterValueTypes());
+                return matchingCategories != null ? definitions.stream().filter(d -> matchingCategories.contains(d.category())).findFirst().orElse(null) : null;
+            }
+        }
+        return null;
     }
 }

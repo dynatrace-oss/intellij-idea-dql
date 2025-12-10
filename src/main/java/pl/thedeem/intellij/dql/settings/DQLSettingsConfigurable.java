@@ -29,7 +29,7 @@ public class DQLSettingsConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         return mySettingsComponent.isCalculatingFieldsDataTypesEnabled() != mySettings.isCalculatingFieldsDataTypesEnabled()
-                || mySettingsComponent.isCalculatingExpressionDataTypesEnabled() != mySettings.isCalculatingExpressionDataTypesEnabled()
+                || mySettingsComponent.isAllowingExperimentalFeatures() != mySettings.isAllowingExperimentalFeatures()
                 || mySettingsComponent.isPerformingLiveValidationEnabled() != mySettings.isPerformingLiveValidationEnabled()
                 || mySettingsComponent.isUseDynatraceAutocompleteEnabled() != mySettings.isUseDynatraceAutocompleteEnabled()
                 || !Objects.equals(mySettingsComponent.getDefaultDynatraceTenant(), mySettings.getDefaultDynatraceTenant())
@@ -39,7 +39,7 @@ public class DQLSettingsConfigurable implements Configurable {
     @Override
     public void apply() {
         mySettings.setCalculatingFieldsDataTypesEnabled(mySettingsComponent.isCalculatingFieldsDataTypesEnabled());
-        mySettings.setCalculatingExpressionDataTypesEnabled(mySettingsComponent.isCalculatingExpressionDataTypesEnabled());
+        mySettings.setAllowingExperimentalFeatures(mySettingsComponent.isAllowingExperimentalFeatures());
         mySettings.setPerformingLiveValidationEnabled(mySettingsComponent.isPerformingLiveValidationEnabled());
         mySettings.setUseDynatraceAutocompleteEnabled(mySettingsComponent.isUseDynatraceAutocompleteEnabled());
         mySettings.setDefaultDynatraceTenant(mySettingsComponent.getDefaultDynatraceTenant());
@@ -48,7 +48,7 @@ public class DQLSettingsConfigurable implements Configurable {
     @Override
     public void reset() {
         mySettingsComponent.setCalculatingFieldsDataTypesEnabled(mySettings.isCalculatingFieldsDataTypesEnabled());
-        mySettingsComponent.setCalculatingExpressionDataTypesEnabled(mySettings.isCalculatingExpressionDataTypesEnabled());
+        mySettingsComponent.setAllowingExperimentalFeatures(mySettings.isAllowingExperimentalFeatures());
         mySettingsComponent.setPerformingLiveValidationEnabled(mySettings.isPerformingLiveValidationEnabled());
         mySettingsComponent.setUseDynatraceAutocompleteEnabled(mySettings.isUseDynatraceAutocompleteEnabled());
         mySettingsComponent.setDefaultDynatraceTenant(mySettings.getDefaultDynatraceTenant());

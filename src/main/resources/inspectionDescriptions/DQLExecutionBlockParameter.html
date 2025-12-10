@@ -1,0 +1,15 @@
+<html lang="en">
+<body>
+Ensures a subquery block is provided.
+<p>
+    Some parameters require from the user to define a nested DQL query.
+    This inspection reports an error when the parameter value is not an execution block.
+</p>
+<pre><code>
+data "..."
+| lookup false, // instead of a boolean value, it should be a non-empty execution block []
+  sourceField: some.field,
+  lookupField: some.field
+</code></pre>
+</body>
+</html>

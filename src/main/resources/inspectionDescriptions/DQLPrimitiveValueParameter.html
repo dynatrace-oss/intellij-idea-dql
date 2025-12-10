@@ -1,0 +1,12 @@
+<html lang="en">
+<body>
+Ensures a primitive value is provided.
+<p>
+    Some parameters require from the user to provide a primitive value like String or Long.
+    This inspection reports an error when the parameter value is a complex expression.
+</p>
+<pre><code>
+data json: toString("{}") // the json parameters requires a static String definition
+</code></pre>
+</body>
+</html>

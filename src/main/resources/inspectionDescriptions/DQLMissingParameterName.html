@@ -1,0 +1,16 @@
+<html lang="en">
+<body>
+Validates the parameter name requirement.
+
+<p>
+    Some parameters require to be explicitly named.
+    This inspection will report an error if it finds an unnamed parameter that requires name.
+</p>
+<pre><code>
+fetch logs, from: -5d, now()-1d // "now()-1d" is defined in place of "to" parameter, but it requires to be explicitly named
+</code></pre>
+
+After applying the quick fix, the calculated parameter name will be specified and the user will be able to overwrite it.
+
+</body>
+</html>

@@ -5,8 +5,8 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
-import pl.thedeem.intellij.dql.definition.DQLParameterObject;
+import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.fixes.DropInvalidParameterQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
@@ -23,12 +23,12 @@ public class DuplicatedFunctionParameterInspection extends LocalInspectionTool {
                 super.visitFunctionCallExpression(function);
 
                 Set<String> alreadyProcessed = new HashSet<>();
-                for (DQLParameterObject parameter : function.getParameters()) {
-                    DQLParameterDefinition definition = parameter.getDefinition();
-                    if (definition != null && !definition.isRepetitive() && !alreadyProcessed.add(definition.name)) {
+                for (MappedParameter parameter : function.getParameters()) {
+                    Parameter definition = parameter.definition();
+                    if (definition != null && !definition.variadic() && !alreadyProcessed.add(definition.name())) {
                         holder.registerProblem(
-                                parameter.getExpression(),
-                                DQLBundle.message("inspection.function.duplicatedParameters.duplicated", definition.name),
+                                parameter.holder(),
+                                DQLBundle.message("inspection.function.duplicatedParameters.duplicated", definition.name()),
                                 new DropInvalidParameterQuickFix(parameter)
                         );
                     }

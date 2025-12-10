@@ -1,15 +1,16 @@
 package pl.thedeem.intellij.dql.documentation.providers;
 
 import com.intellij.openapi.util.text.HtmlChunk;
-import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.DQLFunctionDefinition;
-import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
+import pl.thedeem.intellij.dql.definition.model.Function;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
+import pl.thedeem.intellij.dql.definition.model.Signature;
 import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DQLFunctionDocumentationProvider extends BaseDocumentationProvider {
     private final DQLFunctionCallExpression function;
@@ -22,32 +23,33 @@ public class DQLFunctionDocumentationProvider extends BaseDocumentationProvider 
     @Override
     protected List<HtmlChunk.Element> getSections() {
         List<HtmlChunk.Element> sections = new ArrayList<>();
-        DQLFunctionDefinition definition = function.getDefinition();
+        Function definition = function.getDefinition();
         sections.add(buildDescription(definition));
         if (definition != null) {
-            if (definition.syntax != null && !definition.syntax.isEmpty()) {
-                sections.add(buildSyntaxSection(definition.syntax));
+            if (definition.synopsis() != null) {
+                sections.add(buildSyntaxSection(definition.synopsis()));
             }
-            if (definition.aliases != null && definition.aliases.size() > 1) {
-                sections.add(buildStandardSection(DQLBundle.message("documentation.function.aliases"), DQLBundle.print(definition.aliases)));
+            Signature signature = function.getSignature();
+            if (signature != null) {
+                if (signature.outputs() != null && !signature.outputs().isEmpty()) {
+                    sections.add(buildStandardSection(
+                            DQLBundle.message("documentation.function.returnValues"),
+                            DQLBundle.types(signature.outputs(), function.getProject())));
+                }
+                List<Parameter> parameters = Objects.requireNonNullElse(signature.parameters(), List.of());
+                if (!parameters.isEmpty()) {
+                    sections.add(buildParametersDescription(signature.parameters()));
+                }
+                sections.add(buildMoreInfoLink(DQLBundle.message("documentation.function.moreInfoLink")));
             }
-            if (definition.returns != null && !definition.returns.isEmpty()) {
-                sections.add(buildStandardSection(DQLBundle.message("documentation.function.returnValues"), DQLBundle.print(definition.returns)));
-            }
-            List<DQLParameterDefinition> parameters = definition.getParameters(function);
-            if (!parameters.isEmpty()) {
-                sections.add(buildParametersDescription(definition.parameters));
-            }
-            sections.add(buildMoreInfoLink(
-                    DQLBundle.message("documentation.function.moreInfoLink", definition.getFunctionGroup().getName(), definition.name)
-            ));
+
         }
         return sections;
     }
 
-    protected HtmlChunk.Element buildDescription(DQLFunctionDefinition definition) {
+    protected HtmlChunk.Element buildDescription(Function definition) {
         return HtmlChunk.p().addText(definition != null ?
-                StringUtil.defaultIfEmpty(definition.longDescription, definition.description)
+                definition.description()
                 : DQLBundle.message("documentation.function.unknown"));
     }
 }

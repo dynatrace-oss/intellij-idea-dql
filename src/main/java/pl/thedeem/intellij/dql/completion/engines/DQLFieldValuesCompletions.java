@@ -2,80 +2,71 @@ package pl.thedeem.intellij.dql.completion.engines;
 
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
-import pl.thedeem.intellij.dql.DQLUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
-import pl.thedeem.intellij.dql.definition.*;
+import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.definition.model.Function;
+import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
 import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
-import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 
 public class DQLFieldValuesCompletions {
-   public void autocomplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
-      PsiElement position = parameters.getPosition();
-      List<PsiElement> parent = DQLUtil.getElementsUntilParent(position, DQLFunctionCallExpression.class, DQLQueryStatement.class);
-      if (parent.getFirst() instanceof DQLFunctionCallExpression function && parent.get(1) instanceof DQLExpression expression) {
-         autocompleteParameter(function.getParameter(expression), result);
-      } else if (parent.getFirst() instanceof DQLQueryStatement list && parent.get(1) instanceof DQLExpression expression) {
-         autocompleteParameter(list.getParameter(expression), result);
-      }
-   }
+    public void autocomplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
+        PsiElement position = parameters.getPosition();
+        List<PsiElement> parent = PsiUtils.getElementsUntilParent(position, DQLFunctionCallExpression.class, DQLQueryStatement.class);
+        if (parent.getFirst() instanceof DQLFunctionCallExpression function && parent.get(1) instanceof DQLExpression expression) {
+            autocompleteParameter(function.getParameter(expression), result);
+        } else if (parent.getFirst() instanceof DQLQueryStatement list && parent.get(1) instanceof DQLExpression expression) {
+            autocompleteParameter(list.getParameter(expression), result);
+        }
+    }
 
-   private void autocompleteParameter(DQLParameterObject parameter, CompletionResultSet result) {
-      if (parameter == null || parameter.getDefinition() == null) {
-         return;
-      }
-
-      DQLParameterDefinition paramDefinition = parameter.getDefinition();
-      if (parameter.isMissingName()) {
-         return;
-      }
-      if (paramDefinition.enumValues != null && !paramDefinition.enumValues.isEmpty()) {
-         for (String enumValue : paramDefinition.enumValues) {
-            AutocompleteUtils.autocompleteStaticValue(enumValue, result);
-         }
-      } else {
-         if (paramDefinition.suggested != null) {
-            for (String suggestedValue : paramDefinition.suggested) {
-               AutocompleteUtils.autocompleteStaticValue(suggestedValue, result);
+    private void autocompleteParameter(@Nullable MappedParameter parameter, @NotNull CompletionResultSet result) {
+        Parameter definition = parameter != null ? parameter.definition() : null;
+        if (definition == null) {
+            return;
+        }
+        if (definition.requiresName() && !parameter.isExplicitlyNamed()) {
+            return;
+        }
+        if (definition.allowedEnumValues() != null) {
+            for (String enumValue : definition.allowedEnumValues()) {
+                AutocompleteUtils.autocompleteStaticValue(enumValue, result);
             }
-         }
-         suggestValues(parameter.getExpression().getProject(), paramDefinition.getDQLTypes(), result);
-      }
-   }
+        } else {
+            DQLDefinitionService service = DQLDefinitionService.getInstance(parameter.holder().getProject());
+            List<String> parameterValueTypes = Objects.requireNonNullElse(definition.parameterValueTypes(), List.of());
+            List<String> valueTypes = Objects.requireNonNullElse(definition.valueTypes(), List.of());
 
-   private void suggestValues(Project project, Set<DQLDataType> types, CompletionResultSet result) {
-      if (types == null) {
-         types = Set.of();
-      }
-      Collection<DQLFunctionDefinition> availableFunctions;
-      DQLDefinitionService service = DQLDefinitionService.getInstance(project);
-      if (types.contains(DQLDataType.RECORDS_LIST)) {
-         Set<String> list = service.getFunctionNamesByGroups(Set.of(DQLFunctionGroup.RECORDS_LIST));
-         availableFunctions = service.getFunctionByNames(list);
-      } else if (types.contains(DQLDataType.AGGREGATION_FUNCTION)) {
-         Set<String> list = service.getFunctionNamesByGroups(Set.of(DQLFunctionGroup.AGGREGATE));
-         availableFunctions = service.getFunctionByNames(list);
-      } else if (types.isEmpty() || types.contains(DQLDataType.ANY) || types.contains(DQLDataType.EXPRESSION)) {
-         availableFunctions = service.getFunctions().values();
-      } else {
-         availableFunctions = service.getFunctionByTypes(types);
-      }
-      for (DQLFunctionDefinition function : availableFunctions) {
-         AutocompleteUtils.autocompleteFunction(function, result);
-      }
-      if (types.isEmpty() || types.contains(DQLDataType.BOOLEAN) || types.contains(DQLDataType.ANY)) {
-         AutocompleteUtils.autocompleteBooleans(result);
-      }
-      if (types.contains(DQLDataType.TIMESTAMP)) {
-         AutocompleteUtils.autocompleteCurrentTimestamp(result);
-      }
-   }
+            if (definition.defaultValue() != null) {
+                AutocompleteUtils.autocompleteStaticValue(definition.defaultValue(), result);
+            }
+            Collection<String> categories = service.getFunctionCategoriesForParameterTypes(parameterValueTypes);
+            if (categories == null) {
+                return;
+            }
+            Collection<Function> matchingFunctions = service.getFunctionsByCategoryAndReturnType(
+                    s -> categories.isEmpty() || categories.contains(s),
+                    s -> valueTypes.isEmpty() || valueTypes.contains(s)
+            );
+            for (Function function : matchingFunctions) {
+                AutocompleteUtils.autocomplete(function, result);
+            }
+            if (valueTypes.contains("dql.dataType.boolean")) {
+                AutocompleteUtils.autocompleteBooleans(result);
+            }
+            if (valueTypes.contains("dql.dataType.timestamp")) {
+                AutocompleteUtils.autocompleteCurrentTimestamp(result);
+            }
+        }
+    }
 }

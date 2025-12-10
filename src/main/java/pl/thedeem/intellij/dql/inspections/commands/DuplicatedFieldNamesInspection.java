@@ -7,8 +7,9 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiNamedElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
-import pl.thedeem.intellij.dql.definition.DQLParameterObject;
+import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.fixes.DropElementQuickFix;
 import pl.thedeem.intellij.dql.inspections.fixes.SetFieldNameQuickFix;
 import pl.thedeem.intellij.dql.psi.*;
@@ -26,21 +27,25 @@ public class DuplicatedFieldNamesInspection extends LocalInspectionTool {
             public void visitExpression(@NotNull DQLExpression expression) {
                 super.visitExpression(expression);
                 if (expression.getParent() instanceof DQLQueryStatement command) {
-                    DQLParameterObject parameter = command.getParameter(expression);
+                    MappedParameter parameter = command.getParameter(expression);
                     if (parameter == null) {
                         return;
                     }
-                    DQLParameterDefinition definition = parameter.getDefinition();
-                    if (definition == null || definition.allowsDuplicates()) {
+                    Parameter definition = parameter.definition();
+                    if (definition == null) {
+                        return;
+                    }
+                    // we should check for duplicates only when defining list of fields
+                    if (definition.parameterValueTypes() != null && definition.parameterValueTypes().stream().noneMatch(DQLDefinitionService.FIELD_IDENTIFIER_PARAMETER_VALUE_TYPES::contains)) {
                         return;
                     }
                     List<PsiElement> duplicatedFields = getDuplicatedFields(parameter);
                     for (PsiElement field : duplicatedFields) {
                         holder.registerProblem(
-                            field,
-                            DQLBundle.message("inspection.command.duplicatedFieldNames.duplicated"),
-                            new DropElementQuickFix(),
-                            new SetFieldNameQuickFix()
+                                field,
+                                DQLBundle.message("inspection.command.duplicatedFieldNames.duplicated"),
+                                new DropElementQuickFix(),
+                                new SetFieldNameQuickFix()
                         );
                     }
                 }
@@ -48,14 +53,15 @@ public class DuplicatedFieldNamesInspection extends LocalInspectionTool {
         };
     }
 
-    private List<PsiElement> getDuplicatedFields(DQLParameterObject parameter) {
+    private List<PsiElement> getDuplicatedFields(MappedParameter parameter) {
         Set<String> seenNames = new HashSet<>();
         List<PsiElement> invalidElements = new ArrayList<>();
         List<PsiElement> toProcess = new ArrayList<>();
-        if (parameter.getValues().size() > 1 && parameter.getExpression() == parameter.getValues().getFirst()) {
-            toProcess.addAll(parameter.getExpressions());
+        if (!parameter.included().isEmpty()) {
+            toProcess.add(parameter.holder());
+            toProcess.addAll(parameter.included());
         } else {
-            toProcess.add(parameter.getExpression());
+            toProcess.add(parameter.holder());
         }
 
         while (!toProcess.isEmpty()) {

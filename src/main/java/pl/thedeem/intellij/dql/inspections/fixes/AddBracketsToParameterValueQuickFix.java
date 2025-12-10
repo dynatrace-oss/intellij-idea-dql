@@ -5,21 +5,22 @@ import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.DQLParameterObject;
+import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 
 public class AddBracketsToParameterValueQuickFix implements LocalQuickFix {
     @SafeFieldForPreview
-    private final DQLParameterObject parameter;
+    private final MappedParameter parameter;
 
-    public AddBracketsToParameterValueQuickFix(DQLParameterObject parameter) {
+    public AddBracketsToParameterValueQuickFix(MappedParameter parameter) {
         this.parameter = parameter;
     }
 
@@ -31,12 +32,13 @@ public class AddBracketsToParameterValueQuickFix implements LocalQuickFix {
         if (document == null) {
             return;
         }
-        DQLExpression first = parameter.getValues().getFirst();
-        int start = first.getTextRange().getStartOffset();
+        DQLExpression first = parameter.holder();
+        TextRange textRange = parameter.getTextRange();
+        int start = textRange.getStartOffset();
         if (first instanceof DQLParameterExpression parameterExpression && parameterExpression.getExpression() != null) {
             start = parameterExpression.getExpression().getTextRange().getStartOffset();
         }
-        int end = parameter.getValues().getLast().getTextRange().getEndOffset();
+        int end = textRange.getEndOffset();
         document.insertString(start, "{");
         document.insertString(end + 1, "}");
     }

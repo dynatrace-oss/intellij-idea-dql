@@ -1,16 +1,21 @@
 package pl.thedeem.intellij.dql.inspections.functions;
 
 import com.intellij.codeInspection.LocalInspectionTool;
+import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
+import pl.thedeem.intellij.dql.definition.model.Function;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
+import pl.thedeem.intellij.dql.definition.model.Signature;
 import pl.thedeem.intellij.dql.inspections.fixes.AddMissingParametersQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class MissingFunctionParametersInspection extends LocalInspectionTool {
     @Override
@@ -20,23 +25,36 @@ public class MissingFunctionParametersInspection extends LocalInspectionTool {
             public void visitFunctionCallExpression(@NotNull DQLFunctionCallExpression function) {
                 super.visitFunctionCallExpression(function);
 
-                List<DQLParameterDefinition> missingRequiredParameters = function.getMissingRequiredParameters();
-                if (!missingRequiredParameters.isEmpty()) {
-                    if (function.getDefinition() != null && function.getDefinition().getParameters(function).size() == 1) {
-                        DQLParameterDefinition first = missingRequiredParameters.getFirst();
-                        if (first.repetitive) {
-                            return; // for some reason, DQL allows empty required parameters when it is repetitive and the only one
-                        }
-                    }
+                Function definition = function.getDefinition();
+                if (definition == null) {
+                    return;
+                }
+
+                Collection<Parameter> missingParameters = function.getMissingRequiredParameters();
+                if (!missingParameters.isEmpty() && !isEmptyAllowedForVariadic(function)) {
+                    List<LocalQuickFix> fixes = missingParameters.stream()
+                            .map(p -> (LocalQuickFix) new AddMissingParametersQuickFix(List.of(p), function.getTextRange().getEndOffset() - 1, !function.getExpressionList().isEmpty()))
+                            .toList();
+
                     holder.registerProblem(
                             function.getFunctionName(),
                             DQLBundle.message("inspection.function.parameters.missingRequired",
-                                    DQLBundle.print(missingRequiredParameters.stream().map(p -> p.name).toList())
+                                    DQLBundle.print(missingParameters.stream().map(Parameter::name).toList())
                             ),
-                            new AddMissingParametersQuickFix(missingRequiredParameters, function.getTextRange().getEndOffset() - 1, !function.getExpressionList().isEmpty())
+                            fixes.toArray(new LocalQuickFix[0])
                     );
                 }
             }
         };
+    }
+
+    // In DQL, you can create an empty variadic list if it's the only parameter in the function
+    private boolean isEmptyAllowedForVariadic(@NotNull DQLFunctionCallExpression function) {
+        Signature signature = function.getSignature();
+        if (signature == null || !function.getParameters().isEmpty()) {
+            return false;
+        }
+        List<Parameter> parameters = Objects.requireNonNullElse(signature.parameters(), List.of());
+        return parameters.stream().filter(p -> p.variadic() && !p.requiresName() && p.required()).toList().size() == 1;
     }
 }

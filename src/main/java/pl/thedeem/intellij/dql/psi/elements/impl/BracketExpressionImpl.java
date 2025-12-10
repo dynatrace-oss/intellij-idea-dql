@@ -4,16 +4,17 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.common.StandardItemPresentation;
+import pl.thedeem.intellij.dql.psi.elements.BaseElement;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.BracketExpression;
-import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,18 +25,19 @@ public abstract class BracketExpressionImpl extends ASTWrapperPsiElement impleme
     }
 
     @Override
-    public Set<DQLDataType> getDataType() {
+    public @NotNull Collection<String> getDataType() {
         PsiElement[] children = this.getChildren();
+
+        Set<String> dataTypes = new HashSet<>();
         if (children.length > 0) {
-            return DQLUtil.calculateFieldType(children);
+            for (PsiElement child : getChildren()) {
+                if (child instanceof BaseElement el) {
+                    dataTypes.addAll(el.getDataType());
+                }
+            }
         }
         // If the array is empty, it should match all expression types
-        return Set.of(
-                DQLDataType.ARRAY,
-                DQLDataType.SORTING_EXPRESSION,
-                DQLDataType.WRITE_ONLY_EXPRESSION,
-                DQLDataType.READ_ONLY_EXPRESSION
-        );
+        return dataTypes;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package pl.thedeem.intellij.dql.inspections.commands;
 
 import com.intellij.codeInspection.LocalInspectionTool;
+import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +19,8 @@ public class UnknownCommandInspection extends LocalInspectionTool {
                 if (command.getDefinition() == null) {
                     holder.registerProblem(
                             command.getQueryStatementKeyword(),
-                            DQLBundle.message("inspection.command.name.unknown", command.getName())
+                            DQLBundle.message("inspection.command.name.unknown", command.getName()),
+                            ProblemHighlightType.LIKE_UNKNOWN_SYMBOL
                     );
                 }
             }

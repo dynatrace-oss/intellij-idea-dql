@@ -14,21 +14,22 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.indexing.ReferenceVariantsCalculator;
-import pl.thedeem.intellij.dql.psi.*;
+import pl.thedeem.intellij.dql.psi.DQLAssignExpression;
+import pl.thedeem.intellij.dql.psi.DQLElementFactory;
+import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
+import pl.thedeem.intellij.dql.psi.DQLQuery;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.FieldElement;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
 public abstract class FieldNameElementImpl extends ASTWrapperPsiElement implements FieldElement {
     private CachedValue<DQLAssignExpression> reference;
-    private CachedValue<Set<DQLDataType>> dataType;
     private CachedValue<DQLQuery> parentQuery;
 
     public FieldNameElementImpl(@NotNull ASTNode node) {
@@ -50,6 +51,18 @@ public abstract class FieldNameElementImpl extends ASTWrapperPsiElement implemen
     }
 
     @Override
+    public @NotNull Collection<String> getDataType() {
+        if (!DQLSettings.getInstance().isCalculatingFieldsDataTypesEnabled()) {
+            return Set.of();
+        }
+        if (getParent() instanceof DQLAssignExpression assign && assign.getLeftExpression() == this && assign.getRightExpression() instanceof BaseTypedElement el) {
+            return el.getDataType();
+        }
+        DQLAssignExpression assignedValue = getAssignExpression();
+        return assignedValue != null ? assignedValue.getDataType() : Set.of();
+    }
+
+    @Override
     public PsiElement setName(@NotNull String newName) {
         FieldElement fieldElement = DQLElementFactory.createFieldElement(newName, getProject());
         PsiElement keyNode = getNameIdentifier();
@@ -59,19 +72,6 @@ public abstract class FieldNameElementImpl extends ASTWrapperPsiElement implemen
             keyNode.replace(Objects.requireNonNull(fieldElement.getNameIdentifier()));
         }
         return this;
-    }
-
-    @Override
-    public Set<DQLDataType> getDataType() {
-        if (dataType == null) {
-            dataType = CachedValuesManager.getManager(getProject()).createCachedValue(
-                () -> new CachedValueProvider.Result<>(recalculateDataType(),
-                        this
-                ),
-                false
-            );
-        }
-        return dataType.getValue();
     }
 
     @Override
@@ -106,14 +106,14 @@ public abstract class FieldNameElementImpl extends ASTWrapperPsiElement implemen
     public @NotNull DQLQuery getParentQuery() {
         if (parentQuery == null) {
             parentQuery = CachedValuesManager.getManager(getProject()).createCachedValue(
-                () -> new CachedValueProvider.Result<>(recalculateParentQuery(), this),
-                false
+                    () -> new CachedValueProvider.Result<>(recalculateParentQuery(), this),
+                    false
             );
         }
         return parentQuery.getValue();
     }
 
-    private DQLAssignExpression recalculateReference() {
+    private @Nullable DQLAssignExpression recalculateReference() {
         if (this instanceof DQLFieldExpression field) {
             ReferenceVariantsCalculator calculator = new ReferenceVariantsCalculator(field);
             return calculator.getAssignExpression();
@@ -121,23 +121,7 @@ public abstract class FieldNameElementImpl extends ASTWrapperPsiElement implemen
         return null;
     }
 
-    private Set<DQLDataType> recalculateDataType() {
-        if (!DQLSettings.getInstance().isCalculatingFieldsDataTypesEnabled()) {
-            return Set.of(DQLDataType.IDENTIFIER, DQLDataType.ANY);
-        }
-        DQLAssignExpression definition = getAssignExpression();
-        if (definition != null) {
-            DQLExpression assignedValue = definition.getRightExpression();
-            if (assignedValue instanceof BaseTypedElement value && value != this) {
-                Set<DQLDataType> dataTypes = new HashSet<>(value.getDataType());
-                dataTypes.add(DQLDataType.IDENTIFIER);
-                return dataTypes;
-            }
-        }
-        return Set.of(DQLDataType.ANY);
-    }
-
     private DQLQuery recalculateParentQuery() {
-       return PsiTreeUtil.getParentOfType(this, DQLQuery.class);
+        return PsiTreeUtil.getParentOfType(this, DQLQuery.class);
     }
 }

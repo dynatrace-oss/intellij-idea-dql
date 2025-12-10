@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Features
+
+- Reworked DQL engine to support a better JSON format with the language definition
+- Added more inspections related to parameter value types (subqueries, fields identifier etc.)
+- DPL will now be injected within all supported DQL function strings
+- Added support for experimental DQL features (to be enabled in plugin's tool settings)
+
 ## [1.1.0] - 2025-12-03
 
 ### Features
@@ -93,9 +100,15 @@
     `null` types.
 
 [Unreleased]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.1.0...HEAD
+
 [1.1.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.4...v1.1.0
+
 [1.0.4]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.3...v1.0.4
+
 [1.0.3]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.2...v1.0.3
+
 [1.0.2]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.1...v1.0.2
+
 [1.0.1]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.0...v1.0.1
+
 [1.0.0]: https://github.com/dynatrace-oss/intellij-idea-dql/commits/v1.0.0

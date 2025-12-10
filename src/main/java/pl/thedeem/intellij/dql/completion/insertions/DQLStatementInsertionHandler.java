@@ -7,18 +7,20 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.template.Template;
 import com.intellij.codeInsight.template.TemplateManager;
 import com.intellij.openapi.editor.Editor;
-import pl.thedeem.intellij.common.LangUtils;
-import pl.thedeem.intellij.dql.definition.DQLCommandDefinition;
-import pl.thedeem.intellij.dql.definition.DQLCommandGroup;
-import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
 import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.common.LangUtils;
+import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.definition.model.Command;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DQLStatementInsertionHandler implements InsertHandler<LookupElement> {
-    private final DQLCommandDefinition definition;
+    private final Command definition;
 
-    public DQLStatementInsertionHandler(@NotNull DQLCommandDefinition definition) {
+    public DQLStatementInsertionHandler(@NotNull Command definition) {
         this.definition = definition;
     }
 
@@ -32,11 +34,11 @@ public class DQLStatementInsertionHandler implements InsertHandler<LookupElement
         template.setToReformat(true);
 
         Character lastNonEmptyCharacter = LangUtils.getPreviousNonEmptyCharacterFromDocument(context);
-        if ((lastNonEmptyCharacter == null || lastNonEmptyCharacter != '|') && !DQLCommandGroup.STARTING_COMMAND_TYPES.contains(definition.getCommandGroup())) {
+        if ((lastNonEmptyCharacter == null || lastNonEmptyCharacter != '|') && DQLDefinitionService.EXTENSION_COMMANDS.test(definition.category())) {
             template.addTextSegment("| ");
         }
 
-        template.addTextSegment(definition.name);
+        template.addTextSegment(definition.name());
         template.addTextSegment(" ");
 
         handleRequiredParameters(template);
@@ -51,17 +53,27 @@ public class DQLStatementInsertionHandler implements InsertHandler<LookupElement
 
     private void handleRequiredParameters(Template template) {
         int i = 0;
-        List<DQLParameterDefinition> requiredParameters = definition.getRequiredParameters();
+        Collection<Parameter> requiredParameters = definition.requiredParameters();
+        Set<String> blockedNames = new HashSet<>();
         if (!requiredParameters.isEmpty()) {
-            for (DQLParameterDefinition param : requiredParameters) {
-                if (i > 0) {
-                    template.addTextSegment(", ");
+            for (Parameter param : requiredParameters) {
+                if (!blockedNames.contains(param.name())) {
+                    if (i > 0) {
+                        template.addTextSegment(", ");
+                    }
+                    if (param.requiresName()) {
+                        template.addTextSegment(param.name() + ": ");
+                    }
+                    InsertionsUtils.handleInsertionDefaultValue(param, template);
+                    i++;
+                    blockedNames.add(param.name());
+                    if (param.aliases() != null) {
+                        blockedNames.addAll(param.aliases());
+                    }
+                    if (param.excludes() != null) {
+                        blockedNames.addAll(param.excludes());
+                    }
                 }
-                if (param.canBeNamed()) {
-                    template.addTextSegment(param.name + ": ");
-                }
-                InsertionsUtils.handleInsertionDefaultValue(param.getDQLTypes(), template, param.defaultValue, param.name);
-                i++;
             }
         }
     }
