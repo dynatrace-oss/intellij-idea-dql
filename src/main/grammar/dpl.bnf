@@ -309,5 +309,5 @@ lookaround ::= NEGATION? (PLA | PLB) {
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.LookaroundElementImpl"
 }
 
-private recover_configuration_content ::= !(IDENTIFIER|OR|R_PAREN)
+private recover_configuration_content ::= !(IDENTIFIER|OR|R_PAREN|L_PAREN|L_BRACE|L_BRACKET)
 private recover_alternative_content ::= !(OR|R_PAREN)
