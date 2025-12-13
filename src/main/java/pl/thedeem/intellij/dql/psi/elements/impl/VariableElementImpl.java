@@ -13,13 +13,12 @@ import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLElementFactory;
-import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 import pl.thedeem.intellij.dql.psi.elements.VariableElement;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.variables.DQLVariablesService;
 
 import java.util.List;
@@ -82,21 +81,21 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
     }
 
     @Override
-    public Set<DQLDataType> getDataType() {
+    public @NotNull Set<String> getDataType() {
         PsiElement definition = getDefinition();
         // we need to add the "any" because the variable has only a placeholder, so it's possible it'll have a different type
         if (definition instanceof JsonProperty jsonProperty && jsonProperty.getValue() != null) {
             return switch (jsonProperty.getValue()) {
-                case JsonStringLiteral ignored -> Set.of(DQLDataType.STRING, DQLDataType.ANY);
-                case JsonNumberLiteral ignored -> Set.of(DQLDataType.DOUBLE, DQLDataType.LONG, DQLDataType.ANY);
-                case JsonNullLiteral ignored -> Set.of(DQLDataType.NULL, DQLDataType.ANY);
-                case JsonBooleanLiteral ignored -> Set.of(DQLDataType.BOOLEAN, DQLDataType.ANY);
-                case JsonObject ignored -> Set.of(DQLDataType.RECORD, DQLDataType.ANY);
-                case JsonArray ignored -> Set.of(DQLDataType.ARRAY, DQLDataType.ANY);
-                default -> Set.of(DQLDataType.ANY);
+                case JsonStringLiteral ignored -> Set.of("dql.dataType.string");
+                case JsonNumberLiteral ignored -> Set.of("dql.dataType.double", "dql.dataType.long");
+                case JsonNullLiteral ignored -> Set.of("dql.dataType.null");
+                case JsonBooleanLiteral ignored -> Set.of("dql.dataType.boolean");
+                case JsonObject ignored -> Set.of("dql.dataType.record");
+                case JsonArray ignored -> Set.of("dql.dataType.array");
+                default -> Set.of();
             };
         }
-        return Set.of(DQLDataType.ANY);
+        return Set.of();
     }
 
     @Override

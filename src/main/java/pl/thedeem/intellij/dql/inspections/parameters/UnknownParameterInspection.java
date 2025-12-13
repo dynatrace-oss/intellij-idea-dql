@@ -1,13 +1,13 @@
 package pl.thedeem.intellij.dql.inspections.parameters;
 
+import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
-import pl.thedeem.intellij.dql.definition.DQLParameterObject;
+import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.BaseInspection;
-import pl.thedeem.intellij.dql.inspections.fixes.AddParameterNameQuickFix;
 import pl.thedeem.intellij.dql.inspections.fixes.DropInvalidParameterQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
@@ -21,20 +21,14 @@ public class UnknownParameterInspection extends BaseInspection {
                 super.visitExpression(expression);
 
                 if (expression.getParent() instanceof DQLParametersOwner parametersOwner) {
-                    DQLParameterObject parameter = parametersOwner.getParameter(expression);
-                    DQLParameterDefinition definition = parameter != null ? parameter.getDefinition() : null;
+                    MappedParameter parameter = parametersOwner.getParameter(expression);
+                    Parameter definition = parameter != null ? parameter.definition() : null;
                     if (definition == null) {
                         holder.registerProblem(
                                 expression,
                                 DQLBundle.message("inspection.parameter.unknown.unknownNamed"),
+                                ProblemHighlightType.LIKE_UNKNOWN_SYMBOL,
                                 new DropInvalidParameterQuickFix(parameter)
-                        );
-                    } else if (parameter.isMissingName()) {
-                        holder.registerProblem(
-                                expression,
-                                DQLBundle.message("inspection.parameter.unknown.unknownUnnamedParameter", definition.name),
-                                new DropInvalidParameterQuickFix(parameter),
-                                new AddParameterNameQuickFix(parameter)
                         );
                     }
                 }

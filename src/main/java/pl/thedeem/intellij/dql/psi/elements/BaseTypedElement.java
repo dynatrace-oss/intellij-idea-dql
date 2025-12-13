@@ -1,15 +1,19 @@
 package pl.thedeem.intellij.dql.psi.elements;
 
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
 import java.util.Set;
 
 public interface BaseTypedElement {
-    default Set<DQLDataType> getDataType() {
-        return Set.of(DQLDataType.ANY);
+    default @NotNull Collection<String> getDataType() {
+        return Set.of();
     }
+
     default boolean accessesData() {
         return true;
     }
+
     String getFieldName();
 }

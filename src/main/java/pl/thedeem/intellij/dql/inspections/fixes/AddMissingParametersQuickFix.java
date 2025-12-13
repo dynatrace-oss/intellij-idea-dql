@@ -17,16 +17,17 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.completion.insertions.InsertionsUtils;
-import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 
-import java.util.List;
+import java.util.Collection;
 
 public class AddMissingParametersQuickFix implements LocalQuickFix {
-    @SafeFieldForPreview private final List<DQLParameterDefinition> missing;
+    @SafeFieldForPreview
+    private final Collection<Parameter> missing;
     private final int offset;
     private final boolean addComa;
 
-    public AddMissingParametersQuickFix(@NotNull List<DQLParameterDefinition> missingParameters, int offset, boolean addComa) {
+    public AddMissingParametersQuickFix(@NotNull Collection<Parameter> missingParameters, int offset, boolean addComa) {
         this.missing = missingParameters;
         this.offset = offset;
         this.addComa = addComa;
@@ -47,16 +48,16 @@ public class AddMissingParametersQuickFix implements LocalQuickFix {
         template.setToReformat(true);
 
         int i = 0;
-        for (DQLParameterDefinition param : missing) {
+        for (Parameter param : missing) {
             if (addComa || i > 0) {
                 template.addTextSegment(", ");
             } else {
                 template.addTextSegment(" ");
             }
-            if (param.canBeNamed()) {
-                template.addTextSegment(param.name + ": ");
+            if (param.requiresName()) {
+                template.addTextSegment(param.name() + ": ");
             }
-            InsertionsUtils.handleInsertionDefaultValue(param.getDQLTypes(), template, param.defaultValue, param.name);
+            InsertionsUtils.handleInsertionDefaultValue(param, template);
             i++;
         }
         editor.getCaretModel().moveToOffset(offset);
@@ -73,6 +74,6 @@ public class AddMissingParametersQuickFix implements LocalQuickFix {
     @Override
     public String getName() {
         return DQLBundle.message(missing.size() > 1 ? "inspection.fix.addMissingParameters" : "inspection.fix.addMissingParameter",
-            DQLBundle.print(missing.stream().map(p -> p.name).toList()));
+                DQLBundle.print(missing.stream().map(Parameter::name).toList()));
     }
 }

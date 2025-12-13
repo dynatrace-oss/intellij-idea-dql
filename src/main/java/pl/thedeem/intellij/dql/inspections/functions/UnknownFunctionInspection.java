@@ -1,6 +1,7 @@
 package pl.thedeem.intellij.dql.inspections.functions;
 
 import com.intellij.codeInspection.LocalInspectionTool;
+import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +19,8 @@ public class UnknownFunctionInspection extends LocalInspectionTool {
                 if (function.getDefinition() == null) {
                     holder.registerProblem(
                             function.getFunctionName(),
-                            DQLBundle.message("inspection.function.name.unknown")
+                            DQLBundle.message("inspection.function.name.unknown"),
+                            ProblemHighlightType.LIKE_UNKNOWN_SYMBOL
                     );
                 }
             }

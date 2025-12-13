@@ -18,14 +18,14 @@ import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
-import pl.thedeem.intellij.dql.definition.DQLParameterObject;
+import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 
 public class AddParameterNameQuickFix implements LocalQuickFix {
     @SafeFieldForPreview
-    private final DQLParameterObject parameter;
+    private final MappedParameter parameter;
 
-    public AddParameterNameQuickFix(@NotNull DQLParameterObject parameter) {
+    public AddParameterNameQuickFix(@NotNull MappedParameter parameter) {
         this.parameter = parameter;
     }
 
@@ -39,7 +39,7 @@ public class AddParameterNameQuickFix implements LocalQuickFix {
         if (document == null || editor == null) {
             return;
         }
-        DQLParameterDefinition definition = parameter.getDefinition();
+        Parameter definition = parameter.definition();
         if (definition == null) {
             return;
         }
@@ -50,7 +50,7 @@ public class AddParameterNameQuickFix implements LocalQuickFix {
         Template template = templateManager.createTemplate("", "");
         template.setToReformat(true);
 
-        template.addVariable("parameterName", new TextExpression(definition.name), new EmptyNode(), true);
+        template.addVariable("parameterName", new TextExpression(definition.name()), new EmptyNode(), true);
         template.addTextSegment(":");
         templateManager.startTemplate(editor, template);
         AutoPopupController.getInstance(project).autoPopupParameterInfo(editor, psiFile);

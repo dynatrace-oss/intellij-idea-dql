@@ -1,8 +1,13 @@
 package pl.thedeem.intellij.common.psi;
 
+import com.intellij.patterns.ElementPattern;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class PsiUtils {
     @Nullable
@@ -19,5 +24,47 @@ public class PsiUtils {
             }
         }
         return null;
+    }
+
+    public static List<PsiElement> getElementsUntilParent(PsiElement element, Class<?>... types) {
+        List<PsiElement> elements = new ArrayList<>();
+        elements.add(element);
+        PsiElement result = element.getParent();
+        while (result != null) {
+            elements.add(result);
+            PsiElement finalResult = result;
+
+            if (Arrays.stream(types).anyMatch(t -> t.isInstance(finalResult))) {
+                break;
+            }
+
+            result = result.getParent();
+        }
+        return elements.reversed();
+    }
+
+
+    public static PsiElement getPreviousElement(PsiElement element) {
+        PsiElement prev = element.getPrevSibling();
+        while (prev != null && PlatformPatterns.psiElement().whitespaceCommentEmptyOrError().accepts(prev)) {
+            prev = prev.getPrevSibling();
+        }
+        return prev;
+    }
+
+    public static PsiElement getDeepNeighbourElement(PsiElement element, ElementPattern<PsiElement> pattern) {
+        PsiElement neighbour = PsiUtils.getPreviousElement(element);
+        while (neighbour != null && !pattern.accepts(neighbour)) {
+            neighbour = neighbour.getLastChild();
+        }
+        return neighbour;
+    }
+
+    public static PsiElement getNextElement(PsiElement element) {
+        PsiElement next = element.getNextSibling();
+        while (next != null && PlatformPatterns.psiElement().whitespaceCommentEmptyOrError().accepts(next)) {
+            next = next.getNextSibling();
+        }
+        return next;
     }
 }

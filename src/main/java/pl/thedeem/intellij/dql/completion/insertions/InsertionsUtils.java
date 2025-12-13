@@ -3,52 +3,84 @@ package pl.thedeem.intellij.dql.completion.insertions;
 import com.intellij.codeInsight.template.Template;
 import com.intellij.codeInsight.template.impl.EmptyNode;
 import com.intellij.codeInsight.template.impl.TextExpression;
-import com.intellij.openapi.util.text.StringUtil;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
+import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 
-import java.util.Set;
+import java.util.List;
+import java.util.Objects;
 
 public class InsertionsUtils {
-    public static void handleInsertionDefaultValue(Set<DQLDataType> allowedValues, Template template, String defaultValue, String name) {
-        if (StringUtil.isNotEmpty(defaultValue)) {
-            template.addVariable("bodyDefaultValue:" + name, new TextExpression(defaultValue), new EmptyNode(), true);
+    public static void handleInsertionDefaultValue(@NotNull Parameter parameter, @NotNull Template template) {
+        List<String> valueTypes = Objects.requireNonNullElse(parameter.valueTypes(), List.of());
+        List<String> parameterValueTypes = Objects.requireNonNullElse(parameter.parameterValueTypes(), List.of());
+        String name = parameter.name();
+
+        if (parameter.defaultValue() != null) {
+            template.addVariable("bodyDefaultValue:" + name, new TextExpression(parameter.defaultValue()), new EmptyNode(), true);
             return;
         }
-        if (allowedValues == null || allowedValues.isEmpty()) {
-            template.addVariable("bodyUnknownType:" + name, new EmptyNode(), new EmptyNode(), true);
+
+        if (parameterValueTypes.stream().anyMatch(DQLDefinitionService.FIELD_IDENTIFIER_PARAMETER_VALUE_TYPES::contains)) {
+            template.addVariable("fieldName:" + name, new TextExpression("field"), new EmptyNode(), true);
             return;
         }
-        if (allowedValues.contains(DQLDataType.NAMED_SUBQUERY_EXPRESSION)) {
-            template.addVariable("bodySubqueryFieldName:" + name, new TextExpression("some.field"), new EmptyNode(), true);
-            template.addTextSegment(" = []");
+        if (parameterValueTypes.stream().anyMatch(DQLDefinitionService.DPL_VALUE_TYPES::contains)) {
+            template.addTextSegment("\"\"\"");
+            template.addVariable("dplPattern:" + name, new TextExpression(""), new EmptyNode(), true);
+            template.addTextSegment("\"\"\"");
+            return;
         }
-        else if (allowedValues.contains(DQLDataType.JOIN_CONDITION)) {
+
+        if (parameterValueTypes.contains("dql.dataType.json")) {
+            template.addTextSegment("\"\"\"");
+            template.addVariable("json:" + name, new TextExpression(""), new EmptyNode(), true);
+            template.addTextSegment("\"\"\"");
+            return;
+        }
+
+        if (parameterValueTypes.stream().anyMatch(DQLDefinitionService.EXECUTION_PARAMETER_VALUE_TYPES::contains)) {
+            template.addTextSegment("[]");
+            return;
+        }
+
+        if (parameterValueTypes.stream().anyMatch(DQLDefinitionService.STRING_PARAMETER_VALUE_TYPES::contains)) {
+            template.addTextSegment("\"");
+            template.addVariable("bodyStringValue:" + name, new TextExpression(""), new EmptyNode(), true);
+            template.addTextSegment("\"");
+            return;
+        }
+
+        if (parameterValueTypes.contains("dql.parameterValueType.joinCondition")) {
             template.addTextSegment("left[");
             template.addVariable("bodyLeftSideExpression:" + name, new TextExpression("field"), new EmptyNode(), true);
             template.addTextSegment("] == right[");
             template.addVariable("bodyRightSideExpression:" + name, new TextExpression("field"), new EmptyNode(), true);
             template.addTextSegment("]");
+            return;
         }
-        else if (allowedValues.contains(DQLDataType.SUBQUERY_EXPRESSION)) {
-            template.addTextSegment("[]");
-        } else if (allowedValues.contains(DQLDataType.LIST_OF_EXPRESSIONS)
-                || allowedValues.contains(DQLDataType.READ_ONLY_EXPRESSION)
-                || allowedValues.contains(DQLDataType.WRITE_ONLY_EXPRESSION)) {
+
+        if ("mandatory".equals(parameter.assignmentSupport())) {
+            template.addVariable("bodyDataAssignField:" + name, new TextExpression(""), new EmptyNode(), true);
+            template.addTextSegment(" = ");
+            template.addVariable("bodyDataAssignValue:" + name, new EmptyNode(), new EmptyNode(), true);
+            return;
+        }
+
+        if (parameter.variadic()) {
             template.addTextSegment("{ ");
             template.addVariable("bodyStatementExpression:" + name, new EmptyNode(), new EmptyNode(), true);
             template.addTextSegment(" }");
-        } else if (allowedValues.contains(DQLDataType.IDENTIFIER)) {
-            template.addVariable("bodyDataObject:" + name, new TextExpression("some.field"), new EmptyNode(), true);
-        } else if (allowedValues.contains(DQLDataType.ASSIGN_EXPRESSION)) {
-            template.addVariable("bodyDataAssignField:" + name, new TextExpression("some.field"), new EmptyNode(), true);
-            template.addTextSegment(" = ");
-            template.addVariable("bodyDataAssignValue:" + name, new EmptyNode(), new EmptyNode(), true);
-        } else if (allowedValues.contains(DQLDataType.NUMBER)) {
-            template.addVariable("bodyNumericalType:" + name, new EmptyNode(), new EmptyNode(), true);
-        } else if (allowedValues.contains(DQLDataType.STRING)) {
-            template.addVariable("bodyStringType:" + name, new TextExpression("\"\""), new EmptyNode(), true);
-        } else {
-            template.addVariable("bodyStatementSimple:" + name, new EmptyNode(), new EmptyNode(), true);
+            return;
         }
+
+        if (valueTypes.stream().anyMatch(DQLDefinitionService.STRING_VALUE_TYPES::contains)) {
+            template.addTextSegment("\"");
+            template.addVariable("bodyStringValue:" + name, new TextExpression(""), new EmptyNode(), true);
+            template.addTextSegment("\"");
+            return;
+        }
+
+        template.addVariable("bodyEmpty:" + name, new TextExpression(""), new EmptyNode(), true);
     }
 }

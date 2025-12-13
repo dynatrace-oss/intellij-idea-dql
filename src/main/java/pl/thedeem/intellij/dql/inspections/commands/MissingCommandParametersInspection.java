@@ -6,13 +6,13 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.fixes.AddMissingParametersQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
 import pl.thedeem.intellij.dql.psi.DQLQueryStatementKeyword;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class MissingCommandParametersInspection extends LocalInspectionTool {
@@ -23,33 +23,21 @@ public class MissingCommandParametersInspection extends LocalInspectionTool {
             public void visitQueryStatement(@NotNull DQLQueryStatement command) {
                 super.visitQueryStatement(command);
 
-                List<DQLParameterDefinition> missingExclusive = command.getMissingExclusiveRequiredParameters();
+                Collection<Parameter> missingParameters = command.getMissingRequiredParameters();
                 DQLQueryStatementKeyword keyword = command.getQueryStatementKeyword();
-                if (!missingExclusive.isEmpty()) {
-                    List<LocalQuickFix> fixes = new ArrayList<>();
-                    for (DQLParameterDefinition parameter : missingExclusive) {
-                        fixes.add(new AddMissingParametersQuickFix(List.of(parameter), command.getTextRange().getEndOffset(), false));
-                    }
+                if (!missingParameters.isEmpty()) {
+                    List<LocalQuickFix> fixes = missingParameters.stream()
+                            .map(p -> (LocalQuickFix) new AddMissingParametersQuickFix(List.of(p), command.getTextRange().getEndOffset(), false))
+                            .toList();
 
                     holder.registerProblem(
                             keyword,
                             DQLBundle.message(
-                                    "inspection.command.body.missingExclusiveParameters",
+                                    "inspection.command.body.missingRequiredParameters",
                                     command.getName(),
-                                    DQLBundle.print(missingExclusive.stream().map(p -> p.name).toList())
+                                    DQLBundle.print(missingParameters.stream().map(Parameter::name).toList())
                             ),
                             fixes.toArray(new LocalQuickFix[0])
-                    );
-                }
-
-                List<DQLParameterDefinition> missingRequiredParameters = command.getMissingRequiredParameters();
-                if (!missingRequiredParameters.isEmpty()) {
-                    holder.registerProblem(
-                            keyword,
-                            DQLBundle.message("inspection.command.body.missingRequiredParameters",
-                                    DQLBundle.print(missingRequiredParameters.stream().map(p -> p.name).toList())
-                            ),
-                            new AddMissingParametersQuickFix(missingRequiredParameters, command.getTextRange().getEndOffset(), false)
                     );
                 }
             }

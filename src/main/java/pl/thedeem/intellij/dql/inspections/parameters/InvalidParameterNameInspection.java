@@ -4,8 +4,8 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
-import pl.thedeem.intellij.dql.definition.DQLParameterObject;
+import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.BaseInspection;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
@@ -18,13 +18,13 @@ public class InvalidParameterNameInspection extends BaseInspection {
             public void visitExpression(@NotNull DQLExpression expression) {
                 super.visitExpression(expression);
                 if (expression.getParent() instanceof DQLParametersOwner parametersOwner) {
-                    DQLParameterObject parameter = parametersOwner.getParameter(expression);
+                    MappedParameter parameter = parametersOwner.getParameter(expression);
                     if (parameter != null) {
-                        DQLParameterDefinition definition = parameter.getDefinition();
-                        if (definition != null && !definition.canBeNamed() && parameter.isNamed()) {
+                        Parameter definition = parameter.definition();
+                        if (definition != null && !definition.allowsName() && parameter.isExplicitlyNamed()) {
                             holder.registerProblem(
                                     expression,
-                                    DQLBundle.message("inspection.parameter.invalidName.notAllowed", definition.name)
+                                    DQLBundle.message("inspection.parameter.invalidName.notAllowed", definition.name())
                             );
                         }
                     }

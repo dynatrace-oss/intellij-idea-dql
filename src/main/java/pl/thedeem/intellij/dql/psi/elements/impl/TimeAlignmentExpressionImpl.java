@@ -5,36 +5,17 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.DQLTimeAlignmentOperand;
-import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.TimeAlignmentExpression;
 
-import java.util.Set;
-
-public abstract class TimeAlignmentExpressionImpl extends TwoSidesExpressionImpl implements TimeAlignmentExpression {
+public abstract class TimeAlignmentExpressionImpl extends AbstractOperatorElementImpl implements TimeAlignmentExpression {
     public TimeAlignmentExpressionImpl(@NotNull ASTNode node) {
         super(node);
-    }
-
-    @Override
-    public Set<DQLDataType> getDataType() {
-        return Set.of(DQLDataType.TIMESTAMP);
-    }
-
-    @Override
-    public boolean accessesData() {
-        for (PsiElement param : getChildren()) {
-            if (param instanceof BaseTypedElement entity && entity.accessesData()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

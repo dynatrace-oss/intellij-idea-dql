@@ -15,7 +15,6 @@ import pl.thedeem.intellij.common.code.StringLiteralEscaper;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.elements.StringElement;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,8 +22,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public abstract class DoubleQuotedStringElementImpl extends ASTWrapperPsiElement implements StringElement {
-    private static final Pattern TIMESTAMP_START = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}");
-    private CachedValue<Set<DQLDataType>> dataType;
+    private static final Pattern TIMEFRAME_STRING = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}[^/]+/\\d{4}-\\d{2}-\\d{2}[^/]+");
+    private static final Pattern TIMESTAMP_STRING = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}");
+    private CachedValue<Set<String>> dataType;
 
     public DoubleQuotedStringElementImpl(@NotNull ASTNode node) {
         super(node);
@@ -46,7 +46,7 @@ public abstract class DoubleQuotedStringElementImpl extends ASTWrapperPsiElement
     }
 
     @Override
-    public Set<DQLDataType> getDataType() {
+    public @NotNull Set<String> getDataType() {
         if (dataType == null) {
             dataType = CachedValuesManager.getManager(getProject()).createCachedValue(
                     () -> new CachedValueProvider.Result<>(recalculateDataType(), this),
@@ -88,17 +88,16 @@ public abstract class DoubleQuotedStringElementImpl extends ASTWrapperPsiElement
         return new StringLiteralEscaper<>(this);
     }
 
-    private Set<DQLDataType> recalculateDataType() {
-        Set<DQLDataType> dataType = new HashSet<>();
-        dataType.add(DQLDataType.STRING);
-        if (isTimestampString()) {
-            dataType.add(DQLDataType.TIMESTAMP);
+    private Set<String> recalculateDataType() {
+        Set<String> dataType = new HashSet<>();
+        dataType.add("dql.dataType.string");
+
+        String content = getContent().trim();
+        if (TIMEFRAME_STRING.matcher(content).matches()) {
+            dataType.add("dql.dataType.timeframe");
+        } else if (TIMESTAMP_STRING.matcher(content).matches()) {
+            dataType.add("dql.dataType.timestamp");
         }
         return Collections.unmodifiableSet(dataType);
-    }
-
-    private boolean isTimestampString() {
-        String content = getContent().trim();
-        return TIMESTAMP_START.matcher(content).find();
     }
 }

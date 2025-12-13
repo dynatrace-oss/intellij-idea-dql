@@ -1,14 +1,19 @@
 package pl.thedeem.intellij.dql;
 
 import com.intellij.DynamicBundle;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.definition.model.DataType;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class DQLBundle extends DynamicBundle {
     private static final int MAX_STRING_LENGTH = 25;
@@ -28,13 +33,27 @@ public class DQLBundle extends DynamicBundle {
 
     @NotNull
     public static @Nls String shorten(String text) {
-       return StringUtil.shortenPathWithEllipsis(text, MAX_STRING_LENGTH, true);
+        return StringUtil.shortenPathWithEllipsis(text, MAX_STRING_LENGTH, true);
     }
 
     @NotNull
-    public static @Nls String print(Collection<?> collection) {
+    public static @Nls String types(@Nullable Collection<String> dataTypes, @NotNull Project project) {
+        if (dataTypes == null) {
+            return DQLBundle.message("generic.noTypes");
+        }
+        DQLDefinitionService service = DQLDefinitionService.getInstance(project);
+        List<String> types = dataTypes.stream().map(service::findDataType).filter(Objects::nonNull).map(DataType::name).toList();
+        return print(types, DQLBundle.message("generic.noTypes"));
+    }
+
+    @NotNull
+    public static @Nls String print(@Nullable Collection<?> collection) {
+        return print(collection, "");
+    }
+
+    public static @Nls String print(@Nullable Collection<?> collection, @NotNull String defaultValue) {
         if (collection == null || collection.isEmpty()) {
-            return "";
+            return defaultValue;
         }
         List<String> list = new ArrayList<>(collection.stream().map(Object::toString).toList());
         if (list.size() == 1) {

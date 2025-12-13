@@ -3,25 +3,17 @@ package pl.thedeem.intellij.dql.psi.elements.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
+import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.elements.SubqueryExpression;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Set;
 
 public abstract class SubqueryExpressionImpl extends ASTWrapperPsiElement implements SubqueryExpression {
-
     public SubqueryExpressionImpl(@NotNull ASTNode node) {
         super(node);
-    }
-
-    public Set<DQLDataType> getDataType() {
-        return Set.of(DQLDataType.SUBQUERY_EXPRESSION);
     }
 
     @Override

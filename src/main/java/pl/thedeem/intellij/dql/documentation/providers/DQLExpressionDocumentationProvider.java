@@ -2,7 +2,6 @@ package pl.thedeem.intellij.dql.documentation.providers;
 
 import com.intellij.openapi.util.text.HtmlChunk;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.TwoSidesExpression;
@@ -26,14 +25,16 @@ public class DQLExpressionDocumentationProvider extends BaseTypedElementDocument
             DQLExpression left = twoSidesExpression.getLeftExpression();
             DQLExpression right = twoSidesExpression.getRightExpression();
             if (left instanceof BaseTypedElement element) {
-                sections.add(buildStandardSection(DQLBundle.message("documentation.twoSidedExpression.leftType"), DQLBundle.print(
-                        DQLDataType.getTypes(element.getDataType())
-                )));
+                sections.add(buildStandardSection(
+                        DQLBundle.message("documentation.twoSidedExpression.leftType"),
+                        DQLBundle.types(element.getDataType(), expression.getProject())
+                ));
             }
             if (right instanceof BaseTypedElement element) {
-                sections.add(buildStandardSection(DQLBundle.message("documentation.twoSidedExpression.rightType"), DQLBundle.print(
-                        DQLDataType.getTypes(element.getDataType())
-                )));
+                sections.add(buildStandardSection(
+                        DQLBundle.message("documentation.twoSidedExpression.rightType"),
+                        DQLBundle.types(element.getDataType(), expression.getProject())
+                ));
             }
         }
 

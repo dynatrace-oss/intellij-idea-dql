@@ -67,8 +67,8 @@ query ::= query_statement (query_statement)* { pin=1 }
 query_statement ::= PIPE? query_statement_keyword query_parameters_list? {
     pin=2
     recoverWhile=query_statement_recover
-    mixin="pl.thedeem.intellij.dql.psi.elements.impl.CommandImpl"
-    implements="pl.thedeem.intellij.dql.psi.elements.Command"
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.CommandElementImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.CommandElement"
 }
 
 query_statement_keyword ::= IDENTIFIER {

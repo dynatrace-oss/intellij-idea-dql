@@ -4,10 +4,10 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
-import pl.thedeem.intellij.dql.definition.DQLParameterObject;
+import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.BaseInspection;
 import pl.thedeem.intellij.dql.inspections.fixes.SetFieldNameQuickFix;
 import pl.thedeem.intellij.dql.psi.*;
@@ -38,7 +38,7 @@ public class InvalidFieldReadOperationInspection extends BaseInspection {
     }
 
     private boolean isReadingFieldValueAllowed(DQLFieldExpression fieldExpression) {
-        List<PsiElement> parentsUntil = DQLUtil.getElementsUntilParent(fieldExpression, DQLFunctionCallExpression.class, DQLQueryStatement.class);
+        List<PsiElement> parentsUntil = PsiUtils.getElementsUntilParent(fieldExpression, DQLFunctionCallExpression.class, DQLQueryStatement.class);
         if (!parentsUntil.isEmpty()) {
             PsiElement topParent = parentsUntil.getFirst();
             DQLExpression topParentChild = parentsUntil.get(1) instanceof DQLExpression expr ? expr : fieldExpression;
@@ -51,10 +51,11 @@ public class InvalidFieldReadOperationInspection extends BaseInspection {
         return true;
     }
 
-    private boolean readonlyAllowed(DQLParameterObject parameter) {
-        if (parameter != null && parameter.getDefinition() != null) {
-            return !parameter.getDefinition().satisfies(DQLDataType.WRITE_ONLY_EXPRESSION);
+    private boolean readonlyAllowed(MappedParameter parameter) {
+        Parameter definition = parameter != null ? parameter.definition() : null;
+        if (definition == null) {
+            return true;
         }
-        return true;
+        return !"mandatory".equals(definition.assignmentSupport());
     }
 }

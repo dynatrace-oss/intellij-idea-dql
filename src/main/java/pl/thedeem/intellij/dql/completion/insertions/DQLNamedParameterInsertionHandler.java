@@ -7,24 +7,20 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.template.Template;
 import com.intellij.codeInsight.template.TemplateManager;
 import com.intellij.openapi.editor.Editor;
-import pl.thedeem.intellij.common.LangUtils;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.common.LangUtils;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 
 import java.util.Set;
 
 public class DQLNamedParameterInsertionHandler implements InsertHandler<LookupElement> {
     private final static Set<Character> VALID_CHARACTERS_BEHIND = Set.of(',', '(', '{', '[');
-    private final String paramName;
-    private final Set<DQLDataType> allowedTypes;
+    private final Parameter parameter;
     private final boolean addComma;
-    private final String defaultValue;
 
-    public DQLNamedParameterInsertionHandler(String paramName, Set<DQLDataType> allowedTypes, boolean addComma, String defaultValue) {
-        this.paramName = paramName;
-        this.allowedTypes = allowedTypes;
+    public DQLNamedParameterInsertionHandler(Parameter parameter, boolean addComma) {
+        this.parameter = parameter;
         this.addComma = addComma;
-        this.defaultValue = defaultValue;
     }
 
     @Override
@@ -43,9 +39,11 @@ public class DQLNamedParameterInsertionHandler implements InsertHandler<LookupEl
             }
         }
 
-        template.addTextSegment(paramName + ": ");
+        if (parameter.requiresName()) {
+            template.addTextSegment(parameter.name() + ": ");
+        }
 
-        InsertionsUtils.handleInsertionDefaultValue(allowedTypes, template, defaultValue, paramName);
+        InsertionsUtils.handleInsertionDefaultValue(parameter, template);
 
         context.getDocument().deleteString(startOffset, context.getTailOffset());
 

@@ -13,14 +13,14 @@ import java.awt.*;
 public class DQLSettingsComponent {
     private final JPanel myMainPanel;
     private final JBCheckBox calculateFieldsDataType = new JBCheckBox(DQLBundle.message("settings.dql.features.calculateFieldsDataType"));
-    private final JBCheckBox calculateExpressionsDataType = new JBCheckBox(DQLBundle.message("settings.dql.features.calculateExpressionDataType"));
+    private final JBCheckBox allowExperimentalFeatures = new JBCheckBox(DQLBundle.message("settings.dql.features.allowExperimentalFeatures"));
     private final JBCheckBox performLiveValidations = new JBCheckBox(DQLBundle.message("settings.dql.features.performLiveValidations"));
     private final JBCheckBox useDynatraceAutocomplete = new JBCheckBox(DQLBundle.message("settings.dql.features.useDynatraceAutocomplete"));
     private final DynatraceTenantSelector<?> defaultDynatraceTenant = new DynatraceTenantSelector<>(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
     public DQLSettingsComponent(DQLSettings settings) {
         calculateFieldsDataType.setToolTipText(DQLBundle.message("settings.dql.features.calculateFieldsDataTypeDescription"));
-        calculateExpressionsDataType.setToolTipText(DQLBundle.message("settings.dql.features.calculateExpressionDataTypeDescription"));
+        allowExperimentalFeatures.setToolTipText(DQLBundle.message("settings.dql.features.allowExperimentalFeaturesDescription"));
         JPanel tenantsSelectorPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(DQLBundle.message("settings.dql.features.defaultDynatraceTenant"), defaultDynatraceTenant)
                 .addTooltip(DQLBundle.message("settings.dql.features.defaultDynatraceTenantDescription"))
@@ -28,7 +28,7 @@ public class DQLSettingsComponent {
 
         myMainPanel = FormBuilder.createFormBuilder()
                 .addComponent(calculateFieldsDataType, 1)
-                .addComponent(calculateExpressionsDataType, 1)
+                .addComponent(allowExperimentalFeatures, 1)
                 .addComponent(performLiveValidations, 1)
                 .addComponent(useDynatraceAutocomplete, 1)
                 .addComponent(tenantsSelectorPanel, 1)
@@ -37,7 +37,7 @@ public class DQLSettingsComponent {
 
         // Initialize checkbox state from current settings
         calculateFieldsDataType.setSelected(settings.isCalculatingFieldsDataTypesEnabled());
-        calculateExpressionsDataType.setSelected(settings.isCalculatingExpressionDataTypesEnabled());
+        allowExperimentalFeatures.setSelected(settings.isAllowingExperimentalFeatures());
         performLiveValidations.setSelected(settings.isPerformingLiveValidationEnabled());
         useDynatraceAutocomplete.setSelected(settings.isUseDynatraceAutocompleteEnabled());
         performLiveValidations.addActionListener((actionEvent -> tenantsSelectorPanel.setVisible(performLiveValidations.isSelected() || useDynatraceAutocomplete.isSelected())));
@@ -58,12 +58,12 @@ public class DQLSettingsComponent {
         calculateFieldsDataType.setSelected(enabled);
     }
 
-    public boolean isCalculatingExpressionDataTypesEnabled() {
-        return calculateExpressionsDataType.isSelected();
+    public boolean isAllowingExperimentalFeatures() {
+        return allowExperimentalFeatures.isSelected();
     }
 
-    public void setCalculatingExpressionDataTypesEnabled(boolean enabled) {
-        calculateExpressionsDataType.setSelected(enabled);
+    public void setAllowingExperimentalFeatures(boolean enabled) {
+        allowExperimentalFeatures.setSelected(enabled);
     }
 
     public boolean isPerformingLiveValidationEnabled() {

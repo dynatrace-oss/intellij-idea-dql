@@ -55,12 +55,12 @@ public class DQLDocumentationProvider extends AbstractDocumentationProvider {
             case DQLNull nullElement ->
                     new BaseDocumentationProvider(nullElement, DQLBundle.message("documentation.null.type"));
             case DQLString ignored ->
-                    new BaseDocumentationProvider(null, DQLBundle.message("documentation.string.type"));
+                    new BaseDocumentationProvider(element, DQLBundle.message("documentation.string.type"));
             default -> {
                 if (originalElement != null && originalElement.getParent() instanceof DQLVariableExpression variable) {
                     yield new DQLVariableDocumentationProvider(variable);
                 }
-                yield new BaseDocumentationProvider();
+                yield new BaseDocumentationProvider(element);
             }
         };
         return docsProvider.buildDocumentation();
