@@ -8,6 +8,7 @@
 - Added more inspections related to parameter value types (subqueries, fields identifier etc.)
 - DPL will now be injected within all supported DQL function strings
 - Added support for experimental DQL features (to be enabled in plugin's tool settings)
+- Added search operator `~` code style settings
 
 ## [1.1.0] - 2025-12-03
 
