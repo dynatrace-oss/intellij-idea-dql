@@ -97,16 +97,14 @@ public class BaseDocumentationProvider {
                 .child(HtmlChunk.tag("tr")
                         .child(DocumentationMarkup.SECTION_HEADER_CELL.addText(DQLBundle.message("documentation.parameter.name")))
                         .child(DocumentationMarkup.SECTION_HEADER_CELL.addText(DQLBundle.message("documentation.parameter.returnValue")))
-                        .child(DocumentationMarkup.SECTION_HEADER_CELL.addText(DQLBundle.message("documentation.parameter.isRequired")))
+                        .child(DocumentationMarkup.SECTION_HEADER_CELL.addText(DQLBundle.message("documentation.parameter.attributes")))
                 );
         for (Parameter parameter : parameters) {
             if (!parameter.hidden()) {
                 table = table.child(HtmlChunk.tag("tr")
                         .child(DocumentationMarkup.SECTION_CONTENT_CELL.addText(parameter.name()))
                         .child(DocumentationMarkup.SECTION_CONTENT_CELL.child(describeParameterTypes(parameter, element.getProject())))
-                        .child(DocumentationMarkup.SECTION_CONTENT_CELL.addText((parameter.required() ?
-                                DQLBundle.message("documentation.statement.requiredParameter")
-                                : DQLBundle.message("documentation.statement.optionalParameter"))))
+                        .child(DocumentationMarkup.SECTION_CONTENT_CELL.child(describeParameterAttributes(parameter)))
                 );
             }
         }
@@ -134,6 +132,20 @@ public class BaseDocumentationProvider {
                 result = result.child(HtmlChunk.br());
             }
             result = result.child(HtmlChunk.span().addText(DQLBundle.types(parameter.valueTypes(), element.getProject())));
+        }
+        return result;
+    }
+
+
+    protected HtmlChunk.Element describeParameterAttributes(@NotNull Parameter parameter) {
+        HtmlChunk.Element result = HtmlChunk.span();
+        result = result.child(HtmlChunk.span().addText(parameter.required() ? DQLBundle.message("documentation.parameter.required")
+                : DQLBundle.message("documentation.parameter.optional")));
+        if (parameter.experimental()) {
+            result = result.child(HtmlChunk.br()).child(HtmlChunk.span().addText(DQLBundle.message("documentation.parameter.experimental")));
+        }
+        if (parameter.variadic()) {
+            result = result.child(HtmlChunk.br()).child(HtmlChunk.span().addText(DQLBundle.message("documentation.parameter.variadic")));
         }
         return result;
     }
