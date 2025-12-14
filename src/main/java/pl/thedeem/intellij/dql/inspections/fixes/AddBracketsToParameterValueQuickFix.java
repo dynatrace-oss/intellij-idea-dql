@@ -6,22 +6,23 @@ import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
+import com.intellij.psi.*;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 
+import java.util.List;
+
 public class AddBracketsToParameterValueQuickFix implements LocalQuickFix {
     @SafeFieldForPreview
-    private final MappedParameter parameter;
+    private final List<SmartPsiElementPointer<DQLExpression>> parameters;
 
-    public AddBracketsToParameterValueQuickFix(MappedParameter parameter) {
-        this.parameter = parameter;
+    public AddBracketsToParameterValueQuickFix(@NotNull List<DQLExpression> parameters) {
+        this.parameters = parameters.stream()
+                .map(SmartPointerManager::createPointer)
+                .toList();
     }
 
     @Override
@@ -32,8 +33,12 @@ public class AddBracketsToParameterValueQuickFix implements LocalQuickFix {
         if (document == null) {
             return;
         }
-        DQLExpression first = parameter.holder();
-        TextRange textRange = parameter.getTextRange();
+        DQLExpression first = parameters.getFirst().getElement();
+        DQLExpression last = parameters.getLast().getElement();
+        if (first == null || last == null) {
+            return;
+        }
+        TextRange textRange = new TextRange(first.getTextRange().getStartOffset(), last.getTextRange().getEndOffset());
         int start = textRange.getStartOffset();
         if (first instanceof DQLParameterExpression parameterExpression && parameterExpression.getExpression() != null) {
             start = parameterExpression.getExpression().getTextRange().getStartOffset();

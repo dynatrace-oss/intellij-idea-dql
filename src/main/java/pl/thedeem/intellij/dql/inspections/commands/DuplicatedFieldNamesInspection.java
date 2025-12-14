@@ -15,10 +15,7 @@ import pl.thedeem.intellij.dql.inspections.fixes.SetFieldNameQuickFix;
 import pl.thedeem.intellij.dql.psi.*;
 import pl.thedeem.intellij.dql.psi.elements.BaseElement;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DuplicatedFieldNamesInspection extends LocalInspectionTool {
     @Override
@@ -35,6 +32,10 @@ public class DuplicatedFieldNamesInspection extends LocalInspectionTool {
                     if (definition == null) {
                         return;
                     }
+                    // don't repeat the inspection for other parameters
+                    if (!parameter.holder().equals(expression)) {
+                        return;
+                    }
                     // we should check for duplicates only when defining list of fields
                     if (definition.parameterValueTypes() != null && definition.parameterValueTypes().stream().noneMatch(DQLDefinitionService.FIELD_IDENTIFIER_PARAMETER_VALUE_TYPES::contains)) {
                         return;
@@ -43,7 +44,7 @@ public class DuplicatedFieldNamesInspection extends LocalInspectionTool {
                     for (PsiElement field : duplicatedFields) {
                         holder.registerProblem(
                                 field,
-                                DQLBundle.message("inspection.command.duplicatedFieldNames.duplicated"),
+                                DQLBundle.message("inspection.command.duplicatedFieldNames.duplicated", getFieldName(field)),
                                 new DropElementQuickFix(),
                                 new SetFieldNameQuickFix()
                         );
@@ -74,15 +75,19 @@ public class DuplicatedFieldNamesInspection extends LocalInspectionTool {
                 continue;
             }
 
-            String fieldName = switch (expression) {
-                case BaseElement e -> e.getFieldName();
-                case PsiNamedElement named -> named.getName();
-                default -> expression.getText();
-            };
+            String fieldName = getFieldName(expression);
             if (!seenNames.add(fieldName)) {
                 invalidElements.add(expression);
             }
         }
         return invalidElements;
+    }
+
+    private @NotNull String getFieldName(@NotNull PsiElement element) {
+        return switch (element) {
+            case BaseElement e -> e.getFieldName();
+            case PsiNamedElement named -> Objects.requireNonNullElse(named.getName(), "");
+            default -> element.getText();
+        };
     }
 }

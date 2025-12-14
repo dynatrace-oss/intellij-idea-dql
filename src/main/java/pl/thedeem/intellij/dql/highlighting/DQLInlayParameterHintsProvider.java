@@ -6,7 +6,9 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
+import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
+import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
 
 import java.util.ArrayList;
@@ -29,15 +31,21 @@ public class DQLInlayParameterHintsProvider implements InlayParameterHintsProvid
         if (parameters.size() > 1) {
             for (MappedParameter parameter : parameters) {
                 Parameter definition = parameter.definition();
-                if (parameter == parameters.getFirst() && !inlayFirstParameter) {
+                if (definition == null) {
                     continue;
                 }
-                int textOffset = parameter.holder().getTextOffset();
-                if (definition != null && !parameter.isExplicitlyNamed()) {
-                    if (definition.variadic()) {
-                        result.add(new InlayInfo((!parameter.included().isEmpty() ? "…" : "") + definition.name(), textOffset));
-                    } else if (parameters.size() > 1) {
-                        result.add(new InlayInfo(definition.name(), textOffset));
+                List<List<DQLExpression>> groups = parameter.getParameterGroups();
+                for (List<DQLExpression> group : groups) {
+                    if (group == groups.getFirst() && (parameter == parameters.getFirst() && !inlayFirstParameter)) {
+                        continue;
+                    }
+                    int textOffset = group.getFirst().getTextOffset();
+                    if (!(group.getFirst() instanceof DQLParameterExpression)) {
+                        if (definition.variadic()) {
+                            result.add(new InlayInfo((!parameter.included().isEmpty() ? "…" : "") + definition.name(), textOffset));
+                        } else if (group.size() > 1) {
+                            result.add(new InlayInfo(definition.name(), textOffset));
+                        }
                     }
                 }
             }

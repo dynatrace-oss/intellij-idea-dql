@@ -5,7 +5,6 @@ import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
@@ -13,7 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
+
+import java.util.List;
 
 public class DropInvalidParameterQuickFix implements LocalQuickFix {
     @SafeFieldForPreview
@@ -30,20 +32,22 @@ public class DropInvalidParameterQuickFix implements LocalQuickFix {
         if (document == null) {
             return;
         }
-        TextRange range = parameter.getTextRange();
-        int start = range.getStartOffset();
-        int end = range.getEndOffset();
 
-        PsiElement previousElement = PsiUtils.getPreviousElement(parameter.holder());
-        if (previousElement != null && previousElement.getNode().getElementType() == DQLTypes.COMMA) {
-            start = previousElement.getTextRange().getStartOffset();
-        } else {
-            PsiElement nextElement = PsiUtils.getNextElement(parameter.included().isEmpty() ? parameter.holder() : parameter.included().getLast());
-            if (nextElement != null && nextElement.getNode().getElementType() == DQLTypes.COMMA) {
-                end = nextElement.getTextRange().getEndOffset();
+        for (List<DQLExpression> parameterGroup : parameter.getParameterGroups()) {
+            int start = parameterGroup.getFirst().getTextRange().getStartOffset();
+            int end = parameterGroup.getLast().getTextRange().getEndOffset();
+
+            PsiElement previousElement = PsiUtils.getPreviousElement(parameter.holder());
+            if (previousElement != null && previousElement.getNode().getElementType() == DQLTypes.COMMA) {
+                start = previousElement.getTextRange().getStartOffset();
+            } else {
+                PsiElement nextElement = PsiUtils.getNextElement(parameter.included().isEmpty() ? parameter.holder() : parameter.included().getLast());
+                if (nextElement != null && nextElement.getNode().getElementType() == DQLTypes.COMMA) {
+                    end = nextElement.getTextRange().getEndOffset();
+                }
             }
+            document.deleteString(start, end);
         }
-        document.deleteString(start, end);
     }
 
     @Override

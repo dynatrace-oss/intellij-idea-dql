@@ -27,25 +27,28 @@ public class AdvisedBracketsAroundParametersInspection extends LocalInspectionTo
                     if (definition == null) {
                         return;
                     }
+                    // don't repeat the inspection for other parameters
                     if (!parameter.holder().equals(expression)) {
                         return;
                     }
-                    if (shouldAdviseBrackets(parameter, definition, command)) {
-                        holder.registerProblem(
-                                parameter.holder(),
-                                DQLBundle.message("inspection.command.advisedBrackets.missingBrackets"),
-                                new AddBracketsToParameterValueQuickFix(parameter)
-                        );
+                    if (!definition.variadic() || parameter.included().isEmpty()) {
+                        return;
+                    }
+                    for (List<DQLExpression> group : parameter.getParameterGroups()) {
+                        if (group.size() > 1 && shouldAdviseBrackets(command)) {
+                            holder.registerProblem(
+                                    group.getFirst(),
+                                    DQLBundle.message("inspection.command.advisedBrackets.missingBrackets"),
+                                    new AddBracketsToParameterValueQuickFix(group)
+                            );
+                        }
                     }
                 }
             }
         };
     }
 
-    private boolean shouldAdviseBrackets(@NotNull MappedParameter parameter, @NotNull Parameter definition, @NotNull DQLQueryStatement parent) {
-        if (!definition.variadic() || parameter.included().isEmpty()) {
-            return false;
-        }
+    private boolean shouldAdviseBrackets(@NotNull DQLQueryStatement parent) {
         List<MappedParameter> variadicParams = parent.getParameters().stream().filter(p -> p.definition() != null && p.definition().variadic()).toList();
         return variadicParams.size() > 1;
     }

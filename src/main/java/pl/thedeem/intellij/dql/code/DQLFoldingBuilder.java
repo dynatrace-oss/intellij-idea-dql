@@ -4,7 +4,9 @@ import com.intellij.lang.ASTNode;
 import com.intellij.lang.folding.FoldingBuilderEx;
 import com.intellij.lang.folding.FoldingDescriptor;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.FoldingGroup;
 import com.intellij.openapi.project.DumbAware;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +34,13 @@ public class DQLFoldingBuilder extends FoldingBuilderEx implements DumbAware {
                 } else if (element instanceof DQLQueryStatement list) {
                     for (MappedParameter parameter : list.getParameters()) {
                         if (!parameter.included().isEmpty()) {
-                            descriptors.add(new FoldingDescriptor(parameter.holder(), parameter.getTextRange()));
+                            FoldingGroup foldingGroup = FoldingGroup.newGroup(parameter.name());
+                            for (List<DQLExpression> parameterGroup : parameter.getParameterGroups()) {
+                                descriptors.add(new FoldingDescriptor(parameter.holder().getNode(), new TextRange(
+                                        parameterGroup.getFirst().getTextRange().getStartOffset(),
+                                        parameterGroup.getLast().getTextRange().getEndOffset()
+                                ), foldingGroup));
+                            }
                         }
                     }
                 } else if (element instanceof DQLMultilineString string) {

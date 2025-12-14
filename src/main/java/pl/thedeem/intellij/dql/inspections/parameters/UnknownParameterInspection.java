@@ -10,6 +10,7 @@ import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.BaseInspection;
 import pl.thedeem.intellij.dql.inspections.fixes.DropInvalidParameterQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
+import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 
@@ -23,9 +24,9 @@ public class UnknownParameterInspection extends BaseInspection {
                 if (expression.getParent() instanceof DQLParametersOwner parametersOwner) {
                     MappedParameter parameter = parametersOwner.getParameter(expression);
                     Parameter definition = parameter != null ? parameter.definition() : null;
-                    if (definition == null) {
+                    if (parameter != null && definition == null) {
                         holder.registerProblem(
-                                expression,
+                                parameter.holder() instanceof DQLParameterExpression p ? p.getParameterName() : parameter.holder(),
                                 DQLBundle.message("inspection.parameter.unknown.unknownNamed"),
                                 ProblemHighlightType.LIKE_UNKNOWN_SYMBOL,
                                 new DropInvalidParameterQuickFix(parameter)

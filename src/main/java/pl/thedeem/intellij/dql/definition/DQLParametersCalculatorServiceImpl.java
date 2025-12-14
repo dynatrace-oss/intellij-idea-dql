@@ -1,6 +1,7 @@
 package pl.thedeem.intellij.dql.definition;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLBracketExpression;
@@ -19,39 +20,59 @@ public class DQLParametersCalculatorServiceImpl implements DQLParametersCalculat
         List<MappedParameter> result = new ArrayList<>();
 
         MappedParameter variadic = null;
+        boolean conflictingVariadic = definitions.stream().filter(Parameter::variadic).count() > 1;
         for (DQLExpression defined : definedParameters) {
+            MappedParameter mappedParameter = null;
             if (defined instanceof DQLParameterExpression named) {
-                String name = Objects.requireNonNull(named.getName());
-                Parameter parameter = availableParameters.get(name.toLowerCase());
-                MappedParameter mappedParameter = new MappedParameter(
-                        parameter,
-                        defined,
-                        new ArrayList<>()
-                );
-                result.add(mappedParameter);
-                variadic = parameter == null || !parameter.variadic() || named.getExpression() instanceof DQLBracketExpression ? null : mappedParameter;
+                mappedParameter = createNamedParameter(named, availableParameters);
+            } else if (variadic == null) {
+                mappedParameter = createUnnamedParameter(defined, availableParameters, unusedParameters);
             } else {
-                if (variadic == null) {
-                    if (unusedParameters.isEmpty()) {
-                        result.add(new MappedParameter(null, defined, new ArrayList<>()));
-                    } else {
-                        String name = unusedParameters.removeFirst();
-                        Parameter parameter = availableParameters.get(name.toLowerCase());
-                        MappedParameter mappedParameter = new MappedParameter(
-                                parameter,
-                                defined,
-                                new ArrayList<>()
-                        );
-                        result.add(mappedParameter);
-                        variadic = parameter == null || !parameter.variadic() || defined instanceof DQLBracketExpression ? null : mappedParameter;
-                    }
-                } else {
-                    variadic.included().add(defined);
-                }
+                variadic.included().add(defined);
+            }
+            if (mappedParameter != null) {
+                result.add(mappedParameter);
+                variadic = calculateVariadic(mappedParameter, variadic, conflictingVariadic);
             }
         }
-
         return result;
+    }
+
+    private @Nullable MappedParameter calculateVariadic(@NotNull MappedParameter parameter, @Nullable MappedParameter currentVariadic, boolean conflictingVariadic) {
+        Parameter definition = parameter.definition();
+        if (definition == null) {
+            return currentVariadic;
+        }
+        // sticky variadic only work for parameters that do not require name
+        // If the parameter value is already enclosed with `{}`, it does not stick
+        if (definition.variadic() && !definition.requiresName()) {
+            DQLExpression toCheck = parameter.holder() instanceof DQLParameterExpression named ? named.getExpression() : parameter.holder();
+            return conflictingVariadic && toCheck instanceof DQLBracketExpression ? currentVariadic : parameter;
+        }
+        return currentVariadic;
+    }
+
+    private @NotNull MappedParameter createNamedParameter(@NotNull DQLParameterExpression named, @NotNull Map<String, Parameter> availableParameters) {
+        String name = Objects.requireNonNull(named.getName());
+        Parameter parameter = availableParameters.get(name.toLowerCase());
+        return new MappedParameter(
+                parameter,
+                named,
+                new ArrayList<>()
+        );
+    }
+
+    private @NotNull MappedParameter createUnnamedParameter(@NotNull DQLExpression expression, @NotNull Map<String, Parameter> availableParameters, @NotNull List<String> unusedParameters) {
+        if (unusedParameters.isEmpty()) {
+            return new MappedParameter(null, expression, new ArrayList<>());
+        }
+        String name = unusedParameters.removeFirst();
+        Parameter parameter = availableParameters.get(name.toLowerCase());
+        return new MappedParameter(
+                parameter,
+                expression,
+                new ArrayList<>()
+        );
     }
 
     private @NotNull Map<String, Parameter> availableParameters(@NotNull List<Parameter> definitions) {

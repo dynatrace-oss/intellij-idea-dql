@@ -1,7 +1,6 @@
 package pl.thedeem.intellij.dql.definition.model;
 
-import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
@@ -27,9 +26,19 @@ public record MappedParameter(
         return null;
     }
 
-    public @NotNull TextRange getTextRange() {
-        PsiElement lastElement = included.isEmpty() ? holder : included.getLast();
-        return new TextRange(holder.getTextRange().getStartOffset(), lastElement.getTextRange().getEndOffset());
+    public @NotNull List<List<DQLExpression>> getParameterGroups() {
+        List<List<DQLExpression>> result = new ArrayList<>();
+
+        DQLExpression previous = null;
+        for (DQLExpression expression : getExpressions()) {
+            DQLExpression prevSibling = PsiTreeUtil.getPrevSiblingOfType(expression, DQLExpression.class);
+            if (prevSibling != previous || result.isEmpty()) {
+                result.add(new ArrayList<>());
+            }
+            result.getLast().add(expression);
+            previous = expression;
+        }
+        return result;
     }
 
     public boolean includes(DQLExpression expression) {
