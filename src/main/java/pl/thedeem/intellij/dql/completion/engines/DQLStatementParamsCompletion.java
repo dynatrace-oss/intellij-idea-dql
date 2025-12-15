@@ -19,11 +19,11 @@ public class DQLStatementParamsCompletion {
     public void autocomplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         PsiElement position = parameters.getPosition();
         List<PsiElement> parents = PsiUtils.getElementsUntilParent(position, DQLQueryStatement.class);
-        if (!(parents.size() > 1 && parents.getFirst() instanceof DQLQueryStatement statement)) {
+        if (parents.isEmpty() || !(parents.getFirst() instanceof DQLQueryStatement statement)) {
             return;
         }
         Command definition = statement.getDefinition();
-        MappedParameter currentParameter = parents.get(1) instanceof DQLExpression expression ? statement.getParameter(expression) : null;
+        MappedParameter currentParameter = parents.size() > 1 && parents.get(1) instanceof DQLExpression expression ? statement.getParameter(expression) : null;
         if (definition != null) {
             List<MappedParameter> definedParams = statement.getParameters();
             boolean addComma = !definedParams.isEmpty() && !CompletionUtilCore.DUMMY_IDENTIFIER_TRIMMED.equals(definedParams.getFirst().holder().getText());
