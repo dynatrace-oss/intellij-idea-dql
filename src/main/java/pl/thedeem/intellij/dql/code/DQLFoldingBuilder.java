@@ -4,15 +4,16 @@ import com.intellij.lang.ASTNode;
 import com.intellij.lang.folding.FoldingBuilderEx;
 import com.intellij.lang.folding.FoldingDescriptor;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.FoldingGroup;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
-import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.DQLParameterObject;
-import pl.thedeem.intellij.dql.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.psi.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,6 @@ public class DQLFoldingBuilder extends FoldingBuilderEx implements DumbAware {
     public FoldingDescriptor @NotNull [] buildFoldRegions(@NotNull PsiElement root,
                                                           @NotNull Document document,
                                                           boolean quick) {
-        // Initialize the list of folding regions
         List<FoldingDescriptor> descriptors = new ArrayList<>();
         root.accept(new PsiRecursiveElementVisitor() {
             @Override
@@ -32,15 +32,18 @@ public class DQLFoldingBuilder extends FoldingBuilderEx implements DumbAware {
                         descriptors.add(new FoldingDescriptor(element.getNode(), element.getTextRange()));
                     }
                 } else if (element instanceof DQLQueryStatement list) {
-                    for (DQLParameterObject parameter : list.getParameters()) {
-                        if (parameter.getValues().size() > 1) {
-                            DQLExpression first = parameter.getValues().getFirst();
-                            DQLExpression last = parameter.getValues().getLast();
-                            descriptors.add(new FoldingDescriptor(first.getNode(), new TextRange(first.getTextRange().getStartOffset(), last.getTextRange().getEndOffset())));
+                    for (MappedParameter parameter : list.getParameters()) {
+                        if (!parameter.included().isEmpty()) {
+                            FoldingGroup foldingGroup = FoldingGroup.newGroup(parameter.name());
+                            for (List<DQLExpression> parameterGroup : parameter.getParameterGroups()) {
+                                descriptors.add(new FoldingDescriptor(parameter.holder().getNode(), new TextRange(
+                                        parameterGroup.getFirst().getTextRange().getStartOffset(),
+                                        parameterGroup.getLast().getTextRange().getEndOffset()
+                                ), foldingGroup));
+                            }
                         }
                     }
-                }
-                else if (element instanceof DQLMultilineString string) {
+                } else if (element instanceof DQLMultilineString string) {
                     descriptors.add(new FoldingDescriptor(string.getNode(), string.getTextRange()));
                 }
                 super.visitElement(element);
@@ -62,11 +65,9 @@ public class DQLFoldingBuilder extends FoldingBuilderEx implements DumbAware {
                     return getPlaceholderForQuery(query);
                 }
             }
-        }
-        else if (element instanceof DQLBracketExpression) {
+        } else if (element instanceof DQLBracketExpression) {
             return getPlaceholderForFieldsList(element.getChildren().length);
-        }
-        else if (element instanceof DQLString string) {
+        } else if (element instanceof DQLString string) {
             String text = string.getContent().trim();
             return DQLBundle.shorten(text);
         }

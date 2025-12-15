@@ -4,16 +4,17 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
-import pl.thedeem.intellij.dql.definition.DQLParameterObject;
+import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.BaseInspection;
 import pl.thedeem.intellij.dql.inspections.fixes.DropInvalidParameterQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ConflictedParameterInspection extends BaseInspection {
     @Override
@@ -24,22 +25,28 @@ public class ConflictedParameterInspection extends BaseInspection {
                 super.visitExpression(expression);
 
                 if (expression.getParent() instanceof DQLParametersOwner parametersOwner) {
-                    Set<String> defined = parametersOwner.getDefinedParameterNames();
-                    DQLParameterObject parameter = parametersOwner.getParameter(expression);
+                    MappedParameter parameter = parametersOwner.getParameter(expression);
+                    Parameter definition = parameter != null ? parameter.definition() : null;
+                    if (definition == null) {
+                        return;
+                    }
 
-                    if (parameter != null) {
-                        DQLParameterDefinition definition = parameter.getDefinition();
-                        if (definition != null && DQLUtil.containsAny(defined, definition.getDisallowedParameters())) {
-                            holder.registerProblem(
-                                    expression,
-                                    DQLBundle.message(
-                                            "inspection.parameter.conflicted.conflictsWith",
-                                            definition.name,
-                                            DQLBundle.print(definition.getDisallowedParameters())
-                                    ),
-                                    new DropInvalidParameterQuickFix(parameter)
-                            );
-                        }
+                    Set<String> parameters = parametersOwner.getParameters().stream().map(MappedParameter::name).collect(Collectors.toSet());
+                    Set<String> disallowed = new HashSet<>();
+                    if (parameter.definition().excludes() != null) {
+                        disallowed.addAll(parameter.definition().excludes());
+                    }
+
+                    if (parameters.stream().anyMatch(disallowed::contains)) {
+                        holder.registerProblem(
+                                expression,
+                                DQLBundle.message(
+                                        "inspection.parameter.conflicted.conflictsWith",
+                                        definition.name(),
+                                        DQLBundle.print(disallowed)
+                                ),
+                                new DropInvalidParameterQuickFix(parameter)
+                        );
                     }
                 }
             }

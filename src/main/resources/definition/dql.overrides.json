@@ -1,0 +1,1588 @@
+{
+  "dataTypes": {
+    "dql.dataType.null": {
+      "name": "NULL",
+      "description": "A data type that represents an empty value."
+    },
+    "dql.dataType.json": {
+      "name": "JSON",
+      "description": "A string that contains JSON value."
+    }
+  },
+  "parameterValueTypes": {
+    "dql.parameterValueType.expressionTimeseriesAggregation": {
+      "allowedFunctionCategories": [
+        "dql.functionCategory.expression timeseries"
+      ]
+    },
+    "dql.parameterValueType.metricTimeseriesAggregation": {
+      "allowedFunctionCategories": [
+        "dql.functionCategory.timeseries"
+      ]
+    },
+    "dql.parameterValueType.recordDefinition": {
+      "name": "record definition",
+      "description": "validates if the parameter defines a static record",
+      "allowedFunctionCategories": [
+        "dql.functionCategory.create"
+      ]
+    },
+    "dql.parameterValueType.aggregation": {
+      "name": "aggregation",
+      "description": "An aggregation function (min, max, avg, ...)",
+      "allowedFunctionCategories": [
+        "dql.functionCategory.aggregation"
+      ]
+    }
+  },
+  "commands": {
+    "dql.command.data": {
+      "category": "data_source",
+      "parameters": [
+        {
+          "name": "record",
+          "description": "One of the static records that should be part of the data set.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.record"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue",
+            "dql.parameterValueType.recordDefinition"
+          ],
+          "excludes": [
+            "json",
+            "expression"
+          ]
+        },
+        {
+          "name": "json",
+          "description": "A JSON string that holds an object or an array of objects that will represent the data set.",
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.string"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.primitiveValue",
+            "dql.dataType.json"
+          ],
+          "required": true,
+          "excludes": [
+            "record",
+            "expression"
+          ]
+        }
+      ]
+    },
+    "dql.command.dedup": {
+      "parameters": [
+        {
+          "name": "expression",
+          "description": "An expression for which all different unique values should be kept.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithFieldAccess"
+          ]
+        },
+        {
+          "name": "sort",
+          "description": "An expression defining the how duplicate entries should be sorted (the first record by this order will be kept).",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithFieldAccess"
+          ],
+          "modifiers": [
+            {
+              "name": "asc",
+              "parameter": "direction",
+              "value": "\"ascending\""
+            },
+            {
+              "name": "desc",
+              "parameter": "direction",
+              "value": "\"descending\""
+            }
+          ]
+        },
+        {
+          "name": "direction",
+          "description": "An expression defining the how duplicate entries should be sorted (the first record by this order will be kept).",
+          "required": false,
+          "hidden": true,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "defaultValue": "\"ascending\"",
+          "parameterValueTypes": [
+            "dql.parameterValueType.enum"
+          ],
+          "allowedEnumValues": [
+            "\"ascending\"",
+            "\"descending\""
+          ]
+        },
+        {
+          "name": "filterPushThrough",
+          "description": "Whether the filter should be push through the dedup command.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "FALSE",
+          "valueTypes": [
+            "dql.dataType.boolean"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.primitiveValue"
+          ]
+        },
+        {
+          "name": "limit",
+          "description": "The maximum number of records returned by the dedup command.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "9223372036854775807",
+          "valueTypes": [
+            "dql.dataType.long"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.primitiveValue"
+          ]
+        }
+      ]
+    },
+    "dql.command.describe": {
+      "category": "data_source"
+    },
+    "dql.command.fetch": {
+      "category": "data_source",
+      "parameters": [
+        {
+          "name": "dataObject",
+          "description": "The data object to fetch data for.",
+          "aliases": [
+            "sourceId"
+          ],
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "parameterValueTypes": [
+            "dql.parameterValueType.dataObject"
+          ]
+        },
+        {
+          "name": "bucket",
+          "description": "A bucket (name or pattern) to retrieve data from.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "parameterValueTypes": [
+            "dql.parameterValueType.bucket"
+          ]
+        },
+        {
+          "name": "from",
+          "description": "The start of the timeframe (if no explicit timeframe is specified). A duration is interpreted as an offset from `now()`.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "minValue": "0",
+          "valueTypes": [
+            "dql.dataType.duration",
+            "dql.dataType.long",
+            "dql.dataType.string",
+            "dql.dataType.timestamp"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ],
+          "excludes": [
+            "timeframe"
+          ]
+        },
+        {
+          "name": "to",
+          "description": "The end of the timeframe (if no explicit timeframe is specified). A duration is interpreted as an offset from `now()`.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "minValue": "0",
+          "valueTypes": [
+            "dql.dataType.duration",
+            "dql.dataType.long",
+            "dql.dataType.string",
+            "dql.dataType.timestamp"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ],
+          "excludes": [
+            "timeframe"
+          ]
+        },
+        {
+          "name": "timeframe",
+          "description": "The desired timeframe (if not specified, global timeframe is used).",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.string",
+            "dql.dataType.timeframe"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ],
+          "excludes": [
+            "from",
+            "to"
+          ]
+        },
+        {
+          "name": "samplingRatio",
+          "description": "The desired sampling ratio.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "minValue": "1",
+          "valueTypes": [
+            "dql.dataType.double",
+            "dql.dataType.long"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "scanLimitGBytes",
+          "description": "The maximum number of gigabytes that shall be scanned during loading data.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.long"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        }
+      ]
+    },
+    "dql.command.fieldsFlatten": {
+      "parameters": [
+        {
+          "name": "expression",
+          "description": "An expression returning the record from which to add the fields.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.record"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForFieldOnRootLevel"
+          ]
+        },
+        {
+          "name": "prefix",
+          "description": "Prefix that is applied to all fields that are going to be added.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "parameterValueTypes": [
+            "dql.parameterValueType.prefix"
+          ]
+        },
+        {
+          "name": "fields",
+          "description": "Field to add from the record.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "optional",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForAnyField"
+          ]
+        },
+        {
+          "name": "depth",
+          "description": "Flatten nested records until the specified depth is reached.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "1",
+          "minValue": "1",
+          "maxValue": "10",
+          "valueTypes": [
+            "dql.dataType.long"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.primitiveValue"
+          ]
+        }
+      ]
+    },
+    "dql.command.join": {
+      "parameters": [
+        {
+          "name": "joinTable",
+          "description": "Sub-query for records with fields to add or overwrite in the input.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "parameterValueTypes": [
+            "dql.parameterValueType.nonEmptyExecutionBlock"
+          ]
+        },
+        {
+          "name": "kind",
+          "description": "Defines how records get joined.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "inner",
+          "parameterValueTypes": [
+            "dql.parameterValueType.enum"
+          ],
+          "allowedEnumValues": [
+            "leftOuter",
+            "inner",
+            "outer"
+          ]
+        },
+        {
+          "name": "executionOrder",
+          "description": "Defines which side of the join will be executed first.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "auto",
+          "parameterValueTypes": [
+            "dql.parameterValueType.enum"
+          ],
+          "allowedEnumValues": [
+            "auto",
+            "leftFirst",
+            "rightFirst"
+          ]
+        },
+        {
+          "name": "broadcast",
+          "description": "Defines broadcasting strategy.",
+          "experimental": true,
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "enabled",
+          "parameterValueTypes": [
+            "dql.parameterValueType.enum"
+          ],
+          "allowedEnumValues": [
+            "enabled",
+            "disabled"
+          ]
+        },
+        {
+          "name": "on",
+          "description": "Records must match this condition in order to be joined.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "parameterValueTypes": [
+            "dql.parameterValueType.joinCondition"
+          ]
+        },
+        {
+          "name": "prefix",
+          "description": "Specifies a prefix string for all new fields.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "\"right.\"",
+          "parameterValueTypes": [
+            "dql.parameterValueType.prefix"
+          ]
+        },
+        {
+          "name": "fields",
+          "description": "A field from the sub-query to add to the source.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "optional",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForFieldOnRootLevel"
+          ]
+        }
+      ]
+    },
+    "dql.command.joinNested": {
+      "parameters": [
+        {
+          "name": "joinTable",
+          "description": "Sub-query for records with fields to add or overwrite in the input.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "mandatory",
+          "parameterValueTypes": [
+            "dql.parameterValueType.nonEmptyExecutionBlock"
+          ]
+        },
+        {
+          "name": "on",
+          "description": "Records must match this condition in order to be joined.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "parameterValueTypes": [
+            "dql.parameterValueType.joinCondition"
+          ]
+        },
+        {
+          "name": "executionOrder",
+          "description": "Defines which side of the join will be executed first.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "auto",
+          "parameterValueTypes": [
+            "dql.parameterValueType.enum"
+          ],
+          "allowedEnumValues": [
+            "auto",
+            "leftFirst",
+            "rightFirst"
+          ]
+        },
+        {
+          "name": "broadcast",
+          "description": "Defines broadcasting strategy.",
+          "experimental": true,
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "enabled",
+          "parameterValueTypes": [
+            "dql.parameterValueType.enum"
+          ],
+          "allowedEnumValues": [
+            "enabled",
+            "disabled"
+          ]
+        },
+        {
+          "name": "fields",
+          "description": "A field from the sub-query to add to the source.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "optional",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForFieldOnRootLevel"
+          ]
+        }
+      ]
+    },
+    "dql.command.load": {
+      "category": "data_source"
+    },
+    "dql.command.lookup": {
+      "parameters": [
+        {
+          "name": "lookupTable",
+          "description": "Sub-query for records with fields to add or overwrite in the input.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "parameterValueTypes": [
+            "dql.parameterValueType.nonEmptyExecutionBlock"
+          ]
+        },
+        {
+          "name": "sourceField",
+          "description": "The field to use from the source for equality comparison.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForAnyField"
+          ]
+        },
+        {
+          "name": "lookupField",
+          "description": "The field to use from the sub-query for equality comparison.",
+          "required": true,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForAnyField"
+          ]
+        },
+        {
+          "name": "prefix",
+          "description": "Specifies a prefix string for all new fields.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "\"lookup.\"",
+          "parameterValueTypes": [
+            "dql.parameterValueType.prefix"
+          ]
+        },
+        {
+          "name": "fields",
+          "description": "A field from the sub-query to add to the source.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "optional",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForAnyField"
+          ]
+        },
+        {
+          "name": "executionOrder",
+          "description": "Defines which side of the join will be executed first.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "auto",
+          "parameterValueTypes": [
+            "dql.parameterValueType.enum"
+          ],
+          "allowedEnumValues": [
+            "auto",
+            "leftFirst",
+            "rightFirst"
+          ]
+        },
+        {
+          "name": "broadcast",
+          "description": "Defines broadcasting strategy.",
+          "experimental": true,
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "enabled",
+          "parameterValueTypes": [
+            "dql.parameterValueType.enum"
+          ],
+          "allowedEnumValues": [
+            "enabled",
+            "disabled"
+          ]
+        }
+      ]
+    },
+    "dql.command.makeTimeseries": {
+      "parameters": [
+        {
+          "name": "by",
+          "description": "An expression to split the series by.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "optional",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithFieldAccess"
+          ]
+        },
+        {
+          "name": "interval",
+          "description": "An expression that provides the duration of a bins in the series.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.duration"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "bins",
+          "description": "An positive non-zero long integer number that defines the number of bins that shall be created within the series timeframe.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "120",
+          "minValue": "0",
+          "valueTypes": [
+            "dql.dataType.long"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "from",
+          "description": "The global timeframe start for the series for which values should be considered.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.duration",
+            "dql.dataType.timestamp"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "to",
+          "description": "The global timeframe end for the series for which values should be considered.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.duration",
+            "dql.dataType.timestamp"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "timeframe",
+          "description": "The global timeframe end for the series for which values should be considered.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.timeframe"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "time",
+          "description": "A timestamp expression that provides the timestamp for the bucket calculation of the values in the series.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.timestamp"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithFieldAccess"
+          ]
+        },
+        {
+          "name": "spread",
+          "description": "A timeframe expression that provides the timeframe for the bucket calculation of the values in the series.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.timeframe"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithFieldAccess"
+          ]
+        },
+        {
+          "name": "nonempty",
+          "description": "Produces empty series when there is no data.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "FALSE",
+          "valueTypes": [
+            "dql.dataType.boolean"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "aggregation",
+          "description": "The series that shall be calculated.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "optional",
+          "variadic": true,
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionTimeseriesAggregation"
+          ]
+        },
+        {
+          "name": "default",
+          "description": "The default value in the series bin, if no value is present.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.double",
+            "dql.dataType.long"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "rate",
+          "description": "The rate the resulting series values shall be scaled to.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.duration"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        }
+      ]
+    },
+    "dql.command.metrics": {
+      "category": "data_source",
+      "parameters": [
+        {
+          "name": "bucket",
+          "description": "A bucket (name or pattern) to retrieve data from.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "parameterValueTypes": [
+            "dql.parameterValueType.bucket"
+          ]
+        },
+        {
+          "name": "from",
+          "description": "The global timeframe start for retrieving metrics.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.duration",
+            "dql.dataType.string",
+            "dql.dataType.timestamp"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "to",
+          "description": "The global timeframe end for retrieving metrics.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.duration",
+            "dql.dataType.string",
+            "dql.dataType.timestamp"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "timeframe",
+          "description": "The global timeframe for retrieving metrics.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.string",
+            "dql.dataType.timeframe"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        }
+      ]
+    },
+    "dql.command.smartscapeEdges": {
+      "category": "data_source"
+    },
+    "dql.command.smartscapeNodes": {
+      "category": "data_source"
+    },
+    "dql.command.sort": {
+      "parameters": [
+        {
+          "name": "expression",
+          "description": "An expression defining the sort order.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithFieldAccess"
+          ],
+          "modifiers": [
+            {
+              "name": "asc",
+              "parameter": "direction",
+              "value": "\"ascending\""
+            },
+            {
+              "name": "desc",
+              "parameter": "direction",
+              "value": "\"descending\""
+            }
+          ]
+        },
+        {
+          "name": "direction",
+          "hidden": true,
+          "description": "The direction of the sorting.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "defaultValue": "\"ascending\"",
+          "parameterValueTypes": [
+            "dql.parameterValueType.enum"
+          ],
+          "allowedEnumValues": [
+            "\"ascending\"",
+            "\"descending\""
+          ]
+        }
+      ]
+    },
+    "dql.command.summarize": {
+      "parameters": [
+        {
+          "name": "by",
+          "description": "An expression to group by.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "optional",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithFieldAccess"
+          ]
+        },
+        {
+          "name": "aggregation",
+          "description": "An aggregation function (min, max, avg, ...).",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "optional",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithFieldAccess",
+            "dql.parameterValueType.aggregation"
+          ]
+        }
+      ]
+    },
+    "dql.command.timeseries": {
+      "category": "data_source",
+      "parameters": [
+        {
+          "name": "bucket",
+          "description": "A bucket (name or pattern) to retrieve data from.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "parameterValueTypes": [
+            "dql.parameterValueType.bucket"
+          ]
+        },
+        {
+          "name": "from",
+          "description": "The global timeframe start for the series for which values should be considered.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.duration",
+            "dql.dataType.string",
+            "dql.dataType.timestamp"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "to",
+          "description": "The global timeframe end for the series for which values should be considered.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.duration",
+            "dql.dataType.string",
+            "dql.dataType.timestamp"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "timeframe",
+          "description": "The global timeframe for the series for which values should be considered.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.string",
+            "dql.dataType.timeframe"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "by",
+          "description": "An expression to split the series by.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "optional",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForFieldOnRootLevel"
+          ]
+        },
+        {
+          "name": "filter",
+          "description": "An additional filter condition that shall be applied on the source records before time-/space-aggregation.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.boolean"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithFieldAccess"
+          ]
+        },
+        {
+          "name": "interval",
+          "description": "A suggested interval for the series.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.duration"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "bins",
+          "description": "A suggested number of bins in the series.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "120",
+          "minValue": "0",
+          "valueTypes": [
+            "dql.dataType.long"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "shift",
+          "description": "Shifts the effective timeframe by the provided duration.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.duration"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "nonempty",
+          "description": "Produces empty series when there is no data.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "FALSE",
+          "valueTypes": [
+            "dql.dataType.boolean"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "union",
+          "description": "Whether the results will be combined as union if multiple metric keys are specified.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "FALSE",
+          "valueTypes": [
+            "dql.dataType.boolean"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "metric",
+          "description": "The metric that shall be calculated.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "optional",
+          "variadic": true,
+          "parameterValueTypes": [
+            "dql.parameterValueType.metricTimeseriesAggregation"
+          ]
+        },
+        {
+          "name": "rollup",
+          "description": "The rollup type that shall be used for the metric.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "parameterValueTypes": [
+            "dql.parameterValueType.enum"
+          ],
+          "allowedEnumValues": [
+            "min",
+            "max",
+            "sum",
+            "avg",
+            "total"
+          ]
+        },
+        {
+          "name": "default",
+          "description": "The default value to fill gaps.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.double",
+            "dql.dataType.long"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "rate",
+          "description": "The rate the resulting series values shall be scaled to.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.duration"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        }
+      ]
+    },
+    "dql.command.traverse": {
+      "parameters": [
+        {
+          "name": "edgeType",
+          "description": "The type of the edge to traverse.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForEdgeType"
+          ]
+        },
+        {
+          "name": "targetType",
+          "description": "The type of the target nodes.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForNodeType"
+          ]
+        },
+        {
+          "name": "direction",
+          "description": "The traversal direction.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "\"forward\"",
+          "parameterValueTypes": [
+            "dql.parameterValueType.enum"
+          ],
+          "allowedEnumValues": [
+            "\"forward\"",
+            "\"backward\""
+          ]
+        },
+        {
+          "name": "fieldsKeep",
+          "description": "A field or field pattern to keep in the traversal history.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.fieldPattern",
+            "dql.parameterValueType.identifierForFieldOnRootLevel"
+          ]
+        },
+        {
+          "name": "nodeId",
+          "description": "The field that contains the id of the node in the incoming records.",
+          "experimental": true,
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "id",
+          "valueTypes": [
+            "dql.dataType.smartscapeid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForFieldOnRootLevel"
+          ]
+        }
+      ]
+    }
+  },
+  "functions": {
+    "dql.function.duration": {
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "value",
+              "description": "The numeric value for the duration.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "unit",
+              "description": "The time unit of the duration.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.string"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.enum",
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ],
+              "allowedEnumValues": [
+                "\"ns\"",
+                "\"us\"",
+                "\"ms\"",
+                "\"s\"",
+                "\"sec\"",
+                "\"secs\"",
+                "\"second\"",
+                "\"seconds\"",
+                "\"m\"",
+                "\"min\"",
+                "\"mins\"",
+                "\"minute\"",
+                "\"minutes\"",
+                "\"h\"",
+                "\"hr\"",
+                "\"hrs\"",
+                "\"hour\"",
+                "\"hours\"",
+                "\"d\"",
+                "\"day\"",
+                "\"days\"",
+                "\"w\"",
+                "\"M\"",
+                "\"q\"",
+                "\"y\""
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.duration"
+          ]
+        }
+      ]
+    }
+  },
+  "operators": {
+    "dql.operator.add": {
+      "resultMapping": {
+        "dql.dataType.long": {
+          "dql.dataType.long": "dql.dataType.long",
+          "dql.dataType.double": "dql.dataType.double"
+        },
+        "dql.dataType.double": {
+          "dql.dataType.long": "dql.dataType.double",
+          "dql.dataType.double": "dql.dataType.double"
+        },
+        "dql.dataType.timestamp": {
+          "dql.dataType.duration": "dql.dataType.timestamp"
+        },
+        "dql.dataType.duration": {
+          "dql.dataType.timestamp": "dql.dataType.timestamp",
+          "dql.dataType.duration": "dql.dataType.duration",
+          "dql.dataType.timeframe": "dql.dataType.timeframe"
+        },
+        "dql.dataType.timeframe": {
+          "dql.dataType.timeframe": "dql.dataType.timeframe"
+        }
+      }
+    },
+    "dql.operator.subtract": {
+      "resultMapping": {
+        "dql.dataType.long": {
+          "dql.dataType.long": "dql.dataType.long",
+          "dql.dataType.double": "dql.dataType.double"
+        },
+        "dql.dataType.double": {
+          "dql.dataType.long": "dql.dataType.double",
+          "dql.dataType.double": "dql.dataType.double"
+        },
+        "dql.dataType.timestamp": {
+          "dql.dataType.timestamp": "dql.dataType.duration",
+          "dql.dataType.duration": "dql.dataType.timestamp"
+        },
+        "dql.dataType.duration": {
+          "dql.dataType.duration": "dql.dataType.duration"
+        },
+        "dql.dataType.timeframe": {
+          "dql.dataType.duration": "dql.dataType.timeframe"
+        }
+      }
+    },
+    "dql.operator.multiply": {
+      "resultMapping": {
+        "dql.dataType.long": {
+          "dql.dataType.long": "dql.dataType.long",
+          "dql.dataType.double": "dql.dataType.double",
+          "dql.dataType.duration": "dql.dataType.duration"
+        },
+        "dql.dataType.double": {
+          "dql.dataType.long": "dql.dataType.double",
+          "dql.dataType.double": "dql.dataType.double",
+          "dql.dataType.duration": "dql.dataType.duration"
+        },
+        "dql.dataType.duration": {
+          "dql.dataType.long": "dql.dataType.duration",
+          "dql.dataType.double": "dql.dataType.duration"
+        }
+      }
+    },
+    "dql.operator.divide": {
+      "resultMapping": {
+        "dql.dataType.long": {
+          "dql.dataType.long": "dql.dataType.long",
+          "dql.dataType.double": "dql.dataType.double"
+        },
+        "dql.dataType.double": {
+          "dql.dataType.long": "dql.dataType.double",
+          "dql.dataType.double": "dql.dataType.double"
+        },
+        "dql.dataType.duration": {
+          "dql.dataType.long": "dql.dataType.duration",
+          "dql.dataType.double": "dql.dataType.duration",
+          "dql.dataType.duration": "dql.dataType.double"
+        }
+      }
+    },
+    "dql.operator.modulo": {
+      "resultMapping": {
+        "dql.dataType.long": {
+          "dql.dataType.long": "dql.dataType.long",
+          "dql.dataType.double": "dql.dataType.double"
+        },
+        "dql.dataType.double": {
+          "dql.dataType.long": "dql.dataType.double",
+          "dql.dataType.double": "dql.dataType.double"
+        },
+        "dql.dataType.duration": {
+          "dql.dataType.duration": "dql.dataType.duration"
+        }
+      }
+    },
+    "dql.operator.timeAlignmentAt": {
+      "name": "timeAlignmentAt",
+      "description": "The @ operator aligns a timestamp to the provided time unit. It rounds down the timestamp to the beginning of the time unit.",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "expression",
+              "description": "expression",
+              "required": false,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.duration",
+                "dql.dataType.timestamp"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.timestamp"
+          ]
+        }
+      ],
+      "symbol": "@"
+    }
+  }
+}

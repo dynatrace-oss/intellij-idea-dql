@@ -4,11 +4,11 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
-import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
-import pl.thedeem.intellij.dql.definition.DQLParameterObject;
+import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.BaseInspection;
 import pl.thedeem.intellij.dql.psi.*;
 
@@ -33,7 +33,7 @@ public class InvalidFieldWriteOperationInspection extends BaseInspection {
     }
 
     private boolean isWritingFieldValueInvalid(DQLAssignExpression expression) {
-        List<PsiElement> parentsUntil = DQLUtil.getElementsUntilParent(expression, DQLFunctionCallExpression.class, DQLQueryStatement.class);
+        List<PsiElement> parentsUntil = PsiUtils.getElementsUntilParent(expression, DQLFunctionCallExpression.class, DQLQueryStatement.class);
         if (!parentsUntil.isEmpty()) {
             PsiElement topParent = parentsUntil.getFirst();
             DQLExpression topParentChild = parentsUntil.get(1) instanceof DQLExpression expr ? expr : expression;
@@ -47,14 +47,11 @@ public class InvalidFieldWriteOperationInspection extends BaseInspection {
         return true;
     }
 
-    private boolean assignmentNotAllowed(DQLParameterObject parameter) {
-        if (parameter != null && parameter.getDefinition() != null) {
-            DQLParameterDefinition definition = parameter.getDefinition();
-            if (definition.satisfies(DQLDataType.READ_ONLY_EXPRESSION)) {
-                return true;
-            }
-            return DQLDataType.doesNotSatisfy(DQLDataType.ASSIGN_VALUE_TYPES, definition.getDQLTypes());
+    private boolean assignmentNotAllowed(@Nullable MappedParameter parameter) {
+        Parameter definition = parameter != null ? parameter.definition() : null;
+        if (definition == null) {
+            return false;
         }
-        return true;
+        return "none".equals(definition.assignmentSupport());
     }
 }

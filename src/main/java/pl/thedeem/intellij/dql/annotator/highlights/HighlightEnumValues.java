@@ -2,14 +2,15 @@ package pl.thedeem.intellij.dql.annotator.highlights;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.annotator.AnnotatorEngine;
 import pl.thedeem.intellij.common.annotator.HighlightOptions;
-import pl.thedeem.intellij.dql.definition.DQLParameterObject;
+import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.highlighting.DQLColorScheme;
 import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
-import org.jetbrains.annotations.NotNull;
 
 public class HighlightEnumValues implements AnnotatorEngine {
     @Override
@@ -18,8 +19,9 @@ public class HighlightEnumValues implements AnnotatorEngine {
                 && fieldExpression.getParent() instanceof DQLParameterExpression argument
                 && argument.getParent() instanceof DQLQueryStatement statement
         ) {
-            DQLParameterObject parameter = statement.getParameter(argument);
-            if (parameter != null && parameter.getDefinition() != null && parameter.getDefinition().enumValues != null && !parameter.getDefinition().enumValues.isEmpty()) {
+            MappedParameter parameter = statement.getParameter(argument);
+            Parameter definition = parameter != null ? parameter.definition() : null;
+            if (definition != null && definition.allowedEnumValues() != null && !definition.allowedEnumValues().isEmpty()) {
                 holder.newSilentAnnotation(HighlightOptions.HIGHLIGHT_SEVERITY)
                         .range(element.getTextRange())
                         .textAttributes(DQLColorScheme.ENUM_VALUE)

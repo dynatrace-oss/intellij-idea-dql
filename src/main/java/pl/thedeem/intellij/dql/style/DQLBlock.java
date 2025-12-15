@@ -201,6 +201,7 @@ public class DQLBlock extends AbstractBlock {
                 || element instanceof DQLInExpression
                 || element instanceof DQLTimeAlignmentNowExpression
                 || element instanceof DQLTimeAlignmentAtExpression
+                || element instanceof DQLSearchExpression
                 || element instanceof DQLSortExpression;
     }
 }

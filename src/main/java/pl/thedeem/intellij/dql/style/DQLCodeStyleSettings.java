@@ -22,6 +22,7 @@ public class DQLCodeStyleSettings extends CustomCodeStyleSettings {
     public boolean SPACE_INSIDE_FUNCTION_PARENTHESES = false;
     public boolean SPACE_AROUND_EQUALITY_OPERATORS = true;
     public boolean SPACE_AROUND_COMPARISON_OPERATORS = true;
+    public boolean SPACE_AROUND_SEARCH_OPERATORS = true;
     public boolean SPACE_AROUND_ARITHMETIC_OPERATORS = true;
     public boolean SPACE_BETWEEN_FUNCTION_PARAMETERS = true;
     public boolean SPACE_INSIDE_SUBQUERY = false;

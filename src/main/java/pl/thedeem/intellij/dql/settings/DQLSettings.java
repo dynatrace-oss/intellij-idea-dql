@@ -33,12 +33,12 @@ public class DQLSettings implements PersistentStateComponent<DQLSettingsState> {
         myState.calculateFieldsDataType = enabled;
     }
 
-    public boolean isCalculatingExpressionDataTypesEnabled() {
-        return myState.calculateExpressionsDataType;
+    public boolean isAllowingExperimentalFeatures() {
+        return myState.allowExperimentalFeatures;
     }
 
-    public void setCalculatingExpressionDataTypesEnabled(boolean enabled) {
-        myState.calculateExpressionsDataType = enabled;
+    public void setAllowingExperimentalFeatures(boolean enabled) {
+        myState.allowExperimentalFeatures = enabled;
     }
 
     public boolean isPerformingLiveValidationEnabled() {

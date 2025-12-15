@@ -9,17 +9,20 @@ import com.intellij.codeInsight.template.TemplateManager;
 import com.intellij.codeInsight.template.impl.EmptyNode;
 import com.intellij.codeInsight.template.impl.TextExpression;
 import com.intellij.openapi.editor.Editor;
-import pl.thedeem.intellij.dql.definition.DQLFunctionDefinition;
-import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
 import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.dql.definition.model.Function;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
+import pl.thedeem.intellij.dql.definition.model.Signature;
 
 import java.util.List;
 
 public class DQLFunctionInsertionHandler implements InsertHandler<LookupElement> {
-    private final DQLFunctionDefinition definition;
+    private final Function definition;
+    private final Signature signature;
 
-    public DQLFunctionInsertionHandler(@NotNull DQLFunctionDefinition definition) {
+    public DQLFunctionInsertionHandler(@NotNull Function definition, @NotNull Signature signature) {
         this.definition = definition;
+        this.signature = signature;
     }
 
     @Override
@@ -31,13 +34,16 @@ public class DQLFunctionInsertionHandler implements InsertHandler<LookupElement>
         Template template = templateManager.createTemplate("", "");
         template.setToReformat(true);
 
-        template.addTextSegment(definition.name);
+        template.addTextSegment(definition.name());
         template.addTextSegment("(");
 
-        List<DQLParameterDefinition> parameters = definition.getRequiredParameters();
+        List<Parameter> parameters = signature.requiredParameters();
         for (int i = 0; i < parameters.size(); i++) {
-            DQLParameterDefinition param = parameters.get(i);
-            template.addVariable(param.name, new TextExpression(param.name), new EmptyNode(), true);
+            Parameter param = parameters.get(i);
+            if (param.requiresName()) {
+                template.addTextSegment(param.name() + ":");
+            }
+            template.addVariable(param.name(), new TextExpression(param.name()), new EmptyNode(), true);
             if (i < parameters.size() - 1) {
                 template.addTextSegment(", ");
             }

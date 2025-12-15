@@ -1,56 +1,71 @@
 package pl.thedeem.intellij.dql.definition;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
-import pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
+import pl.thedeem.intellij.dql.definition.model.*;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 
 public interface DQLDefinitionService {
-   static @NotNull DQLDefinitionService getInstance(@NotNull Project project) {
-      return project.getService(DQLDefinitionService.class);
-   }
+    Predicate<String> STARTING_COMMANDS = "data_source"::equals;
+    Predicate<String> EXTENSION_COMMANDS = STARTING_COMMANDS.negate();
+    Predicate<String> NUMERICAL_TYPES = s -> Set.of("dql.dataType.double", "dql.dataType.long").contains(s);
+    Predicate<String> BOOLEAN_TYPES = s -> Objects.equals("dql.dataType.boolean", s);
+    Predicate<String> TIME_TYPES = s -> Set.of("ql.dataType.timestamp", "dql.dataType.duration", "dql.dataType.timeframe").contains(s);
+    Predicate<String> COMPARABLE_TYPES = s -> NUMERICAL_TYPES.test(s) || TIME_TYPES.test(s) || Objects.equals("dql.dataType.string", s);
+    Set<String> STRING_PARAMETER_VALUE_TYPES = Set.of(
+            "dql.parameterValueType.bucket",
+            "dql.parameterValueType.dplPattern",
+            "dql.parameterValueType.filePattern",
+            "dql.parameterValueType.jsonPath",
+            "dql.parameterValueType.namelessDplPattern",
+            "dql.parameterValueType.prefix",
+            "dql.parameterValueType.tabularFileExisting",
+            "dql.parameterValueType.tabularFileNew",
+            "dql.parameterValueType.url"
+    );
+    Set<String> STRING_VALUE_TYPES = Set.of("dql.dataType.uid", "dql.dataType.string");
+    Set<String> DPL_VALUE_TYPES = Set.of("dql.parameterValueType.namelessDplPattern", "dql.parameterValueType.dplPattern");
+    Set<String> EXECUTION_PARAMETER_VALUE_TYPES = Set.of("dql.parameterValueType.nonEmptyExecutionBlock", "dql.parameterValueType.executionBlock");
+    Set<String> FIELD_IDENTIFIER_PARAMETER_VALUE_TYPES = Set.of(
+            "dql.parameterValueType.fieldPattern",
+            "dql.parameterValueType.identifierForFieldOnRootLevel",
+            "dql.parameterValueType.identifierForAnyField",
+            "dql.parameterValueType.dataObject"
+    );
 
-   void invalidateCache();
+    static @NotNull DQLDefinitionService getInstance(@NotNull Project project) {
+        return project.getService(DQLDefinitionService.class);
+    }
 
-   @NotNull Map<String, DQLCommandDefinition> getCommands();
+    void invalidateCache();
 
-   @NotNull Map<String, DQLFunctionDefinition> getFunctions();
+    @Nullable DataType findDataType(@NotNull String name);
 
-   @NotNull List<DQLParameterDefinition> getTimeSeriesParameters();
+    @Nullable ParameterValueType findParameterValueType(@NotNull String name);
 
-   @NotNull Map<IElementType, DQLOperationTarget> getOperations();
+    @NotNull List<Function> getFunctionByName(@NotNull String name);
 
-   @NotNull Map<DQLCommandGroup, Set<DQLCommandDefinition>> getCommandsByType();
+    @NotNull Collection<Function> getFunctionsByReturnType(@NotNull Predicate<String> filter);
 
-   @NotNull Map<String, Set<DQLFunctionDefinition>> getFunctionsByType();
+    @NotNull Collection<Function> getFunctionsByCategory(@NotNull Predicate<String> filter);
 
-   @NotNull Map<DQLFunctionGroup, Set<String>> getFunctionsByGroup();
+    @NotNull Collection<Function> getFunctionsByCategoryAndReturnType(@NotNull Predicate<String> category, @NotNull Predicate<String> values);
 
-   @Nullable DQLCommandDefinition getCommand(@NotNull DQLQueryStatement command);
+    @Nullable Collection<String> getFunctionCategoriesForParameterTypes(@NotNull Collection<String> parameterValueTypes);
 
-   @Nullable DQLCommandDefinition getCommand(@Nullable String commandName);
+    @NotNull Collection<Function> getFunctions();
 
-   @Nullable DQLFunctionDefinition getFunction(@Nullable String functionName);
+    @Nullable Command getCommandByName(@NotNull String name);
 
-   @NotNull Set<DQLDataType> getResultType(@Nullable ExpressionOperatorImpl operator, @Nullable DQLExpression left, @Nullable DQLExpression right);
+    @NotNull Collection<Command> getCommandsByCategory(@NotNull Predicate<String> filter);
 
-   @Nullable DQLOperationTarget getTargetType(@Nullable ExpressionOperatorImpl operator);
+    @NotNull Collection<Command> getCommands();
 
-   @NotNull Set<DQLDataType> getResultType(@NotNull IElementType operator, @NotNull Set<DQLDataType> left, @NotNull Set<DQLDataType> right);
-
-   @NotNull List<DQLCommandDefinition> getStartingCommands();
-
-   @NotNull List<DQLCommandDefinition> getExtensionCommands();
-
-   @NotNull Set<DQLFunctionDefinition> getFunctionByNames(@NotNull Set<String> functionName);
-
-   @NotNull Set<DQLFunctionDefinition> getFunctionByTypes(@NotNull Set<DQLDataType> types);
-
-   @NotNull Set<String> getFunctionNamesByGroups(@NotNull Set<DQLFunctionGroup> groups);
+    @Nullable Operator getOperator(@NotNull String operatorId);
 }

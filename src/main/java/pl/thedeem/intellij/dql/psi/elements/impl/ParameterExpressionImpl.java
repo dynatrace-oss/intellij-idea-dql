@@ -3,17 +3,17 @@ package pl.thedeem.intellij.dql.psi.elements.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
+import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.sdk.model.DQLDataType;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.psi.DQLParameterName;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.ParameterExpression;
-import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.Set;
 
 public abstract class ParameterExpressionImpl extends ASTWrapperPsiElement implements ParameterExpression {
@@ -28,9 +28,9 @@ public abstract class ParameterExpressionImpl extends ASTWrapperPsiElement imple
     }
 
     @Override
-    public Set<DQLDataType> getDataType() {
+    public @NotNull Collection<String> getDataType() {
         DQLExpression expression = getExpression();
-        return expression instanceof BaseTypedElement entity ? entity.getDataType() : Set.of(DQLDataType.ANY);
+        return expression instanceof BaseTypedElement entity ? entity.getDataType() : Set.of();
     }
 
     @Override

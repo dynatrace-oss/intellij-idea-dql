@@ -3,19 +3,19 @@ package pl.thedeem.intellij.dql.highlighting;
 import com.intellij.codeInsight.hints.InlayInfo;
 import com.intellij.codeInsight.hints.InlayParameterHintsProvider;
 import com.intellij.psi.PsiElement;
-import pl.thedeem.intellij.dql.definition.DQLParameterDefinition;
-import pl.thedeem.intellij.dql.definition.DQLParameterObject;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
 import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
+import pl.thedeem.intellij.dql.psi.DQLExpression;
+import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
+import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
+import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@SuppressWarnings("UnstableApiUsage")
 public class DQLInlayParameterHintsProvider implements InlayParameterHintsProvider {
-
     @Override
     public @NotNull List<InlayInfo> getParameterHints(@NotNull PsiElement element) {
         if (element instanceof DQLFunctionCallExpression functionCall) {
@@ -26,22 +26,26 @@ public class DQLInlayParameterHintsProvider implements InlayParameterHintsProvid
         return List.of();
     }
 
-    private List<InlayInfo> getParameterHints(List<DQLParameterObject> parameters, boolean inlayFirstParameter) {
+    private List<InlayInfo> getParameterHints(List<MappedParameter> parameters, boolean inlayFirstParameter) {
         List<InlayInfo> result = new ArrayList<>();
         if (parameters.size() > 1) {
-            for (DQLParameterObject parameter : parameters) {
-                DQLParameterDefinition definition = parameter.getDefinition();
-                if (parameter == parameters.getFirst() && !inlayFirstParameter) {
+            for (MappedParameter parameter : parameters) {
+                Parameter definition = parameter.definition();
+                if (definition == null) {
                     continue;
                 }
-                int textOffset = parameter.getExpression().getTextOffset();
-                if (definition != null && !parameter.isNamed()) {
-                    if (definition.repetitive) {
-                        if (parameter.getExpression() == parameter.getValues().getFirst()) {
-                            result.add(new InlayInfo((definition.repetitive && parameter.getValues().size() > 1 ? "…" : "") + definition.name, textOffset));
+                List<List<DQLExpression>> groups = parameter.getParameterGroups();
+                for (List<DQLExpression> group : groups) {
+                    if (group == groups.getFirst() && (parameter == parameters.getFirst() && !inlayFirstParameter)) {
+                        continue;
+                    }
+                    int textOffset = group.getFirst().getTextOffset();
+                    if (!(group.getFirst() instanceof DQLParameterExpression)) {
+                        if (definition.variadic()) {
+                            result.add(new InlayInfo((!parameter.included().isEmpty() ? "…" : "") + definition.name(), textOffset));
+                        } else if (group.size() > 1) {
+                            result.add(new InlayInfo(definition.name(), textOffset));
                         }
-                    } else if (parameters.size() > 1) {
-                        result.add(new InlayInfo(definition.name, textOffset));
                     }
                 }
             }

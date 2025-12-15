@@ -34,10 +34,10 @@ public class DQLLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
             consumer.showCustomOption(DQLCodeStyleSettings.class, "SPACE_BETWEEN_FUNCTION_PARAMETERS", DQLBundle.message("settings.style.spaceBetweenFunctionParams"), DQLBundle.message("settings.style.groups.functions"));
             consumer.showCustomOption(DQLCodeStyleSettings.class, "WHITESPACE_BEFORE_FUNCTION_PARAMETERS", DQLBundle.message("settings.style.spaceBeforeFunctionParameters"), DQLBundle.message("settings.style.groups.functions"));
 
-
             consumer.showCustomOption(DQLCodeStyleSettings.class, "SPACE_BEFORE_COLON", DQLBundle.message("settings.style.spaceBeforeColon"), DQLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DQLCodeStyleSettings.class, "SPACE_AFTER_COLON", DQLBundle.message("settings.style.spaceAfterColon"), DQLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DQLCodeStyleSettings.class, "SPACE_AROUND_EQUALITY_OPERATORS", DQLBundle.message("settings.style.spaceAroundEqualityOperator"), DQLBundle.message("settings.style.groups.expressions"));
+            consumer.showCustomOption(DQLCodeStyleSettings.class, "SPACE_AROUND_SEARCH_OPERATORS", DQLBundle.message("settings.style.spaceAroundSearchOperator"), DQLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DQLCodeStyleSettings.class, "SPACE_AROUND_ARITHMETIC_OPERATORS", DQLBundle.message("settings.style.spaceAroundArithmeticOperator"), DQLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DQLCodeStyleSettings.class, "SPACE_AROUND_COMPARISON_OPERATORS", DQLBundle.message("settings.style.spaceAroundComparisonOperator"), DQLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DQLCodeStyleSettings.class, "SPACE_AROUND_ASSIGNMENT", DQLBundle.message("settings.style.spaceAroundAssignmentOperator"), DQLBundle.message("settings.style.groups.expressions"));
@@ -94,6 +94,9 @@ public class DQLLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
                     other_example = 10 * power(10, 100),
                     `Can you have named fields?` = true,
                     variable_value = $someVariable // dashboard variable
+                }
+                | fieldsAdd {
+                   additionalField = "DQL is awesome language!" ~ "DQL"
                 }
                 // and this is a comment
                 | filter (matchesValue(my.favourite.language, "*Dynatrace*", caseSensitive: false) and (55 * other_example) >= size) or (other_example == 10)

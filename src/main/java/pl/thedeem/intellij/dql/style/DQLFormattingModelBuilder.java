@@ -61,9 +61,9 @@ public class DQLFormattingModelBuilder implements FormattingModelBuilder {
                     .after(DQLTypes.L_BRACE)
                     .spaceIf(dqlSettings.SPACE_INSIDE_BRACES)
 
-                    .after(DQLTypes.R_BRACE)
+                    .before(DQLTypes.R_BRACE)
                     .lineBreakInCodeIf(dqlSettings.LB_BEFORE_R_BRACE)
-                    .after(DQLTypes.R_BRACE)
+                    .before(DQLTypes.R_BRACE)
                     .spaceIf(dqlSettings.SPACE_INSIDE_BRACES)
 
                     .beforeInside(DQLTypes.COMMA, DQLTypes.BRACKET_EXPRESSION)
@@ -162,6 +162,8 @@ public class DQLFormattingModelBuilder implements FormattingModelBuilder {
                 .spaceIf(dqlSettings.SPACE_AROUND_ARITHMETIC_OPERATORS)
                 .around(DQLTypes.COMPARISON_OPERATOR)
                 .spaceIf(dqlSettings.SPACE_AROUND_COMPARISON_OPERATORS)
+                .around(DQLTypes.SEARCH_OPERATOR)
+                .spaceIf(dqlSettings.SPACE_AROUND_SEARCH_OPERATORS)
                 .before(DQLTypes.ASSIGNMENT_OPERATOR)
                 .spaceIf(dqlSettings.SPACE_AROUND_ASSIGNMENT)
                 .after(DQLTypes.ASSIGNMENT_OPERATOR)

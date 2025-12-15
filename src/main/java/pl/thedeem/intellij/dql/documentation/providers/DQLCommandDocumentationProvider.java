@@ -3,7 +3,7 @@ package pl.thedeem.intellij.dql.documentation.providers;
 import com.intellij.openapi.util.text.HtmlChunk;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.DQLCommandDefinition;
+import pl.thedeem.intellij.dql.definition.model.Command;
 import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
 
 import java.util.ArrayList;
@@ -20,23 +20,22 @@ public class DQLCommandDocumentationProvider extends BaseDocumentationProvider {
     @Override
     protected List<HtmlChunk.Element> getSections() {
         List<HtmlChunk.Element> sections = new ArrayList<>();
-        DQLCommandDefinition definition = command.getDefinition();
+
+        Command definition = command.getDefinition();
         sections.add(buildDescription(definition));
         if (definition != null) {
-            if (definition.syntax != null && !definition.syntax.isEmpty()) {
-                sections.add(buildSyntaxSection(definition.syntax));
+            if (definition.synopsis() != null && !definition.synopsis().isEmpty()) {
+                sections.add(buildSyntaxSection(definition.synopsis()));
             }
-            if (definition.parameters != null && !definition.parameters.isEmpty()) {
-                sections.add(buildParametersDescription(definition.parameters));
+            if (definition.parameters() != null && !definition.parameters().isEmpty()) {
+                sections.add(buildParametersDescription(definition.parameters()));
             }
-            sections.add(buildMoreInfoLink(
-                    DQLBundle.message("documentation.statement.moreInfoLink", definition.getCommandGroup().getName(), definition.name)
-            ));
+            sections.add(buildMoreInfoLink(DQLBundle.message("documentation.statement.moreInfoLink")));
         }
         return sections;
     }
 
-    protected HtmlChunk.Element buildDescription(DQLCommandDefinition definition) {
-        return HtmlChunk.p().addText(definition != null ? definition.description : DQLBundle.message("documentation.command.unknown"));
+    protected HtmlChunk.Element buildDescription(Command definition) {
+        return HtmlChunk.p().addText(definition != null ? definition.description() : DQLBundle.message("documentation.command.unknown"));
     }
 }
