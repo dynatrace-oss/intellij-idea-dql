@@ -29,7 +29,8 @@ public interface DQLDefinitionService {
             "dql.parameterValueType.tabularFileNew",
             "dql.parameterValueType.url"
     );
-    Set<String> STRING_VALUE_TYPES = Set.of("dql.dataType.uid", "dql.dataType.string");
+    Set<String> STRING_VALUE_TYPES = Set.of("dql.dataType.uid", "dql.dataType.string", "dql.dataType.ip");
+    Set<String> NUMERIC_VALUE_TYPES = Set.of("dql.dataType.double", "dql.dataType.long");
     Set<String> DPL_VALUE_TYPES = Set.of("dql.parameterValueType.namelessDplPattern", "dql.parameterValueType.dplPattern");
     Set<String> EXECUTION_PARAMETER_VALUE_TYPES = Set.of("dql.parameterValueType.nonEmptyExecutionBlock", "dql.parameterValueType.executionBlock");
     Set<String> FIELD_IDENTIFIER_PARAMETER_VALUE_TYPES = Set.of(

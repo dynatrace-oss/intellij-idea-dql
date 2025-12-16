@@ -6,8 +6,6 @@ import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.template.Template;
 import com.intellij.codeInsight.template.TemplateManager;
-import com.intellij.codeInsight.template.impl.EmptyNode;
-import com.intellij.codeInsight.template.impl.TextExpression;
 import com.intellij.openapi.editor.Editor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.definition.model.Function;
@@ -43,7 +41,7 @@ public class DQLFunctionInsertionHandler implements InsertHandler<LookupElement>
             if (param.requiresName()) {
                 template.addTextSegment(param.name() + ":");
             }
-            template.addVariable(param.name(), new TextExpression(param.name()), new EmptyNode(), true);
+            InsertionsUtils.handleInsertionDefaultValue(param, template);
             if (i < parameters.size() - 1) {
                 template.addTextSegment(", ");
             }
