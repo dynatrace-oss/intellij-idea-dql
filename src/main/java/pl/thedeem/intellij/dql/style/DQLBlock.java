@@ -134,6 +134,12 @@ public class DQLBlock extends AbstractBlock {
                 return Indent.getContinuationIndent();
             }
         }
+        // left side of the array expression is already indented
+        if (parent instanceof DQLArrayExpression array && child.getPsi() instanceof DQLFieldName) {
+            if (array.getLeftExpression() == child.getPsi()) {
+                return Indent.getNoneIndent();
+            }
+        }
         // any kind of expression should be indented normally
         if (element instanceof DQLExpression) {
             return Indent.getNormalIndent();
