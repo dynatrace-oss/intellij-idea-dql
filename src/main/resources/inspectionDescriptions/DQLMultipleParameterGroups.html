@@ -1,0 +1,18 @@
+<html lang="en">
+<body>
+Validates if parameter values are chained together.
+
+<p>
+    DQL allows variadic parameter values to be disjointed from each other.
+    This notation creates great confusion and makes it harder to understand the parameter definition.
+    This inspection will report an issue if it finds a parameter with multiple disjointed values groups.
+</p>
+<pre><code>
+data record
+| summarize f1, f2, by: f3, f4 // it is equivalent to f1, f2, f4, by: f3
+</code></pre>
+
+After applying the quick fix, parameter values will be chained together.
+
+</body>
+</html>

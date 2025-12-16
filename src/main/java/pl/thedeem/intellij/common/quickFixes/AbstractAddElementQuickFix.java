@@ -14,6 +14,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractAddElementQuickFix implements LocalQuickFix {
     @Override
@@ -30,7 +31,10 @@ public abstract class AbstractAddElementQuickFix implements LocalQuickFix {
         InjectedLanguageManager host = InjectedLanguageManager.getInstance(project);
         int hostCaretOffset = host.injectedToHost(element, caretPosition);
         TemplateManager templateManager = TemplateManager.getInstance(project);
-        Template template = prepareTemplate(element, templateManager);
+        Template template = prepareTemplate(element, templateManager, document);
+        if (template == null) {
+            return;
+        }
         editor.getCaretModel().moveToOffset(hostCaretOffset);
         templateManager.startTemplate(editor, template);
         AutoPopupController.getInstance(project).autoPopupParameterInfo(editor, file);
@@ -43,5 +47,5 @@ public abstract class AbstractAddElementQuickFix implements LocalQuickFix {
 
     protected abstract int getCaretPosition(@NotNull PsiElement element);
 
-    protected abstract Template prepareTemplate(@NotNull PsiElement element, @NotNull TemplateManager templateManager);
+    protected abstract @Nullable Template prepareTemplate(@NotNull PsiElement element, @NotNull TemplateManager templateManager, @NotNull Document document);
 }

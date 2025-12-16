@@ -27,7 +27,11 @@ public class MissingCommandParametersInspection extends LocalInspectionTool {
                 DQLQueryStatementKeyword keyword = command.getQueryStatementKeyword();
                 if (!missingParameters.isEmpty()) {
                     List<LocalQuickFix> fixes = missingParameters.stream()
-                            .map(p -> (LocalQuickFix) new AddMissingParametersQuickFix(List.of(p), command.getTextRange().getEndOffset(), false))
+                            .map(p -> (LocalQuickFix) new AddMissingParametersQuickFix(
+                                    List.of(p),
+                                    command.getTextRange().getEndOffset(),
+                                    !command.getParameters().isEmpty())
+                            )
                             .toList();
 
                     holder.registerProblem(

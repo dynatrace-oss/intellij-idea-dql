@@ -5,7 +5,7 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.inspections.fixes.ConvertSingleQuotesToDoubleQuotesQuickFix;
+import pl.thedeem.intellij.dql.inspections.fixes.ConvertStringToOtherNotation;
 import pl.thedeem.intellij.dql.psi.DQLSingleQuotedString;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
@@ -19,7 +19,7 @@ public class SingleQuotesUsageInspection extends LocalInspectionTool {
                 holder.registerProblem(
                         string,
                         DQLBundle.message("inspection.singleQuotes.notSupported"),
-                        new ConvertSingleQuotesToDoubleQuotesQuickFix()
+                        new ConvertStringToOtherNotation("\"")
                 );
             }
         };

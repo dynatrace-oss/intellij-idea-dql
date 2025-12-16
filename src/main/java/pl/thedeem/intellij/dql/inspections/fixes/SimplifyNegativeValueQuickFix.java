@@ -1,40 +1,34 @@
 package pl.thedeem.intellij.dql.inspections.fixes;
 
-import com.intellij.codeInspection.LocalQuickFix;
-import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.util.IntentionFamilyName;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.quickFixes.AbstractReplaceElementQuickFix;
 import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLNegativeValueExpression;
 
-public class SimplifyNegativeValueQuickFix implements LocalQuickFix {
+public class SimplifyNegativeValueQuickFix extends AbstractReplaceElementQuickFix<DQLNegativeValueExpression> {
     @Override
-    public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) throws IncorrectOperationException {
-        PsiElement element = descriptor.getPsiElement();
-        PsiFile psiFile = element.getContainingFile();
-        Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
-        if (document == null) {
-            return;
+    protected @Nullable DQLNegativeValueExpression getElementToReplace(@NotNull PsiElement element) {
+        return element instanceof DQLNegativeValueExpression expression ? expression : null;
+    }
+
+    @Override
+    protected @NotNull String getDefaultReplacement(@NotNull DQLNegativeValueExpression element) {
+        int amount = 1;
+        DQLNegativeValueExpression bottom = element;
+        while (bottom.getExpression() instanceof DQLNegativeValueExpression nested) {
+            bottom = nested;
+            amount++;
         }
-        int amount = 0;
-        if (element instanceof DQLNegativeValueExpression negativeValue) {
-            DQLNegativeValueExpression bottom = negativeValue;
-            while (bottom.getExpression() instanceof DQLNegativeValueExpression child) {
-                bottom = child;
-                amount++;
-            }
+        DQLExpression result = bottom.getExpression();
+        if (result == null) {
+            result = bottom;
         }
-        if (amount > 0) {
-            int start = element.getTextRange().getStartOffset();
-            int end = start + amount + (amount % 2 == 1 ? 1 : 0);
-            document.deleteString(start, end);
-        }
+        String negatives = amount % 2 == 1 ? "-" : "";
+        return negatives + result.getText();
     }
 
     @Override
@@ -46,5 +40,10 @@ public class SimplifyNegativeValueQuickFix implements LocalQuickFix {
     @Override
     public String getName() {
         return DQLBundle.message("inspection.fix.simplifyNegativeValue");
+    }
+
+    @Override
+    protected boolean useTemplateVariable() {
+        return false;
     }
 }
