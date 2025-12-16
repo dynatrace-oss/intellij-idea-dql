@@ -9,10 +9,15 @@ Validates if parameter values are chained together.
 </p>
 <pre><code>
 data record
-| summarize f1, f2, by: f3, f4 // it is equivalent to f1, f2, f4, by: f3
+| summarize f1, f2, by: f3, f4 // f4 is still treated as an aggregation
 </code></pre>
 
 After applying the quick fix, parameter values will be chained together.
+
+<pre><code>
+data record
+| summarize f1, f2, f4, by: f3
+</code></pre>
 
 </body>
 </html>
