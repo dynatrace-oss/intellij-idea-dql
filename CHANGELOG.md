@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2025-12-17
+
 ### Features
 
 - Reworked DQL engine to support a better JSON format with the language definition
@@ -111,16 +113,11 @@
   - the file supports specifying `record` (JSON object), `array` (JSON array), `string`, `boolean`, `number`, and
     `null` types.
 
-[Unreleased]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.1.0...HEAD
-
+[Unreleased]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.4...v1.1.0
-
 [1.0.4]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.3...v1.0.4
-
 [1.0.3]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.2...v1.0.3
-
 [1.0.2]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.1...v1.0.2
-
 [1.0.1]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.0...v1.0.1
-
 [1.0.0]: https://github.com/dynatrace-oss/intellij-idea-dql/commits/v1.0.0
