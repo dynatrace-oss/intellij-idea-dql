@@ -5,10 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.definition.model.*;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 public interface DQLDefinitionService {
@@ -39,6 +36,7 @@ public interface DQLDefinitionService {
             "dql.parameterValueType.identifierForAnyField",
             "dql.parameterValueType.dataObject"
     );
+    Map<String, String> FILTER_COMMAND_NEGATIONS = Map.of("filter", "filterOut", "filterOut", "filter");
 
     static @NotNull DQLDefinitionService getInstance(@NotNull Project project) {
         return project.getService(DQLDefinitionService.class);

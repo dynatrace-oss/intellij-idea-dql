@@ -1,0 +1,25 @@
+<html lang="en">
+<body>
+Validates if the filtering condition is not negated.
+
+<p>
+    DQL supports different ways of filtering data - "filter" and "filterOut" commands exist to make the condition
+    easier to understand.
+    This inspection will report an issue if it finds a filtering command with a negated condition.
+</p>
+<pre><code>
+data record()
+| filter not true
+| filterOut not false
+</code></pre>
+
+After applying the quick fix, the filtering command will be flipped.
+
+<pre><code>
+data record()
+| filterOut true
+| filter false
+</code></pre>
+
+</body>
+</html>

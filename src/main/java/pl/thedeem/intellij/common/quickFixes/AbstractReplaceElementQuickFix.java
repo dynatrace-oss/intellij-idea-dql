@@ -40,6 +40,9 @@ public abstract class AbstractReplaceElementQuickFix<T extends PsiElement> imple
 
     protected void replaceElement(@NotNull T element, @NotNull Document document, @NotNull Editor editor, @NotNull Project project) {
         String previousText = getDefaultReplacement(element);
+        if (previousText == null) {
+            return;
+        }
         int startOffset = element.getTextRange().getStartOffset();
         document.deleteString(startOffset, element.getTextRange().getEndOffset());
 
@@ -53,10 +56,13 @@ public abstract class AbstractReplaceElementQuickFix<T extends PsiElement> imple
         AutoPopupController.getInstance(project).autoPopupParameterInfo(editor, hostFile);
     }
 
-    protected abstract @NotNull String getDefaultReplacement(@NotNull T element);
+    protected abstract @Nullable String getDefaultReplacement(@NotNull T element);
 
     protected Template prepareTemplate(@NotNull TemplateManager templateManager, String previousText) {
         Template template = templateManager.createTemplate("", "");
+        if (reformatTemplate()) {
+            template.setToReformat(true);
+        }
         if (useTemplateVariable()) {
             template.addVariable("replacement", new TextExpression(previousText), new EmptyNode(), true);
         } else {
@@ -67,6 +73,10 @@ public abstract class AbstractReplaceElementQuickFix<T extends PsiElement> imple
 
     protected boolean useTemplateVariable() {
         return true;
+    }
+
+    protected boolean reformatTemplate() {
+        return false;
     }
 
     @Override

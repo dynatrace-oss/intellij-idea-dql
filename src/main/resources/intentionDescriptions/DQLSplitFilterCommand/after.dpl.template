@@ -1,0 +1,5 @@
+data record()
+| filter not f5
+| filter isNotNull(f2) or isNull(f3)
+| filter f4
+| filter f1

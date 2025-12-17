@@ -1,0 +1,21 @@
+<html lang="en">
+<body>
+Validates if the negation is not unnecessary.
+
+<p>
+    This inspection will report an issue if it finds a condition that was negated more than once.
+</p>
+<pre><code>
+data record()
+| filter not (not not (true or false))
+</code></pre>
+
+After applying the quick fix, the condition will be simplified.
+
+<pre><code>
+data record()
+| filter not (true or false)
+</code></pre>
+
+</body>
+</html>

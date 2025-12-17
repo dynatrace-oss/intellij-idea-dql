@@ -6,12 +6,16 @@
 
 - Reworked DQL engine to support a better JSON format with the language definition
 - Added more inspections related to:
+  - nested negations in conditions (`not (not true)` could be simplified to just `true`)
+  - negated filtering conditions (`filter not true` could be replaced with `filterOut true`)
   - parameter value types (subqueries, fields identifier etc.)
   - disjointed variadic parameters definitions
   - migration from `fetch metric.series` into `metrics` command
 - DPL will now be injected within all supported DQL function strings
 - Added support for experimental DQL features (to be enabled in plugin's tool settings)
 - Added search operator `~` code style settings
+- Added intentions to DQL:
+  - Splitting and joining consecutive `filter` and `filterOut` commands
 
 ### Bug fixes
 
