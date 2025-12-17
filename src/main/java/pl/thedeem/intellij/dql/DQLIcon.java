@@ -24,4 +24,5 @@ public interface DQLIcon {
     Icon DQL_SUBQUERY = AllIcons.Gutter.RecursiveMethod;
     Icon DQL_ARRAY = AllIcons.Debugger.Db_array;
     Icon DQL_RECORD = AllIcons.FileTypes.Json;
+    Icon INTENTION = AllIcons.Actions.Edit;
 }

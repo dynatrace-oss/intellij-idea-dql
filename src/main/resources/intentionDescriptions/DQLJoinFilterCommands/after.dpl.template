@@ -1,0 +1,2 @@
+data record()
+| filter f4 and f1 and (isNotNull(f2) or isNull(f3)) and (not f5)

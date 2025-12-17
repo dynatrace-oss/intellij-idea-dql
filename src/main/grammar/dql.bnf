@@ -86,8 +86,8 @@ multiline_comment ::= ML_COMMENT { pin=1 extends=comment }
 // Supported expression types
 expression ::=
     assign_expression |
-    unary_expression |
     condition_expression |
+    unary_expression |
     equality_expression |
     comparison_expression |
     arithmetical_expression |

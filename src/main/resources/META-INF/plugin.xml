@@ -190,6 +190,14 @@
                          enabledByDefault="true" level="INFO"
                          groupKey="inspection.groups.dql" key="inspection.rightSideNegativeValue.display.name"
                          implementationClass="pl.thedeem.intellij.dql.inspections.expressions.RightSideNegativeValueInspection"/>
+        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLNegatedFilteringCondition"
+                         enabledByDefault="true" level="INFO"
+                         groupKey="inspection.groups.dql" key="inspection.negatedFilteringCondition.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.NegatedFilteringConditionInspection"/>
+        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLNestedNegation"
+                         enabledByDefault="true" level="INFO"
+                         groupKey="inspection.groups.dql" key="inspection.nestedNegation.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.NestedNegationInspection"/>
         <!-- Function validations -->
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLUnknownFunction"
                          enabledByDefault="true"
@@ -315,6 +323,16 @@
         <externalAnnotator language="DQL"
                            implementationClass="pl.thedeem.intellij.dql.inspections.external.DQLVerificationAnnotator"/>
 
+        <!-- Intentions -->
+        <intentionAction>
+            <language>DQL</language>
+            <className>pl.thedeem.intellij.dql.intentions.DQLJoinFilterCommands</className>
+        </intentionAction>
+        <intentionAction>
+            <language>DQL</language>
+            <className>pl.thedeem.intellij.dql.intentions.DQLSplitFilterCommand</className>
+        </intentionAction>
+
         <!-- Settings -->
         <applicationService serviceImplementation="pl.thedeem.intellij.dql.settings.DQLSettings"/>
 
@@ -418,7 +436,6 @@
         <renamePsiElementProcessor implementation="pl.thedeem.intellij.dpl.indexing.DPLRenamePsiElementProcessor"/>
         <gotoSymbolContributor
                 implementation="pl.thedeem.intellij.dpl.indexing.DPLChooseByNameContributor"/>
-
 
         <!-- Structure -->
         <lang.psiStructureViewFactory
