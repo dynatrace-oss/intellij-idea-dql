@@ -33,7 +33,10 @@ public class MissingFunctionParametersInspection extends LocalInspectionTool {
                 Collection<Parameter> missingParameters = function.getMissingRequiredParameters();
                 if (!missingParameters.isEmpty() && !isEmptyAllowedForVariadic(function)) {
                     List<LocalQuickFix> fixes = missingParameters.stream()
-                            .map(p -> (LocalQuickFix) new AddMissingParametersQuickFix(List.of(p), function.getTextRange().getEndOffset() - 1, !function.getExpressionList().isEmpty()))
+                            .map(p -> (LocalQuickFix) new AddMissingParametersQuickFix(
+                                    List.of(p),
+                                    function.getTextRange().getEndOffset() - 1,
+                                    !function.getExpressionList().isEmpty()))
                             .toList();
 
                     holder.registerProblem(

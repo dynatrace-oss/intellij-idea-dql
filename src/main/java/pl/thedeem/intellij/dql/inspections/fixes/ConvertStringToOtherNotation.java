@@ -6,17 +6,23 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.quickFixes.AbstractReplaceElementQuickFix;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
+import pl.thedeem.intellij.dql.psi.DQLString;
 
-public class ParenthesizeElementQuickFix extends AbstractReplaceElementQuickFix<DQLExpression> {
-    @Override
-    protected @Nullable DQLExpression getElementToReplace(@NotNull PsiElement element) {
-        return element instanceof DQLExpression expression ? expression : null;
+public class ConvertStringToOtherNotation extends AbstractReplaceElementQuickFix<DQLString> {
+    private final String quotes;
+
+    public ConvertStringToOtherNotation(@NotNull String quotes) {
+        this.quotes = quotes;
     }
 
     @Override
-    protected @NotNull String getDefaultReplacement(@NotNull DQLExpression element) {
-        return "(" + element.getText() + ")";
+    protected @Nullable DQLString getElementToReplace(@NotNull PsiElement element) {
+        return element instanceof DQLString string ? string : null;
+    }
+
+    @Override
+    protected @NotNull String getDefaultReplacement(@NotNull DQLString element) {
+        return quotes + element.getContent() + quotes;
     }
 
     @Override
@@ -27,7 +33,7 @@ public class ParenthesizeElementQuickFix extends AbstractReplaceElementQuickFix<
     @NotNull
     @Override
     public String getName() {
-        return DQLBundle.message("inspection.fix.parenthesizeElement");
+        return DQLBundle.message("inspection.singleQuotes.fix.convertToDouble");
     }
 
     @Override

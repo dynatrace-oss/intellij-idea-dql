@@ -235,6 +235,11 @@
                          enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.parameter.conflicted.display.name"
                          implementationClass="pl.thedeem.intellij.dql.inspections.parameters.ConflictedParameterInspection"/>
+        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLMultipleParameterGroups"
+                         enabledByDefault="true" level="INFO"
+                         groupKey="inspection.groups.dql"
+                         key="inspection.parameter.multipleParameterGroups.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.MultipleParameterGroupsInspection"/>
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidParameterName"
                          enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.parameter.invalidName.display.name"

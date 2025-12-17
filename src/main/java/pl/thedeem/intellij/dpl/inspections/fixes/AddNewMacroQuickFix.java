@@ -6,6 +6,7 @@ import com.intellij.codeInsight.template.impl.EmptyNode;
 import com.intellij.codeInsight.template.impl.TextExpression;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
+import com.intellij.openapi.editor.Document;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.quickFixes.AbstractAddElementQuickFix;
@@ -35,7 +36,7 @@ public class AddNewMacroQuickFix extends AbstractAddElementQuickFix {
     }
 
     @Override
-    protected Template prepareTemplate(@NotNull PsiElement element, @NotNull TemplateManager templateManager) {
+    protected Template prepareTemplate(@NotNull PsiElement element, @NotNull TemplateManager templateManager, @NotNull Document document) {
         Template template = templateManager.createTemplate("", "");
         template.addTextSegment(this.macroName);
         template.addTextSegment("=");

@@ -59,8 +59,7 @@ public class DuplicatedFieldNamesInspection extends LocalInspectionTool {
         List<PsiElement> invalidElements = new ArrayList<>();
         List<PsiElement> toProcess = new ArrayList<>();
         if (!parameter.included().isEmpty()) {
-            toProcess.add(parameter.holder());
-            toProcess.addAll(parameter.included());
+            toProcess.addAll(parameter.getExpressions());
         } else {
             toProcess.add(parameter.holder());
         }

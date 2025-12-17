@@ -57,8 +57,16 @@ public abstract class AbstractReplaceElementQuickFix<T extends PsiElement> imple
 
     protected Template prepareTemplate(@NotNull TemplateManager templateManager, String previousText) {
         Template template = templateManager.createTemplate("", "");
-        template.addVariable("replacement", new TextExpression(previousText), new EmptyNode(), true);
+        if (useTemplateVariable()) {
+            template.addVariable("replacement", new TextExpression(previousText), new EmptyNode(), true);
+        } else {
+            template.addTextSegment(previousText);
+        }
         return template;
+    }
+
+    protected boolean useTemplateVariable() {
+        return true;
     }
 
     @Override
