@@ -115,7 +115,6 @@ public class DQLUtil {
         return result;
     }
 
-
     public static PsiElement unpackParenthesis(@NotNull PsiElement element) {
         PsiElement result = element;
         while (result instanceof DQLParenthesisedExpression parenthesisedExpression) {
