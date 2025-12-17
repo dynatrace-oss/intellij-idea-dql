@@ -8,9 +8,9 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLFile;
 import pl.thedeem.intellij.dql.psi.*;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,13 +81,11 @@ public class DQLStructureViewElement implements StructureViewTreeElement, Sortab
         for (Object child : children) {
             if (child instanceof DQLQuery query) {
                 result.addAll(List.of(handleChildren(query.getQueryStatementList())));
-            }
-            else if (child instanceof DQLParenthesisedExpression expr) {
+            } else if (child instanceof DQLParenthesisedExpression expr) {
                 if (expr.getExpression() != null) {
                     result.addAll(List.of(handleChildren(List.of(expr.getExpression()))));
                 }
-            }
-            else {
+            } else {
                 result.add(new DQLStructureViewElement((NavigatablePsiElement) child));
             }
         }

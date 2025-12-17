@@ -54,7 +54,7 @@ public class DynatraceTenant {
         if (o == null || getClass() != o.getClass()) return false;
         DynatraceTenant that = (DynatraceTenant) o;
         return Objects.equals(url, that.url)
-               && Objects.equals(name, that.name)
+                && Objects.equals(name, that.name)
                 && Objects.equals(credentialId, that.credentialId);
     }
 

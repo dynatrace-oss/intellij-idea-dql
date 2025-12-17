@@ -18,7 +18,7 @@ public abstract class ComparisonExpressionImpl extends AbstractOperatorElementIm
     public ComparisonExpressionImpl(@NotNull ASTNode node) {
         super(node);
     }
-    
+
     @Override
     public ItemPresentation getPresentation() {
         return new StandardItemPresentation(DQLBundle.message("presentation.comparisonExpression"), this, DQLIcon.DQL_EXPRESSION);

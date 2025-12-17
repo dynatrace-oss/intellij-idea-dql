@@ -12,24 +12,24 @@ import org.jetbrains.annotations.NotNull;
 
 public class DQLInExpressionInsertionHandler implements InsertHandler<LookupElement> {
 
-  @Override
-  public void handleInsert(@NotNull InsertionContext context, @NotNull LookupElement lookupElement) {
-    Editor editor = context.getEditor();
-    int startOffset = context.getStartOffset();
+    @Override
+    public void handleInsert(@NotNull InsertionContext context, @NotNull LookupElement lookupElement) {
+        Editor editor = context.getEditor();
+        int startOffset = context.getStartOffset();
 
-    TemplateManager templateManager = TemplateManager.getInstance(context.getProject());
-    Template template = templateManager.createTemplate("", "");
-    template.setToReformat(true);
+        TemplateManager templateManager = TemplateManager.getInstance(context.getProject());
+        Template template = templateManager.createTemplate("", "");
+        template.setToReformat(true);
 
-    template.addTextSegment("in [");
-    template.addVariable("subquery", new EmptyNode(), new EmptyNode(), true);
-    template.addTextSegment("]");
+        template.addTextSegment("in [");
+        template.addVariable("subquery", new EmptyNode(), new EmptyNode(), true);
+        template.addTextSegment("]");
 
-    context.getDocument().deleteString(startOffset, context.getTailOffset());
+        context.getDocument().deleteString(startOffset, context.getTailOffset());
 
-    editor.getCaretModel().moveToOffset(startOffset);
-    templateManager.startTemplate(editor, template);
+        editor.getCaretModel().moveToOffset(startOffset);
+        templateManager.startTemplate(editor, template);
 
-    AutoPopupController.getInstance(context.getProject()).autoPopupParameterInfo(editor, context.getFile());
-  }
+        AutoPopupController.getInstance(context.getProject()).autoPopupParameterInfo(editor, context.getFile());
+    }
 }

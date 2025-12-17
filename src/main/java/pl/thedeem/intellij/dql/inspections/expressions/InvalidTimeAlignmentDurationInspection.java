@@ -5,15 +5,15 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.sdk.model.DQLDurationType;
 import pl.thedeem.intellij.dql.psi.DQLTimeAlignmentOperand;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
+import pl.thedeem.intellij.dql.sdk.model.DQLDurationType;
 
 import java.util.regex.Pattern;
 
 public class InvalidTimeAlignmentDurationInspection extends LocalInspectionTool {
     private static final Pattern VALID_DURATION_UNIT = Pattern.compile(
-        String.join("|", DQLDurationType.getTypes()) + "|w[0-7]?"
+            String.join("|", DQLDurationType.getTypes()) + "|w[0-7]?"
     );
 
     @Override

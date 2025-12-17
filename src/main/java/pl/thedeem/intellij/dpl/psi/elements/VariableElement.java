@@ -6,5 +6,6 @@ import pl.thedeem.intellij.dpl.psi.DPLMacroDefinitionExpression;
 
 public interface VariableElement extends PsiNameIdentifierOwner {
     boolean isDefinition();
+
     @Nullable DPLMacroDefinitionExpression getDefinition();
 }

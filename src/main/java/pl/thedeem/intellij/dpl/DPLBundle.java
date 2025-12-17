@@ -28,7 +28,7 @@ public class DPLBundle extends DynamicBundle {
 
     @NotNull
     public static @Nls String shorten(String text) {
-       return StringUtil.shortenPathWithEllipsis(text, MAX_STRING_LENGTH, true);
+        return StringUtil.shortenPathWithEllipsis(text, MAX_STRING_LENGTH, true);
     }
 
     @NotNull

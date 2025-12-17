@@ -71,8 +71,7 @@ public class ExecuteDQLRunConfigurationOptions extends RunConfigurationOptions {
     private Long getLongValue(StoredProperty<String> property) {
         try {
             return Long.parseLong(property.getValue(this));
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return null;
         }
     }

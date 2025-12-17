@@ -14,7 +14,7 @@ public abstract class UnaryExpressionImpl extends AbstractOperatorElementImpl im
     public UnaryExpressionImpl(@NotNull ASTNode node) {
         super(node);
     }
-    
+
     @Override
     public String getFieldName() {
         return new DQLFieldNamesGenerator()

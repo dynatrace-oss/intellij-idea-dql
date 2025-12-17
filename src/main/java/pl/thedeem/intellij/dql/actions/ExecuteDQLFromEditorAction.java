@@ -27,7 +27,7 @@ public class ExecuteDQLFromEditorAction extends AnAction {
 
     @Override
     public @NotNull ActionUpdateThread getActionUpdateThread() {
-       return ActionUpdateThread.BGT;
+        return ActionUpdateThread.BGT;
     }
 
     @Override

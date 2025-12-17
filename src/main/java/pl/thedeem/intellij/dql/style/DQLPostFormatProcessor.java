@@ -133,7 +133,7 @@ public class DQLPostFormatProcessor implements PostFormatProcessor {
             default -> false;
         };
     }
-    
+
     private @NotNull CodeStyleSettings createTemporarySettings(@NotNull CodeStyleSettings base, @NotNull PsiLanguageInjectionHost host) {
         boolean isCodeBlock = host instanceof DQLMultilineString;
         CodeStyleSettings temp = CodeStyleSettingsManager.getInstance().cloneSettings(base);

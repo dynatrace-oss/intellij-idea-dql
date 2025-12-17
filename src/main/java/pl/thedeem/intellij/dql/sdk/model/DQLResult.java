@@ -53,8 +53,7 @@ public class DQLResult {
             for (Map.Entry<String, DQLType.DQLFieldType> entry : type.mappings.entrySet()) {
                 if ("undefined".equals(entry.getValue().getType())) {
                     result.putIfAbsent(entry.getKey(), "undefined");
-                }
-                else {
+                } else {
                     result.put(entry.getKey(), entry.getValue().getType());
                 }
             }
@@ -186,5 +185,6 @@ public class DQLResult {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static final class DQLMetricMetadata extends HashMap<String, Object> {}
+    public static final class DQLMetricMetadata extends HashMap<String, Object> {
+    }
 }

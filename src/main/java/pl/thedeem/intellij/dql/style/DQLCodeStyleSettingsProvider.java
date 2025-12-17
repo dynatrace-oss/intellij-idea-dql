@@ -13,36 +13,36 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 
 public class DQLCodeStyleSettingsProvider extends CodeStyleSettingsProvider {
-   @Override
-   public CustomCodeStyleSettings createCustomSettings(@NotNull CodeStyleSettings settings) {
-      return new DQLCodeStyleSettings(settings);
-   }
+    @Override
+    public CustomCodeStyleSettings createCustomSettings(@NotNull CodeStyleSettings settings) {
+        return new DQLCodeStyleSettings(settings);
+    }
 
-   @Override
-   public String getConfigurableDisplayName() {
-      return DynatraceQueryLanguage.DQL_DISPLAY_NAME;
-   }
+    @Override
+    public String getConfigurableDisplayName() {
+        return DynatraceQueryLanguage.DQL_DISPLAY_NAME;
+    }
 
-   @Override
-   @NotNull
-   public CodeStyleConfigurable createConfigurable(@NotNull CodeStyleSettings settings,
-                                                   @NotNull CodeStyleSettings modelSettings) {
-      return new CodeStyleAbstractConfigurable(settings, modelSettings, this.getConfigurableDisplayName()) {
-         @Override
-         protected @NotNull CodeStyleAbstractPanel createPanel(@NotNull CodeStyleSettings settings) {
-            return new DQLCodeStyleMainPanel(getCurrentSettings(), settings);
-         }
-      };
-   }
+    @Override
+    @NotNull
+    public CodeStyleConfigurable createConfigurable(@NotNull CodeStyleSettings settings,
+                                                    @NotNull CodeStyleSettings modelSettings) {
+        return new CodeStyleAbstractConfigurable(settings, modelSettings, this.getConfigurableDisplayName()) {
+            @Override
+            protected @NotNull CodeStyleAbstractPanel createPanel(@NotNull CodeStyleSettings settings) {
+                return new DQLCodeStyleMainPanel(getCurrentSettings(), settings);
+            }
+        };
+    }
 
-   @Override
-   public @Nullable Language getLanguage() {
-      return DynatraceQueryLanguage.INSTANCE;
-   }
+    @Override
+    public @Nullable Language getLanguage() {
+        return DynatraceQueryLanguage.INSTANCE;
+    }
 
-   private static class DQLCodeStyleMainPanel extends TabbedLanguageCodeStylePanel {
-      public DQLCodeStyleMainPanel(CodeStyleSettings currentSettings, CodeStyleSettings settings) {
-         super(DynatraceQueryLanguage.INSTANCE, currentSettings, settings);
-      }
-   }
+    private static class DQLCodeStyleMainPanel extends TabbedLanguageCodeStylePanel {
+        public DQLCodeStyleMainPanel(CodeStyleSettings currentSettings, CodeStyleSettings settings) {
+            super(DynatraceQueryLanguage.INSTANCE, currentSettings, settings);
+        }
+    }
 }

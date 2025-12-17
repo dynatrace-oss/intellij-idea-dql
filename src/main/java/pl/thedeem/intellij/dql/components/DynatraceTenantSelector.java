@@ -63,8 +63,7 @@ public class DynatraceTenantSelector<T extends JBPanel<?>> extends JBPanel<T> {
         }
         if (currentlySelected != null) {
             selectTenant(currentlySelected.getName());
-        }
-        else {
+        } else {
             tenantComboBox.setSelectedItem(null);
         }
     }

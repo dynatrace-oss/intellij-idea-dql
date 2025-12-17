@@ -5,10 +5,10 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.util.IncorrectOperationException;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatementKeyword;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
+import pl.thedeem.intellij.dql.psi.DQLQueryStatementKeyword;
 
 import java.util.Objects;
 
@@ -45,6 +45,6 @@ public final class DQLStatementKeywordReference extends PsiReferenceBase<DQLQuer
 
     @Override
     public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
-       throw new IncorrectOperationException();
+        throw new IncorrectOperationException();
     }
 }

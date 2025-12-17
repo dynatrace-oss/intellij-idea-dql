@@ -11,15 +11,15 @@ import java.nio.file.Path;
 import java.util.List;
 
 public interface DQLVariablesService {
-   @Nullable Path getDefaultVariablesFile(PsiElement element);
+    @Nullable Path getDefaultVariablesFile(PsiElement element);
 
-   @NotNull List<PsiElement> findVariableDefinitionFiles(@NotNull String variableName, @NotNull PsiFile file);
+    @NotNull List<PsiElement> findVariableDefinitionFiles(@NotNull String variableName, @NotNull PsiFile file);
 
-   @NotNull PsiElement findClosestDefinition(@NotNull String path, @NotNull List<PsiElement> definitions);
+    @NotNull PsiElement findClosestDefinition(@NotNull String path, @NotNull List<PsiElement> definitions);
 
-   @Nullable String getVariableValue(@Nullable JsonValue value);
+    @Nullable String getVariableValue(@Nullable JsonValue value);
 
-   static DQLVariablesService getInstance(@NotNull Project project) {
-      return project.getService(DQLVariablesService.class);
-   }
+    static DQLVariablesService getInstance(@NotNull Project project) {
+        return project.getService(DQLVariablesService.class);
+    }
 }

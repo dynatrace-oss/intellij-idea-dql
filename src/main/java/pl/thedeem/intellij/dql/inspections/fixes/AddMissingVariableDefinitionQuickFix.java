@@ -45,7 +45,7 @@ public class AddMissingVariableDefinitionQuickFix implements LocalQuickFix {
         }
         String name = variable.getName();
         Path filePath = DQLVariablesService.getInstance(project).getDefaultVariablesFile(variable);
-        
+
         if (name == null || filePath == null) {
             return;
         }

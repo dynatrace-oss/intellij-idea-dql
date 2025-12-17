@@ -61,7 +61,7 @@ public final class DQLServicesManager implements Disposable {
         DQLExecutionService existing = getService(getServiceId(service));
         if (existing != null) {
             project.getMessageBus().syncPublisher(ServiceEventListener.TOPIC).handle(
-                ServiceEvent.createEvent(ServiceEventListener.EventType.SERVICE_CHANGED, existing, DQLServiceViewContributor.class)
+                    ServiceEvent.createEvent(ServiceEventListener.EventType.SERVICE_CHANGED, existing, DQLServiceViewContributor.class)
             );
         }
     }

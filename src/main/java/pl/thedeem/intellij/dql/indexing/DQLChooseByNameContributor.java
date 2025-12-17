@@ -17,16 +17,16 @@ import java.util.List;
 import java.util.Objects;
 
 public class DQLChooseByNameContributor implements ChooseByNameContributorEx {
-   @Override
-   public void processNames(@NotNull Processor<? super String> processor, @NotNull GlobalSearchScope scope, @Nullable IdFilter idFilter) {
-      Project project = Objects.requireNonNull(scope.getProject());
-      List<String> dqlFields = ContainerUtil.map(DQLUtil.findFieldsInProject(project), DQLFieldExpression::getName);
-      ContainerUtil.process(dqlFields, processor);
-   }
+    @Override
+    public void processNames(@NotNull Processor<? super String> processor, @NotNull GlobalSearchScope scope, @Nullable IdFilter idFilter) {
+        Project project = Objects.requireNonNull(scope.getProject());
+        List<String> dqlFields = ContainerUtil.map(DQLUtil.findFieldsInProject(project), DQLFieldExpression::getName);
+        ContainerUtil.process(dqlFields, processor);
+    }
 
-   @Override
-   public void processElementsWithName(@NotNull String name, @NotNull Processor<? super NavigationItem> processor, @NotNull FindSymbolParameters parameters) {
-      List<NavigationItem> properties = ContainerUtil.map(DQLUtil.findFieldsInProject(parameters.getProject(), name), property -> (NavigationItem) property);
-      ContainerUtil.process(properties, processor);
-   }
+    @Override
+    public void processElementsWithName(@NotNull String name, @NotNull Processor<? super NavigationItem> processor, @NotNull FindSymbolParameters parameters) {
+        List<NavigationItem> properties = ContainerUtil.map(DQLUtil.findFieldsInProject(parameters.getProject(), name), property -> (NavigationItem) property);
+        ContainerUtil.process(properties, processor);
+    }
 }

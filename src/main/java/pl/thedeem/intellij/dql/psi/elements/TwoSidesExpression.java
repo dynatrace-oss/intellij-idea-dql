@@ -11,7 +11,10 @@ import java.util.List;
 public interface TwoSidesExpression {
     @Unmodifiable
     @NotNull List<DQLExpression> getExpressions();
+
     @Nullable ExpressionOperatorImpl getOperator();
+
     @Nullable DQLExpression getLeftExpression();
+
     @Nullable DQLExpression getRightExpression();
 }

@@ -134,7 +134,7 @@ public class DynatraceTenantsConfigurable implements Configurable {
         protected TenantDialog(@Nullable DynatraceTenant existingTenant) {
             super(true);
             this.tenant = existingTenant;
-            setTitle(DQLBundle.message(existingTenant == null ? "settings.dql.tenants.add" :"settings.dql.tenants.edit"));
+            setTitle(DQLBundle.message(existingTenant == null ? "settings.dql.tenants.add" : "settings.dql.tenants.edit"));
             init();
         }
 

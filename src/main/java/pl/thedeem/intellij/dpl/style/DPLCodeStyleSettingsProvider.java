@@ -13,36 +13,36 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dpl.DynatracePatternLanguage;
 
 public class DPLCodeStyleSettingsProvider extends CodeStyleSettingsProvider {
-   @Override
-   public CustomCodeStyleSettings createCustomSettings(@NotNull CodeStyleSettings settings) {
-      return new DPLCodeStyleSettings(settings);
-   }
+    @Override
+    public CustomCodeStyleSettings createCustomSettings(@NotNull CodeStyleSettings settings) {
+        return new DPLCodeStyleSettings(settings);
+    }
 
-   @Override
-   public String getConfigurableDisplayName() {
-      return DynatracePatternLanguage.DPL_DISPLAY_NAME;
-   }
+    @Override
+    public String getConfigurableDisplayName() {
+        return DynatracePatternLanguage.DPL_DISPLAY_NAME;
+    }
 
-   @Override
-   @NotNull
-   public CodeStyleConfigurable createConfigurable(@NotNull CodeStyleSettings settings,
-                                                   @NotNull CodeStyleSettings modelSettings) {
-      return new CodeStyleAbstractConfigurable(settings, modelSettings, this.getConfigurableDisplayName()) {
-         @Override
-         protected @NotNull CodeStyleAbstractPanel createPanel(@NotNull CodeStyleSettings settings) {
-            return new DPLCodeStyleMainPanel(getCurrentSettings(), settings);
-         }
-      };
-   }
+    @Override
+    @NotNull
+    public CodeStyleConfigurable createConfigurable(@NotNull CodeStyleSettings settings,
+                                                    @NotNull CodeStyleSettings modelSettings) {
+        return new CodeStyleAbstractConfigurable(settings, modelSettings, this.getConfigurableDisplayName()) {
+            @Override
+            protected @NotNull CodeStyleAbstractPanel createPanel(@NotNull CodeStyleSettings settings) {
+                return new DPLCodeStyleMainPanel(getCurrentSettings(), settings);
+            }
+        };
+    }
 
-   @Override
-   public @Nullable Language getLanguage() {
-      return DynatracePatternLanguage.INSTANCE;
-   }
+    @Override
+    public @Nullable Language getLanguage() {
+        return DynatracePatternLanguage.INSTANCE;
+    }
 
-   private static class DPLCodeStyleMainPanel extends TabbedLanguageCodeStylePanel {
-      public DPLCodeStyleMainPanel(CodeStyleSettings currentSettings, CodeStyleSettings settings) {
-         super(DynatracePatternLanguage.INSTANCE, currentSettings, settings);
-      }
-   }
+    private static class DPLCodeStyleMainPanel extends TabbedLanguageCodeStylePanel {
+        public DPLCodeStyleMainPanel(CodeStyleSettings currentSettings, CodeStyleSettings settings) {
+            super(DynatracePatternLanguage.INSTANCE, currentSettings, settings);
+        }
+    }
 }

@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface AnnotatorEngine {
     @NotNull AnnotationResult annotate(@NotNull final PsiElement element, @NotNull AnnotationHolder holder);
+
     @NotNull AnnotationType getType();
 
     enum AnnotationResult {
