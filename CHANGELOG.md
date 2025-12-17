@@ -12,6 +12,10 @@
 - Added support for experimental DQL features (to be enabled in plugin's tool settings)
 - Added search operator `~` code style settings
 
+### Bug fixes
+
+- Field accessor (for example, `field[0]`) will now be properly indented
+
 ## [1.1.0] - 2025-12-03
 
 ### Features
