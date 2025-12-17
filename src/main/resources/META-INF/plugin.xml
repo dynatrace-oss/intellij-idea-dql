@@ -305,6 +305,12 @@
                          level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.variable.unknown.display.name"
                          implementationClass="pl.thedeem.intellij.dql.inspections.simple.UnknownVariableInspection"/>
+        <!-- Migrations -->
+        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLMetricSeriesMigration"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         groupKey="inspection.groups.dql" key="inspection.variable.metricSeriesMigration.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.migrations.MetricSeriesMigrationInspection"/>
         <!-- Dynatrace inspections -->
         <externalAnnotator language="DQL"
                            implementationClass="pl.thedeem.intellij.dql.inspections.external.DQLVerificationAnnotator"/>

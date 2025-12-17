@@ -8,6 +8,7 @@
 - Added more inspections related to:
   - parameter value types (subqueries, fields identifier etc.)
   - disjointed variadic parameters definitions
+  - migration from `fetch metric.series` into `metrics` command
 - DPL will now be injected within all supported DQL function strings
 - Added support for experimental DQL features (to be enabled in plugin's tool settings)
 - Added search operator `~` code style settings

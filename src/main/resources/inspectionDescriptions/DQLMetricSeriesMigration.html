@@ -1,0 +1,25 @@
+<html lang="en">
+<body>
+Verifies if the "metrics" command could be used.
+
+<p>
+    The metric.series data object was marked as deprecated and was replaced with a dedicated command named metrics. All
+    usages should migrate to a new solution.
+</p>
+<p>
+    This inspection reports an issue if it detects usage of fetch metric.series.
+</p>
+
+<pre><code>
+fetch metric.series, from: -4h, to: -1h, bucket: "test", samplingRatio: 5, scanLimitGBytes: 1
+</code></pre>
+
+<p>
+    After applying the quick-fix, the command will be automatically updated to "metrics".
+</p>
+<pre><code>
+metrics from: -4h, to: -1h, bucket: "test"
+</code></pre>
+
+</body>
+</html>
