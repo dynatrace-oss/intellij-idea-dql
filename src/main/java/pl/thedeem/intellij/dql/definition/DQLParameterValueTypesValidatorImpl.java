@@ -48,6 +48,16 @@ public class DQLParameterValueTypesValidatorImpl implements DQLParameterValueTyp
                         new FieldIdentifierValidator().validate(parameter, definition);
                 case "dql.parameterValueType.recordDefinition" ->
                         new RecordsListValidator().validate(parameter, definition);
+                case "dql.parameterValueType.bucket",
+                     "dql.parameterValueType.dplPattern",
+                     "dql.parameterValueType.filePattern",
+                     "dql.parameterValueType.jsonPath",
+                     "dql.parameterValueType.namelessDplPattern",
+                     "dql.parameterValueType.prefix",
+                     "dql.parameterValueType.tabularFileExisting",
+                     "dql.parameterValueType.tabularFileNew",
+                     "dql.parameterValueType.url" ->
+                        new PlainStringParameterTypeValidator().validate(parameter, definition);
                 default -> List.of();
             });
         }
