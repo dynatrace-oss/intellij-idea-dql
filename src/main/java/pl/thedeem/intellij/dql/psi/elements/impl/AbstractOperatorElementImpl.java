@@ -11,10 +11,13 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.Operator;
 import pl.thedeem.intellij.dql.definition.model.Signature;
+import pl.thedeem.intellij.dql.psi.DQLExpression;
+import pl.thedeem.intellij.dql.psi.elements.BaseElement;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.OperatorElement;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class AbstractOperatorElementImpl extends TwoSidesExpressionImpl implements OperatorElement, BaseTypedElement {
@@ -83,10 +86,35 @@ public abstract class AbstractOperatorElementImpl extends TwoSidesExpressionImpl
     }
 
     private @NotNull Collection<String> recalculateDataTypes() {
+        Operator definition = getDefinition();
         Signature signature = getSignature();
-        if (signature == null) {
+        if (definition == null || signature == null) {
             return Set.of();
         }
+        Map<String, Map<String, String>> mapping = definition.resultMapping();
+        if (mapping != null) {
+            return recalculateDataTypesFromOperands(mapping, signature);
+        }
+        return signature.outputs();
+    }
+
+    private @NotNull Collection<String> recalculateDataTypesFromOperands(@NotNull Map<String, Map<String, String>> mapping, @NotNull Signature signature) {
+        DQLExpression leftExpression = getLeftExpression();
+        DQLExpression rightExpression = getRightExpression();
+        if (leftExpression instanceof BaseElement leftElement && rightExpression instanceof BaseElement rightElement) {
+            Collection<String> leftTypes = leftElement.getDataType();
+            Collection<String> rightTypes = rightElement.getDataType();
+            if (leftTypes.size() == 1 && rightTypes.size() == 1) {
+                String mappedResult = mapping
+                        .getOrDefault(leftTypes.stream().toList().getFirst(), Map.of())
+                        .get(rightTypes.stream().toList().getFirst());
+                if (mappedResult != null) {
+                    return Set.of(mappedResult);
+                }
+            }
+            return signature.outputs();
+        }
+
         return signature.outputs();
     }
 
