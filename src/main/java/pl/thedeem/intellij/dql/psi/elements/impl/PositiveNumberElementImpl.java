@@ -32,29 +32,13 @@ public abstract class PositiveNumberElementImpl extends ASTWrapperPsiElement imp
     }
 
     @Override
-    public Number getValue() {
-        String text = getName();
-        try {
-            if (text != null) {
-                if (text.contains(".")) {
-                    return Double.valueOf(text);
-                }
-                return Long.valueOf(text);
-            }
-        } catch (NumberFormatException e) {
-            return null;
-        }
-        return null;
-    }
-
-    @Override
     public @NotNull Set<String> getDataType() {
-        Number value = getValue();
-        return switch (value) {
-            case Double ignored -> Set.of("dql.dataType.double");
-            case Long ignored -> Set.of("dql.dataType.long");
-            default -> Set.of("dql.dataType.double", "dql.dataType.long");
-        };
+        String text = getText();
+        if (text.contains(".")) {
+            return Set.of("dql.dataType.double");
+        } else {
+            return Set.of("dql.dataType.long");
+        }
     }
 
     @Override

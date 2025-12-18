@@ -6,7 +6,11 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
+import pl.thedeem.intellij.dql.psi.DQLExpression;
+import pl.thedeem.intellij.dql.psi.elements.BaseElement;
 import pl.thedeem.intellij.dql.psi.elements.NegativeValueExpression;
+
+import java.util.Collection;
 
 public abstract class NegativeValueExpressionImpl extends AbstractOperatorElementImpl implements NegativeValueExpression {
     public NegativeValueExpressionImpl(@NotNull ASTNode node) {
@@ -32,4 +36,14 @@ public abstract class NegativeValueExpressionImpl extends AbstractOperatorElemen
     protected String getOperationId() {
         return "dql.operator.negate";
     }
+
+    @Override
+    public @NotNull Collection<String> getDataType() {
+        DQLExpression expression = findChildByClass(DQLExpression.class);
+        if (expression instanceof BaseElement element) {
+            return element.getDataType();
+        }
+        return super.getDataType();
+    }
+
 }

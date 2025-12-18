@@ -22,6 +22,7 @@
         NUMBERED_IDENTIFIER = 'regexp:[0-9]+[a-zA-Z_]+'
         POSITIVE_LONG = 'regexp:[0-9]+'
         POSITIVE_DOUBLE = 'regexp:[0-9]+\.[0-9]+'
+        POSITIVE_SCIENTIFIC_NOTATION = 'regexp:[0-9]+\.[0-9]+e-?[0-9]+'
         EOL_COMMENT = 'regexp://.*'
         TRUE = 'true'
         FALSE = 'false'
@@ -320,7 +321,7 @@ sort_direction ::= "asc" | "desc" {
     mixin="pl.thedeem.intellij.dql.psi.elements.impl.SortKeywordElementImpl"
     implements="pl.thedeem.intellij.dql.psi.elements.SortKeywordElement"
 }
-number ::= POSITIVE_LONG | POSITIVE_DOUBLE {
+number ::= POSITIVE_LONG | POSITIVE_DOUBLE | POSITIVE_SCIENTIFIC_NOTATION {
    extends=simple_expression
    mixin="pl.thedeem.intellij.dql.psi.elements.impl.PositiveNumberElementImpl"
    implements="pl.thedeem.intellij.dql.psi.elements.NumberElement"
