@@ -35,7 +35,7 @@ public class DQLFoldingBuilder extends FoldingBuilderEx implements DumbAware {
                     for (MappedParameter parameter : list.getParameters()) {
                         if (!parameter.included().isEmpty()) {
                             FoldingGroup foldingGroup = FoldingGroup.newGroup(parameter.name());
-                            for (List<DQLExpression> parameterGroup : parameter.getParameterGroups()) {
+                            for (List<PsiElement> parameterGroup : parameter.getParameterGroups()) {
                                 descriptors.add(new FoldingDescriptor(parameter.holder().getNode(), new TextRange(
                                         parameterGroup.getFirst().getTextRange().getStartOffset(),
                                         parameterGroup.getLast().getTextRange().getEndOffset()

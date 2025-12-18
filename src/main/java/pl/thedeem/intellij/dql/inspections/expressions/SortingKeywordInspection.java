@@ -8,26 +8,30 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.fixes.DropElementQuickFix;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
-import pl.thedeem.intellij.dql.psi.DQLSortDirection;
-import pl.thedeem.intellij.dql.psi.DQLVisitor;
+import pl.thedeem.intellij.dql.psi.*;
+import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 
 import java.util.List;
+import java.util.Set;
 
 public class SortingKeywordInspection extends LocalInspectionTool {
     @Override
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitSortDirection(@NotNull DQLSortDirection sortDirection) {
-                super.visitSortDirection(sortDirection);
+            public void visitSortExpression(@NotNull DQLSortExpression sort) {
+                super.visitSortExpression(sort);
 
-                if (isSortingInvalid(sortDirection)) {
+                List<PsiElement> parents = PsiUtils.getElementsUntilParent(
+                        sort,
+                        t -> Set.of(DQLBracketExpression.class, DQLParameterExpression.class)
+                                .stream().anyMatch(c -> c.isInstance(t)),
+                        DQLParametersOwner.class);
+
+                if (isSortingInvalid(parents, sort)) {
                     holder.registerProblem(
-                            sortDirection,
+                            sort.getSortDirection(),
                             DQLBundle.message("inspection.sortingKeyword.usage.notAllowed"),
                             new DropElementQuickFix()
                     );
@@ -36,18 +40,15 @@ public class SortingKeywordInspection extends LocalInspectionTool {
         };
     }
 
-    private boolean isSortingInvalid(DQLSortDirection sortDirection) {
-        List<PsiElement> parents = PsiUtils.getElementsUntilParent(sortDirection, DQLQueryStatement.class);
-        if (!parents.isEmpty() && parents.getFirst() instanceof DQLQueryStatement statement
-                && parents.get(1) instanceof DQLExpression expression) {
-            MappedParameter parameter = statement.getParameter(expression);
-            Parameter definition = parameter != null ? parameter.definition() : null;
-            if (definition == null) {
-                return true;
-            }
-
-            return !definition.allowsSorting();
+    private boolean isSortingInvalid(@NotNull List<PsiElement> elements, @NotNull DQLSortExpression sort) {
+        if (elements.isEmpty()) {
+            return true;
         }
-        return true;
+        if (!(elements.getFirst() instanceof DQLParametersOwner parametersOwner)) {
+            return true;
+        }
+        DQLExpression containing = elements.size() > 1 && elements.get(1) instanceof DQLExpression expr ? expr : sort;
+        MappedParameter parameter = parametersOwner.getParameter(containing);
+        return parameter == null || parameter.definition() == null || !parameter.definition().allowsSorting();
     }
 }

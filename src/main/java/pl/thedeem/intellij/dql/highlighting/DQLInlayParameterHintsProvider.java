@@ -6,7 +6,6 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
@@ -34,8 +33,8 @@ public class DQLInlayParameterHintsProvider implements InlayParameterHintsProvid
                 if (definition == null) {
                     continue;
                 }
-                List<List<DQLExpression>> groups = parameter.getParameterGroups();
-                for (List<DQLExpression> group : groups) {
+                List<List<PsiElement>> groups = parameter.getParameterGroups();
+                for (List<PsiElement> group : groups) {
                     if (group == groups.getFirst() && (parameter == parameters.getFirst() && !inlayFirstParameter)) {
                         continue;
                     }

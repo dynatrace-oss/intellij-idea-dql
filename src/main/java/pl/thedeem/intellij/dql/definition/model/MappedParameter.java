@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.definition.model;
 
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +14,7 @@ import java.util.*;
 
 public record MappedParameter(
         @Nullable Parameter definition,
-        @NotNull DQLExpression holder,
+        @NotNull PsiElement holder,
         @NotNull List<DQLExpression> included
 ) implements BaseTypedElement {
     public @Nullable String name() {
@@ -26,11 +27,11 @@ public record MappedParameter(
         return null;
     }
 
-    public @NotNull List<List<DQLExpression>> getParameterGroups() {
-        List<List<DQLExpression>> result = new ArrayList<>();
+    public @NotNull List<List<PsiElement>> getParameterGroups() {
+        List<List<PsiElement>> result = new ArrayList<>();
 
-        DQLExpression previous = null;
-        for (DQLExpression expression : getExpressions()) {
+        PsiElement previous = null;
+        for (PsiElement expression : getExpressions()) {
             DQLExpression prevSibling = PsiTreeUtil.getPrevSiblingOfType(expression, DQLExpression.class);
             if (prevSibling != previous || result.isEmpty()) {
                 result.add(new ArrayList<>());
@@ -57,7 +58,7 @@ public record MappedParameter(
             }
         } else {
             Set<String> result = new HashSet<>();
-            for (DQLExpression expression : getExpressions()) {
+            for (PsiElement expression : getExpressions()) {
                 if (expression instanceof BaseElement element) {
                     result.addAll(element.getDataType());
                 }
@@ -69,7 +70,7 @@ public record MappedParameter(
 
     @Override
     public boolean accessesData() {
-        for (DQLExpression value : getExpressions()) {
+        for (PsiElement value : getExpressions()) {
             if (value instanceof BaseTypedElement entity && entity.accessesData()) {
                 return true;
             }
@@ -82,8 +83,8 @@ public record MappedParameter(
         return new DQLFieldNamesGenerator().addPart(holder).getFieldName();
     }
 
-    public @NotNull Collection<DQLExpression> getExpressions() {
-        List<DQLExpression> expressions = new ArrayList<>();
+    public @NotNull Collection<PsiElement> getExpressions() {
+        List<PsiElement> expressions = new ArrayList<>();
         expressions.add(holder);
         expressions.addAll(included);
         return expressions;

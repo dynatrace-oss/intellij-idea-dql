@@ -1,11 +1,11 @@
 package pl.thedeem.intellij.dql.indexing;
 
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.psi.DQLAssignExpression;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
 
@@ -48,7 +48,7 @@ public record ReferenceVariantsCalculator(DQLFieldExpression field) {
                 continue;
             }
             if (otherField.getParent() instanceof DQLAssignExpression assignExpression && assignExpression.getLeftExpression() == otherField) {
-                DQLExpression value = assignExpression.getRightExpression();
+                PsiElement value = assignExpression.getRightExpression();
                 if (value != null) {
                     fValue = value.getText();
                 }

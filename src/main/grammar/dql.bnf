@@ -223,7 +223,7 @@ sort_expression ::= expression sort_direction {
 
 time_alignment_now_expression ::= time_alignment_expression_operator time_alignment_operand {
    pin=1
-   mixin="pl.thedeem.intellij.dql.psi.elements.impl.TimeAlignmentExpressionImpl"
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.TimeAlignmentNowExpressionImpl"
    implements="pl.thedeem.intellij.dql.psi.elements.TimeAlignmentExpression"
 }
 time_alignment_at_expression ::= expression time_alignment_expression_operator time_alignment_operand {

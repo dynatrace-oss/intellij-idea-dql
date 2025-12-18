@@ -4,14 +4,15 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.BaseInspection;
 import pl.thedeem.intellij.dql.inspections.fixes.SetFieldNameQuickFix;
 import pl.thedeem.intellij.dql.psi.*;
+import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class InvalidFieldReadOperationInspection extends BaseInspection {
@@ -19,36 +20,53 @@ public class InvalidFieldReadOperationInspection extends BaseInspection {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitFieldExpression(@NotNull DQLFieldExpression expression) {
-                super.visitFieldExpression(expression);
+            public void visitQueryStatement(@NotNull DQLQueryStatement command) {
+                super.visitQueryStatement(command);
+                validateParameters(command.getParameters(), holder);
+            }
 
-                if (isReadExpression(expression) && !isReadingFieldValueAllowed(expression)) {
-                    holder.registerProblem(
-                            expression,
-                            DQLBundle.message("inspection.fieldReadOperation.notAllowed"),
-                            new SetFieldNameQuickFix()
-                    );
+            @Override
+            public void visitExpression(@NotNull DQLExpression expression) {
+                super.visitExpression(expression);
+
+                if (!(expression instanceof DQLParametersOwner parametersOwner)) {
+                    return;
                 }
+
+                validateParameters(parametersOwner.getParameters(), holder);
             }
         };
     }
 
-    private boolean isReadExpression(DQLFieldExpression fieldExpression) {
-        return !(fieldExpression.getParent() instanceof DQLAssignExpression);
-    }
-
-    private boolean isReadingFieldValueAllowed(DQLFieldExpression fieldExpression) {
-        List<PsiElement> parentsUntil = PsiUtils.getElementsUntilParent(fieldExpression, DQLFunctionCallExpression.class, DQLQueryStatement.class);
-        if (!parentsUntil.isEmpty()) {
-            PsiElement topParent = parentsUntil.getFirst();
-            DQLExpression topParentChild = parentsUntil.get(1) instanceof DQLExpression expr ? expr : fieldExpression;
-            if (topParent instanceof DQLFunctionCallExpression functionArgument) {
-                return readonlyAllowed(functionArgument.getParameter(topParentChild));
-            } else if (topParent instanceof DQLQueryStatement list) {
-                return readonlyAllowed(list.getParameter(topParentChild));
+    private void validateParameters(@NotNull List<MappedParameter> parameters, @NotNull ProblemsHolder holder) {
+        for (MappedParameter parameter : parameters) {
+            if (!readonlyAllowed(parameter) && parameter.definition() != null) {
+                for (PsiElement value : parameter.getExpressions()) {
+                    validateValue(value, holder);
+                }
             }
         }
-        return true;
+    }
+
+    private void validateValue(@NotNull PsiElement expression, @NotNull ProblemsHolder holder) {
+        List<PsiElement> toCheck = new ArrayList<>();
+        toCheck.add(expression);
+        while (!toCheck.isEmpty()) {
+            PsiElement check = toCheck.removeFirst();
+            if (check instanceof DQLBracketExpression bracket) {
+                toCheck.addAll(bracket.getExpressionList());
+            } else if (isReadExpression(check)) {
+                holder.registerProblem(
+                        check,
+                        DQLBundle.message("inspection.fieldReadOperation.notAllowed"),
+                        new SetFieldNameQuickFix()
+                );
+            }
+        }
+    }
+
+    private boolean isReadExpression(PsiElement fieldExpression) {
+        return !(fieldExpression instanceof DQLAssignExpression);
     }
 
     private boolean readonlyAllowed(MappedParameter parameter) {

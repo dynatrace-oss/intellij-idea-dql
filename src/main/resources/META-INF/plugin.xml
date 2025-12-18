@@ -103,18 +103,6 @@
                          enabledByDefault="true" level="INFO"
                          groupKey="inspection.groups.dql" key="inspection.experimentalFeature.display.name"
                          implementationClass="pl.thedeem.intellij.dql.inspections.expressions.ExperimentalFeatureInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidTimeAlignmentDuration"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.time.alignment.operand.type.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidTimeAlignmentDurationInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidTimeAlignmentTarget"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.time.alignment.operator.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidTimeAlignmentTargetInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLEmptySubquery" enabledByDefault="true"
-                         level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.subquery.body.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.EmptySubqueryInspection"/>
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLEmptyBrackets" enabledByDefault="true"
                          level="INFO"
                          groupKey="inspection.groups.dql" key="inspection.bracket.body.display.name"
@@ -124,10 +112,6 @@
                          level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.sortingKeyword.usage.display.name"
                          implementationClass="pl.thedeem.intellij.dql.inspections.expressions.SortingKeywordInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidSortingOperation"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.sorting.invalidTarget.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidSortingOperationInspection"/>
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidFieldReadOperation"
                          enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.fieldReadOperation.display.name"
@@ -136,38 +120,10 @@
                          enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.fieldWriteOperation.display.name"
                          implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidFieldWriteOperationInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidNegationTarget"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.negation.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidNegationTargetInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidEqualityTarget"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.equality.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidEqualityTargetInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidArithmeticalTarget"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.arithmetical.operation.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidArithmeticalTargetInspection"/>
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLUnsupportedOperatorDataType"
                          enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.operator.unsupportedType.display.name"
                          implementationClass="pl.thedeem.intellij.dql.inspections.expressions.UnsupportedOperatorDataTypeInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidComparisonTarget"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.comparison.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidComparisonTargetInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidConditionTarget"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.condition.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidConditionTargetInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidArrayTarget"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.array.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidArrayTargetInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidAssignTarget"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.assign.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidAssignTargetInspection"/>
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLStaticCondition"
                          enabledByDefault="true"
                          level="INFO"
@@ -178,14 +134,10 @@
                          level="INFO"
                          groupKey="inspection.groups.dql" key="inspection.comparison.static.display.name"
                          implementationClass="pl.thedeem.intellij.dql.inspections.expressions.StaticComparisonInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidNegativeValueTarget"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.negativeValue.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidNegativeValueTargetInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLComplexNegativeValue"
+        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLNestedNegativeValue"
                          enabledByDefault="true" level="INFO"
-                         groupKey="inspection.groups.dql" key="inspection.complexNegativeValue.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.ComplexNegativeValueInspection"/>
+                         groupKey="inspection.groups.dql" key="inspection.nestedNegativeValue.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.NestedNegativeValueInspection"/>
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLRightSideNegativeValue"
                          enabledByDefault="true" level="INFO"
                          groupKey="inspection.groups.dql" key="inspection.rightSideNegativeValue.display.name"
@@ -261,44 +213,12 @@
                          enabledByDefault="true"
                          level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.command.parametersValue.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.types.ParameterValueInspection"/>
+                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.ParameterValueInspection"/>
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLMissingParameterName"
                          enabledByDefault="true"
                          level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.command.missingParameterName.display.name"
                          implementationClass="pl.thedeem.intellij.dql.inspections.parameters.MissingParameterNameInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLRecordsListParameter"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.parameter.recordsList.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.types.RecordsListParameterInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLAggregationFunction"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.parameter.aggregationFunction.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.types.AggregationFunctionParameterInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLEnumValueParameter"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.parameter.enumValue.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.types.EnumValueParameterInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLConstantValueParameter"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.parameter.constantValue.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.types.ConstantValueParameterInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLFieldIndentifierParameter"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.parameter.fieldIdentifier.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.types.FieldIdentifierParameterInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLJoinConditionParameter"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.parameter.joinCondition.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.types.JoinConditionParameterInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLExecutionBlockParameter"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.parameter.executionBlock.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.types.ExecutionBlockParameterInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLPrimitiveValueParameter"
-                         enabledByDefault="true" level="ERROR"
-                         groupKey="inspection.groups.dql" key="inspection.parameter.primitiveValue.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.parameters.types.PrimitiveValueParameterInspection"/>
         <!-- Value validations -->
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLSingleQuotesUsage"
                          enabledByDefault="true" level="ERROR"
@@ -357,6 +277,8 @@
                         serviceInterface="pl.thedeem.intellij.dql.variables.DQLVariablesService"/>
         <projectService serviceImplementation="pl.thedeem.intellij.dql.definition.DQLParametersCalculatorServiceImpl"
                         serviceInterface="pl.thedeem.intellij.dql.definition.DQLParametersCalculatorService"/>
+        <projectService serviceImplementation="pl.thedeem.intellij.dql.definition.DQLParameterValueTypesValidatorImpl"
+                        serviceInterface="pl.thedeem.intellij.dql.definition.DQLParameterValueTypesValidator"/>
         <projectService serviceImplementation="pl.thedeem.intellij.dql.definition.DQLDefinitionServiceImpl"
                         serviceInterface="pl.thedeem.intellij.dql.definition.DQLDefinitionService"/>
         <configurationType

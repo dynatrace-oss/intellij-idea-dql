@@ -2,6 +2,7 @@ package pl.thedeem.intellij.dql.inspections.commands;
 
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
@@ -34,7 +35,7 @@ public class AdvisedBracketsAroundParametersInspection extends LocalInspectionTo
                     if (!definition.variadic() || parameter.included().isEmpty()) {
                         return;
                     }
-                    for (List<DQLExpression> group : parameter.getParameterGroups()) {
+                    for (List<PsiElement> group : parameter.getParameterGroups()) {
                         if (group.size() > 1 && shouldAdviseBrackets(command)) {
                             holder.registerProblem(
                                     group.getFirst(),

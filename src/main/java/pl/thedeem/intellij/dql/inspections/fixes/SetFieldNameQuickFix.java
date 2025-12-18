@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.quickFixes.AbstractAddElementQuickFix;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.psi.DQLAssignExpression;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
 
 public class SetFieldNameQuickFix extends AbstractAddElementQuickFix {
     @Override
@@ -28,7 +27,7 @@ public class SetFieldNameQuickFix extends AbstractAddElementQuickFix {
 
         if (element instanceof DQLAssignExpression assignExpression) {
             String initialValue = assignExpression.getFieldName();
-            DQLExpression leftExpression = assignExpression.getLeftExpression();
+            PsiElement leftExpression = assignExpression.getLeftExpression();
             TextRange textRange = leftExpression != null ? leftExpression.getTextRange() : element.getTextRange();
             document.deleteString(textRange.getStartOffset(), textRange.getEndOffset());
             template.addVariable("fieldName", new TextExpression(initialValue), new EmptyNode(), true);

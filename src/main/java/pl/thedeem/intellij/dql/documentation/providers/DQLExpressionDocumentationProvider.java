@@ -1,10 +1,11 @@
 package pl.thedeem.intellij.dql.documentation.providers;
 
 import com.intellij.openapi.util.text.HtmlChunk;
+import com.intellij.psi.PsiElement;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
-import pl.thedeem.intellij.dql.psi.elements.TwoSidesExpression;
+import pl.thedeem.intellij.dql.psi.elements.OperatorElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +22,9 @@ public class DQLExpressionDocumentationProvider extends BaseTypedElementDocument
     protected List<HtmlChunk.Element> getSections() {
         List<HtmlChunk.Element> sections = new ArrayList<>();
 
-        if (expression instanceof TwoSidesExpression twoSidesExpression) {
-            DQLExpression left = twoSidesExpression.getLeftExpression();
-            DQLExpression right = twoSidesExpression.getRightExpression();
+        if (expression instanceof OperatorElement operator) {
+            PsiElement left = operator.getLeftExpression();
+            PsiElement right = operator.getRightExpression();
             if (left instanceof BaseTypedElement element) {
                 sections.add(buildStandardSection(
                         DQLBundle.message("documentation.twoSidedExpression.leftType"),

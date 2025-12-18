@@ -1,38 +1,31 @@
-package pl.thedeem.intellij.dql.inspections.parameters.types;
+package pl.thedeem.intellij.dql.definition.validators;
 
-import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.definition.DQLParameterValueTypesValidator;
 import pl.thedeem.intellij.dql.definition.model.Function;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLAssignExpression;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public class AggregationFunctionParameterInspection extends AbstractParameterValueTypeInspection {
+public class AggregationValidator extends AbstractDefinitionValidator {
     @Override
-    protected void validateParameterValueType(@NotNull DQLExpression expression, @NotNull MappedParameter parameter, @NotNull Parameter definition, @NotNull List<String> parameterTypes, @NotNull ProblemsHolder holder) {
-        if (parameterTypes.stream().noneMatch(Set.of(
-                "dql.parameterValueType.expressionTimeseriesAggregation",
-                "dql.parameterValueType.metricTimeseriesAggregation"
-        )::contains)) {
-            return;
-        }
-
-        DQLDefinitionService service = DQLDefinitionService.getInstance(expression.getProject());
-        Collection<String> categories = service.getFunctionCategoriesForParameterTypes(parameterTypes);
+    public @NotNull List<DQLParameterValueTypesValidator.ValueIssue> validate(@NotNull PsiElement parameter, @NotNull Parameter definition) {
+        List<DQLParameterValueTypesValidator.ValueIssue> result = new ArrayList<>();
+        DQLDefinitionService service = DQLDefinitionService.getInstance(parameter.getProject());
+        Collection<String> categories = service.getFunctionCategoriesForParameterTypes(definition.parameterValueTypes());
         Collection<Function> allowedFunctions = categories != null ? service.getFunctionsByCategoryAndReturnType(
                 s -> categories.isEmpty() || categories.contains(s),
                 s -> definition.valueTypes() == null || definition.valueTypes().isEmpty() || definition.valueTypes().contains(s)
         ) : Set.of();
-        for (PsiElement invalidValue : getInvalidValues(expression, element -> {
+        for (PsiElement invalidValue : getInvalidValues(parameter, element -> {
             if (element instanceof DQLAssignExpression assignExpression) {
                 element = assignExpression.getRightExpression();
             }
@@ -42,13 +35,14 @@ public class AggregationFunctionParameterInspection extends AbstractParameterVal
             }
             return true;
         })) {
-            holder.registerProblem(
+            result.add(new DQLParameterValueTypesValidator.ValueIssue(
                     invalidValue,
                     DQLBundle.message(
                             "inspection.parameter.aggregationFunction.invalidFunction",
                             DQLBundle.print(allowedFunctions.stream().map(Function::name).toList())
                     )
-            );
+            ));
         }
+        return result;
     }
 }

@@ -1563,9 +1563,9 @@
         {
           "parameters": [
             {
-              "name": "expression",
-              "description": "expression",
-              "required": false,
+              "name": "firstExpression",
+              "description": "The timestamp to be rounded",
+              "required": true,
               "requiresName": false,
               "assignmentSupport": "none",
               "valueTypes": [
@@ -1574,6 +1574,103 @@
               ],
               "parameterValueTypes": [
                 "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "secondExpression",
+              "description": "The time unit",
+              "required": false,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "defaultValue": "h",
+              "parameterValueTypes": [
+                "dql.parameterValueType.enum"
+              ],
+              "allowedEnumValues": [
+                "ns",
+                "us",
+                "ms",
+                "s",
+                "sec",
+                "secs",
+                "second",
+                "seconds",
+                "m",
+                "min",
+                "mins",
+                "minute",
+                "minutes",
+                "h",
+                "hr",
+                "hrs",
+                "hour",
+                "hours",
+                "d",
+                "day",
+                "days",
+                "w",
+                "w1",
+                "w2",
+                "w3",
+                "w4",
+                "w5",
+                "w6",
+                "w7",
+                "M",
+                "q",
+                "y"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.timestamp"
+          ]
+        },
+        {
+          "parameters": [
+            {
+              "name": "expression",
+              "description": "The time unit",
+              "required": false,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "defaultValue": "h",
+              "parameterValueTypes": [
+                "dql.parameterValueType.enum"
+              ],
+              "allowedEnumValues": [
+                "ns",
+                "us",
+                "ms",
+                "s",
+                "sec",
+                "secs",
+                "second",
+                "seconds",
+                "m",
+                "min",
+                "mins",
+                "minute",
+                "minutes",
+                "h",
+                "hr",
+                "hrs",
+                "hour",
+                "hours",
+                "d",
+                "day",
+                "days",
+                "w",
+                "w1",
+                "w2",
+                "w3",
+                "w4",
+                "w5",
+                "w6",
+                "w7",
+                "M",
+                "q",
+                "y"
               ]
             }
           ],
@@ -1615,16 +1712,9 @@
               "parameterValueTypes": [
                 "dql.parameterValueType.expressionWithFieldAccess"
               ]
-            }
-          ],
-          "outputs": [
-            "dql.dataType.boolean"
-          ]
-        },
-        {
-          "parameters": [
+            },
             {
-              "name": "firstExpression",
+              "name": "secondExpression",
               "description": "It has to return a single field providing a list of values.",
               "required": true,
               "requiresName": false,
@@ -1640,6 +1730,126 @@
         }
       ],
       "symbol": "in"
+    },
+    "dql.operator.assign": {
+      "name": "assign",
+      "description": "Assigns value to the field from the first expression.",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "firstExpression",
+              "description": "A valid identifier for the field.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "parameterValueTypes": [
+                "dql.parameterValueType.simpleIdentifier"
+              ]
+            },
+            {
+              "name": "secondExpression",
+              "description": "An expression, its result will be added to the field value.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "variadic": true,
+              "valueTypes": [
+                "dql.dataType.array",
+                "dql.dataType.binary",
+                "dql.dataType.boolean",
+                "dql.dataType.double",
+                "dql.dataType.duration",
+                "dql.dataType.geopoint",
+                "dql.dataType.ip",
+                "dql.dataType.long",
+                "dql.dataType.record",
+                "dql.dataType.smartscapeid",
+                "dql.dataType.string",
+                "dql.dataType.timeframe",
+                "dql.dataType.timestamp",
+                "dql.dataType.uid"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ]
+        }
+      ],
+      "symbol": "="
+    },
+    "dql.operator.array": {
+      "name": "array",
+      "description": "Array accessor.",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "firstExpression",
+              "description": "Left part of the expression.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.array",
+                "dql.dataType.record"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "secondExpression",
+              "description": "An expression that will return the index to access",
+              "required": false,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "variadic": true,
+              "valueTypes": [
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.primitiveValue",
+                "dql.parameterValueType.identifierForAnyField"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ]
+        }
+      ],
+      "symbol": "[]"
     }
   }
 }

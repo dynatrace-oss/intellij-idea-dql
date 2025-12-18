@@ -10,16 +10,15 @@ import com.intellij.psi.*;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 
 import java.util.List;
 
 public class AddBracketsToParameterValueQuickFix implements LocalQuickFix {
     @SafeFieldForPreview
-    private final List<SmartPsiElementPointer<DQLExpression>> parameters;
+    private final List<SmartPsiElementPointer<PsiElement>> parameters;
 
-    public AddBracketsToParameterValueQuickFix(@NotNull List<DQLExpression> parameters) {
+    public AddBracketsToParameterValueQuickFix(@NotNull List<PsiElement> parameters) {
         this.parameters = parameters.stream()
                 .map(SmartPointerManager::createPointer)
                 .toList();
@@ -33,8 +32,8 @@ public class AddBracketsToParameterValueQuickFix implements LocalQuickFix {
         if (document == null) {
             return;
         }
-        DQLExpression first = parameters.getFirst().getElement();
-        DQLExpression last = parameters.getLast().getElement();
+        PsiElement first = parameters.getFirst().getElement();
+        PsiElement last = parameters.getLast().getElement();
         if (first == null || last == null) {
             return;
         }
