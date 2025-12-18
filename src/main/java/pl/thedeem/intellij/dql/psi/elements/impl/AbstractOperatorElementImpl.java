@@ -91,7 +91,7 @@ public abstract class AbstractOperatorElementImpl extends TwoSidesExpressionImpl
             return Set.of();
         }
         Map<String, Map<String, String>> mapping = definition.resultMapping();
-        if (mapping != null) {
+        if (mapping != null && !mapping.isEmpty()) {
             return recalculateDataTypesFromOperands(mapping, signature);
         }
         return signature.outputs();
@@ -138,6 +138,7 @@ public abstract class AbstractOperatorElementImpl extends TwoSidesExpressionImpl
             case "*" -> "dql.operator.multiply";
             case "~" -> "dql.operator.search";
             case "@" -> "dql.operator.timeAlignmentAt";
+            case "in" -> "dql.operator.in";
             default -> "";
         };
     }

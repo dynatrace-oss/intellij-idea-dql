@@ -12,17 +12,11 @@ import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.elements.InExpression;
 
 import java.util.List;
-import java.util.Set;
 
-public abstract class InExpressionImpl extends TwoSidesExpressionImpl implements InExpression {
+public abstract class InExpressionImpl extends AbstractOperatorElementImpl implements InExpression {
 
     public InExpressionImpl(@NotNull ASTNode node) {
         super(node);
-    }
-
-    @Override
-    public @NotNull Set<String> getDataType() {
-        return Set.of("dql.dataType.boolean");
     }
 
     @Override

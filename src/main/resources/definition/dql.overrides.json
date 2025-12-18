@@ -1583,6 +1583,63 @@
         }
       ],
       "symbol": "@"
+    },
+    "dql.operator.in": {
+      "name": "in",
+      "description": "The in comparison operator evaluates the occurrence of a value returned by the left side's expression within a list of values returned by the right side's DQL subquery.",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "firstExpression",
+              "description": "Either a field identifier or an expression.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.array",
+                "dql.dataType.binary",
+                "dql.dataType.boolean",
+                "dql.dataType.double",
+                "dql.dataType.duration",
+                "dql.dataType.geopoint",
+                "dql.dataType.ip",
+                "dql.dataType.long",
+                "dql.dataType.record",
+                "dql.dataType.smartscapeid",
+                "dql.dataType.string",
+                "dql.dataType.timeframe",
+                "dql.dataType.timestamp",
+                "dql.dataType.uid"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.boolean"
+          ]
+        },
+        {
+          "parameters": [
+            {
+              "name": "firstExpression",
+              "description": "It has to return a single field providing a list of values.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "parameterValueTypes": [
+                "dql.parameterValueType.nonEmptyExecutionBlock"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.boolean"
+          ]
+        }
+      ],
+      "symbol": "in"
     }
   }
 }
