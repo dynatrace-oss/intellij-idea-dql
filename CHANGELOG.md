@@ -5,6 +5,8 @@
 ### Features
 
 - Adding support for scientific notation numbers in DQL
+- Adding support for calculating the expressions data types for supported operators (if possible, for example: `long` +
+  `long`)
 
 ## [1.2.0] - 2025-12-17
 

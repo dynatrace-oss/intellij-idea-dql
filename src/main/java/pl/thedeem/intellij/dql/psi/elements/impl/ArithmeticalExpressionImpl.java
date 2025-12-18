@@ -8,26 +8,14 @@ import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.definition.model.Signature;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.elements.ArithmeticalExpression;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public class ArithmeticalExpressionImpl extends AbstractOperatorElementImpl implements ArithmeticalExpression {
     public ArithmeticalExpressionImpl(@NotNull ASTNode node) {
         super(node);
-    }
-
-    @Override
-    public @NotNull Collection<String> getDataType() {
-        Signature signature = getSignature();
-        if (signature == null) {
-            return Set.of();
-        }
-        return signature.outputs();
     }
 
     @Override
