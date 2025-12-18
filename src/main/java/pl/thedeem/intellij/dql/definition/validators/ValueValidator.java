@@ -11,7 +11,10 @@ import pl.thedeem.intellij.dql.psi.elements.BaseElement;
 import java.util.*;
 
 public class ValueValidator extends AbstractDefinitionValidator {
-    private final static Set<String> IGNORED_TYPES = Set.of("dql.dataType.null");
+    private final static Set<String> IGNORED_TYPES = Set.of(
+            "dql.dataType.null", // null values can be also representing any other values
+            "dql.dataType.array" // for now, array are not supported for validations due to iterative expressions
+    );
 
     @Override
     public @NotNull List<DQLParameterValueTypesValidator.ValueIssue> validate(@NotNull PsiElement parameter, @NotNull Parameter definition) {
