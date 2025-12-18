@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.dql.sdk.model;
+package pl.thedeem.intellij.common.sdk.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

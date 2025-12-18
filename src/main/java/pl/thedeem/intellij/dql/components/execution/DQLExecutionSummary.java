@@ -4,7 +4,7 @@ import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.components.DQLComponentUtils;
-import pl.thedeem.intellij.dql.sdk.model.DQLResult;
+import pl.thedeem.intellij.common.sdk.model.DQLResult;
 
 import javax.swing.*;
 import java.awt.*;

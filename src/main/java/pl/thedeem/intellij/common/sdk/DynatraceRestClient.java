@@ -1,15 +1,17 @@
-package pl.thedeem.intellij.dql.sdk;
+package pl.thedeem.intellij.common.sdk;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.dql.sdk.errors.*;
-import pl.thedeem.intellij.dql.sdk.model.*;
-import pl.thedeem.intellij.dql.sdk.model.errors.DQLAuthErrorResponse;
-import pl.thedeem.intellij.dql.sdk.model.errors.DQLErrorResponse;
-import pl.thedeem.intellij.dql.sdk.model.errors.DQLExecutionErrorResponse;
+import pl.thedeem.intellij.common.sdk.errors.*;
+import pl.thedeem.intellij.common.sdk.model.*;
+import pl.thedeem.intellij.common.sdk.errors.*;
+import pl.thedeem.intellij.common.sdk.model.*;
+import pl.thedeem.intellij.common.sdk.model.errors.DQLAuthErrorResponse;
+import pl.thedeem.intellij.common.sdk.model.errors.DQLErrorResponse;
+import pl.thedeem.intellij.common.sdk.model.errors.DQLExecutionErrorResponse;
 
 import java.io.IOException;
 import java.net.URI;

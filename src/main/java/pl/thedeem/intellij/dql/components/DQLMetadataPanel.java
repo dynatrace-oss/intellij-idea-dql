@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.components.common.CommonTable;
-import pl.thedeem.intellij.dql.sdk.model.DQLResult;
+import pl.thedeem.intellij.common.sdk.model.DQLResult;
 
 import javax.swing.*;
 import java.awt.*;

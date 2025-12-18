@@ -1,7 +1,7 @@
-package pl.thedeem.intellij.dql.sdk.model.errors;
+package pl.thedeem.intellij.common.sdk.model.errors;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import pl.thedeem.intellij.dql.sdk.model.DQLSyntaxErrorPositionDetails;
+import pl.thedeem.intellij.common.sdk.model.DQLSyntaxErrorPositionDetails;
 
 import java.util.List;
 

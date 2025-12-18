@@ -22,8 +22,8 @@ import pl.thedeem.intellij.dql.components.common.CommonTableHeaderRenderer;
 import pl.thedeem.intellij.dql.components.common.RowCountTable;
 import pl.thedeem.intellij.dql.fileProviders.DQLRecordFieldVirtualFile;
 import pl.thedeem.intellij.dql.fileProviders.DQLRecordVirtualFile;
-import pl.thedeem.intellij.dql.sdk.model.DQLRecord;
-import pl.thedeem.intellij.dql.sdk.model.DQLResult;
+import pl.thedeem.intellij.common.sdk.model.DQLRecord;
+import pl.thedeem.intellij.common.sdk.model.DQLResult;
 
 import javax.swing.*;
 import javax.swing.table.JTableHeader;

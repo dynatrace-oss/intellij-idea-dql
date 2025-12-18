@@ -15,11 +15,11 @@ import pl.thedeem.intellij.common.completion.CompletionUtils;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
-import pl.thedeem.intellij.dql.sdk.DynatraceRestClient;
-import pl.thedeem.intellij.dql.sdk.errors.DQLApiException;
-import pl.thedeem.intellij.dql.sdk.model.DQLAutocompletePayload;
-import pl.thedeem.intellij.dql.sdk.model.DQLAutocompleteResult;
-import pl.thedeem.intellij.dql.sdk.model.DQLSuggestion;
+import pl.thedeem.intellij.common.sdk.DynatraceRestClient;
+import pl.thedeem.intellij.common.sdk.errors.DQLApiException;
+import pl.thedeem.intellij.common.sdk.model.DQLAutocompletePayload;
+import pl.thedeem.intellij.common.sdk.model.DQLAutocompleteResult;
+import pl.thedeem.intellij.common.sdk.model.DQLSuggestion;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 

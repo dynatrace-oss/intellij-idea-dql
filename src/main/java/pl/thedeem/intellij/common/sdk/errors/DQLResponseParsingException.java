@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.dql.sdk.errors;
+package pl.thedeem.intellij.common.sdk.errors;
 
 public class DQLResponseParsingException extends DQLApiException {
     private final String response;

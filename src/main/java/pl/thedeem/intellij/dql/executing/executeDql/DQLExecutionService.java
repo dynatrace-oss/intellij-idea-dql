@@ -32,12 +32,12 @@ import pl.thedeem.intellij.dql.executing.DQLParsedQuery;
 import pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.DQLProcessHandler;
 import pl.thedeem.intellij.dql.executing.services.DQLServicesManager;
 import pl.thedeem.intellij.dql.fileProviders.DQLMetadataVirtualFile;
-import pl.thedeem.intellij.dql.sdk.DynatraceRestClient;
-import pl.thedeem.intellij.dql.sdk.errors.DQLApiException;
-import pl.thedeem.intellij.dql.sdk.model.DQLExecutePayload;
-import pl.thedeem.intellij.dql.sdk.model.DQLExecuteResponse;
-import pl.thedeem.intellij.dql.sdk.model.DQLPollResponse;
-import pl.thedeem.intellij.dql.sdk.model.DQLResult;
+import pl.thedeem.intellij.common.sdk.DynatraceRestClient;
+import pl.thedeem.intellij.common.sdk.errors.DQLApiException;
+import pl.thedeem.intellij.common.sdk.model.DQLExecutePayload;
+import pl.thedeem.intellij.common.sdk.model.DQLExecuteResponse;
+import pl.thedeem.intellij.common.sdk.model.DQLPollResponse;
+import pl.thedeem.intellij.common.sdk.model.DQLResult;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 

@@ -5,9 +5,9 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.definition.model.DQLDurationType;
 import pl.thedeem.intellij.dql.psi.DQLTimeAlignmentOperand;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
-import pl.thedeem.intellij.dql.sdk.model.DQLDurationType;
 
 import java.util.regex.Pattern;
 

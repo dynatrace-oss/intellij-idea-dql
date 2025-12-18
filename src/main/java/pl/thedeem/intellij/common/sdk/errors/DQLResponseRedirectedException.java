@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.dql.sdk.errors;
+package pl.thedeem.intellij.common.sdk.errors;
 
 public class DQLResponseRedirectedException extends DQLApiException {
     private final String redirectionUrl;

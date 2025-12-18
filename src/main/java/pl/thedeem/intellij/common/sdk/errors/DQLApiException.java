@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.dql.sdk.errors;
+package pl.thedeem.intellij.common.sdk.errors;
 
 public class DQLApiException extends Exception {
     public DQLApiException(String message) {

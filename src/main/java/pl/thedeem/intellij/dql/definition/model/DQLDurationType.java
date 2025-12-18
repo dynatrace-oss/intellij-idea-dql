@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.dql.sdk.model;
+package pl.thedeem.intellij.dql.definition.model;
 
 import java.util.Arrays;
 import java.util.Set;

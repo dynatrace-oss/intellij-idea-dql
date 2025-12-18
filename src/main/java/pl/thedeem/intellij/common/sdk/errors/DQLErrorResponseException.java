@@ -1,7 +1,7 @@
-package pl.thedeem.intellij.dql.sdk.errors;
+package pl.thedeem.intellij.common.sdk.errors;
 
-import pl.thedeem.intellij.dql.sdk.model.errors.DQLErrorResponse;
-import pl.thedeem.intellij.dql.sdk.model.errors.DQLExecutionErrorResponse;
+import pl.thedeem.intellij.common.sdk.model.errors.DQLErrorResponse;
+import pl.thedeem.intellij.common.sdk.model.errors.DQLExecutionErrorResponse;
 
 public class DQLErrorResponseException extends DQLApiException {
     private final DQLErrorResponse<DQLExecutionErrorResponse> response;

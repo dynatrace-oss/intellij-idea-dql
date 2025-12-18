@@ -15,7 +15,7 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.executing.DQLExecutionUtil;
 import pl.thedeem.intellij.dql.executing.executeDql.DQLExecutionService;
 import pl.thedeem.intellij.dql.executing.services.DQLServicesManager;
-import pl.thedeem.intellij.dql.sdk.model.DQLExecutePayload;
+import pl.thedeem.intellij.common.sdk.model.DQLExecutePayload;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 

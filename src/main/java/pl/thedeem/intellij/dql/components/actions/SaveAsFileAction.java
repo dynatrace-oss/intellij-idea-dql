@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.executing.executeDql.DQLExecutionService;
-import pl.thedeem.intellij.dql.sdk.model.DQLResult;
+import pl.thedeem.intellij.common.sdk.model.DQLResult;
 
 import java.io.File;
 import java.io.FileWriter;

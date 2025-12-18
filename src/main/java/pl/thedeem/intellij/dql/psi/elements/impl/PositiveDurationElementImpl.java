@@ -8,8 +8,8 @@ import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
+import pl.thedeem.intellij.dql.definition.model.DQLDurationType;
 import pl.thedeem.intellij.dql.psi.elements.DurationElement;
-import pl.thedeem.intellij.dql.sdk.model.DQLDurationType;
 
 import java.util.Set;
 import java.util.regex.Matcher;
