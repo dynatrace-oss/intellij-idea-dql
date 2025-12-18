@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.Operator;
 import pl.thedeem.intellij.dql.definition.model.Signature;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseElement;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.OperatorElement;
@@ -99,9 +98,7 @@ public abstract class AbstractOperatorElementImpl extends TwoSidesExpressionImpl
     }
 
     private @NotNull Collection<String> recalculateDataTypesFromOperands(@NotNull Map<String, Map<String, String>> mapping, @NotNull Signature signature) {
-        DQLExpression leftExpression = getLeftExpression();
-        DQLExpression rightExpression = getRightExpression();
-        if (leftExpression instanceof BaseElement leftElement && rightExpression instanceof BaseElement rightElement) {
+        if (getLeftExpression() instanceof BaseElement leftElement && getRightExpression() instanceof BaseElement rightElement) {
             Collection<String> leftTypes = leftElement.getDataType();
             Collection<String> rightTypes = rightElement.getDataType();
             if (leftTypes.size() == 1 && rightTypes.size() == 1) {
