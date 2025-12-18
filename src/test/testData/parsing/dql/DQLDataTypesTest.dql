@@ -1,0 +1,16 @@
+data record(
+  long = 1233,
+  double = 123.4567,
+  scientific_notation = 99.123e-13,
+  negative_number = -9876e123,
+  duration = 4min,
+  string = "something",
+  multiline_string = """
+    something
+    very
+    long
+  """,
+  empty = null,
+  boolean = true,
+  time_align = @w2
+)

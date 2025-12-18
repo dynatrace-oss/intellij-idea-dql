@@ -11,6 +11,10 @@ public class DQLParsingTest extends ParsingTestCase {
         doTest(true);
     }
 
+    public void testDQLDataTypesTest() {
+        doTest(true);
+    }
+
     @Override
     protected String getTestDataPath() {
         return "src/test/testData/parsing/dql";
