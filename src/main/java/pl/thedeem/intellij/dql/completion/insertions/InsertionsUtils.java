@@ -69,7 +69,7 @@ public class InsertionsUtils {
             return true;
         }
 
-        if ("mandatory".equals(parameter.assignmentSupport())) {
+        if (parameter.requiresFieldName()) {
             template.addVariable("bodyDataAssignField:" + name, new TextExpression(""), new EmptyNode(), true);
             template.addTextSegment(" = ");
             template.addVariable("bodyDataAssignValue:" + name, new EmptyNode(), new EmptyNode(), true);

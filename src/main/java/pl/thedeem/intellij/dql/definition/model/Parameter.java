@@ -241,4 +241,12 @@ public final class Parameter {
     public boolean allowsSorting() {
         return modifiers != null && modifiers.stream().anyMatch(m -> Set.of("asc", "desc").contains(m.name()));
     }
+
+    public boolean allowsFieldName() {
+        return !"none".equalsIgnoreCase(assignmentSupport());
+    }
+
+    public boolean requiresFieldName() {
+        return "mandatory".equalsIgnoreCase(assignmentSupport());
+    }
 }

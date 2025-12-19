@@ -106,7 +106,7 @@ public abstract class AbstractOperatorElementImpl extends ASTWrapperPsiElement i
     }
 
     @Override
-    public @Nullable MappedParameter getParameter(@NotNull DQLExpression parameter) {
+    public @Nullable MappedParameter getParameter(@NotNull PsiElement parameter) {
         return getParameters().stream().filter(m -> m.includes(parameter)).findFirst().orElse(null);
     }
 

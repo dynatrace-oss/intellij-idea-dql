@@ -4,7 +4,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
+import pl.thedeem.intellij.dql.psi.DQLBracketExpression;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseElement;
@@ -15,7 +17,7 @@ import java.util.*;
 public record MappedParameter(
         @Nullable Parameter definition,
         @NotNull PsiElement holder,
-        @NotNull List<DQLExpression> included
+        @NotNull List<PsiElement> included
 ) implements BaseTypedElement {
     public @Nullable String name() {
         if (definition != null) {
@@ -42,7 +44,7 @@ public record MappedParameter(
         return result;
     }
 
-    public boolean includes(DQLExpression expression) {
+    public boolean includes(PsiElement expression) {
         return holder == expression || included.contains(expression);
     }
 
@@ -83,10 +85,25 @@ public record MappedParameter(
         return new DQLFieldNamesGenerator().addPart(holder).getFieldName();
     }
 
-    public @NotNull Collection<PsiElement> getExpressions() {
+    public @NotNull List<PsiElement> getExpressions() {
         List<PsiElement> expressions = new ArrayList<>();
         expressions.add(holder);
         expressions.addAll(included);
         return expressions;
+    }
+
+    public @NotNull List<PsiElement> unpackExpressions() {
+        List<PsiElement> result = new ArrayList<>();
+        List<PsiElement> toProcess = new ArrayList<>(getExpressions());
+
+        while (!toProcess.isEmpty()) {
+            PsiElement element = DQLUtil.unpackParenthesis(toProcess.removeFirst());
+            if (Objects.requireNonNull(element) instanceof DQLBracketExpression bracket) {
+                toProcess.addAll(bracket.getExpressionList());
+            } else {
+                result.add(element);
+            }
+        }
+        return result;
     }
 }
