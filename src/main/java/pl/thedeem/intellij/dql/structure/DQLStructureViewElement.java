@@ -62,9 +62,9 @@ public class DQLStructureViewElement implements StructureViewTreeElement, Sortab
                 DQLQuery[] queries = PsiTreeUtil.getChildrenOfType(file, DQLQuery.class);
                 yield handleChildren(queries != null ? List.of(queries) : List.of());
             }
-            case DQLQuery query -> handleChildren(query.getQueryStatementList());
-            case DQLQueryStatement query -> handleChildren(query.getExpressionList());
-            case DQLFunctionCallExpression expression -> handleChildren(expression.getExpressionList());
+            case DQLQuery query -> handleChildren(query.getCommandList());
+            case DQLCommand query -> handleChildren(query.getExpressionList());
+            case DQLFunctionExpression expression -> handleChildren(expression.getExpressionList());
             case DQLExpression expression -> {
                 List<PsiElement> expressions = PsiTreeUtil.getChildrenOfAnyType(expression, DQLExpression.class, DQLQuery.class);
                 yield handleChildren(expressions);
@@ -80,7 +80,7 @@ public class DQLStructureViewElement implements StructureViewTreeElement, Sortab
         List<TreeElement> result = new ArrayList<>(children.size());
         for (Object child : children) {
             if (child instanceof DQLQuery query) {
-                result.addAll(List.of(handleChildren(query.getQueryStatementList())));
+                result.addAll(List.of(handleChildren(query.getCommandList())));
             } else if (child instanceof DQLParenthesisedExpression expr) {
                 if (expr.getExpression() != null) {
                     result.addAll(List.of(handleChildren(List.of(expr.getExpression()))));

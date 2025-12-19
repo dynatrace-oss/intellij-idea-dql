@@ -9,7 +9,7 @@ import pl.thedeem.intellij.dql.definition.model.Command;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.fixes.ReplaceFetchWithMetricsQuickFix;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
 public class MetricSeriesMigrationInspection extends LocalInspectionTool {
@@ -18,8 +18,8 @@ public class MetricSeriesMigrationInspection extends LocalInspectionTool {
         return new DQLVisitor() {
 
             @Override
-            public void visitQueryStatement(@NotNull DQLQueryStatement command) {
-                super.visitQueryStatement(command);
+            public void visitCommand(@NotNull DQLCommand command) {
+                super.visitCommand(command);
 
                 Command definition = command.getDefinition();
                 if (definition == null || !"fetch".equalsIgnoreCase(definition.name())) {
@@ -32,7 +32,7 @@ public class MetricSeriesMigrationInspection extends LocalInspectionTool {
                         String paramValue = parameter.holder().getText();
                         if ("metric.series".equalsIgnoreCase(paramValue)) {
                             holder.registerProblem(
-                                    command.getQueryStatementKeyword(),
+                                    command.getCommandKeyword(),
                                     DQLBundle.message("inspection.variable.metricSeriesMigration.issueDetected"),
                                     new ReplaceFetchWithMetricsQuickFix()
                             );

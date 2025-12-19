@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.definition.DQLParameterValueTypesValidator;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.inspections.BaseInspection;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
+import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
 import java.util.ArrayList;
@@ -20,8 +20,8 @@ public class ParameterValueInspection extends BaseInspection {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitQueryStatement(@NotNull DQLQueryStatement expression) {
-                super.visitQueryStatement(expression);
+            public void visitCommand(@NotNull DQLCommand expression) {
+                super.visitCommand(expression);
                 DQLParameterValueTypesValidator service = DQLParameterValueTypesValidator.getInstance(expression.getProject());
                 for (MappedParameter parameter : expression.getParameters()) {
                     for (DQLParameterValueTypesValidator.ValueIssue issue : findIssues(parameter, service)) {
@@ -31,8 +31,8 @@ public class ParameterValueInspection extends BaseInspection {
             }
 
             @Override
-            public void visitFunctionCallExpression(@NotNull DQLFunctionCallExpression expression) {
-                super.visitFunctionCallExpression(expression);
+            public void visitFunctionExpression(@NotNull DQLFunctionExpression expression) {
+                super.visitFunctionExpression(expression);
                 DQLParameterValueTypesValidator service = DQLParameterValueTypesValidator.getInstance(expression.getProject());
                 for (MappedParameter parameter : expression.getParameters()) {
                     for (DQLParameterValueTypesValidator.ValueIssue issue : findIssues(parameter, service)) {

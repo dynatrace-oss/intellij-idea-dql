@@ -25,7 +25,7 @@ public class DQLConditionOperandCompletion {
                     psiElement(DQLComparisonExpression.class),
                     psiElement(DQLEqualityExpression.class),
                     psiElement(DQLConditionExpression.class),
-                    psiElement(DQLFunctionCallExpression.class)
+                    psiElement(DQLFunctionExpression.class)
             ));
             if (neighbour instanceof BaseTypedElement typedElement) {
                 Collection<String> dataType = typedElement.getDataType();

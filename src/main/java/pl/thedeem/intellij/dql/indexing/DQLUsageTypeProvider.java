@@ -3,9 +3,9 @@ package pl.thedeem.intellij.dql.indexing;
 import com.intellij.psi.PsiElement;
 import com.intellij.usages.impl.rules.UsageType;
 import com.intellij.usages.impl.rules.UsageTypeProvider;
-import pl.thedeem.intellij.dql.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.dql.psi.*;
 
 public class DQLUsageTypeProvider implements UsageTypeProvider {
     @Override
@@ -13,7 +13,7 @@ public class DQLUsageTypeProvider implements UsageTypeProvider {
         if (
                 psiElement instanceof DQLVariableExpression
                         || psiElement instanceof DQLFunctionName
-                        || psiElement instanceof DQLQueryStatementKeyword
+                        || psiElement instanceof DQLCommandKeyword
         ) {
             return UsageType.READ;
         }

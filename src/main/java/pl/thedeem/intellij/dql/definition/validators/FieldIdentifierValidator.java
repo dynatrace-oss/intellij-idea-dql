@@ -28,7 +28,7 @@ public class FieldIdentifierValidator extends AbstractDefinitionValidator {
                 toProcess.add(array.getLeftExpression());
             } else if (
                     !(element instanceof DQLString && definition.parameterValueTypes().contains("dql.parameterValueType.fieldPattern")) &&
-                            !(element instanceof DQLSimpleExpression && definition.parameterValueTypes().contains("dql.parameterValueType.primitiveValue")) &&
+                            !(element instanceof DQLPrimitiveExpression && definition.parameterValueTypes().contains("dql.parameterValueType.primitiveValue")) &&
                             !(element instanceof DQLFieldExpression)) {
                 issues.add(new DQLParameterValueTypesValidator.ValueIssue(
                         element,

@@ -18,21 +18,21 @@ public class DQLDocumentationProvider extends AbstractDocumentationProvider {
     @Override
     public @Nullable String generateDoc(@NotNull PsiElement element, @Nullable PsiElement originalElement) {
         BaseDocumentationProvider docsProvider = switch (element) {
-            case DQLQueryStatementKeyword keyword ->
-                    new DQLCommandDocumentationProvider((DQLQueryStatement) keyword.getParent());
+            case DQLCommandKeyword keyword when keyword.getParent() instanceof DQLCommand command ->
+                    new DQLCommandDocumentationProvider(command);
             case DQLParameterName parameterName -> {
                 if (parameterName.getParent() instanceof DQLParameterExpression parameter) {
-                    if (parameter.getParent() instanceof DQLQueryStatement command) {
+                    if (parameter.getParent() instanceof DQLCommand command) {
                         yield new DQLParameterDocumentationProvider(Objects.requireNonNull(command.getParameter(parameter)));
-                    } else if (parameter.getParent() instanceof DQLFunctionCallExpression function) {
+                    } else if (parameter.getParent() instanceof DQLFunctionExpression function) {
                         yield new DQLParameterDocumentationProvider(Objects.requireNonNull(function.getParameter(parameter)));
                     }
                 }
                 yield new BaseDocumentationProvider(parameterName, DQLBundle.message("documentation.parameter.type"));
             }
-            case DQLFunctionCallExpression func -> new DQLFunctionDocumentationProvider(func);
-            case DQLFunctionName func ->
-                    new DQLFunctionDocumentationProvider((DQLFunctionCallExpression) func.getParent());
+            case DQLFunctionExpression func -> new DQLFunctionDocumentationProvider(func);
+            case DQLFunctionName func when func.getParent() instanceof DQLFunctionExpression function ->
+                    new DQLFunctionDocumentationProvider(function);
             case DQLFieldExpression field -> new BaseTypedElementDocumentationProvider(
                     originalElement != null && originalElement.getParent() instanceof DQLFieldExpression originalField ? originalField : field,
                     DQLBundle.message("documentation.field.type")

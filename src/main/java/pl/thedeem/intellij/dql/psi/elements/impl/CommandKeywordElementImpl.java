@@ -5,14 +5,14 @@ import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
+import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.common.StandardItemPresentation;
-import pl.thedeem.intellij.dql.psi.elements.CommandKeyword;
-import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.dql.psi.elements.CommandKeywordElement;
 
-public abstract class CommandKeywordImpl extends ASTWrapperPsiElement implements CommandKeyword {
-    public CommandKeywordImpl(@NotNull ASTNode node) {
+public abstract class CommandKeywordElementImpl extends ASTWrapperPsiElement implements CommandKeywordElement {
+    public CommandKeywordElementImpl(@NotNull ASTNode node) {
         super(node);
     }
 

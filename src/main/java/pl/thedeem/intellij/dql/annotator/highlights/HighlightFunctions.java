@@ -7,13 +7,13 @@ import pl.thedeem.intellij.common.annotator.AnnotatorEngine;
 import pl.thedeem.intellij.common.annotator.HighlightOptions;
 import pl.thedeem.intellij.dql.highlighting.DQLColorScheme;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
+import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 
 public class HighlightFunctions implements AnnotatorEngine {
     @Override
     public @NotNull AnnotationResult annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (element instanceof DQLFunctionCallExpression callExpression) {
+        if (element instanceof DQLFunctionExpression callExpression) {
             holder.newSilentAnnotation(HighlightOptions.HIGHLIGHT_SEVERITY)
                     .range(callExpression.getFunctionName().getTextRange())
                     .textAttributes(DQLColorScheme.FUNCTION)

@@ -10,16 +10,16 @@ import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.dql.definition.model.Command;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
 
 import java.util.List;
 
 public class DQLStatementParamsCompletion {
     public void autocomplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         PsiElement position = parameters.getPosition();
-        List<PsiElement> parents = PsiUtils.getElementsUntilParent(position, DQLQueryStatement.class);
-        if (parents.isEmpty() || !(parents.getFirst() instanceof DQLQueryStatement statement)) {
+        List<PsiElement> parents = PsiUtils.getElementsUntilParent(position, DQLCommand.class);
+        if (parents.isEmpty() || !(parents.getFirst() instanceof DQLCommand statement)) {
             return;
         }
         Command definition = statement.getDefinition();

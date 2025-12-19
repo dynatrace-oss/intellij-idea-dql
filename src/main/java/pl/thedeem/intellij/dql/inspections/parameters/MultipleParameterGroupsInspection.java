@@ -8,8 +8,8 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.inspections.BaseInspection;
 import pl.thedeem.intellij.dql.inspections.fixes.JoinParameterGroupsQuickFix;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
+import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
 import java.util.List;
@@ -19,15 +19,15 @@ public class MultipleParameterGroupsInspection extends BaseInspection {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitQueryStatement(@NotNull DQLQueryStatement statement) {
-                super.visitQueryStatement(statement);
+            public void visitCommand(@NotNull DQLCommand statement) {
+                super.visitCommand(statement);
                 List<MappedParameter> parameters = statement.getParameters();
                 validateParameterGroups(parameters, holder);
             }
 
             @Override
-            public void visitFunctionCallExpression(@NotNull DQLFunctionCallExpression function) {
-                super.visitFunctionCallExpression(function);
+            public void visitFunctionExpression(@NotNull DQLFunctionExpression function) {
+                super.visitFunctionExpression(function);
                 List<MappedParameter> parameters = function.getParameters();
                 validateParameterGroups(parameters, holder);
             }

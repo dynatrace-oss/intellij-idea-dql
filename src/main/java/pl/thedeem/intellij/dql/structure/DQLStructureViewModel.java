@@ -6,10 +6,10 @@ import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.smartTree.Sorter;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiFile;
-import pl.thedeem.intellij.dql.psi.*;
-import pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.dql.psi.*;
+import pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl;
 
 public class DQLStructureViewModel extends StructureViewModelBase implements StructureViewModel.ElementInfoProvider {
     public DQLStructureViewModel(@Nullable Editor editor, @NotNull PsiFile psiFile) {
@@ -30,7 +30,7 @@ public class DQLStructureViewModel extends StructureViewModelBase implements Str
     public boolean isAlwaysLeaf(StructureViewTreeElement element) {
         return element.getValue() instanceof DQLFieldExpression
                 || element.getValue() instanceof DQLVariableExpression
-                || element.getValue() instanceof DQLSimpleExpression;
+                || element.getValue() instanceof DQLPrimitiveExpression;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class DQLStructureViewModel extends StructureViewModelBase implements Str
                 DQLExpression.class,
                 ExpressionOperatorImpl.class,
                 DQLQuery.class,
-                DQLQueryStatement.class
+                DQLPrimitiveExpression.class
         };
     }
 }

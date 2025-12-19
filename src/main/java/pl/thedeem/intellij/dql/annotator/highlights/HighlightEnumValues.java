@@ -8,18 +8,18 @@ import pl.thedeem.intellij.common.annotator.HighlightOptions;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.highlighting.DQLColorScheme;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
 
 public class HighlightEnumValues implements AnnotatorEngine {
     @Override
     public @NotNull AnnotationResult annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof DQLFieldExpression fieldExpression
                 && fieldExpression.getParent() instanceof DQLParameterExpression argument
-                && argument.getParent() instanceof DQLQueryStatement statement
+                && argument.getParent() instanceof DQLCommand command
         ) {
-            MappedParameter parameter = statement.getParameter(argument);
+            MappedParameter parameter = command.getParameter(argument);
             Parameter definition = parameter != null ? parameter.definition() : null;
             if (definition != null && definition.allowedEnumValues() != null && !definition.allowedEnumValues().isEmpty()) {
                 holder.newSilentAnnotation(HighlightOptions.HIGHLIGHT_SEVERITY)

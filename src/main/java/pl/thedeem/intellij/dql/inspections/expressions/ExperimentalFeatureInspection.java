@@ -7,9 +7,9 @@ import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.*;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
+import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 
@@ -18,8 +18,8 @@ public class ExperimentalFeatureInspection extends LocalInspectionTool {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitQueryStatement(@NotNull DQLQueryStatement command) {
-                super.visitQueryStatement(command);
+            public void visitCommand(@NotNull DQLCommand command) {
+                super.visitCommand(command);
 
                 Command definition = command.getDefinition();
                 if (definition == null) {
@@ -35,8 +35,8 @@ public class ExperimentalFeatureInspection extends LocalInspectionTool {
             }
 
             @Override
-            public void visitFunctionCallExpression(@NotNull DQLFunctionCallExpression function) {
-                super.visitFunctionCallExpression(function);
+            public void visitFunctionExpression(@NotNull DQLFunctionExpression function) {
+                super.visitFunctionExpression(function);
 
                 Function definition = function.getDefinition();
                 Signature signature = function.getSignature();

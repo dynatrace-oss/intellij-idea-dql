@@ -6,7 +6,7 @@ import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLSimpleExpression;
+import pl.thedeem.intellij.dql.psi.DQLPrimitiveExpression;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public abstract class BaseInspection extends LocalInspectionTool {
     }
 
     protected boolean hasStaticValue(PsiElement toValidate) {
-        return toValidate instanceof DQLSimpleExpression;
+        return toValidate instanceof DQLPrimitiveExpression;
     }
 
     protected boolean doesNotContainErrorToken(@NotNull PsiElement toValidate) {

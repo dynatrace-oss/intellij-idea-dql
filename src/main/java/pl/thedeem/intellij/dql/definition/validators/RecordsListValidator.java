@@ -7,7 +7,7 @@ import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.DQLParameterValueTypesValidator;
 import pl.thedeem.intellij.dql.definition.model.Function;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
+import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,7 +26,7 @@ public class RecordsListValidator extends AbstractDefinitionValidator {
         ) : Set.of();
         for (PsiElement invalidValue : getInvalidValues(parameter,
                 element -> {
-                    if (!(element instanceof DQLFunctionCallExpression function)) {
+                    if (!(element instanceof DQLFunctionExpression function)) {
                         return true;
                     }
 

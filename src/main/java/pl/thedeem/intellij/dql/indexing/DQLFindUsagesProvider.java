@@ -6,11 +6,11 @@ import com.intellij.lang.findUsages.FindUsagesProvider;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLLexerAdapter;
 import pl.thedeem.intellij.dql.psi.*;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class DQLFindUsagesProvider implements FindUsagesProvider {
     @Override
@@ -42,7 +42,7 @@ public class DQLFindUsagesProvider implements FindUsagesProvider {
             case DQLVariableExpression ignored -> DQLBundle.message("findUsages.types.variables");
             case DQLFunctionName ignored -> DQLBundle.message("findUsages.types.functions");
             case DQLParameterName ignored -> DQLBundle.message("findUsages.types.parameters");
-            case DQLQueryStatementKeyword ignored -> DQLBundle.message("findUsages.types.statements");
+            case DQLCommandKeyword ignored -> DQLBundle.message("findUsages.types.statements");
             default -> DQLBundle.message("findUsages.types.unknown");
         };
     }

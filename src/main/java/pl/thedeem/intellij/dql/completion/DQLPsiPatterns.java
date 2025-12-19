@@ -14,17 +14,17 @@ public interface DQLPsiPatterns {
     PsiElementPattern.Capture<PsiElement> INSERTION_ERROR_ELEMENT = psiElement().withParent(psiElement(TokenType.ERROR_ELEMENT));
 
     PsiElementPattern.Capture<PsiElement> QUERY_KEYWORD = psiElement()
-            .withParent(DQLQueryStatementKeyword.class)
-            .withSuperParent(2, psiElement(DQLQueryStatement.class));
+            .withParent(DQLCommandKeyword.class)
+            .withSuperParent(2, psiElement(DQLCommand.class));
 
     PsiElementPattern.Capture<PsiElement> LAST_ELEMENT_IN_STATEMENT = psiElement()
-            .withParent(psiElement(TokenType.ERROR_ELEMENT).with(PsiPatternUtils.isLastChildUntil(psiElement(DQLQueryStatement.class))));
+            .withParent(psiElement(TokenType.ERROR_ELEMENT).with(PsiPatternUtils.isLastChildUntil(psiElement(DQLCommand.class))));
 
     ElementPattern<PsiElement> INSIDE_STATEMENT_PARAMETERS_LIST = PlatformPatterns.or(
-            psiElement().withParent(DQLFieldExpression.class).withSuperParent(2, DQLQueryStatement.class),
+            psiElement().withParent(DQLFieldExpression.class).withSuperParent(2, DQLCommand.class),
             psiElement().withParent(psiElement(TokenType.ERROR_ELEMENT).with(
                     PsiPatternUtils.isAfterElementSkipping(
-                            psiElement().withParent(DQLQueryStatement.class),
+                            psiElement().withParent(DQLCommand.class),
                             psiElement().whitespaceCommentEmptyOrError()
                     )
             ))
@@ -36,7 +36,7 @@ public interface DQLPsiPatterns {
     ElementPattern<PsiElement> SUGGEST_FIELD_NAMES = PlatformPatterns.or(
             psiElement().withParent(DQLFieldName.class)
     );
-    ElementPattern<PsiElement> SUGGEST_FUNCTION_PARAMETERS = psiElement().withSuperParent(2, DQLFunctionCallExpression.class);
+    ElementPattern<PsiElement> SUGGEST_FUNCTION_PARAMETERS = psiElement().withSuperParent(2, DQLFunctionExpression.class);
 
     PsiElementPattern.Capture<PsiElement> SIBLING_OF_FIELD = psiElement()
             .withParent(
@@ -52,7 +52,7 @@ public interface DQLPsiPatterns {
 
     ElementPattern<PsiElement> QUERY_COMMAND = PlatformPatterns.or(
             LAST_ELEMENT_IN_STATEMENT,
-            psiElement().withParent(DQLQueryStatementKeyword.class)
+            psiElement().withParent(DQLCommandKeyword.class)
     );
 
     ElementPattern<PsiElement> SUGGEST_COMMAND_KEYWORDS = PlatformPatterns.or(

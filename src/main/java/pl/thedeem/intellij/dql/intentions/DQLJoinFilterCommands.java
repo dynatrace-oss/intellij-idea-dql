@@ -17,10 +17,10 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import pl.thedeem.intellij.dql.definition.model.Command;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
 import pl.thedeem.intellij.dql.psi.DQLParenthesisedExpression;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
-import pl.thedeem.intellij.dql.psi.DQLSimpleExpression;
+import pl.thedeem.intellij.dql.psi.DQLPrimitiveExpression;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -36,24 +36,24 @@ public class DQLJoinFilterCommands extends PsiElementBaseIntentionAction impleme
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement psiElement) {
-        DQLQueryStatement command = PsiTreeUtil.getParentOfType(psiElement, DQLQueryStatement.class);
+        DQLCommand command = PsiTreeUtil.getParentOfType(psiElement, DQLCommand.class);
         if (command == null || !isFilter(command)) {
             return false;
         }
-        return ((PsiUtils.getNextElement(command) instanceof DQLQueryStatement next)
+        return ((PsiUtils.getNextElement(command) instanceof DQLCommand next)
                 && isFilter(next) && intersects(next, editor.getSelectionModel())) ||
-                (PsiUtils.getPreviousElement(command) instanceof DQLQueryStatement previous
+                (PsiUtils.getPreviousElement(command) instanceof DQLCommand previous
                         && isFilter(previous) && intersects(previous, editor.getSelectionModel()));
     }
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement psiElement) throws IncorrectOperationException {
         Document document = editor.getDocument();
-        DQLQueryStatement command = PsiTreeUtil.getParentOfType(psiElement, DQLQueryStatement.class);
+        DQLCommand command = PsiTreeUtil.getParentOfType(psiElement, DQLCommand.class);
         if (command == null || !isFilter(command)) {
             return;
         }
-        List<DQLQueryStatement> includedFilters = findSiblingFilters(command, editor.getSelectionModel());
+        List<DQLCommand> includedFilters = findSiblingFilters(command, editor.getSelectionModel());
         String newFilter = calculateNewFilterCommand(includedFilters);
         document.replaceString(
                 includedFilters.getFirst().getTextRange().getStartOffset(),
@@ -77,7 +77,7 @@ public class DQLJoinFilterCommands extends PsiElementBaseIntentionAction impleme
         return true;
     }
 
-    private boolean isFilter(@NotNull DQLQueryStatement command) {
+    private boolean isFilter(@NotNull DQLCommand command) {
         Command definition = command.getDefinition();
         if (definition == null) {
             return false;
@@ -85,24 +85,24 @@ public class DQLJoinFilterCommands extends PsiElementBaseIntentionAction impleme
         return FILTERABLE_COMMANDS.contains(definition.name());
     }
 
-    private @NotNull List<DQLQueryStatement> findSiblingFilters(@NotNull DQLQueryStatement command, @NotNull SelectionModel selectionModel) {
-        List<DQLQueryStatement> result = new ArrayList<>();
-        DQLQueryStatement current = command;
-        while (PsiUtils.getPreviousElement(current) instanceof DQLQueryStatement previous && intersects(previous, selectionModel) && isFilter(previous)) {
+    private @NotNull List<DQLCommand> findSiblingFilters(@NotNull DQLCommand command, @NotNull SelectionModel selectionModel) {
+        List<DQLCommand> result = new ArrayList<>();
+        DQLCommand current = command;
+        while (PsiUtils.getPreviousElement(current) instanceof DQLCommand previous && intersects(previous, selectionModel) && isFilter(previous)) {
             result.add(previous);
             current = previous;
         }
         result = result.reversed();
         result.add(command);
         current = command;
-        while (PsiUtils.getNextElement(current) instanceof DQLQueryStatement next && intersects(next, selectionModel) && isFilter(next)) {
+        while (PsiUtils.getNextElement(current) instanceof DQLCommand next && intersects(next, selectionModel) && isFilter(next)) {
             result.add(next);
             current = next;
         }
         return result;
     }
 
-    private @NotNull String calculateNewFilterCommand(@NotNull List<DQLQueryStatement> filters) {
+    private @NotNull String calculateNewFilterCommand(@NotNull List<DQLCommand> filters) {
         return "| filter " + String.join(" and ", filters.stream()
                 .map(c -> {
                     Command definition = c.getDefinition();
@@ -111,7 +111,7 @@ public class DQLJoinFilterCommands extends PsiElementBaseIntentionAction impleme
                         return "";
                     }
                     List<String> parts = condition.getExpressions().stream().map(p -> {
-                        if (p instanceof DQLParenthesisedExpression || p instanceof DQLSimpleExpression || p instanceof DQLFieldExpression) {
+                        if (p instanceof DQLParenthesisedExpression || p instanceof DQLPrimitiveExpression || p instanceof DQLFieldExpression) {
                             return p.getText();
                         }
                         return "(" + p.getText() + ")";

@@ -63,21 +63,21 @@
 }
 
 root ::= comment | query?
-query ::= query_statement (query_statement)* { pin=1 }
+query ::= command (command)* { pin=1 }
 
-query_statement ::= PIPE? query_statement_keyword query_parameters_list? {
+command ::= PIPE? command_keyword command_parameters? {
     pin=2
-    recoverWhile=query_statement_recover
+    recoverWhile=recover_command
     mixin="pl.thedeem.intellij.dql.psi.elements.impl.CommandElementImpl"
     implements="pl.thedeem.intellij.dql.psi.elements.CommandElement"
 }
 
-query_statement_keyword ::= IDENTIFIER {
-   mixin="pl.thedeem.intellij.dql.psi.elements.impl.CommandKeywordImpl"
-   implements="pl.thedeem.intellij.dql.psi.elements.CommandKeyword"
+command_keyword ::= IDENTIFIER {
+   mixin="pl.thedeem.intellij.dql.psi.elements.impl.CommandKeywordElementImpl"
+   implements="pl.thedeem.intellij.dql.psi.elements.CommandKeywordElement"
 }
 
-private query_parameters_list ::= expression (COMMA expression)*
+private command_parameters ::= expression (COMMA expression)*
 
 // Comment types
 comment ::= end_of_line_comment | multiline_comment
@@ -96,7 +96,7 @@ expression ::=
 
 private primary_expression ::=
     parenthesised_expression |
-    function_call_expression |
+    function_expression |
     negative_value_expression |
     field_expression |
     variable_expression |
@@ -109,9 +109,9 @@ private primary_expression ::=
     parameter_expression |
     bracket_expression |
     search_expression |
-    simple_expression
+    primitive_expression
 
-simple_expression ::=
+primitive_expression ::=
     boolean |
     string |
     number |
@@ -237,7 +237,7 @@ time_alignment_expression_operator ::= AT {
 
 time_alignment_operand ::= IDENTIFIER
 
-function_call_expression ::= function_name L_PARENTHESIS function_arguments_list? R_PARENTHESIS {
+function_expression ::= function_name L_PARENTHESIS function_arguments_list? R_PARENTHESIS {
     pin=2
     mixin="pl.thedeem.intellij.dql.psi.elements.impl.FunctionCallExpressionImpl"
     implements="pl.thedeem.intellij.dql.psi.elements.FunctionCallExpression"
@@ -281,7 +281,7 @@ escaped_field_name ::= TICK_QUOTE string_content_element TICK_QUOTE {
     implements="pl.thedeem.intellij.dql.psi.elements.FieldElement"
 }
 string ::= double_quoted_string | single_quoted_string | multiline_string {
-    extends=simple_expression
+    extends=primitive_expression
     implements="pl.thedeem.intellij.dql.psi.elements.StringElement"
 }
 double_quoted_string ::= DOUBLE_QUOTE string_content_element DOUBLE_QUOTE {
@@ -322,28 +322,28 @@ sort_direction ::= "asc" | "desc" {
     implements="pl.thedeem.intellij.dql.psi.elements.SortKeywordElement"
 }
 number ::= POSITIVE_LONG | POSITIVE_DOUBLE | POSITIVE_SCIENTIFIC_NOTATION {
-   extends=simple_expression
+   extends=primitive_expression
    mixin="pl.thedeem.intellij.dql.psi.elements.impl.PositiveNumberElementImpl"
    implements="pl.thedeem.intellij.dql.psi.elements.NumberElement"
 }
 duration ::= NUMBERED_IDENTIFIER {
-    extends=simple_expression
+    extends=primitive_expression
     mixin="pl.thedeem.intellij.dql.psi.elements.impl.PositiveDurationElementImpl"
     implements="pl.thedeem.intellij.dql.psi.elements.DurationElement"
 }
 boolean ::= TRUE | FALSE {
-    extends=simple_expression
+    extends=primitive_expression
     mixin="pl.thedeem.intellij.dql.psi.elements.impl.BooleanElementImpl"
     implements="pl.thedeem.intellij.dql.psi.elements.BooleanElement"
 }
 null ::= NULL_TYPE {
-    extends=simple_expression
+    extends=primitive_expression
     mixin="pl.thedeem.intellij.dql.psi.elements.impl.NullElementImpl"
     implements="pl.thedeem.intellij.dql.psi.elements.NullElement"
 }
 
 // recovers
-private query_statement_recover ::= !(PIPE|ARRAY_CLOSE)
+private recover_command ::= !(PIPE|ARRAY_CLOSE)
 private recover_parenthesised_item ::= !(R_PARENTHESIS|COLON|PIPE)
 private recover_array_content ::= !(ARRAY_CLOSE|PIPE|COLON|R_BRACE)
 private recover_bracket_content ::= !(ARRAY_CLOSE|R_BRACE|COMMA|PIPE|COLON)

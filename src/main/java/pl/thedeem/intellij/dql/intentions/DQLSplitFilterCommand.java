@@ -31,7 +31,7 @@ public class DQLSplitFilterCommand extends PsiElementBaseIntentionAction impleme
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement psiElement) {
-        DQLQueryStatement command = PsiTreeUtil.getParentOfType(psiElement, DQLQueryStatement.class);
+        DQLCommand command = PsiTreeUtil.getParentOfType(psiElement, DQLCommand.class);
         if (command == null || command.getDefinition() == null || !FILTERABLE_COMMANDS.contains(command.getDefinition().name())) {
             return false;
         }
@@ -51,7 +51,7 @@ public class DQLSplitFilterCommand extends PsiElementBaseIntentionAction impleme
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement psiElement) throws IncorrectOperationException {
         Document document = editor.getDocument();
-        DQLQueryStatement command = PsiTreeUtil.getParentOfType(psiElement, DQLQueryStatement.class);
+        DQLCommand command = PsiTreeUtil.getParentOfType(psiElement, DQLCommand.class);
         if (command == null || command.getDefinition() == null) {
             return;
         }

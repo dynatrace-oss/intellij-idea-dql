@@ -21,9 +21,9 @@ import pl.thedeem.intellij.dql.definition.model.Function;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.definition.model.Signature;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLFunctionName;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.FunctionCallExpression;
 
@@ -167,8 +167,8 @@ public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement im
         if (definitions.size() == 1) {
             return definitions.getFirst();
         }
-        List<PsiElement> parents = PsiUtils.getElementsUntilParent(this, DQLQueryStatement.class);
-        if (parents.getFirst() instanceof DQLQueryStatement statement && parents.get(1) instanceof DQLExpression expression) {
+        List<PsiElement> parents = PsiUtils.getElementsUntilParent(this, DQLCommand.class);
+        if (parents.getFirst() instanceof DQLCommand statement && parents.get(1) instanceof DQLExpression expression) {
             MappedParameter parameter = statement.getParameter(expression);
             Parameter parameterDefinition = parameter != null ? parameter.definition() : null;
             if (parameterDefinition != null) {

@@ -118,13 +118,13 @@ public class DQLBlock extends AbstractBlock {
             return Indent.getNormalIndent();
         }
         // command-level
-        if (element instanceof DQLQueryStatement command) {
+        if (element instanceof DQLCommand command) {
             if (settings.INDENT_BEFORE_PIPE) {
                 return command.isFirstStatement() ? Indent.getNoneIndent() : Indent.getNormalIndent();
             }
         }
-        if (parent instanceof DQLQueryStatement command) {
-            if (element instanceof DQLQueryStatementKeyword && !command.isFirstStatement()) {
+        if (parent instanceof DQLCommand command) {
+            if (element instanceof DQLCommandKeyword && !command.isFirstStatement()) {
                 return Indent.getNormalIndent();
             }
             if (element instanceof DQLParameterExpression) {
@@ -155,15 +155,15 @@ public class DQLBlock extends AbstractBlock {
     private Wrap getChildWrap(ASTNode child) {
         IElementType elementType = this.getNode().getElementType();
         IElementType childType = child.getElementType();
-        if (DQLTypes.L_PARENTHESIS == childType && DQLTypes.FUNCTION_CALL_EXPRESSION == elementType) {
+        if (DQLTypes.L_PARENTHESIS == childType && DQLTypes.FUNCTION_EXPRESSION == elementType) {
             return Wrap.createWrap(WrapType.NONE, true);
         }
         if (settings.WRAP_LONG_EXPRESSIONS) {
             if (DQLTypes.ARITHMETICAL_EXPRESSION == elementType
-                    || DQLTypes.QUERY_STATEMENT == elementType
+                    || DQLTypes.COMMAND == elementType
                     || DQLTypes.CONDITION_EXPRESSION == elementType
                     || DQLTypes.PARENTHESISED_EXPRESSION == elementType
-                    || DQLTypes.FUNCTION_CALL_EXPRESSION == elementType
+                    || DQLTypes.FUNCTION_EXPRESSION == elementType
                     || DQLTypes.COMPARISON_EXPRESSION == elementType
                     || DQLTypes.ASSIGN_EXPRESSION == elementType
                     || DQLTypes.EQUALITY_EXPRESSION == elementType

@@ -1,0 +1,20 @@
+data record(field = "test")
+| fields {
+  arithmetical = 5 + 5 * 5 - 5 / 5 % 5,
+  negative_value = -123.312,
+  condition = true and false xor true,
+  negation = not true,
+  in_expression = field in [
+      data record(field = "")],
+  array_expression = array(1, 2, 3)[2],
+  field_accessor = record(test = "")[test],
+  equality = true == true,
+  negated_equality = true != false,
+  comparison_lesser = 5 < 10,
+  comparison_lesser_than = 5 <= 10,
+  comparison_greater = 10 > 5,
+  comparison_greater_than = 10 >= 5,
+  time_alignment_now = @d,
+  time_alignment_at = (now() - 10h)@minute,
+  search = "something long" ~ "long"
+}

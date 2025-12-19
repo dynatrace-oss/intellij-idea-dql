@@ -24,7 +24,7 @@ public class DQLElementFactory {
 
     public static PsiElement createUnknownElement(@NotNull Project project, @NotNull String text) {
         PsiFile newFile = PsiFileFactory.getInstance(project).createFileFromText("temporary.dql", DynatraceQueryLanguage.INSTANCE, "fetch " + text);
-        DQLQueryStatementKeyword keyword = PsiTreeUtil.findChildOfType(newFile, DQLQueryStatementKeyword.class);
+        DQLCommandKeyword keyword = PsiTreeUtil.findChildOfType(newFile, DQLCommandKeyword.class);
         return Objects.requireNonNull(keyword).getNextSibling().getNextSibling();
     }
 

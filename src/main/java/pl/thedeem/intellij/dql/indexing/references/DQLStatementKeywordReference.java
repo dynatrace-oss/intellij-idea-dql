@@ -7,13 +7,13 @@ import com.intellij.psi.PsiReferenceBase;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatementKeyword;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
+import pl.thedeem.intellij.dql.psi.DQLCommandKeyword;
 
 import java.util.Objects;
 
-public final class DQLStatementKeywordReference extends PsiReferenceBase<DQLQueryStatementKeyword> {
-    public DQLStatementKeywordReference(@NotNull DQLQueryStatementKeyword element) {
+public final class DQLStatementKeywordReference extends PsiReferenceBase<DQLCommandKeyword> {
+    public DQLStatementKeywordReference(@NotNull DQLCommandKeyword element) {
         super(element, TextRange.from(0, element.getTextLength()));
     }
 
@@ -32,10 +32,10 @@ public final class DQLStatementKeywordReference extends PsiReferenceBase<DQLQuer
     public boolean isReferenceTo(@NotNull PsiElement element) {
         boolean isReference = super.isReferenceTo(element);
         if (!isReference) {
-            if (element instanceof DQLQueryStatementKeyword keyword) {
+            if (element instanceof DQLCommandKeyword keyword) {
                 return Objects.equals(myElement.getName(), keyword.getName());
             }
-            if (element instanceof DQLQueryStatement statement) {
+            if (element instanceof DQLCommand statement) {
                 return Objects.equals(myElement.getName(), statement.getName());
             }
             return false;

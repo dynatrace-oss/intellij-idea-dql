@@ -6,16 +6,16 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.Function;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.definition.model.Signature;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
+import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class DQLFunctionDocumentationProvider extends BaseDocumentationProvider {
-    private final DQLFunctionCallExpression function;
+    private final DQLFunctionExpression function;
 
-    public DQLFunctionDocumentationProvider(@NotNull DQLFunctionCallExpression function) {
+    public DQLFunctionDocumentationProvider(@NotNull DQLFunctionExpression function) {
         super(function, DQLBundle.message("documentation.function.type"));
         this.function = function;
     }

@@ -6,7 +6,7 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
 public class UnknownCommandInspection extends LocalInspectionTool {
@@ -14,11 +14,11 @@ public class UnknownCommandInspection extends LocalInspectionTool {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitQueryStatement(@NotNull DQLQueryStatement command) {
-                super.visitQueryStatement(command);
+            public void visitCommand(@NotNull DQLCommand command) {
+                super.visitCommand(command);
                 if (command.getDefinition() == null) {
                     holder.registerProblem(
-                            command.getQueryStatementKeyword(),
+                            command.getCommandKeyword(),
                             DQLBundle.message("inspection.command.name.unknown", command.getName()),
                             ProblemHighlightType.LIKE_UNKNOWN_SYMBOL
                     );

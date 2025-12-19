@@ -3,15 +3,15 @@ package pl.thedeem.intellij.dql.indexing;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.*;
 import com.intellij.util.ProcessingContext;
+import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.indexing.references.DQLFieldReference;
 import pl.thedeem.intellij.dql.indexing.references.DQLFunctionReference;
 import pl.thedeem.intellij.dql.indexing.references.DQLStatementKeywordReference;
 import pl.thedeem.intellij.dql.indexing.references.DQLVariableReference;
+import pl.thedeem.intellij.dql.psi.DQLCommandKeyword;
 import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
 import pl.thedeem.intellij.dql.psi.DQLFunctionName;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatementKeyword;
 import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
-import org.jetbrains.annotations.NotNull;
 
 public class DQLReferenceContributor extends PsiReferenceContributor {
     @Override
@@ -35,12 +35,12 @@ public class DQLReferenceContributor extends PsiReferenceContributor {
                     }
                 });
         registrar.registerReferenceProvider(
-                PlatformPatterns.psiElement(DQLQueryStatementKeyword.class),
+                PlatformPatterns.psiElement(DQLCommandKeyword.class),
                 new PsiReferenceProvider() {
                     @Override
                     public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
                                                                            @NotNull ProcessingContext context) {
-                        return new PsiReference[]{new DQLStatementKeywordReference((DQLQueryStatementKeyword) element)};
+                        return new PsiReference[]{new DQLStatementKeywordReference((DQLCommandKeyword) element)};
                     }
                 });
         registrar.registerReferenceProvider(

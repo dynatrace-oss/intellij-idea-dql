@@ -8,7 +8,7 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.fixes.DropInvalidParameterQuickFix;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
+import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
 import java.util.HashSet;
@@ -19,8 +19,8 @@ public class DuplicatedFunctionParameterInspection extends LocalInspectionTool {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitFunctionCallExpression(@NotNull DQLFunctionCallExpression function) {
-                super.visitFunctionCallExpression(function);
+            public void visitFunctionExpression(@NotNull DQLFunctionExpression function) {
+                super.visitFunctionExpression(function);
 
                 Set<String> alreadyProcessed = new HashSet<>();
                 for (MappedParameter parameter : function.getParameters()) {

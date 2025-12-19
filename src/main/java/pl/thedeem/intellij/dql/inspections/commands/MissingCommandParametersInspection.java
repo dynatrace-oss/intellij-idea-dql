@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.fixes.AddMissingParametersQuickFix;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatementKeyword;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
+import pl.thedeem.intellij.dql.psi.DQLCommandKeyword;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
 import java.util.Collection;
@@ -20,11 +20,11 @@ public class MissingCommandParametersInspection extends LocalInspectionTool {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitQueryStatement(@NotNull DQLQueryStatement command) {
-                super.visitQueryStatement(command);
+            public void visitCommand(@NotNull DQLCommand command) {
+                super.visitCommand(command);
 
                 Collection<Parameter> missingParameters = command.getMissingRequiredParameters();
-                DQLQueryStatementKeyword keyword = command.getQueryStatementKeyword();
+                DQLCommandKeyword keyword = command.getCommandKeyword();
                 if (!missingParameters.isEmpty()) {
                     List<LocalQuickFix> fixes = missingParameters.stream()
                             .map(p -> (LocalQuickFix) new AddMissingParametersQuickFix(

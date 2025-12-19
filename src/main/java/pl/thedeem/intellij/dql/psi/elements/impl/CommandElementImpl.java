@@ -20,9 +20,9 @@ import pl.thedeem.intellij.dql.definition.DQLParametersCalculatorService;
 import pl.thedeem.intellij.dql.definition.model.Command;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
+import pl.thedeem.intellij.dql.psi.DQLCommandKeyword;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatementKeyword;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 import pl.thedeem.intellij.dql.psi.elements.CommandElement;
 
@@ -40,7 +40,7 @@ public abstract class CommandElementImpl extends ASTWrapperPsiElement implements
 
     @Override
     public String getName() {
-        DQLQueryStatementKeyword keyword = this.findChildByClass(DQLQueryStatementKeyword.class);
+        DQLCommandKeyword keyword = this.findChildByClass(DQLCommandKeyword.class);
         return keyword != null ? keyword.getName() : getText();
     }
 
@@ -104,7 +104,7 @@ public abstract class CommandElementImpl extends ASTWrapperPsiElement implements
     @Override
     public boolean isFirstStatement() {
         DQLQuery query = (DQLQuery) getParent();
-        return query.getQueryStatementList().getFirst() == this;
+        return query.getCommandList().getFirst() == this;
     }
 
     @Override

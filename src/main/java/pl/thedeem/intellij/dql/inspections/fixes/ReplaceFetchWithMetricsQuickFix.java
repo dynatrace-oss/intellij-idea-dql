@@ -11,20 +11,20 @@ import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.Command;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ReplaceFetchWithMetricsQuickFix extends AbstractReplaceElementQuickFix<DQLQueryStatement> {
+public class ReplaceFetchWithMetricsQuickFix extends AbstractReplaceElementQuickFix<DQLCommand> {
     @Override
-    protected @Nullable DQLQueryStatement getElementToReplace(@NotNull PsiElement element) {
-        return element instanceof DQLQueryStatement statement ? statement : PsiTreeUtil.getParentOfType(element, DQLQueryStatement.class);
+    protected @Nullable DQLCommand getElementToReplace(@NotNull PsiElement element) {
+        return element instanceof DQLCommand statement ? statement : PsiTreeUtil.getParentOfType(element, DQLCommand.class);
     }
 
     @Override
-    protected @NotNull String getDefaultReplacement(@NotNull DQLQueryStatement element) {
+    protected @NotNull String getDefaultReplacement(@NotNull DQLCommand element) {
         DQLDefinitionService service = DQLDefinitionService.getInstance(element.getProject());
         Command metrics = service.getCommandByName("metrics");
         Command definition = element.getDefinition();

@@ -23,7 +23,7 @@ public class DuplicatedFieldNamesInspection extends LocalInspectionTool {
         return new DQLVisitor() {
             public void visitExpression(@NotNull DQLExpression expression) {
                 super.visitExpression(expression);
-                if (expression.getParent() instanceof DQLQueryStatement command) {
+                if (expression.getParent() instanceof DQLCommand command) {
                     MappedParameter parameter = command.getParameter(expression);
                     if (parameter == null) {
                         return;

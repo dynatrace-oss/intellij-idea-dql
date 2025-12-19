@@ -10,7 +10,7 @@ import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.dql.definition.model.Function;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.definition.model.Signature;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
+import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 
 import java.util.List;
 import java.util.Set;
@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 public class DQLFunctionParametersCompletion {
     public void autocomplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         PsiElement position = parameters.getPosition();
-        List<PsiElement> parents = PsiUtils.getElementsUntilParent(position, DQLFunctionCallExpression.class);
-        if (parents.getFirst() instanceof DQLFunctionCallExpression function) {
+        List<PsiElement> parents = PsiUtils.getElementsUntilParent(position, DQLFunctionExpression.class);
+        if (parents.getFirst() instanceof DQLFunctionExpression function) {
             Function definition = function.getDefinition();
             Signature signature = function.getSignature();
             if (definition == null || signature == null) {

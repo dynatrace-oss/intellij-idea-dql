@@ -10,9 +10,9 @@ import pl.thedeem.intellij.dpl.DynatracePatternLanguage;
 import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
+import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
 import pl.thedeem.intellij.dql.psi.DQLString;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 
@@ -53,6 +53,6 @@ public class DQLLanguagesInjector implements MultiHostInjector {
 
     @Override
     public @NotNull List<? extends Class<? extends PsiElement>> elementsToInjectIn() {
-        return List.of(DQLParameterExpression.class, DQLQueryStatement.class, DQLFunctionCallExpression.class);
+        return List.of(DQLParameterExpression.class, DQLCommand.class, DQLFunctionExpression.class);
     }
 }

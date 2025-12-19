@@ -4,15 +4,15 @@ import com.intellij.openapi.util.text.HtmlChunk;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.Command;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DQLCommandDocumentationProvider extends BaseDocumentationProvider {
-    private final DQLQueryStatement command;
+    private final DQLCommand command;
 
-    public DQLCommandDocumentationProvider(@NotNull DQLQueryStatement command) {
+    public DQLCommandDocumentationProvider(@NotNull DQLCommand command) {
         super(command, DQLBundle.message("documentation.command.type"));
         this.command = command;
     }

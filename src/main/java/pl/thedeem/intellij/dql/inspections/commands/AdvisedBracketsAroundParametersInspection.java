@@ -9,8 +9,8 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.fixes.AddBracketsToParameterValueQuickFix;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class AdvisedBracketsAroundParametersInspection extends LocalInspectionTo
             @Override
             public void visitExpression(@NotNull DQLExpression expression) {
                 super.visitExpression(expression);
-                if (expression.getParent() instanceof DQLQueryStatement command) {
+                if (expression.getParent() instanceof DQLCommand command) {
                     MappedParameter parameter = command.getParameter(expression);
                     Parameter definition = parameter != null ? parameter.definition() : null;
                     if (definition == null) {
@@ -49,7 +49,7 @@ public class AdvisedBracketsAroundParametersInspection extends LocalInspectionTo
         };
     }
 
-    private boolean shouldAdviseBrackets(@NotNull DQLQueryStatement parent) {
+    private boolean shouldAdviseBrackets(@NotNull DQLCommand parent) {
         List<MappedParameter> variadicParams = parent.getParameters().stream().filter(p -> p.definition() != null && p.definition().variadic()).toList();
         return variadicParams.size() > 1;
     }

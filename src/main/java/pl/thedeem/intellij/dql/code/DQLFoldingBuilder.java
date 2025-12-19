@@ -31,7 +31,7 @@ public class DQLFoldingBuilder extends FoldingBuilderEx implements DumbAware {
                     if (element.getTextRange().getStartOffset() != element.getTextRange().getEndOffset()) {
                         descriptors.add(new FoldingDescriptor(element.getNode(), element.getTextRange()));
                     }
-                } else if (element instanceof DQLQueryStatement list) {
+                } else if (element instanceof DQLCommand list) {
                     for (MappedParameter parameter : list.getParameters()) {
                         if (!parameter.included().isEmpty()) {
                             FoldingGroup foldingGroup = FoldingGroup.newGroup(parameter.name());

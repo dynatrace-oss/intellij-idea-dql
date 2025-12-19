@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.Function;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
+import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
 public class DeprecatedInspection extends LocalInspectionTool {
@@ -15,8 +15,8 @@ public class DeprecatedInspection extends LocalInspectionTool {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitFunctionCallExpression(@NotNull DQLFunctionCallExpression function) {
-                super.visitFunctionCallExpression(function);
+            public void visitFunctionExpression(@NotNull DQLFunctionExpression function) {
+                super.visitFunctionExpression(function);
 
                 Function definition = function.getDefinition();
                 if (definition == null) {

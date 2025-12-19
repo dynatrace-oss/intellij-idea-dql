@@ -10,7 +10,7 @@ import pl.thedeem.intellij.dql.definition.model.Function;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.definition.model.Signature;
 import pl.thedeem.intellij.dql.inspections.fixes.AddMissingParametersQuickFix;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
+import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
 import java.util.Collection;
@@ -22,8 +22,8 @@ public class MissingFunctionParametersInspection extends LocalInspectionTool {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitFunctionCallExpression(@NotNull DQLFunctionCallExpression function) {
-                super.visitFunctionCallExpression(function);
+            public void visitFunctionExpression(@NotNull DQLFunctionExpression function) {
+                super.visitFunctionExpression(function);
 
                 Function definition = function.getDefinition();
                 if (definition == null) {
@@ -52,7 +52,7 @@ public class MissingFunctionParametersInspection extends LocalInspectionTool {
     }
 
     // In DQL, you can create an empty variadic list if it's the only parameter in the function
-    private boolean isEmptyAllowedForVariadic(@NotNull DQLFunctionCallExpression function) {
+    private boolean isEmptyAllowedForVariadic(@NotNull DQLFunctionExpression function) {
         Signature signature = function.getSignature();
         if (signature == null || !function.getParameters().isEmpty()) {
             return false;

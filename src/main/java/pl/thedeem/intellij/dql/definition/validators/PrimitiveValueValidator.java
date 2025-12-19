@@ -7,7 +7,7 @@ import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.DQLParameterValueTypesValidator;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
-import pl.thedeem.intellij.dql.psi.DQLSimpleExpression;
+import pl.thedeem.intellij.dql.psi.DQLPrimitiveExpression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class PrimitiveValueValidator extends AbstractDefinitionValidator {
     }
 
     private boolean isInvalid(@NotNull PsiElement element, @NotNull Parameter definition) {
-        if (element instanceof DQLSimpleExpression) {
+        if (element instanceof DQLPrimitiveExpression) {
             return false;
         }
         List<String> types = Objects.requireNonNullElse(definition.parameterValueTypes(), List.of());

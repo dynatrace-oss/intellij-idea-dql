@@ -20,8 +20,8 @@ public class InvalidFieldReadOperationInspection extends BaseInspection {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitQueryStatement(@NotNull DQLQueryStatement command) {
-                super.visitQueryStatement(command);
+            public void visitCommand(@NotNull DQLCommand command) {
+                super.visitCommand(command);
                 validateParameters(command.getParameters(), holder);
             }
 

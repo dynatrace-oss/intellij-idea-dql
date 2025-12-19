@@ -4,10 +4,10 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.util.IncorrectOperationException;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
-import pl.thedeem.intellij.dql.psi.DQLFunctionName;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
+import pl.thedeem.intellij.dql.psi.DQLFunctionName;
 
 import java.util.Objects;
 
@@ -33,7 +33,7 @@ public final class DQLFunctionReference extends PsiReferenceBase<DQLFunctionName
             if (element instanceof DQLFunctionName func) {
                 return Objects.equals(myElement.getName(), func.getName());
             }
-            if (element instanceof DQLFunctionCallExpression func) {
+            if (element instanceof DQLFunctionExpression func) {
                 return Objects.equals(myElement.getName(), func.getName());
             }
             return false;

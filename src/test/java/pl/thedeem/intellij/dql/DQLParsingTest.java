@@ -10,6 +10,10 @@ public class DQLParsingTest extends ParsingTestCase {
     public void testDQLFetchLogsTest() {
         doTest(true);
     }
+    
+    public void testDQLExpressionsTest() {
+        doTest(true);
+    }
 
     public void testDQLDataTypesTest() {
         doTest(true);

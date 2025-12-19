@@ -10,7 +10,7 @@ import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.Command;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.inspections.fixes.FlipConditionQuickFix;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLUnaryExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
@@ -19,8 +19,8 @@ public class NegatedFilteringConditionInspection extends LocalInspectionTool {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitQueryStatement(@NotNull DQLQueryStatement command) {
-                super.visitQueryStatement(command);
+            public void visitCommand(@NotNull DQLCommand command) {
+                super.visitCommand(command);
 
                 Command definition = command.getDefinition();
                 if (definition == null || !DQLDefinitionService.FILTER_COMMAND_NEGATIONS.containsKey(definition.name())) {
@@ -33,7 +33,7 @@ public class NegatedFilteringConditionInspection extends LocalInspectionTool {
                 boolean negativeFound = condition.getExpressions().stream().allMatch(e -> DQLUtil.unpackParenthesis(e) instanceof DQLUnaryExpression);
                 if (negativeFound) {
                     holder.registerProblem(
-                            command.getQueryStatementKeyword(),
+                            command.getCommandKeyword(),
                             DQLBundle.message(
                                     "inspection.negatedFilteringCondition.shouldBeFlipped",
                                     definition.name(),

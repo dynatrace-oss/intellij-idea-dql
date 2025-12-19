@@ -11,17 +11,17 @@ import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.Command;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLUnaryExpression;
 
-public class FlipConditionQuickFix extends AbstractReplaceElementQuickFix<DQLQueryStatement> {
+public class FlipConditionQuickFix extends AbstractReplaceElementQuickFix<DQLCommand> {
     @Override
-    protected @Nullable DQLQueryStatement getElementToReplace(@NotNull PsiElement element) {
-        return element instanceof DQLQueryStatement command ? command : PsiTreeUtil.getParentOfType(element, DQLQueryStatement.class);
+    protected @Nullable DQLCommand getElementToReplace(@NotNull PsiElement element) {
+        return element instanceof DQLCommand command ? command : PsiTreeUtil.getParentOfType(element, DQLCommand.class);
     }
 
     @Override
-    protected @Nullable String getDefaultReplacement(@NotNull DQLQueryStatement command) {
+    protected @Nullable String getDefaultReplacement(@NotNull DQLCommand command) {
         Command definition = command.getDefinition();
         if (definition == null) {
             return null;

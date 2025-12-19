@@ -11,9 +11,9 @@ import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.Function;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
+import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,13 +22,13 @@ import java.util.Objects;
 public class DQLFieldValuesCompletions {
     public void autocomplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         PsiElement position = parameters.getPosition();
-        List<PsiElement> parent = PsiUtils.getElementsUntilParent(position, DQLFunctionCallExpression.class, DQLQueryStatement.class);
+        List<PsiElement> parent = PsiUtils.getElementsUntilParent(position, DQLFunctionExpression.class, DQLCommand.class);
         if (parent.isEmpty()) {
             return;
         }
-        if (parent.getFirst() instanceof DQLFunctionCallExpression function && parent.get(1) instanceof DQLExpression expression) {
+        if (parent.getFirst() instanceof DQLFunctionExpression function && parent.get(1) instanceof DQLExpression expression) {
             autocompleteParameter(function.getParameter(expression), result);
-        } else if (parent.getFirst() instanceof DQLQueryStatement list && parent.get(1) instanceof DQLExpression expression) {
+        } else if (parent.getFirst() instanceof DQLCommand list && parent.get(1) instanceof DQLExpression expression) {
             autocompleteParameter(list.getParameter(expression), result);
         }
     }

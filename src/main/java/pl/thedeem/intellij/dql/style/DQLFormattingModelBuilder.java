@@ -83,26 +83,26 @@ public class DQLFormattingModelBuilder implements FormattingModelBuilder {
         SpacingBuilder result = builder;
         if (dqlSettings.FORCE_LB_SETTINGS_FOR_COMMAND_PARAMETERS) {
             result = result
-                    .beforeInside(DQLTypes.COMMA, DQLTypes.QUERY_STATEMENT)
+                    .beforeInside(DQLTypes.COMMA, DQLTypes.COMMAND)
                     .lineBreakOrForceSpace(dqlSettings.LB_BEFORE_ARGUMENT_COMMA, dqlSettings.SPACE_BEFORE_PARAMETER_COMMA)
-                    .afterInside(DQLTypes.COMMA, DQLTypes.QUERY_STATEMENT)
+                    .afterInside(DQLTypes.COMMA, DQLTypes.COMMAND)
                     .lineBreakOrForceSpace(dqlSettings.LB_BEFORE_COMMAND_PARAM, dqlSettings.SPACE_BEFORE_PARAMETER);
         } else {
             result = result
-                    .beforeInside(DQLTypes.COMMA, DQLTypes.QUERY_STATEMENT)
+                    .beforeInside(DQLTypes.COMMA, DQLTypes.COMMAND)
                     .lineBreakInCodeIf(dqlSettings.LB_BEFORE_ARGUMENT_COMMA)
-                    .beforeInside(DQLTypes.COMMA, DQLTypes.QUERY_STATEMENT)
+                    .beforeInside(DQLTypes.COMMA, DQLTypes.COMMAND)
                     .spaceIf(dqlSettings.SPACE_BEFORE_PARAMETER_COMMA)
 
-                    .afterInside(DQLTypes.COMMA, DQLTypes.QUERY_STATEMENT)
+                    .afterInside(DQLTypes.COMMA, DQLTypes.COMMAND)
                     .lineBreakInCodeIf(dqlSettings.LB_BEFORE_COMMAND_PARAM)
-                    .afterInside(DQLTypes.COMMA, DQLTypes.QUERY_STATEMENT)
+                    .afterInside(DQLTypes.COMMA, DQLTypes.COMMAND)
                     .spaceIf(dqlSettings.SPACE_BEFORE_PARAMETER);
         }
         return result
-                .between(DQLTypes.QUERY_STATEMENT, DQLTypes.QUERY_STATEMENT)
+                .between(DQLTypes.COMMAND, DQLTypes.COMMAND)
                 .lineBreakInCodeIf(dqlSettings.LB_BEFORE_PIPE)
-                .after(DQLTypes.QUERY_STATEMENT)
+                .after(DQLTypes.COMMAND)
                 .spaceIf(dqlSettings.SPACE_BEFORE_PIPE)
                 .after(DQLTypes.PIPE)
                 .spaceIf(dqlSettings.SPACE_AFTER_PIPE);
@@ -112,34 +112,34 @@ public class DQLFormattingModelBuilder implements FormattingModelBuilder {
         SpacingBuilder result = builder;
         if (dqlSettings.FORCE_LB_SETTINGS_FOR_FUNCTION_PARAMETERS) {
             result = result
-                    .beforeInside(DQLTypes.COMMA, DQLTypes.FUNCTION_CALL_EXPRESSION)
+                    .beforeInside(DQLTypes.COMMA, DQLTypes.FUNCTION_EXPRESSION)
                     .lineBreakOrForceSpace(dqlSettings.LB_BEFORE_FUNCTION_ARGUMENTS_COMMA, dqlSettings.SPACE_BEFORE_FUNCTION_ARGUMENTS_COMMA)
-                    .afterInside(DQLTypes.COMMA, DQLTypes.FUNCTION_CALL_EXPRESSION)
+                    .afterInside(DQLTypes.COMMA, DQLTypes.FUNCTION_EXPRESSION)
                     .lineBreakOrForceSpace(dqlSettings.LB_INSIDE_FUNCTION_ARGUMENTS_LIST, dqlSettings.SPACE_BETWEEN_FUNCTION_PARAMETERS)
-                    .beforeInside(DQLTypes.R_PARENTHESIS, DQLTypes.FUNCTION_CALL_EXPRESSION)
+                    .beforeInside(DQLTypes.R_PARENTHESIS, DQLTypes.FUNCTION_EXPRESSION)
                     .lineBreakOrForceSpace(dqlSettings.LB_INSIDE_FUNCTION_ARGUMENTS_LIST, dqlSettings.SPACE_INSIDE_FUNCTION_PARENTHESES)
-                    .afterInside(DQLTypes.L_PARENTHESIS, DQLTypes.FUNCTION_CALL_EXPRESSION)
+                    .afterInside(DQLTypes.L_PARENTHESIS, DQLTypes.FUNCTION_EXPRESSION)
                     .lineBreakOrForceSpace(dqlSettings.LB_INSIDE_FUNCTION_ARGUMENTS_LIST, dqlSettings.SPACE_INSIDE_FUNCTION_PARENTHESES)
             ;
         } else {
             result = result
-                    .beforeInside(DQLTypes.COMMA, DQLTypes.FUNCTION_CALL_EXPRESSION)
+                    .beforeInside(DQLTypes.COMMA, DQLTypes.FUNCTION_EXPRESSION)
                     .lineBreakInCodeIf(dqlSettings.LB_BEFORE_FUNCTION_ARGUMENTS_COMMA)
-                    .beforeInside(DQLTypes.COMMA, DQLTypes.FUNCTION_CALL_EXPRESSION)
+                    .beforeInside(DQLTypes.COMMA, DQLTypes.FUNCTION_EXPRESSION)
                     .spaceIf(dqlSettings.SPACE_BEFORE_FUNCTION_ARGUMENTS_COMMA)
 
-                    .afterInside(DQLTypes.COMMA, DQLTypes.FUNCTION_CALL_EXPRESSION)
+                    .afterInside(DQLTypes.COMMA, DQLTypes.FUNCTION_EXPRESSION)
                     .lineBreakInCodeIf(dqlSettings.LB_INSIDE_FUNCTION_ARGUMENTS_LIST)
-                    .afterInside(DQLTypes.COMMA, DQLTypes.FUNCTION_CALL_EXPRESSION)
+                    .afterInside(DQLTypes.COMMA, DQLTypes.FUNCTION_EXPRESSION)
                     .spaceIf(dqlSettings.SPACE_BETWEEN_FUNCTION_PARAMETERS)
 
-                    .afterInside(DQLTypes.L_PARENTHESIS, DQLTypes.FUNCTION_CALL_EXPRESSION)
+                    .afterInside(DQLTypes.L_PARENTHESIS, DQLTypes.FUNCTION_EXPRESSION)
                     .lineBreakInCodeIf(dqlSettings.LB_INSIDE_FUNCTION_ARGUMENTS_LIST)
-                    .afterInside(DQLTypes.L_PARENTHESIS, DQLTypes.FUNCTION_CALL_EXPRESSION)
+                    .afterInside(DQLTypes.L_PARENTHESIS, DQLTypes.FUNCTION_EXPRESSION)
                     .spaceIf(dqlSettings.SPACE_INSIDE_FUNCTION_PARENTHESES)
-                    .beforeInside(DQLTypes.R_PARENTHESIS, DQLTypes.FUNCTION_CALL_EXPRESSION)
+                    .beforeInside(DQLTypes.R_PARENTHESIS, DQLTypes.FUNCTION_EXPRESSION)
                     .lineBreakInCodeIf(dqlSettings.LB_INSIDE_FUNCTION_ARGUMENTS_LIST)
-                    .beforeInside(DQLTypes.R_PARENTHESIS, DQLTypes.FUNCTION_CALL_EXPRESSION)
+                    .beforeInside(DQLTypes.R_PARENTHESIS, DQLTypes.FUNCTION_EXPRESSION)
                     .spaceIf(dqlSettings.SPACE_INSIDE_FUNCTION_PARENTHESES);
         }
         return result

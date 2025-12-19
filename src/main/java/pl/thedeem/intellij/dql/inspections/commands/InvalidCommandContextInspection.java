@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.definition.model.Command;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
-import pl.thedeem.intellij.dql.psi.DQLQueryStatementKeyword;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
+import pl.thedeem.intellij.dql.psi.DQLCommandKeyword;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
 public class InvalidCommandContextInspection extends LocalInspectionTool {
@@ -17,8 +17,8 @@ public class InvalidCommandContextInspection extends LocalInspectionTool {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
             @Override
-            public void visitQueryStatement(@NotNull DQLQueryStatement command) {
-                super.visitQueryStatement(command);
+            public void visitCommand(@NotNull DQLCommand command) {
+                super.visitCommand(command);
 
                 Command definition = command.getDefinition();
                 if (definition == null || DQLUtil.isPartialFile(command.getContainingFile())) {
@@ -27,7 +27,7 @@ public class InvalidCommandContextInspection extends LocalInspectionTool {
                 PsiElement pipe = command.getPipe();
 
                 boolean isStartingCommand = "data_source".equals(definition.category());
-                DQLQueryStatementKeyword keyword = command.getQueryStatementKeyword();
+                DQLCommandKeyword keyword = command.getCommandKeyword();
                 if (command.isFirstStatement()) {
                     if (!isStartingCommand) {
                         holder.registerProblem(
