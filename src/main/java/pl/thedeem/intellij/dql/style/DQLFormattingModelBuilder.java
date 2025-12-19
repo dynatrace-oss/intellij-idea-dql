@@ -193,6 +193,8 @@ public class DQLFormattingModelBuilder implements FormattingModelBuilder {
         return builder.around(DQLTokenSets.WORD_EXPRESSION_OPERATORS) // operators like "and", "or", "not" always need spaces around
                 .spaces(1)
                 .after(DQLTypes.EOL_COMMENT) // the comment needs to always be the last element in the line
-                .lineBreakInCode();
+                .lineBreakInCode()
+                .around(DQLTypes.TIME_ALIGNMENT_EXPRESSION_OPERATOR)
+                .none();
     }
 }

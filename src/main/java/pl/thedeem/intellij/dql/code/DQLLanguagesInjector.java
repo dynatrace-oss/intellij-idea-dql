@@ -10,7 +10,10 @@ import pl.thedeem.intellij.dpl.DynatracePatternLanguage;
 import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
-import pl.thedeem.intellij.dql.psi.*;
+import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
+import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
+import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
+import pl.thedeem.intellij.dql.psi.DQLString;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 
 import java.util.List;
@@ -38,8 +41,8 @@ public class DQLLanguagesInjector implements MultiHostInjector {
         if (definition == null || definition.parameterValueTypes() == null || !filter.test(definition.parameterValueTypes())) {
             return;
         }
-        for (DQLExpression expression : parameter.getExpressions()) {
-            DQLExpression toCheck = expression instanceof DQLParameterExpression param ? param.getExpression() : expression;
+        for (PsiElement expression : parameter.getExpressions()) {
+            PsiElement toCheck = expression instanceof DQLParameterExpression param ? param.getExpression() : expression;
             if (toCheck instanceof DQLString string) {
                 registrar.startInjecting(language)
                         .addPlace("", "", string, string.getHostTextRange())

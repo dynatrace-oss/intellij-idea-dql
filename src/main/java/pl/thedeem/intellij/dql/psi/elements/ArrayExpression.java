@@ -1,4 +1,4 @@
 package pl.thedeem.intellij.dql.psi.elements;
 
-public interface ArrayExpression extends BaseElement, TwoSidesExpression {
+public interface ArrayExpression extends BaseElement, OperatorElement {
 }

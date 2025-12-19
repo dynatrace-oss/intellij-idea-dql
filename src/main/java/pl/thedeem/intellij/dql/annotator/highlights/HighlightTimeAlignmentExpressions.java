@@ -14,7 +14,7 @@ public class HighlightTimeAlignmentExpressions implements AnnotatorEngine {
     @Override
     public @NotNull AnnotationResult annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof TimeAlignmentExpression timeAlignmentExpression) {
-            PsiElement target = Objects.requireNonNullElse(timeAlignmentExpression.getDurationElement(), timeAlignmentExpression);
+            PsiElement target = Objects.requireNonNullElse(timeAlignmentExpression.getRightExpression(), timeAlignmentExpression);
             holder.newSilentAnnotation(HighlightOptions.HIGHLIGHT_SEVERITY)
                     .range(target.getTextRange())
                     .textAttributes(DQLColorScheme.DURATION)

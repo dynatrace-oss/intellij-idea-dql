@@ -1,13 +1,13 @@
 package pl.thedeem.intellij.dql.inspections.parameters;
 
 import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.inspections.BaseInspection;
 import pl.thedeem.intellij.dql.inspections.fixes.JoinParameterGroupsQuickFix;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLFunctionCallExpression;
 import pl.thedeem.intellij.dql.psi.DQLQueryStatement;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
@@ -36,7 +36,7 @@ public class MultipleParameterGroupsInspection extends BaseInspection {
 
     private void validateParameterGroups(@NotNull List<MappedParameter> parameters, @NotNull ProblemsHolder holder) {
         for (MappedParameter parameter : parameters) {
-            List<List<DQLExpression>> groups = parameter.getParameterGroups();
+            List<List<PsiElement>> groups = parameter.getParameterGroups();
             if (groups.size() > 1) {
                 holder.registerProblem(
                         parameter.holder(),

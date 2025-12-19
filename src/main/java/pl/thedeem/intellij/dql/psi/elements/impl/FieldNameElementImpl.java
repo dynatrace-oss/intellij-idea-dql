@@ -20,7 +20,6 @@ import pl.thedeem.intellij.dql.psi.DQLAssignExpression;
 import pl.thedeem.intellij.dql.psi.DQLElementFactory;
 import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
-import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.FieldElement;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 
@@ -55,10 +54,10 @@ public abstract class FieldNameElementImpl extends ASTWrapperPsiElement implemen
         if (!DQLSettings.getInstance().isCalculatingFieldsDataTypesEnabled()) {
             return Set.of();
         }
-        if (getParent() instanceof DQLAssignExpression assign && assign.getLeftExpression() == this && assign.getRightExpression() instanceof BaseTypedElement el) {
-            return el.getDataType();
-        }
         DQLAssignExpression assignedValue = getAssignExpression();
+        if (assignedValue == getParent()) {
+            return Set.of();
+        }
         return assignedValue != null ? assignedValue.getDataType() : Set.of();
     }
 

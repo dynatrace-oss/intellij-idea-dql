@@ -10,7 +10,11 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.BaseInspection;
-import pl.thedeem.intellij.dql.psi.*;
+import pl.thedeem.intellij.dql.inspections.fixes.DropElementQuickFix;
+import pl.thedeem.intellij.dql.psi.DQLAssignExpression;
+import pl.thedeem.intellij.dql.psi.DQLExpression;
+import pl.thedeem.intellij.dql.psi.DQLVisitor;
+import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 
 import java.util.List;
 
@@ -25,7 +29,8 @@ public class InvalidFieldWriteOperationInspection extends BaseInspection {
                 if (isWritingFieldValueInvalid(expression)) {
                     holder.registerProblem(
                             expression,
-                            DQLBundle.message("inspection.fieldWriteOperation.notAllowed")
+                            DQLBundle.message("inspection.fieldWriteOperation.notAllowed"),
+                            new DropElementQuickFix()
                     );
                 }
             }
@@ -33,15 +38,13 @@ public class InvalidFieldWriteOperationInspection extends BaseInspection {
     }
 
     private boolean isWritingFieldValueInvalid(DQLAssignExpression expression) {
-        List<PsiElement> parentsUntil = PsiUtils.getElementsUntilParent(expression, DQLFunctionCallExpression.class, DQLQueryStatement.class);
+        List<PsiElement> parentsUntil = PsiUtils.getElementsUntilParent(expression, DQLParametersOwner.class);
         if (!parentsUntil.isEmpty()) {
             PsiElement topParent = parentsUntil.getFirst();
             DQLExpression topParentChild = parentsUntil.get(1) instanceof DQLExpression expr ? expr : expression;
 
-            if (topParent instanceof DQLFunctionCallExpression functionArgument) {
-                return assignmentNotAllowed(functionArgument.getParameter(topParentChild));
-            } else if (topParent instanceof DQLQueryStatement list) {
-                return assignmentNotAllowed(list.getParameter(topParentChild));
+            if (topParent instanceof DQLParametersOwner parametersOwner) {
+                return assignmentNotAllowed(parametersOwner.getParameter(topParentChild));
             }
         }
         return true;

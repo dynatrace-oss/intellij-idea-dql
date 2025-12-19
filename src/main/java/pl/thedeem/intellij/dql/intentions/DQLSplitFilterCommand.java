@@ -40,7 +40,7 @@ public class DQLSplitFilterCommand extends PsiElementBaseIntentionAction impleme
             return false;
         }
         return condition.getExpressions().stream().anyMatch(e -> {
-            DQLExpression toCheck = e;
+            PsiElement toCheck = e;
             if (toCheck instanceof DQLParenthesisedExpression parents) {
                 toCheck = parents.getExpression();
             }
@@ -86,7 +86,7 @@ public class DQLSplitFilterCommand extends PsiElementBaseIntentionAction impleme
 
     private @NotNull List<DQLExpression> getExpressionsToSeparate(@NotNull MappedParameter condition) {
         List<DQLExpression> result = new ArrayList<>();
-        List<DQLExpression> toProcess = new ArrayList<>(condition.getExpressions());
+        List<PsiElement> toProcess = new ArrayList<>(condition.getExpressions());
 
         while (!toProcess.isEmpty()) {
             PsiElement toCheck = DQLUtil.unpackParenthesis(toProcess.removeFirst());

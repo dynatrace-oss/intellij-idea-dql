@@ -11,7 +11,7 @@ import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLNegativeValueExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
-public class ComplexNegativeValueInspection extends LocalInspectionTool {
+public class NestedNegativeValueInspection extends LocalInspectionTool {
     @Override
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {
@@ -25,7 +25,7 @@ public class ComplexNegativeValueInspection extends LocalInspectionTool {
                     if (topNegative != expression) {
                         holder.registerProblem(
                                 topNegative,
-                                DQLBundle.message("inspection.complexNegativeValue.canBeSimplified"),
+                                DQLBundle.message("inspection.nestedNegativeValue.canBeSimplified"),
                                 new SimplifyNegativeValueQuickFix()
                         );
                     }

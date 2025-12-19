@@ -1,4 +1,4 @@
 package pl.thedeem.intellij.dql.psi.elements;
 
-public interface SearchExpression extends BaseElement, TwoSidesExpression {
+public interface SearchExpression extends BaseElement, OperatorElement {
 }

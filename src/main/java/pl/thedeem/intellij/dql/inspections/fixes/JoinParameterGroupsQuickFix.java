@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 
 import java.util.List;
@@ -46,11 +45,11 @@ public class JoinParameterGroupsQuickFix implements LocalQuickFix {
         }
 
         StringBuilder toInsert = new StringBuilder();
-        List<List<DQLExpression>> groups = parameter.getParameterGroups();
+        List<List<PsiElement>> groups = parameter.getParameterGroups();
 
         for (int i = groups.size() - 1; i >= 1; i--) {
-            List<DQLExpression> group = groups.get(i);
-            for (DQLExpression expression : group) {
+            List<PsiElement> group = groups.get(i);
+            for (PsiElement expression : group) {
                 toInsert.append(",").append(expression.getText());
             }
 

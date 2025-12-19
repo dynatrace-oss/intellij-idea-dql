@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.definition;
 
+import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
@@ -46,7 +47,7 @@ public class DQLParametersCalculatorServiceImpl implements DQLParametersCalculat
         // sticky variadic only work for parameters that do not require name
         // If the parameter value is already enclosed with `{}`, it does not stick
         if (definition.variadic() && !definition.requiresName()) {
-            DQLExpression toCheck = parameter.holder() instanceof DQLParameterExpression named ? named.getExpression() : parameter.holder();
+            PsiElement toCheck = parameter.holder() instanceof DQLParameterExpression named ? named.getExpression() : parameter.holder();
             return conflictingVariadic && toCheck instanceof DQLBracketExpression ? currentVariadic : parameter;
         }
         return currentVariadic;

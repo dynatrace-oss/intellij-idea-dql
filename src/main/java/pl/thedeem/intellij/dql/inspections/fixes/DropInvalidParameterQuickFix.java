@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 
 import java.util.List;
@@ -33,7 +32,7 @@ public class DropInvalidParameterQuickFix implements LocalQuickFix {
             return;
         }
 
-        for (List<DQLExpression> parameterGroup : parameter.getParameterGroups()) {
+        for (List<PsiElement> parameterGroup : parameter.getParameterGroups()) {
             int start = parameterGroup.getFirst().getTextRange().getStartOffset();
             int end = parameterGroup.getLast().getTextRange().getEndOffset();
 
