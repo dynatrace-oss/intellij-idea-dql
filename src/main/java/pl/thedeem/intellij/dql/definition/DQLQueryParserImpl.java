@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.dql.executing;
+package pl.thedeem.intellij.dql.definition;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -12,19 +12,13 @@ import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class DQLParsedQuery {
-    private final String parsedQuery;
-    private final List<OffsetMapping> offsetMappings;
-
-    public DQLParsedQuery(@NotNull PsiFile psiFile) {
-        this.offsetMappings = new ArrayList<>();
-        this.parsedQuery = getSubstitutedQuery(psiFile);
-    }
-
-    public String getSubstitutedQuery(PsiFile psiFile) {
+public class DQLQueryParserImpl implements DQLQueryParser {
+    @NotNull
+    public ParseResult getSubstitutedQuery(@NotNull PsiFile psiFile) {
         Map<String, String> definitions = getFoundVariables(psiFile);
         AtomicReference<String> result = new AtomicReference<>("");
 
+        List<OffsetMapping> offsetMappings = new ArrayList<>();
         WriteCommandAction.runWriteCommandAction(psiFile.getProject(), () -> {
             PsiElement copied = psiFile.copy();
             List<DQLVariableExpression> vars = new ArrayList<>(PsiTreeUtil.findChildrenOfType(copied, DQLVariableExpression.class));
@@ -51,50 +45,23 @@ public class DQLParsedQuery {
             // update variables and substituted offsets
             for (int i = 0; i < replacements.size(); i++) {
                 Replacement r = replacements.get(i);
-                int substitutedStartOffset = r.variable.getTextOffset();
+                int substitutedStartOffset = r.variable().getTextOffset();
 
                 mappings.set(i, new OffsetMapping(
-                        mappings.get(i).originalStartOffset,
+                        mappings.get(i).originalStartOffset(),
                         substitutedStartOffset,
-                        mappings.get(i).originalLength,
-                        mappings.get(i).substitutedLength
+                        mappings.get(i).originalLength(),
+                        mappings.get(i).substitutedLength()
                 ));
 
-                PsiElement replacementElement = DQLElementFactory.createUnknownElement(psiFile.getProject(), r.value);
-                r.variable.replace(replacementElement);
+                PsiElement replacementElement = DQLElementFactory.createUnknownElement(psiFile.getProject(), r.value());
+                r.variable().replace(replacementElement);
             }
 
             offsetMappings.addAll(mappings);
             result.set(copied.getText());
         });
-
-        return result.get();
-    }
-
-    public String getParsedQuery() {
-        return parsedQuery;
-    }
-
-    public int getOriginalOffset(int substitutedOffset) {
-        if (substitutedOffset < 0 || substitutedOffset > parsedQuery.length()) {
-            return -1;
-        }
-
-        int originalOffset = substitutedOffset;
-        for (OffsetMapping mapping : offsetMappings) {
-            // if it's inside the variable, let's just return the original "$" position
-            if (substitutedOffset >= mapping.substitutedStartOffset
-                    && substitutedOffset < (mapping.substitutedStartOffset + mapping.substitutedLength)) {
-                return mapping.originalStartOffset;
-            }
-
-            if (substitutedOffset >= mapping.substitutedStartOffset) {
-                originalOffset -= (mapping.substitutedLength - mapping.originalLength);
-            } else {
-                break;
-            }
-        }
-        return Math.max(originalOffset, 0);
+        return new ParseResult(offsetMappings, result.get());
     }
 
     private Map<String, String> getFoundVariables(PsiFile psiFile) {
@@ -110,12 +77,4 @@ public class DQLParsedQuery {
             return defs;
         });
     }
-
-    private record OffsetMapping(int originalStartOffset, int substitutedStartOffset, int originalLength,
-                                 int substitutedLength) {
-    }
-
-    private record Replacement(DQLVariableExpression variable, String value) {
-    }
-
 }

@@ -12,14 +12,15 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.completion.CompletionUtils;
-import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.common.sdk.DynatraceRestClient;
 import pl.thedeem.intellij.common.sdk.errors.DQLApiException;
 import pl.thedeem.intellij.common.sdk.model.DQLAutocompletePayload;
 import pl.thedeem.intellij.common.sdk.model.DQLAutocompleteResult;
 import pl.thedeem.intellij.common.sdk.model.DQLSuggestion;
+import pl.thedeem.intellij.dql.DQLIcon;
+import pl.thedeem.intellij.dql.DQLUtil;
+import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
+import pl.thedeem.intellij.dql.definition.DQLQueryParser;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
@@ -39,10 +40,11 @@ public class DQLDynatraceAutocomplete {
                         ApplicationManager.getApplication().executeOnPooledThread(() -> {
                             try {
                                 ProgressManager.checkCanceled();
-                                // TODO: Find a way to parse the query without causing the process cancelled issue  DQLParsedQuery query = new DQLParsedQuery(parameters.getOriginalFile());
+                                DQLQueryParser parser = DQLQueryParser.getInstance(parameters.getOriginalFile().getProject());
                                 String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
+                                DQLQueryParser.ParseResult substitutedQuery = parser.getSubstitutedQuery(parameters.getOriginalFile());
                                 return client.autocomplete(
-                                        new DQLAutocompletePayload(ReadAction.compute(() -> parameters.getOriginalFile().getText()), (long) parameters.getPosition().getTextOffset()),
+                                        new DQLAutocompletePayload(substitutedQuery.parsed(), (long) substitutedQuery.getOriginalOffset(parameters.getPosition().getTextOffset())),
                                         apiToken
                                 );
                             } catch (IOException | InterruptedException | DQLApiException e) {
