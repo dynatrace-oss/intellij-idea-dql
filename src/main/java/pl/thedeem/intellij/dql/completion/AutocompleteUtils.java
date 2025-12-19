@@ -161,4 +161,21 @@ public class AutocompleteUtils {
                 new DQLInExpressionInsertionHandler()
         ));
     }
+
+    public static void autocompleteStringValues(@NotNull CompletionResultSet result) {
+        result.addElement(CompletionUtils.createLookupElement(
+                "\"...\"",
+                DQLIcon.DQL_STRING,
+                AutocompleteUtils.STATIC,
+                "",
+                new DQLStringInsertionHandler("\"")
+        ));
+        result.addElement(CompletionUtils.createLookupElement(
+                "\"\"\"...\"\"\"",
+                DQLIcon.DQL_STRING,
+                AutocompleteUtils.STATIC,
+                "",
+                new DQLStringInsertionHandler("\"\"\"")
+        ));
+    }
 }

@@ -32,4 +32,17 @@ public abstract class EqualityExpressionImpl extends AbstractOperatorElementImpl
                 .addPart(expressions, operator)
                 .getFieldName();
     }
+
+    @Override
+    protected String getOperationId() {
+        ExpressionOperatorImpl operator = PsiTreeUtil.getChildOfType(this, ExpressionOperatorImpl.class);
+        if (operator == null) {
+            return null;
+        }
+        return switch (operator.getText().trim().toLowerCase()) {
+            case "!=" -> "dql.operator.notEquals";
+            case "==" -> "dql.operator.equals";
+            default -> operator.getText().trim().toLowerCase();
+        };
+    }
 }

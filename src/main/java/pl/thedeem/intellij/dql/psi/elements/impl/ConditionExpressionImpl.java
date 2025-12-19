@@ -32,4 +32,18 @@ public abstract class ConditionExpressionImpl extends AbstractOperatorElementImp
                 .addPart(expressions, operator)
                 .getFieldName();
     }
+
+    @Override
+    protected String getOperationId() {
+        ExpressionOperatorImpl operator = PsiTreeUtil.getChildOfType(this, ExpressionOperatorImpl.class);
+        if (operator == null) {
+            return null;
+        }
+        return switch (operator.getText().trim().toLowerCase()) {
+            case "and" -> "dql.operator.and";
+            case "or" -> "dql.operator.or";
+            case "xor" -> "dql.operator.xor";
+            default -> operator.getText().trim().toLowerCase();
+        };
+    }
 }

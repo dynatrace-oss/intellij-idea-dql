@@ -13,9 +13,25 @@ import pl.thedeem.intellij.dql.psi.elements.ArithmeticalExpression;
 
 import java.util.List;
 
-public class ArithmeticalExpressionImpl extends AbstractOperatorElementImpl implements ArithmeticalExpression {
+public abstract class ArithmeticalExpressionImpl extends AbstractOperatorElementImpl implements ArithmeticalExpression {
     public ArithmeticalExpressionImpl(@NotNull ASTNode node) {
         super(node);
+    }
+
+    @Override
+    protected String getOperationId() {
+        ExpressionOperatorImpl operator = PsiTreeUtil.getChildOfType(this, ExpressionOperatorImpl.class);
+        if (operator == null) {
+            return null;
+        }
+        return switch (operator.getText().trim().toLowerCase()) {
+            case "-" -> "dql.operator.subtract";
+            case "+" -> "dql.operator.add";
+            case "/" -> "dql.operator.divide";
+            case "%" -> "dql.operator.modulo";
+            case "*" -> "dql.operator.multiply";
+            default -> operator.getText().trim().toLowerCase();
+        };
     }
 
     @Override

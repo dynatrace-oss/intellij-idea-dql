@@ -32,4 +32,19 @@ public abstract class ComparisonExpressionImpl extends AbstractOperatorElementIm
                 .addPart(expressions, operator)
                 .getFieldName();
     }
+
+    @Override
+    protected String getOperationId() {
+        ExpressionOperatorImpl operator = PsiTreeUtil.getChildOfType(this, ExpressionOperatorImpl.class);
+        if (operator == null) {
+            return null;
+        }
+        return switch (operator.getText().trim().toLowerCase()) {
+            case ">" -> "dql.operator.greater";
+            case ">=" -> "dql.operator.greaterEquals";
+            case "<" -> "dql.operator.lower";
+            case "<=" -> "dql.operator.lowerEquals";
+            default -> operator.getText().trim().toLowerCase();
+        };
+    }
 }

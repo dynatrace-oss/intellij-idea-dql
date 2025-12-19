@@ -11,26 +11,28 @@ import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.Function;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
-import pl.thedeem.intellij.dql.psi.DQLCommand;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
+import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-public class DQLFieldValuesCompletions {
+public class DQLParameterValuesCompletion {
     public void autocomplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         PsiElement position = parameters.getPosition();
-        List<PsiElement> parent = PsiUtils.getElementsUntilParent(position, DQLFunctionExpression.class, DQLCommand.class);
+        List<PsiElement> parent = PsiUtils.getElementsUntilParent(position, DQLParametersOwner.class);
         if (parent.isEmpty()) {
             return;
         }
-        if (parent.getFirst() instanceof DQLFunctionExpression function && parent.get(1) instanceof DQLExpression expression) {
-            autocompleteParameter(function.getParameter(expression), result);
-        } else if (parent.getFirst() instanceof DQLCommand list && parent.get(1) instanceof DQLExpression expression) {
-            autocompleteParameter(list.getParameter(expression), result);
+        PsiElement parameterExpression = parent.size() > 1 ? parent.get(1) : position;
+        if (!(parent.getFirst() instanceof DQLParametersOwner owner)) {
+            return;
         }
+        MappedParameter parameter = owner.getParameter(parameterExpression);
+        if (parameter == null) {
+            return;
+        }
+        autocompleteParameter(parameter, result);
     }
 
     private void autocompleteParameter(@Nullable MappedParameter parameter, @NotNull CompletionResultSet result) {
@@ -54,6 +56,10 @@ public class DQLFieldValuesCompletions {
                 AutocompleteUtils.autocompleteStaticValue(definition.defaultValue(), result);
             }
             Collection<String> categories = service.getFunctionCategoriesForParameterTypes(parameterValueTypes);
+
+            if (parameterValueTypes.stream().anyMatch(DQLDefinitionService.STRING_PARAMETER_VALUE_TYPES::contains)) {
+                AutocompleteUtils.autocompleteStringValues(result);
+            }
             if (categories == null) {
                 return;
             }
@@ -66,6 +72,9 @@ public class DQLFieldValuesCompletions {
             }
             if (valueTypes.contains("dql.dataType.boolean")) {
                 AutocompleteUtils.autocompleteBooleans(result);
+            }
+            if (valueTypes.stream().anyMatch(DQLDefinitionService.STRING_VALUE_TYPES::contains)) {
+                AutocompleteUtils.autocompleteStringValues(result);
             }
             if (valueTypes.contains("dql.dataType.timestamp")) {
                 AutocompleteUtils.autocompleteCurrentTimestamp(result);

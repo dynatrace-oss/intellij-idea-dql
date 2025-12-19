@@ -1,0 +1,1 @@
+data record(matchesPattern("something", pattern: <caret>))

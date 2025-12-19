@@ -5,16 +5,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.definition.model.*;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public interface DQLDefinitionService {
     Predicate<String> STARTING_COMMANDS = "data_source"::equals;
     Predicate<String> EXTENSION_COMMANDS = STARTING_COMMANDS.negate();
-    Predicate<String> NUMERICAL_TYPES = s -> Set.of("dql.dataType.double", "dql.dataType.long").contains(s);
-    Predicate<String> BOOLEAN_TYPES = s -> Objects.equals("dql.dataType.boolean", s);
-    Predicate<String> TIME_TYPES = s -> Set.of("ql.dataType.timestamp", "dql.dataType.duration", "dql.dataType.timeframe").contains(s);
-    Predicate<String> COMPARABLE_TYPES = s -> NUMERICAL_TYPES.test(s) || TIME_TYPES.test(s) || Objects.equals("dql.dataType.string", s);
     Set<String> STRING_PARAMETER_VALUE_TYPES = Set.of(
             "dql.parameterValueType.bucket",
             "dql.parameterValueType.dplPattern",

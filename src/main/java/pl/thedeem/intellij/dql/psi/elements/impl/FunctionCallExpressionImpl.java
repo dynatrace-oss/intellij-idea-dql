@@ -90,7 +90,7 @@ public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement im
     }
 
     @Override
-    public MappedParameter getParameter(@NotNull DQLExpression argument) {
+    public MappedParameter getParameter(@NotNull PsiElement argument) {
         return getParameters().stream().filter(m -> m.includes(argument)).findFirst().orElse(null);
     }
 

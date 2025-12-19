@@ -27,4 +27,9 @@ public abstract class UnaryExpressionImpl extends AbstractOperatorElementImpl im
     public ItemPresentation getPresentation() {
         return new StandardItemPresentation(DQLBundle.message("presentation.negationExpression"), this, DQLIcon.DQL_EXPRESSION);
     }
+
+    @Override
+    protected String getOperationId() {
+        return "dql.operator.not";
+    }
 }

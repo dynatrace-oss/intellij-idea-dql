@@ -108,7 +108,7 @@ public abstract class CommandElementImpl extends ASTWrapperPsiElement implements
     }
 
     @Override
-    public @Nullable MappedParameter getParameter(@NotNull DQLExpression parameter) {
+    public @Nullable MappedParameter getParameter(@NotNull PsiElement parameter) {
         return getParameters().stream().filter(m -> m.includes(parameter)).findFirst().orElse(null);
     }
 

@@ -35,4 +35,9 @@ public abstract class TimeAlignmentExpressionImpl extends AbstractOperatorElemen
     public @Nullable PsiElement getRightExpression() {
         return findChildByClass(DQLTimeAlignmentOperand.class);
     }
+
+    @Override
+    protected String getOperationId() {
+        return "dql.operator.timeAlignmentAt";
+    }
 }

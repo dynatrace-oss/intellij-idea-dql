@@ -15,7 +15,7 @@ import java.util.*;
 public record MappedParameter(
         @Nullable Parameter definition,
         @NotNull PsiElement holder,
-        @NotNull List<DQLExpression> included
+        @NotNull List<PsiElement> included
 ) implements BaseTypedElement {
     public @Nullable String name() {
         if (definition != null) {
@@ -42,7 +42,7 @@ public record MappedParameter(
         return result;
     }
 
-    public boolean includes(DQLExpression expression) {
+    public boolean includes(PsiElement expression) {
         return holder == expression || included.contains(expression);
     }
 
