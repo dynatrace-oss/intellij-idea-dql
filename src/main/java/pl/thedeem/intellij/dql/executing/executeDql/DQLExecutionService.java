@@ -11,11 +11,13 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
@@ -104,7 +106,7 @@ public class DQLExecutionService {
             PsiFile psiFile = ReadAction.compute(() -> DQLUtil.openFile(project, Path.of(DQLExecutionUtil.getProjectAbsolutePath(this.dqlFile, project)).toString()));
             if (psiFile != null) {
                 DQLQueryParser parser = DQLQueryParser.getInstance(psiFile.getProject());
-                DQLQueryParser.ParseResult parsed = parser.getSubstitutedQuery(psiFile);
+                DQLQueryParser.ParseResult parsed = WriteCommandAction.runWriteCommandAction(psiFile.getProject(), (Computable<DQLQueryParser.ParseResult>) () -> parser.getSubstitutedQuery(psiFile));
                 payload.setQuery(parsed.parsed());
             } else {
                 Notifications.Bus.notify(new Notification(

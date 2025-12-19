@@ -7,8 +7,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.sdk.errors.*;
 import pl.thedeem.intellij.common.sdk.model.*;
-import pl.thedeem.intellij.common.sdk.errors.*;
-import pl.thedeem.intellij.common.sdk.model.*;
 import pl.thedeem.intellij.common.sdk.model.errors.DQLAuthErrorResponse;
 import pl.thedeem.intellij.common.sdk.model.errors.DQLErrorResponse;
 import pl.thedeem.intellij.common.sdk.model.errors.DQLExecutionErrorResponse;

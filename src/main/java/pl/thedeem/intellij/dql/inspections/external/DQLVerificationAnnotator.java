@@ -5,7 +5,9 @@ import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.lang.annotation.HighlightSeverity;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +50,7 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
             String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
             DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
             try {
-                DQLQueryParser.ParseResult parseResult = parser.getSubstitutedQuery(input.file);
+                DQLQueryParser.ParseResult parseResult = WriteCommandAction.runWriteCommandAction(input.file.getProject(), (Computable<DQLQueryParser.ParseResult>) () -> parser.getSubstitutedQuery(input.file));
                 DQLVerifyResponse response = client.verifyDQL(new DQLVerifyPayload(parseResult.parsed()), apiToken);
                 return new Result(response, parseResult);
             } catch (IOException | InterruptedException | DQLApiException e) {
