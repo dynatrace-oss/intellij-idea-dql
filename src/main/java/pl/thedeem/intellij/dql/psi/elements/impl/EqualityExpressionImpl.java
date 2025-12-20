@@ -40,7 +40,7 @@ public abstract class EqualityExpressionImpl extends AbstractOperatorElementImpl
             return null;
         }
         return switch (operator.getText().trim().toLowerCase()) {
-            case "!=" -> "dql.operator.notEquals";
+            case "!=", "<>" -> "dql.operator.notEquals";
             case "==" -> "dql.operator.equals";
             default -> operator.getText().trim().toLowerCase();
         };
