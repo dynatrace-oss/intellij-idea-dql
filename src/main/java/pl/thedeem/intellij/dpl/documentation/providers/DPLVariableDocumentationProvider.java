@@ -30,7 +30,7 @@ public class DPLVariableDocumentationProvider {
     }
 
     private HtmlChunk buildHeader() {
-        String name = Objects.requireNonNull(variable.getName());
+        String name = Objects.requireNonNullElse(variable.getName(), "");
         return DocumentationMarkup.PRE_ELEMENT
                 .child(HtmlChunk.span().addText(name).attr("style", "padding-right: 10px;"))
                 .child(DocumentationMarkup.GRAYED_ELEMENT.addText(DPLBundle.message("documentation.variable.type")));

@@ -1,12 +1,12 @@
 package pl.thedeem.intellij.dql.inspections.parameters;
 
+import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.definition.DQLParameterValueTypesValidator;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
-import pl.thedeem.intellij.dql.inspections.BaseInspection;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
@@ -14,7 +14,7 @@ import pl.thedeem.intellij.dql.psi.DQLVisitor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParameterValueInspection extends BaseInspection {
+public class ParameterValueInspection extends LocalInspectionTool {
 
     @Override
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
@@ -36,9 +36,7 @@ public class ParameterValueInspection extends BaseInspection {
                 DQLParameterValueTypesValidator service = DQLParameterValueTypesValidator.getInstance(expression.getProject());
                 for (MappedParameter parameter : expression.getParameters()) {
                     for (DQLParameterValueTypesValidator.ValueIssue issue : findIssues(parameter, service)) {
-                        if (doesNotContainErrorToken(issue.element())) {
-                            holder.registerProblem(issue.element(), issue.issue());
-                        }
+                        holder.registerProblem(issue.element(), issue.issue());
                     }
                 }
             }

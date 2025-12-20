@@ -1,12 +1,12 @@
 package pl.thedeem.intellij.dql.inspections.parameters;
 
+import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
-import pl.thedeem.intellij.dql.inspections.BaseInspection;
 import pl.thedeem.intellij.dql.inspections.fixes.JoinParameterGroupsQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
@@ -14,7 +14,7 @@ import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
 import java.util.List;
 
-public class MultipleParameterGroupsInspection extends BaseInspection {
+public class MultipleParameterGroupsInspection extends LocalInspectionTool {
     @Override
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {

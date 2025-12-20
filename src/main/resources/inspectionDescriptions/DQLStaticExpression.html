@@ -1,0 +1,15 @@
+<html lang="en">
+<body>
+Checks if the expression is composed of only static values from both sides.
+
+<p>
+    This inspection adds simple information that an expression will always have the same value and could be simplified.
+</p>
+
+<pre><code>
+data json: "..."
+| filter true or false // this will always be true
+| fields something = 5 < 10 // this will always be true
+</code></pre>
+</body>
+</html>

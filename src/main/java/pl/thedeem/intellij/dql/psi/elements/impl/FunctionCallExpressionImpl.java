@@ -160,7 +160,7 @@ public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement im
 
     private @Nullable Function recalculateDefinition() {
         DQLDefinitionService service = DQLDefinitionService.getInstance(getProject());
-        List<Function> definitions = service.getFunctionByName(Objects.requireNonNull(this.getName()));
+        List<Function> definitions = service.getFunctionByName(Objects.requireNonNullElse(this.getName(), ""));
         if (definitions.isEmpty()) {
             return null;
         }

@@ -14,12 +14,14 @@ import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
 
 import java.util.List;
-import java.util.Objects;
 
 public class DQLChooseByNameContributor implements ChooseByNameContributorEx {
     @Override
     public void processNames(@NotNull Processor<? super String> processor, @NotNull GlobalSearchScope scope, @Nullable IdFilter idFilter) {
-        Project project = Objects.requireNonNull(scope.getProject());
+        Project project = scope.getProject();
+        if (project == null) {
+            return;
+        }
         List<String> dqlFields = ContainerUtil.map(DQLUtil.findFieldsInProject(project), DQLFieldExpression::getName);
         ContainerUtil.process(dqlFields, processor);
     }

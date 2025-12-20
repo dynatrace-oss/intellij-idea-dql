@@ -88,7 +88,7 @@ public abstract class CommandElementImpl extends ASTWrapperPsiElement implements
         if (definition == null) {
             DQLDefinitionService service = DQLDefinitionService.getInstance(getProject());
             definition = CachedValuesManager.getManager(getProject()).createCachedValue(
-                    () -> new CachedValueProvider.Result<>(service.getCommandByName(Objects.requireNonNull(this.getName())), this),
+                    () -> new CachedValueProvider.Result<>(service.getCommandByName(Objects.requireNonNullElse(this.getName(), "")), this),
                     false
             );
         }

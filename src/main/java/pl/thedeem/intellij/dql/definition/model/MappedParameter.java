@@ -98,9 +98,9 @@ public record MappedParameter(
 
         while (!toProcess.isEmpty()) {
             PsiElement element = DQLUtil.unpackParenthesis(toProcess.removeFirst());
-            if (Objects.requireNonNull(element) instanceof DQLBracketExpression bracket) {
+            if (element instanceof DQLBracketExpression bracket) {
                 toProcess.addAll(bracket.getExpressionList());
-            } else {
+            } else if (element != null) {
                 result.add(element);
             }
         }

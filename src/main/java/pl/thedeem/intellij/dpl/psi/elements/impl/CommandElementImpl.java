@@ -36,7 +36,7 @@ public abstract class CommandElementImpl extends DPLDefinitionExpressionImpl imp
     @Override
     public @Nullable ExpressionDescription getDefinition() {
         DPLDefinitionService service = DPLDefinitionService.getInstance(getProject());
-        String name = Objects.requireNonNull(getName()).toUpperCase();
+        String name = Objects.requireNonNullElse(getName(), "").toUpperCase();
         return service.commands().get(name);
     }
 
