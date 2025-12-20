@@ -21,4 +21,6 @@ public interface OperatorElement {
     @Nullable PsiElement getLeftExpression();
 
     @Nullable PsiElement getRightExpression();
+
+    @Nullable String getOperatorSymbol();
 }

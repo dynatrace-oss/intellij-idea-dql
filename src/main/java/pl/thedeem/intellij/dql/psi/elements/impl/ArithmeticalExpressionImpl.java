@@ -20,17 +20,14 @@ public abstract class ArithmeticalExpressionImpl extends AbstractOperatorElement
 
     @Override
     protected String getOperationId() {
-        ExpressionOperatorImpl operator = PsiTreeUtil.getChildOfType(this, ExpressionOperatorImpl.class);
-        if (operator == null) {
-            return null;
-        }
-        return switch (operator.getText().trim().toLowerCase()) {
+        String symbol = getOperatorSymbol();
+        return switch (symbol) {
             case "-" -> "dql.operator.subtract";
             case "+" -> "dql.operator.add";
             case "/" -> "dql.operator.divide";
             case "%" -> "dql.operator.modulo";
             case "*" -> "dql.operator.multiply";
-            default -> operator.getText().trim().toLowerCase();
+            case null, default -> symbol;
         };
     }
 

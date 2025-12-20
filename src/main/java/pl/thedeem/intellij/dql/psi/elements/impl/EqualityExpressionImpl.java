@@ -35,14 +35,11 @@ public abstract class EqualityExpressionImpl extends AbstractOperatorElementImpl
 
     @Override
     protected String getOperationId() {
-        ExpressionOperatorImpl operator = PsiTreeUtil.getChildOfType(this, ExpressionOperatorImpl.class);
-        if (operator == null) {
-            return null;
-        }
-        return switch (operator.getText().trim().toLowerCase()) {
+        String symbol = getOperatorSymbol();
+        return switch (symbol) {
             case "!=", "<>" -> "dql.operator.notEquals";
             case "==" -> "dql.operator.equals";
-            default -> operator.getText().trim().toLowerCase();
+            case null, default -> symbol;
         };
     }
 }

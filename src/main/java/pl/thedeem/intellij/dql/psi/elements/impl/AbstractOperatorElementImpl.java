@@ -204,4 +204,13 @@ public abstract class AbstractOperatorElementImpl extends ASTWrapperPsiElement i
     }
 
     protected abstract String getOperationId();
+
+    @Override
+    public @Nullable String getOperatorSymbol() {
+        ExpressionOperatorImpl operator = PsiTreeUtil.getChildOfType(this, ExpressionOperatorImpl.class);
+        if (operator == null) {
+            return null;
+        }
+        return operator.getText().trim().toLowerCase();
+    }
 }

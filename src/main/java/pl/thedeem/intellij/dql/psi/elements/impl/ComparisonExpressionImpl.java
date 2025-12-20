@@ -35,16 +35,13 @@ public abstract class ComparisonExpressionImpl extends AbstractOperatorElementIm
 
     @Override
     protected String getOperationId() {
-        ExpressionOperatorImpl operator = PsiTreeUtil.getChildOfType(this, ExpressionOperatorImpl.class);
-        if (operator == null) {
-            return null;
-        }
-        return switch (operator.getText().trim().toLowerCase()) {
+        String symbol = getOperatorSymbol();
+        return switch (symbol) {
             case ">" -> "dql.operator.greater";
             case ">=" -> "dql.operator.greaterEquals";
             case "<" -> "dql.operator.lower";
             case "<=" -> "dql.operator.lowerEquals";
-            default -> operator.getText().trim().toLowerCase();
+            case null, default -> symbol;
         };
     }
 }
