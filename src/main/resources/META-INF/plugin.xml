@@ -124,16 +124,11 @@
                          enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.operator.unsupportedType.display.name"
                          implementationClass="pl.thedeem.intellij.dql.inspections.expressions.UnsupportedOperatorDataTypeInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLStaticCondition"
+        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLStaticExpression"
                          enabledByDefault="true"
                          level="INFO"
-                         groupKey="inspection.groups.dql" key="inspection.condition.static.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.StaticConditionInspection"/>
-        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLStaticComparison"
-                         enabledByDefault="true"
-                         level="INFO"
-                         groupKey="inspection.groups.dql" key="inspection.comparison.static.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.StaticComparisonInspection"/>
+                         groupKey="inspection.groups.dql" key="inspection.expression.static.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.StaticExpressionInspection"/>
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLNestedNegativeValue"
                          enabledByDefault="true" level="INFO"
                          groupKey="inspection.groups.dql" key="inspection.nestedNegativeValue.display.name"

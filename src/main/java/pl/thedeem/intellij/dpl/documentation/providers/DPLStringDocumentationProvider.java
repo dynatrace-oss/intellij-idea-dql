@@ -38,7 +38,7 @@ public class DPLStringDocumentationProvider {
     }
 
     private HtmlChunk buildHeader() {
-        String name = Objects.requireNonNull(string.getName());
+        String name = Objects.requireNonNullElse(string.getName(), "");
         return DocumentationMarkup.PRE_ELEMENT
                 .child(HtmlChunk.span().addText(name).attr("style", "padding-right: 10px;"))
                 .child(DocumentationMarkup.GRAYED_ELEMENT.addText(DPLBundle.message("documentation.string.type")));

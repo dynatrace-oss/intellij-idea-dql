@@ -47,7 +47,7 @@ public abstract class ExpressionElementImpl extends ASTWrapperPsiElement impleme
         for (DPLParameterExpression parameter : parameters) {
             DPLParameterName pName = parameter.getParameterName();
             if (pName != null) {
-                String parameterName = Objects.requireNonNull(pName.getName()).toLowerCase();
+                String parameterName = Objects.requireNonNullElse(pName.getName(), "").toLowerCase();
                 result.add(parameterName);
                 Configuration definition = configurationDefinition.get(parameterName);
                 if (definition != null && definition.aliases() != null) {

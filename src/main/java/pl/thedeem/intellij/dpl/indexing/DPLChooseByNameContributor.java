@@ -14,12 +14,14 @@ import pl.thedeem.intellij.dpl.DPLUtil;
 import pl.thedeem.intellij.dpl.psi.DPLFieldName;
 
 import java.util.List;
-import java.util.Objects;
 
 public class DPLChooseByNameContributor implements ChooseByNameContributorEx {
     @Override
     public void processNames(@NotNull Processor<? super String> processor, @NotNull GlobalSearchScope scope, @Nullable IdFilter idFilter) {
-        Project project = Objects.requireNonNull(scope.getProject());
+        Project project = scope.getProject();
+        if (project == null) {
+            return;
+        }
         List<String> fields = ContainerUtil.map(DPLUtil.findFields(project), DPLFieldName::getName);
         ContainerUtil.process(fields, processor);
     }

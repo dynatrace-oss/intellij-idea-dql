@@ -19,7 +19,7 @@ public class ValueValidator extends AbstractDefinitionValidator {
     @Override
     public @NotNull List<DQLParameterValueTypesValidator.ValueIssue> validate(@NotNull PsiElement parameter, @NotNull Parameter definition) {
         List<DQLParameterValueTypesValidator.ValueIssue> result = new ArrayList<>();
-        List<String> wantedValues = Objects.requireNonNull(definition.valueTypes());
+        List<String> wantedValues = Objects.requireNonNullElse(definition.valueTypes(), List.of());
         if (wantedValues.isEmpty()) {
             return List.of();
         }

@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.inspections.expressions;
 
+import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
@@ -7,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
-import pl.thedeem.intellij.dql.inspections.BaseInspection;
 import pl.thedeem.intellij.dql.inspections.fixes.SetFieldNameQuickFix;
 import pl.thedeem.intellij.dql.psi.*;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
@@ -15,7 +15,7 @@ import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InvalidFieldReadOperationInspection extends BaseInspection {
+public class InvalidFieldReadOperationInspection extends LocalInspectionTool {
     @Override
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {

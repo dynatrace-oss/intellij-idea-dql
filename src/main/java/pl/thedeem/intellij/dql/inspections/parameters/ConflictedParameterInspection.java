@@ -1,12 +1,12 @@
 package pl.thedeem.intellij.dql.inspections.parameters;
 
+import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
-import pl.thedeem.intellij.dql.inspections.BaseInspection;
 import pl.thedeem.intellij.dql.inspections.fixes.DropInvalidParameterQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ConflictedParameterInspection extends BaseInspection {
+public class ConflictedParameterInspection extends LocalInspectionTool {
     @Override
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new DQLVisitor() {

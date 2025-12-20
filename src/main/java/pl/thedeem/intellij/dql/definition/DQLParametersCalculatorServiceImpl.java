@@ -58,7 +58,7 @@ public class DQLParametersCalculatorServiceImpl implements DQLParametersCalculat
     }
 
     private @Nullable MappedParameter createNamedParameter(@NotNull DQLParameterExpression named, @NotNull Map<String, Parameter> availableParameters, @Nullable MappedParameter previousParameter) {
-        String name = Objects.requireNonNull(named.getName());
+        String name = Objects.requireNonNullElse(named.getName(), "");
         Parameter parameter = availableParameters.get(name.toLowerCase());
         if (parameter == null && "alias".equalsIgnoreCase(name) && previousParameter != null && previousParameter.definition() != null) {
             if (previousParameter.definition().allowsFieldName()) {

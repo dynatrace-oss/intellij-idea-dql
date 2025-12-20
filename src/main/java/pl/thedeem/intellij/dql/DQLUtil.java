@@ -115,7 +115,10 @@ public class DQLUtil {
         return result;
     }
 
-    public static PsiElement unpackParenthesis(@NotNull PsiElement element) {
+    public static @Nullable PsiElement unpackParenthesis(@Nullable PsiElement element) {
+        if (element == null) {
+            return null;
+        }
         PsiElement result = element;
         while (result instanceof DQLParenthesisedExpression parenthesisedExpression) {
             result = parenthesisedExpression.getExpression();
@@ -140,7 +143,7 @@ public class DQLUtil {
     public static @NotNull Collection<Parameter> getMissingParameters(@NotNull List<MappedParameter> definedParameters, @NotNull Collection<Parameter> parameters) {
         Set<String> names = definedParameters.stream()
                 .filter(p -> p.name() != null && !CompletionUtilCore.DUMMY_IDENTIFIER_TRIMMED.equals(p.holder().getText()))
-                .map(p -> Objects.requireNonNull(p.name()).toLowerCase())
+                .map(p -> Objects.requireNonNullElse(p.name(), "").toLowerCase())
                 .collect(Collectors.toSet());
 
         return parameters.stream()

@@ -45,7 +45,7 @@ public class DPLCommandDocumentationProvider {
     }
 
     private HtmlChunk buildHeader(@Nullable ExpressionDescription definition) {
-        String name = Objects.requireNonNull(command.getCommandKeyword().getName());
+        String name = Objects.requireNonNullElse(command.getCommandKeyword().getName(), "");
         HtmlChunk.Element header = DocumentationMarkup.PRE_ELEMENT.child(
                 HtmlChunk.span()
                         .addText(name).attr("style", "padding-right: 10px;")
