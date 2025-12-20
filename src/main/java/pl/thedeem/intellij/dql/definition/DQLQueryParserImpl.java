@@ -26,15 +26,17 @@ public class DQLQueryParserImpl implements DQLQueryParser {
         for (DQLVariableExpression variable : vars) {
             String name = variable.getName();
             String value = definitions.get(name);
-            if (value != null) {
-                int originalStartOffset = variable.getTextOffset();
-                String originalText = variable.getText();
-                int originalLength = originalText.length();
-                int substitutedLength = value.length();
-
-                mappings.add(new OffsetMapping(originalStartOffset, -1, originalLength, substitutedLength));
-                replacements.add(new Replacement(variable, value));
+            if (value == null) {
+                value = "null";
             }
+
+            int originalStartOffset = variable.getTextOffset();
+            String originalText = variable.getText();
+            int originalLength = originalText.length();
+            int substitutedLength = value.length();
+
+            mappings.add(new OffsetMapping(originalStartOffset, -1, originalLength, substitutedLength));
+            replacements.add(new Replacement(variable, value));
         }
 
         // update variables and substituted offsets
