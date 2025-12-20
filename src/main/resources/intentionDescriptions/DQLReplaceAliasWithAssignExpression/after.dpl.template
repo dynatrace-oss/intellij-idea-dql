@@ -1,0 +1,2 @@
+data record(field = 10)
+| fields newField = field * 10 + 11

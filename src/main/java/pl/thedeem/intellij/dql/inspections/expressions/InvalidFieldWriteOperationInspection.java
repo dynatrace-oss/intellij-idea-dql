@@ -55,6 +55,6 @@ public class InvalidFieldWriteOperationInspection extends BaseInspection {
         if (definition == null) {
             return false;
         }
-        return "none".equals(definition.assignmentSupport());
+        return !definition.allowsFieldName();
     }
 }

@@ -219,6 +219,11 @@
                          level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.command.missingParameterName.display.name"
                          implementationClass="pl.thedeem.intellij.dql.inspections.parameters.MissingParameterNameInspection"/>
+        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLAliasDisallowed"
+                         enabledByDefault="true"
+                         level="ERROR"
+                         groupKey="inspection.groups.dql" key="inspection.command.invalidAlias.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.AliasDisallowedInspection"/>
         <!-- Value validations -->
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLSingleQuotesUsage"
                          enabledByDefault="true" level="ERROR"
@@ -251,6 +256,10 @@
         <intentionAction>
             <language>DQL</language>
             <className>pl.thedeem.intellij.dql.intentions.DQLSplitFilterCommand</className>
+        </intentionAction>
+        <intentionAction>
+            <language>DQL</language>
+            <className>pl.thedeem.intellij.dql.intentions.DQLReplaceAliasWithAssignExpression</className>
         </intentionAction>
 
         <!-- Settings -->

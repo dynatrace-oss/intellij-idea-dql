@@ -1,0 +1,24 @@
+<html lang="en">
+<body>
+Reports an error when an invalid alias definition is found.
+
+<p>
+    DQL language allows to define a name for an expression in two major ways: via the assign expression
+    (name = value), and by specifying the alias for the field (value, alias: name).
+
+    This inspection validates if there was no conflict between both (you cannot specify two names for the field at the
+    same time) and if the alias parameter was specified in a correct place.
+</p>
+
+<pre><code>
+data json: "..."
+| fields {
+    f1 = 5, alias: "field1", // you should not specify an alias if the assign expression was already provided
+    alias: "field2" // the alias is not related to any expression providing value
+},
+    alias: "something" // the "data" command does not have a parameter named alias
+</code></pre>
+
+<p>After applying the quick fix, an invalid alias will be dropped.</p>
+</body>
+</html>

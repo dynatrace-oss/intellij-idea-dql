@@ -21,11 +21,12 @@ public class DQLParametersCalculatorServiceImpl implements DQLParametersCalculat
         List<MappedParameter> result = new ArrayList<>();
 
         MappedParameter variadic = null;
+        MappedParameter previous = null;
         boolean conflictingVariadic = definitions.stream().filter(Parameter::variadic).count() > 1;
         for (DQLExpression defined : definedParameters) {
             MappedParameter mappedParameter = null;
             if (defined instanceof DQLParameterExpression named) {
-                mappedParameter = createNamedParameter(named, availableParameters);
+                mappedParameter = createNamedParameter(named, availableParameters, previous);
             } else if (variadic == null) {
                 mappedParameter = createUnnamedParameter(defined, availableParameters, unusedParameters);
             } else {
@@ -34,6 +35,9 @@ public class DQLParametersCalculatorServiceImpl implements DQLParametersCalculat
             if (mappedParameter != null) {
                 result.add(mappedParameter);
                 variadic = calculateVariadic(mappedParameter, variadic, conflictingVariadic);
+                previous = mappedParameter;
+            } else {
+                previous = variadic;
             }
         }
         return result;
@@ -53,9 +57,15 @@ public class DQLParametersCalculatorServiceImpl implements DQLParametersCalculat
         return currentVariadic;
     }
 
-    private @NotNull MappedParameter createNamedParameter(@NotNull DQLParameterExpression named, @NotNull Map<String, Parameter> availableParameters) {
+    private @Nullable MappedParameter createNamedParameter(@NotNull DQLParameterExpression named, @NotNull Map<String, Parameter> availableParameters, @Nullable MappedParameter previousParameter) {
         String name = Objects.requireNonNull(named.getName());
         Parameter parameter = availableParameters.get(name.toLowerCase());
+        if (parameter == null && "alias".equalsIgnoreCase(name) && previousParameter != null && previousParameter.definition() != null) {
+            if (previousParameter.definition().allowsFieldName()) {
+                previousParameter.included().add(named);
+                return null;
+            }
+        }
         return new MappedParameter(
                 parameter,
                 named,

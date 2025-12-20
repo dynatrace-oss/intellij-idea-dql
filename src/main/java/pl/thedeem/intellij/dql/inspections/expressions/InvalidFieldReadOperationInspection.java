@@ -40,7 +40,7 @@ public class InvalidFieldReadOperationInspection extends BaseInspection {
 
     private void validateParameters(@NotNull List<MappedParameter> parameters, @NotNull ProblemsHolder holder) {
         for (MappedParameter parameter : parameters) {
-            if (!readonlyAllowed(parameter) && parameter.definition() != null) {
+            if (readonlyDisallowed(parameter) && parameter.definition() != null) {
                 for (PsiElement value : parameter.getExpressions()) {
                     validateValue(value, holder);
                 }
@@ -69,11 +69,11 @@ public class InvalidFieldReadOperationInspection extends BaseInspection {
         return !(fieldExpression instanceof DQLAssignExpression);
     }
 
-    private boolean readonlyAllowed(MappedParameter parameter) {
+    private boolean readonlyDisallowed(MappedParameter parameter) {
         Parameter definition = parameter != null ? parameter.definition() : null;
         if (definition == null) {
-            return true;
+            return false;
         }
-        return !"mandatory".equals(definition.assignmentSupport());
+        return definition.requiresFieldName();
     }
 }

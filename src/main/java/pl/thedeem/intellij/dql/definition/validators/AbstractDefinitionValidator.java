@@ -8,7 +8,6 @@ import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLAssignExpression;
 import pl.thedeem.intellij.dql.psi.DQLBracketExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
-import pl.thedeem.intellij.dql.psi.DQLParenthesisedExpression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,25 +22,18 @@ public abstract class AbstractDefinitionValidator {
         List<PsiElement> invalidElements = new ArrayList<>();
 
         while (!toValidate.isEmpty()) {
-            PsiElement element = toValidate.removeFirst();
-            if (element instanceof DQLParameterExpression param) {
-                toValidate.add(param.getExpression());
-                continue;
-            }
-            if (element instanceof DQLParenthesisedExpression paren) {
-                toValidate.add(DQLUtil.unpackParenthesis(paren));
-                continue;
-            }
-            if (element instanceof DQLBracketExpression bracketExpression) {
-                toValidate.addAll(bracketExpression.getExpressionList());
-                continue;
-            }
-            if (element instanceof DQLAssignExpression assign) {
-                toValidate.add(assign.getRightExpression());
-                continue;
-            }
-            if (element != null && validator.test(element)) {
-                invalidElements.add(element);
+            PsiElement element = DQLUtil.unpackParenthesis(toValidate.removeFirst());
+            switch (element) {
+                case DQLParameterExpression param -> toValidate.add(param.getExpression());
+                case DQLBracketExpression bracket -> toValidate.addAll(bracket.getExpressionList());
+                case DQLAssignExpression assign -> toValidate.add(assign.getRightExpression());
+                case null -> {
+                }
+                default -> {
+                    if (validator.test(element)) {
+                        invalidElements.add(element);
+                    }
+                }
             }
         }
 
