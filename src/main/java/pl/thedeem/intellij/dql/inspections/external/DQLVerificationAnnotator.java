@@ -5,18 +5,20 @@ import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.lang.annotation.HighlightSeverity;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.executing.DQLParsedQuery;
 import pl.thedeem.intellij.common.sdk.DynatraceRestClient;
 import pl.thedeem.intellij.common.sdk.errors.DQLApiException;
 import pl.thedeem.intellij.common.sdk.model.DQLSyntaxErrorPositionDetails;
 import pl.thedeem.intellij.common.sdk.model.DQLVerifyPayload;
 import pl.thedeem.intellij.common.sdk.model.DQLVerifyResponse;
+import pl.thedeem.intellij.dql.DQLUtil;
+import pl.thedeem.intellij.dql.definition.DQLQueryParser;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
@@ -27,7 +29,7 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
     public record Input(PsiFile file) {
     }
 
-    public record Result(DQLVerifyResponse response, @Nullable DQLParsedQuery parsedQuery) {
+    public record Result(DQLVerifyResponse response, @Nullable DQLQueryParser.ParseResult parsedQuery) {
     }
 
     @Override
@@ -43,13 +45,14 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
         }
         String tenantName = DynatraceTenantsService.getInstance().findTenantName(input.file().getProject(), input.file());
         DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(tenantName);
+        DQLQueryParser parser = DQLQueryParser.getInstance(input.file.getProject());
         if (tenant != null) {
             String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
             DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
             try {
-                DQLParsedQuery parsedQuery = new DQLParsedQuery(input.file);
-                DQLVerifyResponse response = client.verifyDQL(new DQLVerifyPayload(parsedQuery.getParsedQuery()), apiToken);
-                return new Result(response, parsedQuery);
+                DQLQueryParser.ParseResult parseResult = WriteCommandAction.runWriteCommandAction(input.file.getProject(), (Computable<DQLQueryParser.ParseResult>) () -> parser.getSubstitutedQuery(input.file));
+                DQLVerifyResponse response = client.verifyDQL(new DQLVerifyPayload(parseResult.parsed()), apiToken);
+                return new Result(response, parseResult);
             } catch (IOException | InterruptedException | DQLApiException e) {
                 return new Result(new DQLVerifyResponse(), null);
             }
@@ -67,7 +70,7 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
         }
     }
 
-    private TextRange getTextRange(DQLVerifyResponse.DQLVerifyNotification notification, @Nullable DQLParsedQuery parsedQuery) {
+    private TextRange getTextRange(DQLVerifyResponse.DQLVerifyNotification notification, @Nullable DQLQueryParser.ParseResult parsedQuery) {
         DQLSyntaxErrorPositionDetails syntaxPosition = notification.getSyntaxPosition();
         int start = syntaxPosition.getStartIndex();
         int end = syntaxPosition.getEndIndex();

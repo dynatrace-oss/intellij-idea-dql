@@ -11,33 +11,35 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.StandardItemPresentation;
-import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
-import pl.thedeem.intellij.dql.components.DQLResultPanel;
-import pl.thedeem.intellij.dql.components.actions.SaveAsFileAction;
-import pl.thedeem.intellij.dql.executing.DQLExecutionUtil;
-import pl.thedeem.intellij.dql.executing.DQLParsedQuery;
-import pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.DQLProcessHandler;
-import pl.thedeem.intellij.dql.executing.services.DQLServicesManager;
-import pl.thedeem.intellij.dql.fileProviders.DQLMetadataVirtualFile;
 import pl.thedeem.intellij.common.sdk.DynatraceRestClient;
 import pl.thedeem.intellij.common.sdk.errors.DQLApiException;
 import pl.thedeem.intellij.common.sdk.model.DQLExecutePayload;
 import pl.thedeem.intellij.common.sdk.model.DQLExecuteResponse;
 import pl.thedeem.intellij.common.sdk.model.DQLPollResponse;
 import pl.thedeem.intellij.common.sdk.model.DQLResult;
+import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.DQLIcon;
+import pl.thedeem.intellij.dql.DQLUtil;
+import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
+import pl.thedeem.intellij.dql.components.DQLResultPanel;
+import pl.thedeem.intellij.dql.components.actions.SaveAsFileAction;
+import pl.thedeem.intellij.dql.definition.DQLQueryParser;
+import pl.thedeem.intellij.dql.executing.DQLExecutionUtil;
+import pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.DQLProcessHandler;
+import pl.thedeem.intellij.dql.executing.services.DQLServicesManager;
+import pl.thedeem.intellij.dql.fileProviders.DQLMetadataVirtualFile;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
@@ -103,8 +105,9 @@ public class DQLExecutionService {
         if (dqlFile != null) {
             PsiFile psiFile = ReadAction.compute(() -> DQLUtil.openFile(project, Path.of(DQLExecutionUtil.getProjectAbsolutePath(this.dqlFile, project)).toString()));
             if (psiFile != null) {
-                DQLParsedQuery parsedQuery = new DQLParsedQuery(psiFile);
-                payload.setQuery(parsedQuery.getParsedQuery());
+                DQLQueryParser parser = DQLQueryParser.getInstance(psiFile.getProject());
+                DQLQueryParser.ParseResult parsed = WriteCommandAction.runWriteCommandAction(psiFile.getProject(), (Computable<DQLQueryParser.ParseResult>) () -> parser.getSubstitutedQuery(psiFile));
+                payload.setQuery(parsed.parsed());
             } else {
                 Notifications.Bus.notify(new Notification(
                         DynatraceQueryLanguage.DQL_ID,

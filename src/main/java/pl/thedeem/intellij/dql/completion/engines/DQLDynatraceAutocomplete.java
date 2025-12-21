@@ -12,19 +12,21 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.completion.CompletionUtils;
-import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.common.sdk.DynatraceRestClient;
 import pl.thedeem.intellij.common.sdk.errors.DQLApiException;
 import pl.thedeem.intellij.common.sdk.model.DQLAutocompletePayload;
 import pl.thedeem.intellij.common.sdk.model.DQLAutocompleteResult;
 import pl.thedeem.intellij.common.sdk.model.DQLSuggestion;
+import pl.thedeem.intellij.dql.DQLIcon;
+import pl.thedeem.intellij.dql.DQLUtil;
+import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
+import pl.thedeem.intellij.dql.definition.DQLQueryParser;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class DQLDynatraceAutocomplete {
@@ -35,24 +37,7 @@ public class DQLDynatraceAutocomplete {
         if (tenant != null) {
             DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
             try {
-                DQLAutocompleteResult autocomplete = ApplicationUtil.runWithCheckCanceled(
-                        ApplicationManager.getApplication().executeOnPooledThread(() -> {
-                            try {
-                                ProgressManager.checkCanceled();
-                                // TODO: Find a way to parse the query without causing the process cancelled issue  DQLParsedQuery query = new DQLParsedQuery(parameters.getOriginalFile());
-                                String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
-                                return client.autocomplete(
-                                        new DQLAutocompletePayload(ReadAction.compute(() -> parameters.getOriginalFile().getText()), (long) parameters.getPosition().getTextOffset()),
-                                        apiToken
-                                );
-                            } catch (IOException | InterruptedException | DQLApiException e) {
-                                logger.warn("Something went wrong when getting autocomplete results from Dynatrace: " + e.getMessage());
-                                return null;
-                            }
-                        }),
-                        ProgressManager.getInstance().getProgressIndicator()
-                );
-
+                DQLAutocompleteResult autocomplete = getAutocompleteResult(parameters, tenant, client);
                 if (autocomplete != null) {
                     for (DQLSuggestion suggestion : autocomplete.getSuggestions()) {
                         if (StringUtil.isNotEmpty(suggestion.getSuggestion())) {
@@ -84,6 +69,27 @@ public class DQLDynatraceAutocomplete {
                 logger.warn("Could not load autocomplete results from Dynatrace: " + e.getMessage());
             }
         }
+    }
+
+    private static DQLAutocompleteResult getAutocompleteResult(@NotNull CompletionParameters parameters, @NotNull DynatraceTenant tenant, @NotNull DynatraceRestClient client) throws ExecutionException {
+        return ApplicationUtil.runWithCheckCanceled(
+                ApplicationManager.getApplication().executeOnPooledThread(() -> {
+                    try {
+                        ProgressManager.checkCanceled();
+                        DQLQueryParser parser = DQLQueryParser.getInstance(parameters.getOriginalFile().getProject());
+                        String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
+                        DQLQueryParser.ParseResult substitutedQuery = ReadAction.compute(() -> parser.getSubstitutedQuery(parameters.getOriginalFile()));
+                        return client.autocomplete(
+                                new DQLAutocompletePayload(substitutedQuery.parsed(), (long) substitutedQuery.getOriginalOffset(parameters.getPosition().getTextOffset())),
+                                apiToken
+                        );
+                    } catch (IOException | InterruptedException | DQLApiException e) {
+                        logger.warn("Something went wrong when getting autocomplete results from Dynatrace: " + e.getMessage());
+                        return null;
+                    }
+                }),
+                ProgressManager.getInstance().getProgressIndicator()
+        );
     }
 
     protected DynatraceTenant recalculateTenantConfiguration(CompletionParameters parameters) {

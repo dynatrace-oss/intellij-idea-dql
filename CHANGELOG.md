@@ -12,6 +12,8 @@
 - Added support for fields named via `alias:` parameter. Added intention to replace `alias` with
   assigned expression (`=`)
 - Replacing manual inspections with automatically generated based on the DQL JSON definition
+- Added support for known Dynatrace Dashboards variables (`$variable`) replacement for live Notebooks autocompletion
+  and inspections
 
 ## [1.2.0] - 2025-12-17
 

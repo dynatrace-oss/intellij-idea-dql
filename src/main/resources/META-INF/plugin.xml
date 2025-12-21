@@ -283,6 +283,8 @@
                         serviceInterface="pl.thedeem.intellij.dql.definition.DQLParametersCalculatorService"/>
         <projectService serviceImplementation="pl.thedeem.intellij.dql.definition.DQLParameterValueTypesValidatorImpl"
                         serviceInterface="pl.thedeem.intellij.dql.definition.DQLParameterValueTypesValidator"/>
+        <projectService serviceImplementation="pl.thedeem.intellij.dql.definition.DQLQueryParserImpl"
+                        serviceInterface="pl.thedeem.intellij.dql.definition.DQLQueryParser"/>
         <projectService serviceImplementation="pl.thedeem.intellij.dql.definition.DQLDefinitionServiceImpl"
                         serviceInterface="pl.thedeem.intellij.dql.definition.DQLDefinitionService"/>
         <configurationType
