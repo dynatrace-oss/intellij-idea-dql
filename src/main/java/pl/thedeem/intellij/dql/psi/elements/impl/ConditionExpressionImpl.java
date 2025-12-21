@@ -32,4 +32,15 @@ public abstract class ConditionExpressionImpl extends AbstractOperatorElementImp
                 .addPart(expressions, operator)
                 .getFieldName();
     }
+
+    @Override
+    protected String getOperationId() {
+        String symbol = getOperatorSymbol();
+        return switch (symbol) {
+            case "and" -> "dql.operator.and";
+            case "or" -> "dql.operator.or";
+            case "xor" -> "dql.operator.xor";
+            case null, default -> symbol;
+        };
+    }
 }

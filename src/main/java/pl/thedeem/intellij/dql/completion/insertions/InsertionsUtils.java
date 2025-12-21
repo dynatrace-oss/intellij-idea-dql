@@ -34,6 +34,10 @@ public class InsertionsUtils {
             template.addVariable("fieldName:" + name, new TextExpression("field"), new EmptyNode(), true);
             return true;
         }
+        if (parameterValueTypes.contains("dql.parameterValueType.expressionWithFieldAccess")) {
+            template.addVariable("fieldName:" + name, new TextExpression("field"), new EmptyNode(), true);
+            return true;
+        }
         if (parameterValueTypes.stream().anyMatch(DQLDefinitionService.DPL_VALUE_TYPES::contains)) {
             template.addTextSegment("\"\"\"");
             template.addVariable("dplPattern:" + name, new TextExpression(""), new EmptyNode(), true);

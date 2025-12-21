@@ -32,4 +32,16 @@ public abstract class ComparisonExpressionImpl extends AbstractOperatorElementIm
                 .addPart(expressions, operator)
                 .getFieldName();
     }
+
+    @Override
+    protected String getOperationId() {
+        String symbol = getOperatorSymbol();
+        return switch (symbol) {
+            case ">" -> "dql.operator.greater";
+            case ">=" -> "dql.operator.greaterEquals";
+            case "<" -> "dql.operator.lower";
+            case "<=" -> "dql.operator.lowerEquals";
+            case null, default -> symbol;
+        };
+    }
 }

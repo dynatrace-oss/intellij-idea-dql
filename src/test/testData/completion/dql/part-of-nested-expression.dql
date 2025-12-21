@@ -1,0 +1,3 @@
+data record(
+    expression = true and (5 - <caret> < 10)
+)

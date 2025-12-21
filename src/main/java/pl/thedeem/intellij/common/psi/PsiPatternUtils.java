@@ -53,4 +53,20 @@ public class PsiPatternUtils {
             }
         };
     }
+
+    public static PatternCondition<PsiElement> withParentSkipping(ElementPattern<? extends PsiElement> expected, ElementPattern<? extends PsiElement> skipping) {
+        return new PatternCondition<>("withParentSkipping") {
+            @Override
+            public boolean accepts(@NotNull PsiElement element, ProcessingContext context) {
+                if (expected.accepts(element, context)) {
+                    return true;
+                }
+                PsiElement processed = element;
+                do {
+                    processed = processed.getParent();
+                } while (processed != null && skipping.accepts(processed, context));
+                return processed != null && expected.accepts(processed, context);
+            }
+        };
+    }
 }

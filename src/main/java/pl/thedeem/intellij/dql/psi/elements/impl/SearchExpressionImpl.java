@@ -28,4 +28,9 @@ public abstract class SearchExpressionImpl extends AbstractOperatorElementImpl i
                 .addPart(getLeftExpression())
                 .getFieldName();
     }
+
+    @Override
+    protected String getOperationId() {
+        return "dql.operator.search";
+    }
 }

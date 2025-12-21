@@ -1,0 +1,3 @@
+data record(
+    expression = 5 * <caret>
+)

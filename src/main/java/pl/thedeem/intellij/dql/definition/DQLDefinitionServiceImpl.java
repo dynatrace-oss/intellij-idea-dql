@@ -100,6 +100,10 @@ public class DQLDefinitionServiceImpl implements DQLDefinitionService {
         if (parameterValueTypes.stream().anyMatch(FIELD_IDENTIFIER_PARAMETER_VALUE_TYPES::contains)) {
             return null;
         }
+        // if the parameter requires a primitive value, do not suggest functions
+        if (parameterValueTypes.contains("dql.parameterValueType.primitiveValue") || parameterValueTypes.stream().anyMatch(STRING_PARAMETER_VALUE_TYPES::contains)) {
+            return null;
+        }
         Set<String> categories = new HashSet<>();
         for (String parameterValueType : parameterValueTypes) {
             ParameterValueType type = findParameterValueType(parameterValueType);

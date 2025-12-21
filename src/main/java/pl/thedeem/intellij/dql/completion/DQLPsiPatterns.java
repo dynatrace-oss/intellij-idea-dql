@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.TokenType;
 import pl.thedeem.intellij.common.psi.PsiPatternUtils;
 import pl.thedeem.intellij.dql.psi.*;
+import pl.thedeem.intellij.dql.psi.elements.impl.AbstractOperatorElementImpl;
 
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
@@ -28,10 +29,6 @@ public interface DQLPsiPatterns {
                             psiElement().whitespaceCommentEmptyOrError()
                     )
             ))
-    );
-
-    ElementPattern<PsiElement> SUGGEST_FIELD_VALUES = PlatformPatterns.or(
-            psiElement().withParent(DQLFieldExpression.class)
     );
     ElementPattern<PsiElement> SUGGEST_FIELD_NAMES = PlatformPatterns.or(
             psiElement().withParent(DQLFieldName.class)
@@ -59,4 +56,26 @@ public interface DQLPsiPatterns {
             QUERY_COMMAND,
             SUGGEST_QUERY_START
     );
+
+    ElementPattern<PsiElement> INSIDE_COMMENTS = PlatformPatterns.or(
+            psiElement(DQLTypes.ML_COMMENT),
+            psiElement(DQLTypes.EOL_COMMENT)
+    );
+
+    PsiElementPattern.Capture<PsiElement> INSIDE_PARAMETER = psiElement()
+            .with(PsiPatternUtils.withParentSkipping(
+                    PlatformPatterns.or(
+                            psiElement(DQLCommand.class),
+                            psiElement(DQLFunctionExpression.class),
+                            psiElement(AbstractOperatorElementImpl.class)
+                    ),
+                    PlatformPatterns.or(
+                            psiElement(DQLFieldExpression.class),
+                            psiElement(DQLTimeAlignmentOperand.class),
+                            psiElement(DQLAssignExpression.class),
+                            psiElement(DQLParameterExpression.class),
+                            psiElement(DQLBracketExpression.class),
+                            psiElement(DQLParenthesisedExpression.class)
+                    )
+            ));
 }

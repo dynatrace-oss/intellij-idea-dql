@@ -4,6 +4,8 @@
 
 ### Features
 
+- Autocompleting parameter values in all suitable places (for example, in nested expressions of different types)
+- Added autocompleting string quotes in suitable places
 - Adding support for scientific notation numbers in DQL
 - Adding support for calculating the expressions data types for supported operators (if possible, for example: `long` +
   `long`)

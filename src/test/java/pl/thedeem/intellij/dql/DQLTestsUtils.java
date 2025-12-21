@@ -2,10 +2,7 @@ package pl.thedeem.intellij.dql;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.dql.definition.model.Command;
-import pl.thedeem.intellij.dql.definition.model.Function;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
-import pl.thedeem.intellij.dql.definition.model.Signature;
+import pl.thedeem.intellij.dql.definition.model.*;
 
 import java.util.List;
 
@@ -29,10 +26,10 @@ public class DQLTestsUtils {
 
     public static Parameter createParameter(
             @NotNull String name,
-            @NotNull List<String> types,
+            @Nullable List<String> types,
             boolean required,
-            @NotNull List<String> disallows,
-            @NotNull List<String> enumValues,
+            @Nullable List<String> disallows,
+            @Nullable List<String> enumValues,
             @Nullable String defaultValue,
             boolean requiresName
     ) {
@@ -45,7 +42,7 @@ public class DQLTestsUtils {
                 false,
                 "none",
                 types,
-                List.of(),
+                List.of("dql.parameterValueType.expressionWithFieldAccess"),
                 enumValues,
                 defaultValue,
                 null,
@@ -77,6 +74,16 @@ public class DQLTestsUtils {
                 null,
                 null,
                 null
+        );
+    }
+
+    public static Operator createOperator(@NotNull String name, @NotNull List<String> output, @NotNull List<Parameter> parameters) {
+        Signature signature = new Signature(parameters, output, false);
+        return new Operator(
+                name,
+                "description",
+                "symbol",
+                List.of(signature)
         );
     }
 }

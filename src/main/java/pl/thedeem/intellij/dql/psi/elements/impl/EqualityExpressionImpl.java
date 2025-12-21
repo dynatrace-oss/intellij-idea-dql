@@ -32,4 +32,14 @@ public abstract class EqualityExpressionImpl extends AbstractOperatorElementImpl
                 .addPart(expressions, operator)
                 .getFieldName();
     }
+
+    @Override
+    protected String getOperationId() {
+        String symbol = getOperatorSymbol();
+        return switch (symbol) {
+            case "!=", "<>" -> "dql.operator.notEquals";
+            case "==" -> "dql.operator.equals";
+            case null, default -> symbol;
+        };
+    }
 }

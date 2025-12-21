@@ -31,4 +31,9 @@ public abstract class InExpressionImpl extends AbstractOperatorElementImpl imple
                 .addPart(expressions, " in ")
                 .getFieldName();
     }
+
+    @Override
+    protected String getOperationId() {
+        return "dql.operator.in";
+    }
 }
