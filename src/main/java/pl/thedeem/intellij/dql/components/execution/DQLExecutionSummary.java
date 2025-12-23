@@ -2,9 +2,9 @@ package pl.thedeem.intellij.dql.components.execution;
 
 import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.components.DQLComponentUtils;
+import pl.thedeem.intellij.common.components.ComponentsUtils;
 import pl.thedeem.intellij.common.sdk.model.DQLResult;
+import pl.thedeem.intellij.dql.DQLBundle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +23,7 @@ public class DQLExecutionSummary extends JPanel {
                 result.getGrailMetadata().executionTimeMilliseconds
         ), AllIcons.General.Information, JLabel.LEFT);
 
-        summary.setBorder(DQLComponentUtils.DEFAULT_BORDER);
+        summary.setBorder(ComponentsUtils.DEFAULT_BORDER);
 
         add(summary, BorderLayout.WEST);
 

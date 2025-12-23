@@ -15,6 +15,8 @@ public class DQLSettingsState {
     public boolean allowExperimentalFeatures;
     @OptionTag
     public String defaultTenantUrl;
+    @OptionTag
+    public boolean showDqlExecutionToolbar;
 
     @Override
     public boolean equals(Object o) {
@@ -25,6 +27,7 @@ public class DQLSettingsState {
                 && performLiveValidation == that.performLiveValidation
                 && useDynatraceAutocomplete == that.useDynatraceAutocomplete
                 && allowExperimentalFeatures == that.allowExperimentalFeatures
+                && showDqlExecutionToolbar == that.showDqlExecutionToolbar
                 && Objects.equals(defaultTenantUrl, that.defaultTenantUrl);
     }
 
@@ -35,6 +38,7 @@ public class DQLSettingsState {
                 performLiveValidation,
                 useDynatraceAutocomplete,
                 allowExperimentalFeatures,
+                showDqlExecutionToolbar,
                 defaultTenantUrl
         );
     }

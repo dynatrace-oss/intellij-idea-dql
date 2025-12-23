@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
-import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Operator;
 import pl.thedeem.intellij.dql.definition.model.Parameter;

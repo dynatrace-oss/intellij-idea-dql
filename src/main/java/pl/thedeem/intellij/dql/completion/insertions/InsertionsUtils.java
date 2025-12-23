@@ -4,7 +4,7 @@ import com.intellij.codeInsight.template.Template;
 import com.intellij.codeInsight.template.impl.EmptyNode;
 import com.intellij.codeInsight.template.impl.TextExpression;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 
 import java.util.List;

@@ -20,7 +20,9 @@ import pl.thedeem.intellij.common.sdk.model.DQLSuggestion;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
-import pl.thedeem.intellij.dql.definition.DQLQueryParser;
+import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
+import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
+import pl.thedeem.intellij.dql.services.query.DQLQueryParserService;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
@@ -33,11 +35,14 @@ public class DQLDynatraceAutocomplete {
     private static final Logger logger = Logger.getInstance(DQLDynatraceAutocomplete.class);
 
     public void autocomplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
-        DynatraceTenant tenant = recalculateTenantConfiguration(parameters);
+        DynatraceTenantsService tenantsService = DynatraceTenantsService.getInstance();
+        DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance(parameters.getOriginalFile().getProject());
+        QueryConfiguration configuration = configurationService.getQueryConfiguration(parameters.getOriginalFile());
+        DynatraceTenant tenant = tenantsService.findTenant(configuration.tenant());
         if (tenant != null) {
             DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
             try {
-                DQLAutocompleteResult autocomplete = getAutocompleteResult(parameters, tenant, client);
+                DQLAutocompleteResult autocomplete = getAutocompleteResult(parameters, tenant, client, configuration);
                 if (autocomplete != null) {
                     for (DQLSuggestion suggestion : autocomplete.getSuggestions()) {
                         if (StringUtil.isNotEmpty(suggestion.getSuggestion())) {
@@ -71,14 +76,19 @@ public class DQLDynatraceAutocomplete {
         }
     }
 
-    private static DQLAutocompleteResult getAutocompleteResult(@NotNull CompletionParameters parameters, @NotNull DynatraceTenant tenant, @NotNull DynatraceRestClient client) throws ExecutionException {
+    private static DQLAutocompleteResult getAutocompleteResult(
+            @NotNull CompletionParameters parameters,
+            @NotNull DynatraceTenant tenant,
+            @NotNull DynatraceRestClient client,
+            @NotNull QueryConfiguration configuration
+    ) throws ExecutionException {
         return ApplicationUtil.runWithCheckCanceled(
                 ApplicationManager.getApplication().executeOnPooledThread(() -> {
                     try {
                         ProgressManager.checkCanceled();
-                        DQLQueryParser parser = DQLQueryParser.getInstance(parameters.getOriginalFile().getProject());
+                        DQLQueryParserService parser = DQLQueryParserService.getInstance(parameters.getOriginalFile().getProject());
                         String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
-                        DQLQueryParser.ParseResult substitutedQuery = ReadAction.compute(() -> parser.getSubstitutedQuery(parameters.getOriginalFile()));
+                        DQLQueryParserService.ParseResult substitutedQuery = ReadAction.compute(() -> parser.getSubstitutedQuery(parameters.getOriginalFile(), configuration.definedVariables()));
                         return client.autocomplete(
                                 new DQLAutocompletePayload(substitutedQuery.parsed(), (long) substitutedQuery.getOriginalOffset(parameters.getPosition().getTextOffset())),
                                 apiToken
@@ -90,12 +100,5 @@ public class DQLDynatraceAutocomplete {
                 }),
                 ProgressManager.getInstance().getProgressIndicator()
         );
-    }
-
-    protected DynatraceTenant recalculateTenantConfiguration(CompletionParameters parameters) {
-        String tenantName = ReadAction.compute(() -> DynatraceTenantsService.getInstance().findTenantName(
-                parameters.getOriginalFile().getProject(), parameters.getOriginalFile())
-        );
-        return DynatraceTenantsService.getInstance().findTenant(tenantName);
     }
 }

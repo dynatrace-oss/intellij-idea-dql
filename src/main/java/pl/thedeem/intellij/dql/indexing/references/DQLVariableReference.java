@@ -13,7 +13,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
-import pl.thedeem.intellij.dql.variables.DQLVariablesService;
+import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 
 import java.util.*;
 

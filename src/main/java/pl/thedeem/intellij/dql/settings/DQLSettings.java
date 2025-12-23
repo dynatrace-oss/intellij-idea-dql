@@ -64,4 +64,12 @@ public class DQLSettings implements PersistentStateComponent<DQLSettingsState> {
     public void setDefaultDynatraceTenant(String tenant) {
         myState.defaultTenantUrl = tenant;
     }
+
+    public boolean isDQLExecutionToolbarVisible() {
+        return myState.showDqlExecutionToolbar;
+    }
+
+    public void setDQLExecutionToolbarVisible(boolean enabled) {
+        myState.showDqlExecutionToolbar = enabled;
+    }
 }

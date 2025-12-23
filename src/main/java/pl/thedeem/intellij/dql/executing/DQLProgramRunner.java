@@ -12,7 +12,7 @@ import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.execution.runners.RunContentBuilder;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.ExecuteDQLRunConfiguration;
+import pl.thedeem.intellij.dql.executing.runConfiguration.ExecuteDQLRunConfiguration;
 
 public class DQLProgramRunner implements ProgramRunner<RunnerSettings> {
     @NotNull

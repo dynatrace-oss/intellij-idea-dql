@@ -2,8 +2,8 @@ package pl.thedeem.intellij.dql.fileProviders;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.dql.components.DQLMetadataPanel;
 import pl.thedeem.intellij.common.sdk.model.DQLResult;
+import pl.thedeem.intellij.dql.components.execution.DQLMetadataPanel;
 
 import javax.swing.*;
 import java.time.LocalDateTime;

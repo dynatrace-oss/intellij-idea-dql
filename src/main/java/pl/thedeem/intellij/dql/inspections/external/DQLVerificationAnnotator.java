@@ -7,6 +7,7 @@ import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
@@ -18,7 +19,9 @@ import pl.thedeem.intellij.common.sdk.model.DQLSyntaxErrorPositionDetails;
 import pl.thedeem.intellij.common.sdk.model.DQLVerifyPayload;
 import pl.thedeem.intellij.common.sdk.model.DQLVerifyResponse;
 import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.definition.DQLQueryParser;
+import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
+import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
+import pl.thedeem.intellij.dql.services.query.DQLQueryParserService;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
@@ -29,7 +32,7 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
     public record Input(PsiFile file) {
     }
 
-    public record Result(DQLVerifyResponse response, @Nullable DQLQueryParser.ParseResult parsedQuery) {
+    public record Result(DQLVerifyResponse response, @Nullable DQLQueryParserService.ParseResult parsedQuery) {
     }
 
     @Override
@@ -39,18 +42,23 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
 
     @Override
     public Result doAnnotate(Input input) {
-        // We cannot do any annotations on partial files, as they will not be valid either way
         if (!canPerformExternalValidation(input)) {
             return new Result(new DQLVerifyResponse(), null);
         }
-        String tenantName = DynatraceTenantsService.getInstance().findTenantName(input.file().getProject(), input.file());
-        DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(tenantName);
-        DQLQueryParser parser = DQLQueryParser.getInstance(input.file.getProject());
+        Project project = input.file.getProject();
+        DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance(project);
+        QueryConfiguration configuration = configurationService.getQueryConfiguration(input.file);
+        DQLQueryParserService parser = DQLQueryParserService.getInstance(project);
+        DynatraceTenantsService tenantsService = DynatraceTenantsService.getInstance();
+        DynatraceTenant tenant = tenantsService.findTenant(configuration.tenant());
         if (tenant != null) {
             String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
             DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
             try {
-                DQLQueryParser.ParseResult parseResult = WriteCommandAction.runWriteCommandAction(input.file.getProject(), (Computable<DQLQueryParser.ParseResult>) () -> parser.getSubstitutedQuery(input.file));
+                DQLQueryParserService.ParseResult parseResult = WriteCommandAction.runWriteCommandAction(
+                        project,
+                        (Computable<DQLQueryParserService.ParseResult>) () -> parser.getSubstitutedQuery(input.file, configuration.definedVariables())
+                );
                 DQLVerifyResponse response = client.verifyDQL(new DQLVerifyPayload(parseResult.parsed()), apiToken);
                 return new Result(response, parseResult);
             } catch (IOException | InterruptedException | DQLApiException e) {
@@ -70,7 +78,7 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
         }
     }
 
-    private TextRange getTextRange(DQLVerifyResponse.DQLVerifyNotification notification, @Nullable DQLQueryParser.ParseResult parsedQuery) {
+    private TextRange getTextRange(DQLVerifyResponse.DQLVerifyNotification notification, @Nullable DQLQueryParserService.ParseResult parsedQuery) {
         DQLSyntaxErrorPositionDetails syntaxPosition = notification.getSyntaxPosition();
         int start = syntaxPosition.getStartIndex();
         int end = syntaxPosition.getEndIndex();
@@ -82,6 +90,7 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
     }
 
     private boolean canPerformExternalValidation(Input input) {
+        // We cannot do any annotations on partial files, as they will not be valid either way
         return !DQLUtil.isPartialFile(input.file)
                 && DQLSettings.getInstance().isPerformingLiveValidationEnabled();
     }

@@ -19,7 +19,7 @@ import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLElementFactory;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 import pl.thedeem.intellij.dql.psi.elements.VariableElement;
-import pl.thedeem.intellij.dql.variables.DQLVariablesService;
+import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 
 import java.util.List;
 import java.util.Objects;

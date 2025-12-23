@@ -16,6 +16,7 @@ public class DQLSettingsComponent {
     private final JBCheckBox allowExperimentalFeatures = new JBCheckBox(DQLBundle.message("settings.dql.features.allowExperimentalFeatures"));
     private final JBCheckBox performLiveValidations = new JBCheckBox(DQLBundle.message("settings.dql.features.performLiveValidations"));
     private final JBCheckBox useDynatraceAutocomplete = new JBCheckBox(DQLBundle.message("settings.dql.features.useDynatraceAutocomplete"));
+    private final JBCheckBox showDqlExecutionToolbar = new JBCheckBox(DQLBundle.message("settings.dql.features.showDqlExecutionToolbar"));
     private final DynatraceTenantSelector<?> defaultDynatraceTenant = new DynatraceTenantSelector<>(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
     public DQLSettingsComponent(DQLSettings settings) {
@@ -27,6 +28,7 @@ public class DQLSettingsComponent {
                 .getPanel();
 
         myMainPanel = FormBuilder.createFormBuilder()
+                .addComponent(showDqlExecutionToolbar, 1)
                 .addComponent(calculateFieldsDataType, 1)
                 .addComponent(allowExperimentalFeatures, 1)
                 .addComponent(performLiveValidations, 1)
@@ -40,6 +42,7 @@ public class DQLSettingsComponent {
         allowExperimentalFeatures.setSelected(settings.isAllowingExperimentalFeatures());
         performLiveValidations.setSelected(settings.isPerformingLiveValidationEnabled());
         useDynatraceAutocomplete.setSelected(settings.isUseDynatraceAutocompleteEnabled());
+        showDqlExecutionToolbar.setSelected(settings.isDQLExecutionToolbarVisible());
         performLiveValidations.addActionListener((actionEvent -> tenantsSelectorPanel.setVisible(performLiveValidations.isSelected() || useDynatraceAutocomplete.isSelected())));
         useDynatraceAutocomplete.addActionListener((actionEvent -> tenantsSelectorPanel.setVisible(performLiveValidations.isSelected() || useDynatraceAutocomplete.isSelected())));
         tenantsSelectorPanel.setVisible(settings.isPerformingLiveValidationEnabled());
@@ -89,5 +92,13 @@ public class DQLSettingsComponent {
     public String getDefaultDynatraceTenant() {
         DynatraceTenant selectedTenant = defaultDynatraceTenant.getSelectedTenant();
         return selectedTenant != null ? selectedTenant.getName() : null;
+    }
+
+    public boolean isDQLExecutionToolbarVisible() {
+        return showDqlExecutionToolbar.isSelected();
+    }
+
+    public void setDQLExecutionToolbarVisible(boolean visible) {
+        showDqlExecutionToolbar.setSelected(visible);
     }
 }
