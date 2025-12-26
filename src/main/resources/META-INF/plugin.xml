@@ -289,6 +289,8 @@
                         serviceInterface="pl.thedeem.intellij.dql.services.query.DQLQueryParserService"/>
         <projectService serviceImplementation="pl.thedeem.intellij.dql.services.definition.DQLDefinitionServiceImpl"
                         serviceInterface="pl.thedeem.intellij.dql.services.definition.DQLDefinitionService"/>
+        <projectService serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLFieldNamesServiceImpl"
+                        serviceInterface="pl.thedeem.intellij.dql.services.query.DQLFieldNamesService"/>
         <projectService
                 serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationServiceImpl"
                 serviceInterface="pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService"/>

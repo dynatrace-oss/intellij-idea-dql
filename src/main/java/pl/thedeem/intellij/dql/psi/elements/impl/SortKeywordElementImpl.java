@@ -3,11 +3,11 @@ package pl.thedeem.intellij.dql.psi.elements.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
-import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.common.StandardItemPresentation;
-import pl.thedeem.intellij.dql.psi.elements.SortKeywordElement;
 import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.common.StandardItemPresentation;
+import pl.thedeem.intellij.dql.DQLIcon;
+import pl.thedeem.intellij.dql.psi.elements.SortKeywordElement;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 public abstract class SortKeywordElementImpl extends ASTWrapperPsiElement implements SortKeywordElement {
     public SortKeywordElementImpl(@NotNull ASTNode node) {
@@ -21,7 +21,7 @@ public abstract class SortKeywordElementImpl extends ASTWrapperPsiElement implem
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator().addPart(getName()).getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getName());
     }
 
     @Override

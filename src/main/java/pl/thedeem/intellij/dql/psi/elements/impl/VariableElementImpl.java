@@ -15,10 +15,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLElementFactory;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 import pl.thedeem.intellij.dql.psi.elements.VariableElement;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 
 import java.util.List;
@@ -62,7 +62,7 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator().addPart(getName()).getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getName());
     }
 
     @Override

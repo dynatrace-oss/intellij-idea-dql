@@ -6,8 +6,8 @@ import com.intellij.navigation.ItemPresentation;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.elements.BaseNamedElement;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 import java.util.Set;
 
@@ -23,7 +23,7 @@ public abstract class StringContentElementImpl extends ASTWrapperPsiElement impl
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator().addPart(getText()).getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getText());
     }
 
     @Override

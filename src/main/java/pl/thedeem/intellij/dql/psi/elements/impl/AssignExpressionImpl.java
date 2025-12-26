@@ -7,9 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.elements.AssignExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 import java.util.Collection;
 import java.util.Set;
@@ -33,9 +33,7 @@ public abstract class AssignExpressionImpl extends AbstractOperatorElementImpl i
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator()
-                .addPart(getLeftExpression())
-                .getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getLeftExpression());
     }
 
     @Override

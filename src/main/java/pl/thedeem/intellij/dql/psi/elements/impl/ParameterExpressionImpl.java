@@ -7,11 +7,11 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterName;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.ParameterExpression;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 import java.util.Collection;
 import java.util.Set;
@@ -45,11 +45,10 @@ public abstract class ParameterExpressionImpl extends ASTWrapperPsiElement imple
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator()
-                .addPart(getName())
-                .addPart(": ")
-                .addPart(getExpression())
-                .getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+                getName(),
+                ": ",
+                getExpression());
     }
 
     @Override

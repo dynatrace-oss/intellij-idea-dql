@@ -10,7 +10,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
-import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Operator;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
@@ -20,6 +19,8 @@ import pl.thedeem.intellij.dql.psi.elements.BaseElement;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 import pl.thedeem.intellij.dql.psi.elements.OperatorElement;
+import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,6 +43,15 @@ public abstract class AbstractOperatorElementImpl extends ASTWrapperPsiElement i
             }
         }
         return false;
+    }
+
+    @Override
+    public String getFieldName() {
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+                getLeftExpression(),
+                getOperator(),
+                getRightExpression()
+        );
     }
 
     @Override

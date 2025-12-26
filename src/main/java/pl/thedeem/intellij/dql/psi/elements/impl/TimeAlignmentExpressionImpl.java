@@ -8,22 +8,12 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLTimeAlignmentOperand;
 import pl.thedeem.intellij.dql.psi.elements.TimeAlignmentExpression;
 
 public abstract class TimeAlignmentExpressionImpl extends AbstractOperatorElementImpl implements TimeAlignmentExpression {
     public TimeAlignmentExpressionImpl(@NotNull ASTNode node) {
         super(node);
-    }
-
-    @Override
-    public String getFieldName() {
-        return new DQLFieldNamesGenerator()
-                .addPart(getLeftExpression())
-                .addPart("@")
-                .addPart(getRightExpression())
-                .getFieldName();
     }
 
     @Override

@@ -8,9 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 import pl.thedeem.intellij.dql.psi.elements.BaseNamedElement;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 public abstract class ExpressionOperatorImpl extends ASTWrapperPsiElement implements BaseNamedElement {
     public ExpressionOperatorImpl(@NotNull ASTNode node) {
@@ -23,10 +23,10 @@ public abstract class ExpressionOperatorImpl extends ASTWrapperPsiElement implem
     }
 
     @Override
-    public @NotNull String getFieldName() {
-        return new DQLFieldNamesGenerator()
-                .addPart(getText())
-                .getFieldName();
+    public String getFieldName() {
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+                getText()
+        );
     }
 
     public IElementType getNodeType() {

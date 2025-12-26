@@ -14,9 +14,6 @@ import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.services.parameters.DQLParametersCalculatorService;
 import pl.thedeem.intellij.dql.definition.model.Command;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
@@ -25,6 +22,9 @@ import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 import pl.thedeem.intellij.dql.psi.elements.CommandElement;
+import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.parameters.DQLParametersCalculatorService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 import java.util.Collection;
 import java.util.List;
@@ -51,7 +51,7 @@ public abstract class CommandElementImpl extends ASTWrapperPsiElement implements
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator().addPart(getName()).getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getName());
     }
 
     @Override

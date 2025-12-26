@@ -2,16 +2,12 @@ package pl.thedeem.intellij.dql.psi.elements.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
-import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.elements.InExpression;
-
-import java.util.List;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 public abstract class InExpressionImpl extends AbstractOperatorElementImpl implements InExpression {
 
@@ -26,10 +22,10 @@ public abstract class InExpressionImpl extends AbstractOperatorElementImpl imple
 
     @Override
     public String getFieldName() {
-        List<DQLExpression> expressions = PsiTreeUtil.getChildrenOfTypeAsList(this, DQLExpression.class);
-        return new DQLFieldNamesGenerator()
-                .addPart(expressions, " in ")
-                .getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+                getLeftExpression(),
+                " in ",
+                getRightExpression());
     }
 
     @Override

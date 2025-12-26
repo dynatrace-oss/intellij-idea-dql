@@ -7,9 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.definition.model.DQLDurationType;
 import pl.thedeem.intellij.dql.psi.elements.DurationElement;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -54,7 +54,7 @@ public abstract class PositiveDurationElementImpl extends ASTWrapperPsiElement i
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator().addPart(getName()).getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getText());
     }
 
     @Override

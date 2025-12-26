@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.elements.SortingExpression;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 public abstract class SortingExpressionImpl extends ASTWrapperPsiElement implements SortingExpression {
     public SortingExpressionImpl(@NotNull ASTNode node) {
@@ -17,7 +17,7 @@ public abstract class SortingExpressionImpl extends ASTWrapperPsiElement impleme
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator().addPart(getText()).getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getText());
     }
 
     @Override
