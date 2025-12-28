@@ -25,7 +25,6 @@ public class DQLSettingsComponent {
         allowExperimentalFeatures.setToolTipText(DQLBundle.message("settings.dql.features.allowExperimentalFeaturesDescription"));
         JPanel tenantsSelectorPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(DQLBundle.message("settings.dql.features.defaultDynatraceTenant"), defaultDynatraceTenant)
-                .addTooltip(DQLBundle.message("settings.dql.features.defaultDynatraceTenantDescription"))
                 .getPanel();
 
         myMainPanel = FormBuilder.createFormBuilder()
@@ -33,9 +32,9 @@ public class DQLSettingsComponent {
                 .addComponent(showDqlInjectionGutterIcon, 1)
                 .addComponent(calculateFieldsDataType, 1)
                 .addComponent(allowExperimentalFeatures, 1)
+                .addComponent(tenantsSelectorPanel, 1)
                 .addComponent(performLiveValidations, 1)
                 .addComponent(useDynatraceAutocomplete, 1)
-                .addComponent(tenantsSelectorPanel, 1)
                 .addComponentFillVertically(new JBPanel<>(), 0)
                 .getPanel();
 
@@ -46,8 +45,6 @@ public class DQLSettingsComponent {
         useDynatraceAutocomplete.setSelected(settings.isUseDynatraceAutocompleteEnabled());
         showDqlExecutionToolbar.setSelected(settings.isDQLExecutionToolbarVisible());
         showDqlInjectionGutterIcon.setSelected(settings.isDQLInjectionGutterIconVisible());
-        performLiveValidations.addActionListener((actionEvent -> tenantsSelectorPanel.setVisible(performLiveValidations.isSelected() || useDynatraceAutocomplete.isSelected())));
-        useDynatraceAutocomplete.addActionListener((actionEvent -> tenantsSelectorPanel.setVisible(performLiveValidations.isSelected() || useDynatraceAutocomplete.isSelected())));
         tenantsSelectorPanel.setVisible(settings.isPerformingLiveValidationEnabled());
         defaultDynatraceTenant.refreshTenantsComboBox();
     }
