@@ -10,7 +10,6 @@ import com.intellij.openapi.editor.markup.HighlighterLayer;
 import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.MarkupModel;
 import com.intellij.openapi.editor.markup.TextAttributes;
-import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.JBPopupListener;
 import com.intellij.openapi.ui.popup.LightweightWindowEvent;
@@ -21,6 +20,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.ColoredListCellRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.executing.runConfiguration.ExecuteDQLRunConfiguration;
@@ -33,6 +33,7 @@ import pl.thedeem.intellij.dql.settings.DQLSettings;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationService {
@@ -68,7 +69,7 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
         QueryConfiguration result = new QueryConfiguration();
         result.setQuery(file.getText());
         result.setTenant(DQLSettings.getInstance().getDefaultDynatraceTenant());
-        result.setOriginalFile(ProjectUtil.calcRelativeToProjectPath(file.getVirtualFile(), file.getProject(), false, false, false));
+        result.setOriginalFile(IntelliJUtils.getRelativeProjectPath(file.getVirtualFile(), file.getProject()));
         return result;
     }
 
@@ -82,9 +83,9 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
             return null;
         }
         RunManager runManager = RunManager.getInstance(file.getProject());
-        String filePath = ProjectUtil.calcRelativeToProjectPath(file.getVirtualFile(), file.getProject(), false, false, false);
+        String filePath = IntelliJUtils.getRelativeProjectPath(file.getVirtualFile(), file.getProject());
         for (RunnerAndConfigurationSettings settings : runManager.getAllSettings()) {
-            if (settings.getConfiguration() instanceof ExecuteDQLRunConfiguration dqlRunConfiguration && filePath.equals(dqlRunConfiguration.getDQLFile())) {
+            if (settings.getConfiguration() instanceof ExecuteDQLRunConfiguration dqlRunConfiguration && Objects.equals(filePath, dqlRunConfiguration.getDQLFile())) {
                 return dqlRunConfiguration.getConfiguration();
             }
         }

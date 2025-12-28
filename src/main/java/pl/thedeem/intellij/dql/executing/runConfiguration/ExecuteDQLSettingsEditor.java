@@ -64,41 +64,36 @@ public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfig
         queryParameters.setTimeframeStart(runConfig.getOptions().getTimeframeStart());
         queryParameters.setTimeframeEnd(runConfig.getOptions().getTimeframeEnd());
 
-        if (runConfig.getOptions().getFromFileSelected()) {
-            dqlQuery.setText(runConfig.getOptions().getDqlQuery());
-            dqlFilePath.setText(runConfig.getDQLFile());
-            queryPanel.setFromFile(true);
-        } else {
-            dqlFilePath.setText(runConfig.getDQLFile());
-            dqlQuery.setText("");
-            queryPanel.setFromFile(false);
-        }
+        dqlFilePath.setText(runConfig.getDQLFile());
+        dqlQuery.setText(runConfig.getOptions().getDqlQuery());
+        queryPanel.setFromFile(runConfig.getOptions().getFromFileSelected());
     }
 
     @Override
     protected void applyEditorTo(@NotNull ExecuteDQLRunConfiguration runConfig) {
+        ExecuteDQLRunConfigurationOptions options = runConfig.getOptions();
         if (queryPanel.isFromFile()) {
-            runConfig.getOptions().setFromFileSelected(true);
+            options.setFromFileSelected(true);
             runConfig.setDQLFile(dqlFilePath.getText());
-            runConfig.getOptions().setDqlQuery(null);
+            options.setDqlQuery(null);
         } else {
-            runConfig.getOptions().setDqlQuery(dqlQuery.getText());
+            options.setDqlQuery(dqlQuery.getText());
             runConfig.setDQLFile(null);
-            runConfig.getOptions().setFromFileSelected(false);
+            options.setFromFileSelected(false);
         }
         DynatraceTenant selectedTenant = tenantSelector.getSelectedTenant();
 
         if (selectedTenant != null) {
-            runConfig.getOptions().setSelectedTenant(selectedTenant.getName());
+            options.setSelectedTenant(selectedTenant.getName());
         } else {
-            runConfig.getOptions().setSelectedTenant(null);
+            options.setSelectedTenant(null);
         }
 
-        runConfig.getOptions().setDefaultScanLimit(queryParameters.getDefaultScanLimit());
-        runConfig.getOptions().setMaxResultBytes(queryParameters.getMaxResultBytes());
-        runConfig.getOptions().setMaxResultRecords(queryParameters.getMaxResultRecords());
-        runConfig.getOptions().setTimeframeStart(queryParameters.getTimeframeStart());
-        runConfig.getOptions().setTimeframeEnd(queryParameters.getTimeframeEnd());
+        options.setDefaultScanLimit(queryParameters.getDefaultScanLimit());
+        options.setMaxResultBytes(queryParameters.getMaxResultBytes());
+        options.setMaxResultRecords(queryParameters.getMaxResultRecords());
+        options.setTimeframeStart(queryParameters.getTimeframeStart());
+        options.setTimeframeEnd(queryParameters.getTimeframeEnd());
     }
 
     @NotNull
