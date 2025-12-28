@@ -300,6 +300,8 @@
         <serviceViewContributor implementation="pl.thedeem.intellij.dql.services.ui.DQLServiceViewContributor"/>
 
         <fileEditorProvider implementation="pl.thedeem.intellij.dql.fileProviders.DQLFileEditorProvider"/>
+        <editorNotificationProvider
+                implementation="pl.thedeem.intellij.dql.components.editor.DQLMissingTenantNotificationProvider"/>
         <editorNotificationProvider implementation="pl.thedeem.intellij.dql.components.editor.DQLToolbarProvider"/>
         <runLineMarkerContributor language=""
                                   implementationClass="pl.thedeem.intellij.dql.components.editor.DQLInjectionLineMakerProvider"/>

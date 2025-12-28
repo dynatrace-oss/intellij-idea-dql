@@ -12,13 +12,14 @@ import com.intellij.psi.PsiLanguageInjectionHost;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLFileType;
+import pl.thedeem.intellij.dql.settings.DQLSettings;
 
 import java.util.List;
 
 public class DQLInjectionLineMakerProvider extends RunLineMarkerContributor {
     @Override
     public @Nullable Info getInfo(@NotNull PsiElement element) {
-        if (!(element instanceof PsiLanguageInjectionHost host)) {
+        if (!(element instanceof PsiLanguageInjectionHost host) || !DQLSettings.getInstance().isDQLInjectionGutterIconVisible()) {
             return null;
         }
         InjectedLanguageManager injector = InjectedLanguageManager.getInstance(host.getProject());

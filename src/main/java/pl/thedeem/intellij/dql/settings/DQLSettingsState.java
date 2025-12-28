@@ -16,7 +16,9 @@ public class DQLSettingsState {
     @OptionTag
     public String defaultTenantUrl;
     @OptionTag
-    public boolean showDqlExecutionToolbar;
+    public boolean showDqlExecutionToolbar = true;
+    @OptionTag
+    public boolean showDqlInjectionGutterIcon = true;
 
     @Override
     public boolean equals(Object o) {
@@ -28,6 +30,7 @@ public class DQLSettingsState {
                 && useDynatraceAutocomplete == that.useDynatraceAutocomplete
                 && allowExperimentalFeatures == that.allowExperimentalFeatures
                 && showDqlExecutionToolbar == that.showDqlExecutionToolbar
+                && showDqlInjectionGutterIcon == that.showDqlInjectionGutterIcon
                 && Objects.equals(defaultTenantUrl, that.defaultTenantUrl);
     }
 
@@ -39,6 +42,7 @@ public class DQLSettingsState {
                 useDynatraceAutocomplete,
                 allowExperimentalFeatures,
                 showDqlExecutionToolbar,
+                showDqlInjectionGutterIcon,
                 defaultTenantUrl
         );
     }

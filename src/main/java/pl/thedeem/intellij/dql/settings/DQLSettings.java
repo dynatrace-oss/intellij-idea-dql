@@ -72,4 +72,12 @@ public class DQLSettings implements PersistentStateComponent<DQLSettingsState> {
     public void setDQLExecutionToolbarVisible(boolean enabled) {
         myState.showDqlExecutionToolbar = enabled;
     }
+
+    public boolean isDQLInjectionGutterIconVisible() {
+        return myState.showDqlInjectionGutterIcon;
+    }
+
+    public void setDQLInjectionGutterIconVisible(boolean enabled) {
+        myState.showDqlInjectionGutterIcon = enabled;
+    }
 }
