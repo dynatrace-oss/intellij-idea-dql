@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -69,7 +70,7 @@ public class IntelliJUtils {
     }
 
     public static @Nullable String getRelativeProjectPath(@NotNull VirtualFile file, @NotNull Project project) {
-        VirtualFile baseDir = project.getProjectFile();
+        VirtualFile baseDir = ProjectUtil.guessProjectDir(project);
         if (baseDir == null) {
             return null;
         }
