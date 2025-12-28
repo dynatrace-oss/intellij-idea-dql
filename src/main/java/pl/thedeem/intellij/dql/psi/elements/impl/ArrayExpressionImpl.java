@@ -6,9 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.elements.ArrayExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 public abstract class ArrayExpressionImpl extends AbstractOperatorElementImpl implements ArrayExpression {
     public ArrayExpressionImpl(@NotNull ASTNode node) {
@@ -30,12 +30,12 @@ public abstract class ArrayExpressionImpl extends AbstractOperatorElementImpl im
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator()
-                .addPart(getLeftExpression())
-                .addPart("[")
-                .addPart(getRightExpression())
-                .addPart("]")
-                .getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+                getLeftExpression(),
+                "[",
+                getRightExpression(),
+                "]"
+        );
     }
 
     @Override

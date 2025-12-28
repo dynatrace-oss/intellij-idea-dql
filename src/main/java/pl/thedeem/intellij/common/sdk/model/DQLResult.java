@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.common.sdk.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.*;
@@ -14,10 +15,12 @@ public class DQLResult {
         return metadata;
     }
 
+    @JsonIgnore
     public DQLGrailMetadata getGrailMetadata() {
         return metadata != null && metadata.grail != null ? metadata.grail : new DQLGrailMetadata();
     }
 
+    @JsonIgnore
     public List<DQLMetricMetadata> getMetricsMetadata() {
         return metadata != null && metadata.metrics != null ? metadata.metrics : List.of();
     }
@@ -31,6 +34,7 @@ public class DQLResult {
     }
 
     // The order is important, but so is the column uniqueness
+    @JsonIgnore
     public Set<String> getColumns() {
         if (types == null) {
             return Set.of();
@@ -44,6 +48,7 @@ public class DQLResult {
         return result;
     }
 
+    @JsonIgnore
     public Map<String, String> getColumnTypes() {
         if (types == null) {
             return Map.of();

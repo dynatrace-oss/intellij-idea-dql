@@ -8,10 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.elements.BaseElement;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.BracketExpression;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -57,10 +57,10 @@ public abstract class BracketExpressionImpl extends ASTWrapperPsiElement impleme
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator()
-                .addPart("{")
-                .addPart(List.of(getChildren()), ", ")
-                .addPart("}")
-                .getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+                "{",
+                new DQLFieldNamesService.SeparatedChildren(List.of(getChildren()), ","),
+                "}"
+        );
     }
 }

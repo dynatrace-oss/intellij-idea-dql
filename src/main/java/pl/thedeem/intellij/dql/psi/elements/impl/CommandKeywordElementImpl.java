@@ -8,8 +8,8 @@ import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.elements.CommandKeywordElement;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 public abstract class CommandKeywordElementImpl extends ASTWrapperPsiElement implements CommandKeywordElement {
     public CommandKeywordElementImpl(@NotNull ASTNode node) {
@@ -28,9 +28,7 @@ public abstract class CommandKeywordElementImpl extends ASTWrapperPsiElement imp
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator()
-                .addPart(getName())
-                .getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getName());
     }
 
     @Override

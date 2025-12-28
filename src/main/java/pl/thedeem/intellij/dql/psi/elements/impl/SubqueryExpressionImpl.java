@@ -7,9 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.elements.SubqueryExpression;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 public abstract class SubqueryExpressionImpl extends ASTWrapperPsiElement implements SubqueryExpression {
     public SubqueryExpressionImpl(@NotNull ASTNode node) {
@@ -18,11 +18,11 @@ public abstract class SubqueryExpressionImpl extends ASTWrapperPsiElement implem
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator()
-                .addPart("[")
-                .addPart(findChildByClass(DQLExpression.class))
-                .addPart("]")
-                .getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+                "[",
+                findChildByClass(DQLExpression.class),
+                "]"
+        );
     }
 
     @Override

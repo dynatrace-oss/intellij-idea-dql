@@ -3,7 +3,6 @@ package pl.thedeem.intellij.dql;
 import com.intellij.codeInsight.completion.CompletionUtilCore;
 import com.intellij.credentialStore.CredentialAttributes;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -34,14 +33,6 @@ public class DQLUtil {
 
     private final static String PARTIAL_DQL_NAME = ".partial.";
     private final static String CREDENTIALS_PREFIX = "pl.thedeem.intellij.dql/";
-
-    public static @Nullable PsiFile openFile(@NotNull Project project, @NotNull String path) {
-        VirtualFile file = LocalFileSystem.getInstance().findFileByPath(path);
-        if (file != null) {
-            return PsiManager.getInstance(project).findFile(file);
-        }
-        return null;
-    }
 
     public static boolean isPartialFile(final PsiFile file) {
         String name = file.getName();

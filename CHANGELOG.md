@@ -4,6 +4,18 @@
 
 ### Features
 
+- Major reworking for the DQL execution
+  - **Executing DQLs no longer require the user to create a Run Configuration** - each file will have its own context
+    stored in memory. The user can still create a run configuration to save settings inside IntelliJ project.
+  - Adding a DQL toolbar at the top of each DQL file (similar to `.sql` files). The toolbar allows the user to set up
+    the Dynatrace context used for the file (to run, verify & autocomplete the query).
+  - Added an option to display DQL execution result as JSON
+  - Added an option to display the executed DQL query in the execution result panel
+  - Added an option to select a part of DQL query to be executed. The plugin will automatically calculate the nearest
+    boundaries for selected DQL commands.
+  - Automatically detecting nested subqueries. If the caret is inside a subquery, the plugin will show a popup
+    to ask the user which DQL query should be executed (whole file or just nested subquery).
+  - Added an option to also execute injected DQL fragments into other languages (like TypeScript, Java etc.).
 - Autocompleting parameter values in all suitable places (for example, in nested expressions of different types)
 - Added autocompleting string quotes in suitable places
 - Adding support for scientific notation numbers in DQL

@@ -5,12 +5,12 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.DQLBracketExpression;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseElement;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 import java.util.*;
 
@@ -82,7 +82,7 @@ public record MappedParameter(
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator().addPart(holder).getFieldName();
+        return DQLFieldNamesService.getInstance(holder.getProject()).calculateFieldName(holder);
     }
 
     public @NotNull List<PsiElement> getExpressions() {

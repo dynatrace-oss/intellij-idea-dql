@@ -6,8 +6,8 @@ import com.intellij.navigation.ItemPresentation;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.psi.elements.NullElement;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 import java.util.Set;
 
@@ -38,8 +38,6 @@ public abstract class NullElementImpl extends ASTWrapperPsiElement implements Nu
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator()
-                .addPart(getName())
-                .getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getName());
     }
 }

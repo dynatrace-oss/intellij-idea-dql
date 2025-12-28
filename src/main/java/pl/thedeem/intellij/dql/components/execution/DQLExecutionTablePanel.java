@@ -12,18 +12,14 @@ import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.components.*;
+import pl.thedeem.intellij.common.sdk.model.DQLRecord;
+import pl.thedeem.intellij.common.sdk.model.DQLResult;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.components.DQLComponentUtils;
-import pl.thedeem.intellij.dql.components.common.CommonTable;
-import pl.thedeem.intellij.dql.components.common.CommonTableCellRenderer;
-import pl.thedeem.intellij.dql.components.common.CommonTableHeaderRenderer;
-import pl.thedeem.intellij.dql.components.common.RowCountTable;
 import pl.thedeem.intellij.dql.fileProviders.DQLRecordFieldVirtualFile;
 import pl.thedeem.intellij.dql.fileProviders.DQLRecordVirtualFile;
-import pl.thedeem.intellij.common.sdk.model.DQLRecord;
-import pl.thedeem.intellij.common.sdk.model.DQLResult;
 
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
@@ -231,7 +227,7 @@ public class DQLExecutionTablePanel extends JPanel {
 
         Map<String, Object> rowValues = new HashMap<>();
         for (int col = 0; col < table.getColumnCount(); col++) {
-            rowValues.put(table.getColumnName(col), DQLComponentUtils.prepareColumnValue(table.getValueAt(row, col)));
+            rowValues.put(table.getColumnName(col), ComponentsUtils.prepareColumnValue(table.getValueAt(row, col)));
         }
         FileEditorManager.getInstance(project).openFile(new DQLRecordVirtualFile(
                 DQLBundle.message("components.dqlRecordDetails.fileName"),

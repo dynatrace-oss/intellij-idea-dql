@@ -277,22 +277,32 @@
 
         <!-- Services -->
         <applicationService serviceImplementation="pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService"/>
-        <projectService serviceImplementation="pl.thedeem.intellij.dql.variables.DQLVariablesServiceImpl"
-                        serviceInterface="pl.thedeem.intellij.dql.variables.DQLVariablesService"/>
-        <projectService serviceImplementation="pl.thedeem.intellij.dql.definition.DQLParametersCalculatorServiceImpl"
-                        serviceInterface="pl.thedeem.intellij.dql.definition.DQLParametersCalculatorService"/>
-        <projectService serviceImplementation="pl.thedeem.intellij.dql.definition.DQLParameterValueTypesValidatorImpl"
-                        serviceInterface="pl.thedeem.intellij.dql.definition.DQLParameterValueTypesValidator"/>
-        <projectService serviceImplementation="pl.thedeem.intellij.dql.definition.DQLQueryParserImpl"
-                        serviceInterface="pl.thedeem.intellij.dql.definition.DQLQueryParser"/>
-        <projectService serviceImplementation="pl.thedeem.intellij.dql.definition.DQLDefinitionServiceImpl"
-                        serviceInterface="pl.thedeem.intellij.dql.definition.DQLDefinitionService"/>
+        <projectService serviceImplementation="pl.thedeem.intellij.dql.services.variables.DQLVariablesServiceImpl"
+                        serviceInterface="pl.thedeem.intellij.dql.services.variables.DQLVariablesService"/>
+        <projectService
+                serviceImplementation="pl.thedeem.intellij.dql.services.parameters.DQLParametersCalculatorServiceImpl"
+                serviceInterface="pl.thedeem.intellij.dql.services.parameters.DQLParametersCalculatorService"/>
+        <projectService
+                serviceImplementation="pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidatorImpl"
+                serviceInterface="pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator"/>
+        <projectService serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLQueryParserServiceImpl"
+                        serviceInterface="pl.thedeem.intellij.dql.services.query.DQLQueryParserService"/>
+        <projectService serviceImplementation="pl.thedeem.intellij.dql.services.definition.DQLDefinitionServiceImpl"
+                        serviceInterface="pl.thedeem.intellij.dql.services.definition.DQLDefinitionService"/>
+        <projectService serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLFieldNamesServiceImpl"
+                        serviceInterface="pl.thedeem.intellij.dql.services.query.DQLFieldNamesService"/>
+        <projectService
+                serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationServiceImpl"
+                serviceInterface="pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService"/>
         <configurationType
-                implementation="pl.thedeem.intellij.dql.executing.executeDql.runConfiguration.ExecuteDQLConfigurationType"/>
+                implementation="pl.thedeem.intellij.dql.executing.runConfiguration.ExecuteDQLConfigurationType"/>
         <programRunner implementation="pl.thedeem.intellij.dql.executing.DQLProgramRunner"/>
-        <serviceViewContributor implementation="pl.thedeem.intellij.dql.executing.services.DQLServiceViewContributor"/>
+        <serviceViewContributor implementation="pl.thedeem.intellij.dql.services.ui.DQLServiceViewContributor"/>
 
         <fileEditorProvider implementation="pl.thedeem.intellij.dql.fileProviders.DQLFileEditorProvider"/>
+        <editorNotificationProvider implementation="pl.thedeem.intellij.dql.components.editor.DQLToolbarProvider"/>
+        <runLineMarkerContributor language=""
+                                  implementationClass="pl.thedeem.intellij.dql.components.editor.DQLInjectionLineMakerProvider"/>
         <!-- endregion -->
         <!-- region DPL -->
         <fileType name="DPL"
@@ -503,16 +513,79 @@
     </extensions>
 
     <actions resource-bundle="messages.DQLBundle">
-        <group id="DQL">
-            <action id="DQL.ExecuteScript" class="pl.thedeem.intellij.dql.actions.ExecuteDQLFromEditorAction"
-                    icon="AllIcons.Actions.Execute">
-                <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="RunnerActions"/>
-                <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="NewGroup"/>
-                <keyboard-shortcut keymap="$default" first-keystroke="control alt E"/>
-            </action>
-        </group>
-        <action id="DQL.NewDQLFile" class="pl.thedeem.intellij.dql.actions.CreateNewDQLFile"
+        <action id="DQL.NewDQLFile" class="pl.thedeem.intellij.dql.actions.CreateNewDQLFileAction"
                 icon="/icons/dynatrace.png"/>
+
+        <action id="DQL.SelectTenant"
+                icon="/icons/dynatrace.png"
+                class="pl.thedeem.intellij.dql.actions.TenantSelectorAction"/>
+        <action id="DQL.RunQuery"
+                class="pl.thedeem.intellij.dql.actions.RunDQLQueryAction"
+                icon="AllIcons.Actions.Execute">
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="RunnerActions"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="NewGroup"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="control alt E"/>
+        </action>
+        <action id="DQL.StopQuery"
+                class="pl.thedeem.intellij.dql.actions.StopDQLQueryAction"
+                icon="AllIcons.Run.Stop"/>
+        <action id="DQL.SaveConfigurationAsRunConfig"
+                class="pl.thedeem.intellij.dql.actions.SaveQueryConfigurationAction"
+                icon="AllIcons.Actions.AddToDictionary"/>
+        <action id="DQL.ToggleDQLExecutionToolbar"
+                class="pl.thedeem.intellij.dql.actions.ToggleDQLExecutionToolbarAction"
+                icon="AllIcons.Actions.Close">
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="RunnerActions"/>
+        </action>
+        <action id="DQL.SaveDQLResultsAsFileAction"
+                class="pl.thedeem.intellij.dql.actions.services.SaveDQLResultsAsFileAction"
+                icon="AllIcons.Actions.Install"
+        />
+        <action id="DQL.OpenDQLResultMetadata"
+                class="pl.thedeem.intellij.dql.actions.services.OpenDQLResultMetadataAction"
+                icon="AllIcons.Actions.Annotate"
+        />
+        <action id="DQL.ResultsAsTableAction"
+                class="pl.thedeem.intellij.dql.actions.services.DQLResultsAsTableAction"
+                icon="AllIcons.Nodes.DataTables"
+        />
+        <action id="DQL.ResultsAsJsonAction"
+                class="pl.thedeem.intellij.dql.actions.services.DQLResultsAsJsonAction"
+                icon="AllIcons.FileTypes.Json"
+        />
+        <action id="DQL.ShowUsedDQLQuery"
+                class="pl.thedeem.intellij.dql.actions.services.DQLShowUsedQueryAction"
+                icon="AllIcons.Actions.Preview"
+        />
+        <action id="DQL.CloseDQLResult"
+                class="pl.thedeem.intellij.dql.actions.services.CloseDQLResultAction"
+                icon="AllIcons.General.Close"
+        />
+
+        <group id="DQL.FloatingToolbar">
+            <reference ref="DQL.SelectTenant"/>
+            <reference ref="DQL.RunQuery"/>
+            <reference ref="DQL.StopQuery"/>
+        </group>
+        <group id="DQL.FloatingToolbarManager">
+            <reference ref="DQL.SaveConfigurationAsRunConfig"/>
+            <reference ref="DQL.ToggleDQLExecutionToolbar"/>
+        </group>
+        <group id="DQL.ExecutionServiceActions">
+            <reference ref="DQL.SelectTenant"/>
+            <reference ref="DQL.RunQuery"/>
+            <reference ref="DQL.StopQuery"/>
+            <separator/>
+            <reference ref="DQL.ResultsAsJsonAction"/>
+            <reference ref="DQL.ResultsAsTableAction"/>
+            <reference ref="DQL.ShowUsedDQLQuery"/>
+            <separator/>
+            <reference ref="DQL.SaveDQLResultsAsFileAction"/>
+            <reference ref="DQL.OpenDQLResultMetadata"/>
+            <separator/>
+            <reference ref="DQL.CloseDQLResult"/>
+        </group>
+
     </actions>
     <resource-bundle>messages.DQLBundle</resource-bundle>
     <resource-bundle>messages.DPLBundle</resource-bundle>

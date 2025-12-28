@@ -5,11 +5,11 @@ import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
-import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.common.StandardItemPresentation;
-import pl.thedeem.intellij.dql.psi.elements.FunctionNameElement;
 import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.common.StandardItemPresentation;
+import pl.thedeem.intellij.dql.DQLIcon;
+import pl.thedeem.intellij.dql.psi.elements.FunctionNameElement;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 public abstract class FunctionNameElementImpl extends ASTWrapperPsiElement implements FunctionNameElement {
     public FunctionNameElementImpl(@NotNull ASTNode node) {
@@ -28,9 +28,7 @@ public abstract class FunctionNameElementImpl extends ASTWrapperPsiElement imple
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator()
-                .addPart(getName())
-                .getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getName());
     }
 
     @Override

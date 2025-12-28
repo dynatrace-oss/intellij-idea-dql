@@ -6,9 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.elements.UnaryExpression;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 public abstract class UnaryExpressionImpl extends AbstractOperatorElementImpl implements UnaryExpression {
     public UnaryExpressionImpl(@NotNull ASTNode node) {
@@ -17,10 +16,10 @@ public abstract class UnaryExpressionImpl extends AbstractOperatorElementImpl im
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator()
-                .addPart("not")
-                .addPart(findChildByClass(DQLExpression.class))
-                .getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+                "not ",
+                getLeftExpression()
+        );
     }
 
     @Override

@@ -14,13 +14,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
 import pl.thedeem.intellij.dql.indexing.ReferenceVariantsCalculator;
 import pl.thedeem.intellij.dql.psi.DQLAssignExpression;
 import pl.thedeem.intellij.dql.psi.DQLElementFactory;
 import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
 import pl.thedeem.intellij.dql.psi.elements.FieldElement;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 
 import java.util.Collection;
@@ -85,9 +85,7 @@ public abstract class FieldNameElementImpl extends ASTWrapperPsiElement implemen
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator()
-                .addPart(getName())
-                .getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getName());
     }
 
     @Override

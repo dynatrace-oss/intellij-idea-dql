@@ -14,9 +14,6 @@ import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.definition.DQLDefinitionService;
-import pl.thedeem.intellij.dql.definition.DQLFieldNamesGenerator;
-import pl.thedeem.intellij.dql.definition.DQLParametersCalculatorService;
 import pl.thedeem.intellij.dql.definition.model.Function;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
@@ -26,6 +23,9 @@ import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLFunctionName;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.FunctionCallExpression;
+import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.parameters.DQLParametersCalculatorService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 import java.util.Collection;
 import java.util.List;
@@ -124,12 +124,12 @@ public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement im
 
     @Override
     public String getFieldName() {
-        return new DQLFieldNamesGenerator()
-                .addPart(getName())
-                .addPart("(")
-                .addPart(getFunctionArguments(), ",")
-                .addPart(")")
-                .getFieldName();
+        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+                getName(),
+                "(",
+                new DQLFieldNamesService.SeparatedChildren(getFunctionArguments(), ", "),
+                ")"
+        );
     }
 
     @Override

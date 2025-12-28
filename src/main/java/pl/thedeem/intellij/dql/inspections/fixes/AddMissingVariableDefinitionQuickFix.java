@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
-import pl.thedeem.intellij.dql.variables.DQLVariablesService;
+import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 
 import java.io.IOException;
 import java.nio.file.Files;
