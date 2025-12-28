@@ -18,6 +18,7 @@ import java.util.Objects;
 public class DynatraceTenantsService implements PersistentStateComponent<DynatraceTenantsService.State> {
     public static class State {
         public List<DynatraceTenant> tenants = new ArrayList<>();
+        public boolean missingTenantsNotificationDismissed;
     }
 
     private final State myState = new State();
@@ -56,5 +57,13 @@ public class DynatraceTenantsService implements PersistentStateComponent<Dynatra
                 .filter(t -> Objects.equals(tenant, t.getName()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public boolean isMissingTenantsNotificationDismissed() {
+        return myState.missingTenantsNotificationDismissed;
+    }
+
+    public void dismissMissingTenantsNotification() {
+        myState.missingTenantsNotificationDismissed = true;
     }
 }

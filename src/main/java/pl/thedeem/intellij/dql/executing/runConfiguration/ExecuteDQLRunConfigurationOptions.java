@@ -26,8 +26,9 @@ public class ExecuteDQLRunConfigurationOptions extends RunConfigurationOptions {
         this.dqlQuery.setValue(this, dqlQuery);
     }
 
+    // could be simplified in the future. It's comparing to FALSE ensuring old run configurations without the property still work
     public Boolean getFromFileSelected() {
-        return fromFileSelected.getValue(this);
+        return !Boolean.FALSE.equals(fromFileSelected.getValue(this));
     }
 
     public void setFromFileSelected(Boolean fromFileSelected) {

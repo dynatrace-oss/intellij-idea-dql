@@ -80,9 +80,15 @@ public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLR
         if (StringUtil.isEmpty(options.getSelectedTenant())) {
             throw new RuntimeConfigurationError(DQLBundle.message("runConfiguration.executeDQL.settings.errors.emptyTenant"));
         }
-        String query = getQuery();
-        if (StringUtil.isEmpty(query)) {
-            throw new RuntimeConfigurationError(DQLBundle.message("runConfiguration.executeDQL.settings.errors.emptyQuery"));
+        if (options.getFromFileSelected()) {
+            String queryFromFile = getQueryFromFile(options.getDqlPath(), getProject());
+            if (StringUtil.isEmpty(queryFromFile)) {
+                throw new RuntimeConfigurationError(DQLBundle.message("runConfiguration.executeDQL.settings.errors.emptyFile"));
+            }
+        } else {
+            if (StringUtil.isEmpty(options.getDqlQuery())) {
+                throw new RuntimeConfigurationError(DQLBundle.message("runConfiguration.executeDQL.settings.errors.emptyQuery"));
+            }
         }
     }
 

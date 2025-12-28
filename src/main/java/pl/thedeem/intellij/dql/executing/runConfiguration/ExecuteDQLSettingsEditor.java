@@ -64,7 +64,7 @@ public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfig
         queryParameters.setTimeframeStart(runConfig.getOptions().getTimeframeStart());
         queryParameters.setTimeframeEnd(runConfig.getOptions().getTimeframeEnd());
 
-        if (!Boolean.FALSE.equals(runConfig.getOptions().getFromFileSelected())) {
+        if (runConfig.getOptions().getFromFileSelected()) {
             dqlQuery.setText(runConfig.getOptions().getDqlQuery());
             dqlFilePath.setText(runConfig.getDQLFile());
             queryPanel.setFromFile(true);

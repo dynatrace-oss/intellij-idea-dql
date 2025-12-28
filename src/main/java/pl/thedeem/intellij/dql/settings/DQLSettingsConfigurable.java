@@ -33,8 +33,8 @@ public class DQLSettingsConfigurable implements Configurable {
                 || mySettingsComponent.isPerformingLiveValidationEnabled() != mySettings.isPerformingLiveValidationEnabled()
                 || mySettingsComponent.isUseDynatraceAutocompleteEnabled() != mySettings.isUseDynatraceAutocompleteEnabled()
                 || mySettingsComponent.isDQLExecutionToolbarVisible() != mySettings.isDQLExecutionToolbarVisible()
-                || !Objects.equals(mySettingsComponent.getDefaultDynatraceTenant(), mySettings.getDefaultDynatraceTenant())
-                ;
+                || mySettingsComponent.isDQLInjectionGutterIconVisible() != mySettings.isDQLInjectionGutterIconVisible()
+                || !Objects.equals(mySettingsComponent.getDefaultDynatraceTenant(), mySettings.getDefaultDynatraceTenant());
     }
 
     @Override
@@ -45,6 +45,7 @@ public class DQLSettingsConfigurable implements Configurable {
         mySettings.setUseDynatraceAutocompleteEnabled(mySettingsComponent.isUseDynatraceAutocompleteEnabled());
         mySettings.setDQLExecutionToolbarVisible(mySettingsComponent.isDQLExecutionToolbarVisible());
         mySettings.setDefaultDynatraceTenant(mySettingsComponent.getDefaultDynatraceTenant());
+        mySettings.setDQLInjectionGutterIconVisible(mySettingsComponent.isDQLInjectionGutterIconVisible());
     }
 
     @Override
@@ -55,6 +56,7 @@ public class DQLSettingsConfigurable implements Configurable {
         mySettingsComponent.setUseDynatraceAutocompleteEnabled(mySettings.isUseDynatraceAutocompleteEnabled());
         mySettingsComponent.setDQLExecutionToolbarVisible(mySettings.isDQLExecutionToolbarVisible());
         mySettingsComponent.setDefaultDynatraceTenant(mySettings.getDefaultDynatraceTenant());
+        mySettingsComponent.setDQLInjectionGutterIconVisible(mySettings.isDQLInjectionGutterIconVisible());
     }
 
     @Override
