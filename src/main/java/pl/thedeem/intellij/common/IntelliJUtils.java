@@ -9,6 +9,8 @@ import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VfsUtilCore;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.EditorTextField;
 import org.jetbrains.annotations.NotNull;
@@ -64,5 +66,13 @@ public class IntelliJUtils {
             }
         }
         return null;
+    }
+
+    public static @Nullable String getRelativeProjectPath(@NotNull VirtualFile file, @NotNull Project project) {
+        VirtualFile baseDir = project.getProjectFile();
+        if (baseDir == null) {
+            return null;
+        }
+        return VfsUtilCore.getRelativePath(file, baseDir, '/');
     }
 }
