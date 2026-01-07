@@ -12,6 +12,8 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jsoup.internal.StringUtil;
+import pl.thedeem.intellij.dql.definition.model.DQLDurationType;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
@@ -24,13 +26,21 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class DQLUtil {
     public final static DateTimeFormatter DQL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
     public final static DateTimeFormatter USER_FRIENDLY_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-
+    public final static Pattern DURATION_PATTERN = Pattern.compile(
+            "^\\s*(-?)\\s*(\\d+)\\s*("
+                    + String.join("|", DQLDurationType.getTypes()) +
+                    ")$");
+    
     private final static String PARTIAL_DQL_NAME = ".partial.";
     private final static String CREDENTIALS_PREFIX = "pl.thedeem.intellij.dql/";
 
@@ -159,5 +169,30 @@ public class DQLUtil {
                     return !p.experimental() || DQLSettings.getInstance().isAllowingExperimentalFeatures();
                 })
                 .collect(Collectors.toList());
+    }
+
+    public static @Nullable String parseUserTime(@NotNull String text) throws IllegalArgumentException {
+        if (StringUtil.isBlank(text)) {
+            return null;
+        }
+        Matcher durationMatcher = DURATION_PATTERN.matcher(text);
+        if (durationMatcher.matches()) {
+            int negative = durationMatcher.group(1).trim().isBlank() ? 0 : -1;
+            int amount = Integer.parseInt(durationMatcher.group(2)) * negative;
+            String unit = durationMatcher.group(3);
+            DQLDurationType type = DQLDurationType.getByType(unit);
+            if (type == null) {
+                throw new IllegalArgumentException("Invalid duration type: " + unit);
+            }
+            Instant instant = type.getInstant(amount, Instant.now());
+            return DQLUtil.DQL_DATE_FORMATTER.format(instant.atZone(ZoneId.systemDefault()));
+        }
+
+        try {
+            TemporalAccessor parsed = DQLUtil.DQL_DATE_FORMATTER.parse(text);
+            return DQLUtil.DQL_DATE_FORMATTER.format(parsed);
+        } catch (DateTimeParseException ex) {
+            throw new IllegalArgumentException("Invalid date format", ex);
+        }
     }
 }

@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.dql.actions;
+package pl.thedeem.intellij.dql.actions.executionToolbar;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.*;
@@ -7,13 +7,12 @@ import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
+import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
-import pl.thedeem.intellij.dql.executing.DQLExecutionService;
-import pl.thedeem.intellij.dql.services.ui.DQLManagedService;
+import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsConfigurable;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
@@ -26,25 +25,14 @@ public class TenantSelectorAction extends ComboBoxAction {
     @Override
     public void update(@NotNull AnActionEvent e) {
         Project project = e.getProject();
-
         Presentation presentation = e.getPresentation();
         if (project == null) {
             presentation.setVisible(false);
             return;
         }
-        DQLManagedService<?> service = e.getData(DQLManagedService.EXECUTION_SERVICE);
-        if (service instanceof DQLExecutionService executionService && executionService.getConfiguration() != null) {
-            presentation.setText(executionService.getConfiguration().tenant());
-        } else {
-            PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
-            if (file == null) {
-                presentation.setVisible(false);
-                return;
-            }
-            DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance(project);
-            QueryConfiguration configuration = configurationService.getQueryConfiguration(file);
-            presentation.setText(configuration.tenant());
-        }
+        presentation.setIcon(DQLIcon.DYNATRACE_LOGO);
+        presentation.setText(DQLBundle.message("action.DQL.SelectTenant.text"));
+        presentation.setText(getSelectedTenant(e.getDataContext()));
         presentation.putClientProperty(ActionUtil.SHOW_TEXT_IN_TOOLBAR, true);
     }
 
@@ -52,46 +40,27 @@ public class TenantSelectorAction extends ComboBoxAction {
     protected @NotNull DefaultActionGroup createPopupActionGroup(@NotNull JComponent button, @NotNull DataContext dataContext) {
         DefaultActionGroup group = new DefaultActionGroup();
         Project project = dataContext.getData(CommonDataKeys.PROJECT);
-        PsiFile file = dataContext.getData(CommonDataKeys.PSI_FILE);
 
         if (project == null) {
             return group;
         }
-        DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance(project);
-        List<DynatraceTenant> tenants = DynatraceTenantsService.getInstance().getTenants();
 
-        DQLManagedService<?> service = dataContext.getData(DQLManagedService.EXECUTION_SERVICE);
+        List<DynatraceTenant> tenants = DynatraceTenantsService.getInstance().getTenants();
+        String selectedTenant = getSelectedTenant(dataContext);
         for (DynatraceTenant tenant : tenants) {
             group.add(new AnAction(tenant.getName()) {
                 @Override
                 public void update(@NotNull AnActionEvent e) {
                     super.update(e);
-                    QueryConfiguration configuration = service instanceof DQLExecutionService executionService && executionService.getConfiguration() != null ?
-                            executionService.getConfiguration()
-                            : file != null ? configurationService.getQueryConfiguration(file) : null;
                     Presentation presentation = e.getPresentation();
-                    if (configuration == null) {
-                        presentation.setEnabledAndVisible(false);
-                        return;
-                    }
-
-                    if (Objects.equals(configuration.tenant(), tenant.getName())) {
+                    if (Objects.equals(selectedTenant, tenant.getName())) {
                         presentation.setVisible(false);
                     }
                 }
 
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
-                    if (service instanceof DQLExecutionService executionService) {
-                        QueryConfiguration configuration = executionService.getConfiguration();
-                        if (configuration != null) {
-                            configuration.setTenant(tenant.getName());
-                        }
-                    } else if (file != null) {
-                        QueryConfiguration configuration = configurationService.getQueryConfiguration(file);
-                        configuration.setTenant(tenant.getName());
-                        configurationService.updateQueryConfiguration(configuration, file);
-                    }
+                    updateSelectedTenant(tenant.getName(), dataContext);
                 }
 
                 @Override
@@ -110,6 +79,18 @@ public class TenantSelectorAction extends ComboBoxAction {
             }
         });
         return group;
+    }
+
+    protected @Nullable String getSelectedTenant(@NotNull DataContext e) {
+        QueryConfiguration config = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
+        return config != null ? config.tenant() : null;
+    }
+
+    protected void updateSelectedTenant(@NotNull String selectedTenant, @NotNull DataContext dataContext) {
+        QueryConfiguration config = dataContext.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
+        if (config != null) {
+            config.setTenant(selectedTenant);
+        }
     }
 
     @Override

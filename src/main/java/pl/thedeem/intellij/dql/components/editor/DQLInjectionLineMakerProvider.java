@@ -12,6 +12,8 @@ import com.intellij.psi.PsiLanguageInjectionHost;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLFileType;
+import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
+import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 
 import java.util.List;
@@ -28,35 +30,43 @@ public class DQLInjectionLineMakerProvider extends RunLineMarkerContributor {
             for (Pair<PsiElement, TextRange> pair : files) {
                 PsiFile file = pair.first.getContainingFile();
                 if (DQLFileType.INSTANCE.equals(file.getFileType())) {
-                    AnAction originalAction = ActionManager.getInstance().getAction("DQL.RunQuery");
-                    AnAction wrappedAction = new AnAction() {
-                        @Override
-                        public void update(@NotNull AnActionEvent e) {
-                            originalAction.update(e);
-                        }
-
-                        @Override
-                        public void actionPerformed(@NotNull AnActionEvent e) {
-                            DataContext customContext = SimpleDataContext.builder()
-                                    .setParent(e.getDataContext())
-                                    .add(CommonDataKeys.PSI_FILE, file)
-                                    .add(CommonDataKeys.PSI_ELEMENT, file)
-                                    .build();
-
-                            AnActionEvent newEvent = e.withDataContext(customContext);
-                            originalAction.actionPerformed(newEvent);
-                        }
-
-                        @Override
-                        public @NotNull ActionUpdateThread getActionUpdateThread() {
-                            return ActionUpdateThread.BGT;
-                        }
-                    };
-                    wrappedAction.copyFrom(originalAction);
+                    DQLQueryConfigurationService service = DQLQueryConfigurationService.getInstance(element.getProject());
+                    QueryConfiguration configuration = service.getQueryConfiguration(file);
+                    AnAction wrappedAction = createCustomAction(file, configuration);
                     return new Info(wrappedAction);
                 }
             }
         }
         return null;
+    }
+
+    private static @NotNull AnAction createCustomAction(PsiFile file, QueryConfiguration configuration) {
+        AnAction originalAction = ActionManager.getInstance().getAction("DQL.StartStopExecution");
+        AnAction wrappedAction = new AnAction() {
+            @Override
+            public void update(@NotNull AnActionEvent e) {
+                originalAction.update(e);
+            }
+
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                DataContext customContext = SimpleDataContext.builder()
+                        .setParent(e.getDataContext())
+                        .add(CommonDataKeys.PSI_FILE, file)
+                        .add(CommonDataKeys.PSI_ELEMENT, file)
+                        .add(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, configuration)
+                        .build();
+
+                AnActionEvent newEvent = e.withDataContext(customContext);
+                originalAction.actionPerformed(newEvent);
+            }
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.BGT;
+            }
+        };
+        wrappedAction.copyFrom(originalAction);
+        return wrappedAction;
     }
 }

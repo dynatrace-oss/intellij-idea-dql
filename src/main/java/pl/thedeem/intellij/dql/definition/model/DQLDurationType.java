@@ -1,5 +1,10 @@
 package pl.thedeem.intellij.dql.definition.model;
 
+import groovyjarjarantlr4.v4.runtime.misc.NotNull;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.time.Period;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,5 +42,21 @@ public enum DQLDurationType {
                 .filter(value -> value.types.contains(type.toLowerCase()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public Instant getInstant(int duration, @NotNull Instant base) {
+        return switch (this) {
+            case NANOSECOND -> base.plus(Duration.ofNanos(duration));
+            case MICROSECOND -> base.plus(Duration.ofNanos(duration * 1000L));
+            case MILLISECOND -> base.plus(Duration.ofMillis(duration));
+            case SECOND -> base.plus(Duration.ofSeconds(duration));
+            case MINUTE -> base.plus(Duration.ofMinutes(duration));
+            case HOUR -> base.plus(Duration.ofHours(duration));
+            case DAY -> base.plus(Duration.ofDays(duration));
+            case WEEK -> base.plus(Period.ofWeeks(duration));
+            case MONTH -> base.plus(Period.ofMonths(duration));
+            case QUARTER -> base.plus(Period.ofMonths(duration * 4));
+            case YEAR -> base.plus(Period.ofYears(duration));
+        };
     }
 }

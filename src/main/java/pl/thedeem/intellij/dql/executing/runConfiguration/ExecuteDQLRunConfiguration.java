@@ -106,10 +106,12 @@ public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLR
         return configuration;
     }
 
-    public void loadFromConfiguration(@NotNull QueryConfiguration configuration, @NotNull PsiFile file) {
+    public void loadFromConfiguration(@NotNull QueryConfiguration configuration, @Nullable PsiFile file) {
         ExecuteDQLRunConfigurationOptions options = getOptions();
         options.setSelectedTenant(configuration.tenant());
-        options.setDqlPath(IntelliJUtils.getRelativeProjectPath(file.getVirtualFile(), getProject()));
+        if (file != null) {
+            options.setDqlPath(IntelliJUtils.getRelativeProjectPath(file.getVirtualFile(), getProject()));
+        }
         options.setDqlQuery(configuration.query());
         options.setDefaultScanLimit(configuration.defaultScanLimit());
         options.setTimeframeStart(configuration.timeframeStart());

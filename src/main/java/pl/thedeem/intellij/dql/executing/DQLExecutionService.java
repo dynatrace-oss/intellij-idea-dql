@@ -6,10 +6,7 @@ import com.intellij.ide.ActivityTracker;
 import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.json.JsonFileType;
 import com.intellij.navigation.ItemPresentation;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.DataSink;
-import com.intellij.openapi.actionSystem.UiDataProvider;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -17,6 +14,7 @@ import com.intellij.openapi.util.Computable;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jsoup.internal.StringUtil;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.common.components.FormattedLanguageText;
 import pl.thedeem.intellij.common.sdk.DynatraceRestClient;
@@ -28,6 +26,7 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFileType;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
+import pl.thedeem.intellij.dql.actions.executionToolbar.ExecutionManagerAction;
 import pl.thedeem.intellij.dql.components.execution.DQLExecuteInProgressPanel;
 import pl.thedeem.intellij.dql.components.execution.DQLExecutionErrorPanel;
 import pl.thedeem.intellij.dql.components.execution.DQLTableResultPanel;
@@ -65,6 +64,7 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
     private String executionId;
     private QueryConfiguration configuration;
     private ResultsDisplayMode displayMode;
+    private DefaultActionGroup actions;
 
     public DQLExecutionService(@NotNull String name, @NotNull Project project, @NotNull DQLProcessHandler processHandler) {
         this.project = project;
@@ -73,6 +73,7 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
         this.resultPanel = new JPanel(new BorderLayout());
         this.resultPanel.setOpaque(false);
         this.resultPanel.setBorder(BorderFactory.createEmptyBorder());
+        this.configuration = new QueryConfiguration();
     }
 
     @Override
@@ -164,7 +165,14 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
 
     @Override
     public @Nullable ActionGroup getToolbarActions() {
-        return (ActionGroup) ActionManager.getInstance().getAction("DQL.ExecutionServiceActions");
+        if (actions == null) {
+            actions = new DefaultActionGroup();
+            actions.setInjectedContext(true);
+            actions.addAction(new ExecutionManagerAction(this));
+            actions.addSeparator();
+            actions.addAction(ActionManager.getInstance().getAction("DQL.ExecutionServiceActions"));
+        }
+        return actions;
     }
 
     @Override
@@ -199,7 +207,7 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
         return displayMode;
     }
 
-    public @Nullable QueryConfiguration getConfiguration() {
+    public @NotNull QueryConfiguration getConfiguration() {
         return configuration;
     }
 
@@ -304,9 +312,24 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
                 project,
                 (Computable<DQLQueryParserService.ParseResult>) () -> parser.getSubstitutedQuery(configuration.query(), project, configuration.definedVariables()));
         DQLExecutePayload result = new DQLExecutePayload(parsed.parsed());
+        if (!StringUtil.isBlank(configuration.timeframeStart())) {
+            try {
+                result.setDefaultTimeframeStart(DQLUtil.parseUserTime(configuration.timeframeStart()));
+            } catch (IllegalArgumentException ignored) {
+                result.setDefaultTimeframeStart(null);
+            }
+        }
+        if (!StringUtil.isBlank(configuration.timeframeEnd())) {
+            try {
+                result.setDefaultTimeframeEnd(DQLUtil.parseUserTime(configuration.timeframeEnd()));
+            } catch (IllegalArgumentException ignored) {
+                result.setDefaultTimeframeEnd(null);
+            }
+        }
+        if (!StringUtil.isBlank(result.getDefaultTimeframeStart()) && StringUtil.isBlank(result.getDefaultTimeframeEnd())) {
+            result.setDefaultTimeframeEnd(DQLUtil.getCurrentTimeTimestamp());
+        }
         result.setDefaultScanLimitGbytes(configuration.defaultScanLimit());
-        result.setDefaultTimeframeStart(configuration.timeframeStart());
-        result.setDefaultTimeframeEnd(configuration.timeframeEnd());
         result.setMaxResultBytes(configuration.maxResultBytes());
         result.setMaxResultRecords(configuration.maxResultRecords());
         return result;

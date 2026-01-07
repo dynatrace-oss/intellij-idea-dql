@@ -52,30 +52,12 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
     }
 
     @Override
-    public void getQueryConfigurationWithEditorContext(@NotNull PsiFile file, @Nullable Editor editor, @NotNull Consumer<QueryConfiguration> consumer) {
-        QueryConfiguration configuration = getQueryConfiguration(file);
-        if (editor != null) {
-            getQueryFromEditorContext(file, editor, (query) -> {
-                configuration.setQuery(query);
-                consumer.accept(configuration);
-            });
-        } else {
-            consumer.accept(configuration);
-        }
-    }
-
-    @Override
     public @NotNull QueryConfiguration createDefaultConfiguration(@NotNull PsiFile file) {
         QueryConfiguration result = new QueryConfiguration();
         result.setQuery(file.getText());
         result.setTenant(DQLSettings.getInstance().getDefaultDynatraceTenant());
         result.setOriginalFile(IntelliJUtils.getRelativeProjectPath(file.getVirtualFile(), file.getProject()));
         return result;
-    }
-
-    @Override
-    public void updateQueryConfiguration(@NotNull QueryConfiguration configuration, @NotNull PsiFile file) {
-        file.putUserData(QUERY_CONFIGURATION, configuration);
     }
 
     private @Nullable QueryConfiguration createConfigurationFromRunManager(@NotNull PsiFile file) {
@@ -92,7 +74,8 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
         return null;
     }
 
-    private void getQueryFromEditorContext(@NotNull PsiFile file, @NotNull Editor editor, @NotNull Consumer<@NotNull String> consumer) {
+    @Override
+    public void getQueryFromEditorContext(@NotNull PsiFile file, @NotNull Editor editor, @NotNull Consumer<@NotNull String> consumer) {
         int start = editor.getSelectionModel().getSelectionStart();
         int end = editor.getSelectionModel().getSelectionEnd();
         InjectedLanguageManager injector = InjectedLanguageManager.getInstance(file.getProject());
