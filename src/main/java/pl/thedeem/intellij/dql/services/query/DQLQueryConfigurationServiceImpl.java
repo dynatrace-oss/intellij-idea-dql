@@ -75,7 +75,11 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
     }
 
     @Override
-    public void getQueryFromEditorContext(@NotNull PsiFile file, @NotNull Editor editor, @NotNull Consumer<@NotNull String> consumer) {
+    public void getQueryFromEditorContext(@NotNull PsiFile file, @Nullable Editor editor, @NotNull Consumer<@NotNull String> consumer) {
+        if (editor == null) {
+            consumer.accept(file.getText());
+            return;
+        }
         int start = editor.getSelectionModel().getSelectionStart();
         int end = editor.getSelectionModel().getSelectionEnd();
         InjectedLanguageManager injector = InjectedLanguageManager.getInstance(file.getProject());

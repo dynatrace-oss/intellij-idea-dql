@@ -9,8 +9,11 @@ import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.TextEditor;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLFileType;
@@ -33,20 +36,37 @@ public abstract class ActionUtils {
         return serviceClass.cast(serviceKey);
     }
 
-    public static @Nullable PsiFile getRelatedPsiFile(@Nullable PsiFile originalFile, @Nullable Editor editor, @Nullable PsiElement psiElement) {
-        if (originalFile == null || editor == null) {
+    public static @Nullable PsiFile getRelatedPsiFile(@NotNull AnActionEvent e) {
+        Project project = e.getProject();
+        if (project == null) {
             return null;
         }
-        if (!DQLFileType.INSTANCE.equals(originalFile.getFileType())) {
-            InjectedLanguageManager manager = InjectedLanguageManager.getInstance(originalFile.getProject());
-            PsiElement injectedElement = manager.findInjectedElementAt(originalFile, editor.getCaretModel().getOffset());
+        PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
+        if (psiFile == null) {
+            VirtualFile virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
+            if (virtualFile != null) {
+                psiFile = PsiManager.getInstance(project).findFile(virtualFile);
+            }
+
+        }
+        if (psiFile == null) {
+            return null;
+        }
+        if (!DQLFileType.INSTANCE.equals(psiFile.getFileType())) {
+            InjectedLanguageManager manager = InjectedLanguageManager.getInstance(psiFile.getProject());
+            Editor editor = ActionUtils.getEditor(e);
+            if (editor == null) {
+                return null;
+            }
+            PsiElement psiElement = e.getData(CommonDataKeys.PSI_ELEMENT);
+            PsiElement injectedElement = manager.findInjectedElementAt(psiFile, editor.getCaretModel().getOffset());
             if (injectedElement != null && DQLFileType.INSTANCE.equals(injectedElement.getContainingFile().getFileType())) {
                 return injectedElement.getContainingFile();
             } else if (psiElement != null) {
                 return DQLFileType.INSTANCE.equals(psiElement.getContainingFile().getFileType()) ? psiElement.getContainingFile() : null;
             }
         }
-        return originalFile;
+        return psiFile;
     }
 
     public static boolean isNotRelatedToDQL(@NotNull AnActionEvent e) {

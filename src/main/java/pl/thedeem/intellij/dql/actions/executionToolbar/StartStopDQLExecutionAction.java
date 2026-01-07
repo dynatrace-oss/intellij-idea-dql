@@ -51,7 +51,7 @@ public class StartStopDQLExecutionAction extends AnAction {
             return;
         }
         Editor editor = ActionUtils.getEditor(e);
-        PsiFile file = ActionUtils.getRelatedPsiFile(e.getData(CommonDataKeys.PSI_FILE), editor, e.getData(CommonDataKeys.PSI_ELEMENT));
+        PsiFile file = ActionUtils.getRelatedPsiFile(e);
 
         if (service != null) {
             List<DQLManagedService<?>> services = runningServices(project, file, service);
@@ -85,11 +85,7 @@ public class StartStopDQLExecutionAction extends AnAction {
             @NotNull AnActionEvent e,
             @NotNull Consumer<QueryConfiguration> consumer
     ) {
-        QueryConfiguration config = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
         DQLExecutionService service = ActionUtils.getService(e, DQLExecutionService.class);
-        if (config == null) {
-            return;
-        }
         if (service != null) {
             e.getPresentation().setEnabled(false);
             DQLServicesManager.getInstance(project).startExecution(
@@ -99,15 +95,16 @@ public class StartStopDQLExecutionAction extends AnAction {
             return;
         }
 
-        if (editor == null) {
-            return;
+        DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance(project);
+        QueryConfiguration config = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
+        if (config == null) {
+            config = configurationService.getQueryConfiguration(file);
         }
 
-        DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance(project);
-
+        QueryConfiguration finalConfig = config;
         configurationService.getQueryFromEditorContext(file, editor, (query) -> {
-            config.setQuery(query);
-            consumer.accept(config);
+            finalConfig.setQuery(query);
+            consumer.accept(finalConfig);
         });
     }
 

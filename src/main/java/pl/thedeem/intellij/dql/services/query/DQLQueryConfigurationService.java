@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 
 import java.util.function.Consumer;
@@ -22,5 +23,5 @@ public interface DQLQueryConfigurationService {
 
     @NotNull QueryConfiguration createDefaultConfiguration(@NotNull PsiFile file);
 
-    void getQueryFromEditorContext(@NotNull PsiFile file, @NotNull Editor editor, @NotNull Consumer<@NotNull String> consumer);
+    void getQueryFromEditorContext(@NotNull PsiFile file, @Nullable Editor editor, @NotNull Consumer<@NotNull String> consumer);
 }
