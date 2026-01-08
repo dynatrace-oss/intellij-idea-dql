@@ -4,6 +4,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.ActivityTracker;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,18 +15,23 @@ import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.Callable;
 
 public class ExecutionManagerAction extends AnAction implements CustomComponentAction {
-    private final JComponent myComponent;
+    private final DQLExecutionManagerToolbar myComponent;
 
     public ExecutionManagerAction(@NotNull PsiFile file) {
         super(DQLBundle.message("action.DQLExecutionManagerToolbar.text"), null, AllIcons.Actions.Execute);
-        DQLQueryConfigurationService configService = DQLQueryConfigurationService.getInstance(file.getProject());
-        this.myComponent = new DQLExecutionManagerToolbar(configService.getQueryConfiguration(file), file);
+        this.myComponent = new DQLExecutionManagerToolbar();
+        myComponent.init(() -> {
+            DQLQueryConfigurationService configService = DQLQueryConfigurationService.getInstance(file.getProject());
+            return configService.getQueryConfiguration(file);
+        }, file);
     }
 
     public ExecutionManagerAction(@NotNull DQLExecutionService service) {
-        this.myComponent = new DQLExecutionManagerToolbar(service.getConfiguration(), null);
+        this.myComponent = new DQLExecutionManagerToolbar();
+        myComponent.init(service::getConfiguration, null);
     }
 
     @Override
@@ -51,16 +57,37 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
 
     private static final class DQLExecutionManagerToolbar extends JPanel implements UiDataProvider {
         private static final DataKey<Boolean> SHOW_MORE_OPTIONS = DataKey.create("DQL_SHOW_MORE_OPTIONS");
-        private final QueryConfiguration configuration;
-        private final PsiFile file;
+        private QueryConfiguration configuration;
+        private PsiFile file;
         private boolean showMoreOptions = false;
 
-        public DQLExecutionManagerToolbar(@NotNull QueryConfiguration configuration, @Nullable PsiFile file) {
-            this.configuration = configuration;
-            this.file = file;
+        public DQLExecutionManagerToolbar() {
             setBorder(BorderFactory.createEmptyBorder());
             setOpaque(false);
+        }
 
+        public void init(@NotNull Callable<QueryConfiguration> configurationCallback, @Nullable PsiFile file) {
+            this.file = file;
+            ApplicationManager.getApplication().executeOnPooledThread(() -> {
+                try {
+                    this.configuration = configurationCallback.call();
+                    ApplicationManager.getApplication().invokeLater(this::refreshUi);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+        }
+
+        @Override
+        public void uiDataSnapshot(@NotNull DataSink dataSink) {
+            dataSink.set(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, configuration);
+            dataSink.set(SHOW_MORE_OPTIONS, showMoreOptions);
+            if (file != null) {
+                file.putUserData(DQLQueryConfigurationService.QUERY_CONFIGURATION, configuration);
+            }
+        }
+
+        private void refreshUi() {
             DefaultActionGroup group = new DefaultActionGroup();
             ActionManager actionManager = ActionManager.getInstance();
             group.add(actionManager.getAction("DQL.SelectTenant"));
@@ -76,17 +103,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
             JComponent toolbarComponent = toolbar.getComponent();
             toolbarComponent.setOpaque(false);
             toolbarComponent.setBorder(BorderFactory.createEmptyBorder());
-
             add(toolbarComponent, BorderLayout.WEST);
-        }
-
-        @Override
-        public void uiDataSnapshot(@NotNull DataSink dataSink) {
-            dataSink.set(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, configuration);
-            dataSink.set(SHOW_MORE_OPTIONS, showMoreOptions);
-            if (file != null) {
-                file.putUserData(DQLQueryConfigurationService.QUERY_CONFIGURATION, configuration);
-            }
         }
 
         private void addQueryConfiguration(@NotNull DefaultActionGroup group) {

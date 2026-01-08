@@ -19,6 +19,8 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 
 public abstract class AbstractTextFieldAction<T> extends AnAction implements CustomComponentAction, DumbAware {
+    private final static int TEXT_FIELD_MIN_WIDTH = 50;
+    private final static int TEXT_FIELD_MAX_WIDTH = 400;
     private final Icon myIcon;
     private final String myDescription;
     private final String myText;
@@ -53,6 +55,7 @@ public abstract class AbstractTextFieldAction<T> extends AnAction implements Cus
         if (value != null) {
             this.myField.setText(value);
         }
+        resizeToFit();
     }
 
     @Override
@@ -122,8 +125,8 @@ public abstract class AbstractTextFieldAction<T> extends AnAction implements Cus
         String text = myField.getText();
         FontMetrics fm = myField.getFontMetrics(myField.getFont());
 
-        int textWidth = fm.stringWidth(text + "W");
-        int newWidth = Math.max(JBUI.scale(50), Math.min(JBUI.scale(400), textWidth));
+        int textWidth = fm.stringWidth(text + "WW");
+        int newWidth = Math.max(JBUI.scale(TEXT_FIELD_MIN_WIDTH), Math.min(JBUI.scale(TEXT_FIELD_MAX_WIDTH), textWidth));
 
         Dimension dim = new Dimension(newWidth, myField.getPreferredSize().height);
         myField.setPreferredSize(dim);

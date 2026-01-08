@@ -24,6 +24,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfiguration> {
+    private final static int CODE_EDITOR_HEIGHT = 250;
     private final TextFieldWithBrowseButton dqlFilePath;
     private final EditorTextField dqlQuery;
     private final DynatraceTenantSelector<?> tenantSelector;
@@ -50,6 +51,8 @@ public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfig
                 .addSeparator()
                 .addComponent(queryParameters.getPanel())
                 .getPanel();
+
+        dqlQuery.setPreferredSize(new Dimension(dqlQuery.getPreferredSize().width, JBUI.scale(CODE_EDITOR_HEIGHT)));
     }
 
     @Override

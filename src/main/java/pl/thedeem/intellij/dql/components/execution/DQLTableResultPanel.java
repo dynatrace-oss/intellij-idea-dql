@@ -19,17 +19,24 @@ public class DQLTableResultPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder());
 
         if (result == null) {
-            add(new JBScrollPane(new InformationComponent(
+            add(createScrollPane(new InformationComponent(
                     DQLBundle.message("runConfiguration.executeDQL.infos.emptyRecords"),
                     AllIcons.General.Information
             )), BorderLayout.CENTER);
         } else if (result.getResult() != null && !result.getResult().getRecords().isEmpty()) {
             add(new DQLExecutionTablePanel(project, result.getResult()), BorderLayout.CENTER);
         } else {
-            add(new JBScrollPane(new InformationComponent(
+            add(createScrollPane(new InformationComponent(
                     DQLBundle.message("runConfiguration.executeDQL.infos.emptyRecords"),
                     AllIcons.General.Information
             )), BorderLayout.CENTER);
         }
+    }
+
+    private @NotNull JBScrollPane createScrollPane(@NotNull JComponent content) {
+        JBScrollPane panel = new JBScrollPane(content);
+        panel.setOpaque(false);
+        panel.setBorder(BorderFactory.createEmptyBorder());
+        return panel;
     }
 }
