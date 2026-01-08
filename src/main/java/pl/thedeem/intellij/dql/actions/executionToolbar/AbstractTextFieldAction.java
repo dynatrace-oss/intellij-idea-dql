@@ -19,7 +19,7 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 
 public abstract class AbstractTextFieldAction<T> extends AnAction implements CustomComponentAction, DumbAware {
-    private final static int TEXT_FIELD_MIN_WIDTH = 50;
+    private final static int TEXT_FIELD_MIN_WIDTH = 75;
     private final static int TEXT_FIELD_MAX_WIDTH = 400;
     private final Icon myIcon;
     private final String myDescription;

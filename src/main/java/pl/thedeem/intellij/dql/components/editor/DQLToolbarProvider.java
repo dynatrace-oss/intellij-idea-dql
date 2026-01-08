@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.EditorNotificationProvider;
+import com.intellij.ui.components.JBScrollPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLFileType;
@@ -41,11 +42,17 @@ public class DQLToolbarProvider implements EditorNotificationProvider {
             container.add(toolbar.getComponent(), BorderLayout.WEST);
             ActionToolbar closeToolbar = createManagerToolbar(actionManager);
             closeToolbar.setTargetComponent(container);
-            container.add(closeToolbar.getComponent(), BorderLayout.EAST);
-
+            JComponent toolbarComponent = closeToolbar.getComponent();
+            toolbarComponent.setBorder(BorderFactory.createEmptyBorder());
+            toolbarComponent.setOpaque(false);
+            container.add(toolbarComponent, BorderLayout.EAST);
             container.setOpaque(false);
             container.setBorder(BorderFactory.createEmptyBorder());
-            return container;
+            JBScrollPane scrollPane = new JBScrollPane(container);
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
+            scrollPane.setOpaque(false);
+            scrollPane.getViewport().setOpaque(false);
+            return scrollPane;
         };
     }
 

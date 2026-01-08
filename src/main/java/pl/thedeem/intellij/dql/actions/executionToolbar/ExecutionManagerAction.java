@@ -109,7 +109,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
         private void addQueryConfiguration(@NotNull DefaultActionGroup group) {
             group.add(new AbstractTimeFieldAction(
                     configuration.timeframeStart(),
-                    DQLBundle.message("action.DQL.QueryConfigurationAction.queryFrom"),
+                    DQLBundle.message("action.DQL.QueryConfigurationAction.timeframeFrom.placeholder"),
                     DQLBundle.message("action.DQLExecutionManagerToolbar.option.queryTimeframe"),
                     AllIcons.General.History
             ) {
@@ -124,7 +124,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
             });
             group.add(new AbstractTimeFieldAction(
                     configuration.timeframeEnd(),
-                    DQLBundle.message("action.DQL.QueryConfigurationAction.queryTo"),
+                    DQLBundle.message("action.DQL.QueryConfigurationAction.timeframeTo.placeholder"),
                     DQLBundle.message("action.DQLExecutionManagerToolbar.option.queryTimeframe"),
                     null
             ) {
@@ -162,7 +162,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
 
             group.addAction(new AbstractNumericFieldAction(
                     configuration.defaultScanLimit(),
-                    "",
+                    DQLBundle.message("action.DQL.QueryConfigurationAction.scanLimit.placeholder"),
                     DQLBundle.message("action.DQLExecutionManagerToolbar.option.scanLimit"),
                     AllIcons.Actions.GroupByModule
             ) {
@@ -182,7 +182,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
             });
             group.addAction(new AbstractNumericFieldAction(
                     configuration.maxResultBytes(),
-                    "",
+                    DQLBundle.message("action.DQL.QueryConfigurationAction.maxBytes.placeholder"),
                     DQLBundle.message("action.DQLExecutionManagerToolbar.option.maxBytes"),
                     AllIcons.Actions.GroupByModuleGroup
             ) {
@@ -202,7 +202,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
             });
             group.addAction(new AbstractNumericFieldAction(
                     configuration.maxResultRecords(),
-                    "",
+                    DQLBundle.message("action.DQL.QueryConfigurationAction.maxRecords.placeholder"),
                     DQLBundle.message("action.DQLExecutionManagerToolbar.option.maxRecords"),
                     AllIcons.Json.Array
             ) {
