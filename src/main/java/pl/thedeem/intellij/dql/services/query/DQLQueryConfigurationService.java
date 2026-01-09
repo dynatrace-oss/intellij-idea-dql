@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.services.query;
 
+import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
@@ -12,6 +13,7 @@ import java.util.function.Consumer;
 
 public interface DQLQueryConfigurationService {
     Key<QueryConfiguration> QUERY_CONFIGURATION = Key.create("DQL_QUERY_CONFIGURATION");
+    DataKey<QueryConfiguration> DATA_QUERY_CONFIGURATION = DataKey.create("DQL_QUERY_CONFIGURATION");
 
     static @NotNull DQLQueryConfigurationService getInstance(@NotNull Project project) {
         return project.getService(DQLQueryConfigurationService.class);
@@ -19,9 +21,7 @@ public interface DQLQueryConfigurationService {
 
     @NotNull QueryConfiguration getQueryConfiguration(@NotNull PsiFile file);
 
-    void getQueryConfigurationWithEditorContext(@NotNull PsiFile file, @Nullable Editor editor, @NotNull Consumer<QueryConfiguration> consumer);
-
     @NotNull QueryConfiguration createDefaultConfiguration(@NotNull PsiFile file);
 
-    void updateQueryConfiguration(@NotNull QueryConfiguration configuration, @NotNull PsiFile file);
+    void getQueryFromEditorContext(@NotNull PsiFile file, @Nullable Editor editor, @NotNull Consumer<@NotNull String> consumer);
 }
