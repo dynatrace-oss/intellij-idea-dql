@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.dql.components.editor;
+package pl.thedeem.intellij.dql.editor;
 
 import com.intellij.execution.lineMarker.RunLineMarkerContributor;
 import com.intellij.lang.injection.InjectedLanguageManager;

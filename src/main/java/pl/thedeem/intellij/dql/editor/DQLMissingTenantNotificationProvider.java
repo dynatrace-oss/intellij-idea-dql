@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.dql.components.editor;
+package pl.thedeem.intellij.dql.editor;
 
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.options.ShowSettingsUtil;

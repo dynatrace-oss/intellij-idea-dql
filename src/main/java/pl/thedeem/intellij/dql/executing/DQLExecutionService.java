@@ -38,7 +38,9 @@ import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -58,7 +60,7 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
     private final AtomicReference<Boolean> loading = new AtomicReference<>(false);
     private final AtomicReference<Exception> errored = new AtomicReference<>(null);
 
-    private LocalDateTime executionTime;
+    private ZonedDateTime executionTime;
     private String requestToken;
     private DQLPollResponse result;
     private String executionId;
@@ -78,7 +80,7 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
 
     @Override
     public void startExecution(@NotNull QueryConfiguration params) {
-        this.executionTime = LocalDateTime.now();
+        this.executionTime = Instant.now().atZone(ZoneId.systemDefault());
         this.configuration = params;
         if (params.query() == null) {
             updatePanel(new DQLExecutionErrorPanel(DQLBundle.message("services.executeDQL.errors.invalidPayload")));
@@ -199,7 +201,7 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
         return result != null ? result.getResult() : null;
     }
 
-    public @NotNull LocalDateTime getExecutionTime() {
+    public @NotNull ZonedDateTime getExecutionTime() {
         return executionTime;
     }
 
@@ -332,6 +334,7 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
         result.setDefaultScanLimitGbytes(configuration.defaultScanLimit());
         result.setMaxResultBytes(configuration.maxResultBytes());
         result.setMaxResultRecords(configuration.maxResultRecords());
+        result.setTimezone(ZoneId.systemDefault().getId());
         return result;
     }
 

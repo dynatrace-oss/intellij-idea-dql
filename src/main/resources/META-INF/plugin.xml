@@ -301,10 +301,10 @@
 
         <fileEditorProvider implementation="pl.thedeem.intellij.dql.fileProviders.DQLFileEditorProvider"/>
         <editorNotificationProvider
-                implementation="pl.thedeem.intellij.dql.components.editor.DQLMissingTenantNotificationProvider"/>
-        <editorNotificationProvider implementation="pl.thedeem.intellij.dql.components.editor.DQLToolbarProvider"/>
+                implementation="pl.thedeem.intellij.dql.editor.DQLMissingTenantNotificationProvider"/>
+        <editorNotificationProvider implementation="pl.thedeem.intellij.dql.editor.DQLToolbarProvider"/>
         <runLineMarkerContributor language=""
-                                  implementationClass="pl.thedeem.intellij.dql.components.editor.DQLInjectionLineMakerProvider"/>
+                                  implementationClass="pl.thedeem.intellij.dql.editor.DQLInjectionLineMakerProvider"/>
         <!-- endregion -->
         <!-- region DPL -->
         <fileType name="DPL"

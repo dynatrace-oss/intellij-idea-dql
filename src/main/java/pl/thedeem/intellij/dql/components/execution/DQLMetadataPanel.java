@@ -12,12 +12,12 @@ import pl.thedeem.intellij.dql.DQLUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DQLMetadataPanel extends JPanel {
-    public DQLMetadataPanel(DQLResult.DQLGrailMetadata metadata, @NotNull LocalDateTime executionTime) {
+    public DQLMetadataPanel(DQLResult.DQLGrailMetadata metadata, @NotNull ZonedDateTime executionTime) {
         setLayout(new BorderLayout());
         List<MetadataRow> records = List.of(
                 new MetadataRow(DQLBundle.message("components.queryDetails.values.executionMoment"), executionTime.format(DQLUtil.DQL_DATE_FORMATTER)),
