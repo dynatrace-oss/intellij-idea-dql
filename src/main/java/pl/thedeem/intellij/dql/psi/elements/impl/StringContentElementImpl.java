@@ -23,7 +23,7 @@ public abstract class StringContentElementImpl extends ASTWrapperPsiElement impl
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getText());
+        return DQLFieldNamesService.getInstance().calculateFieldName(getText());
     }
 
     @Override

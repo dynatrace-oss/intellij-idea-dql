@@ -62,7 +62,7 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getName());
+        return DQLFieldNamesService.getInstance().calculateFieldName(getName());
     }
 
     @Override

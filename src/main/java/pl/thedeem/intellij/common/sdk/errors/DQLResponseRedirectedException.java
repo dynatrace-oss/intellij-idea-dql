@@ -1,6 +1,6 @@
 package pl.thedeem.intellij.common.sdk.errors;
 
-public class DQLResponseRedirectedException extends DQLApiException {
+public class DQLResponseRedirectedException extends DQLInvalidResponseException {
     private final String redirectionUrl;
 
     public DQLResponseRedirectedException(String message, String redirectionUrl) {
@@ -10,5 +10,10 @@ public class DQLResponseRedirectedException extends DQLApiException {
 
     public String getRedirectionUrl() {
         return redirectionUrl;
+    }
+
+    @Override
+    protected String getResponseMessage() {
+        return "The request was redirected to " + redirectionUrl;
     }
 }

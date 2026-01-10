@@ -51,7 +51,7 @@ public abstract class CommandElementImpl extends ASTWrapperPsiElement implements
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getName());
+        return DQLFieldNamesService.getInstance().calculateFieldName(getName());
     }
 
     @Override
@@ -125,7 +125,7 @@ public abstract class CommandElementImpl extends ASTWrapperPsiElement implements
         Command definition = getDefinition();
         List<DQLExpression> defined = getParameterArguments();
         List<Parameter> definitions = definition != null ? definition.parameters() : List.of();
-        DQLParametersCalculatorService calculatorService = DQLParametersCalculatorService.getInstance(getProject());
+        DQLParametersCalculatorService calculatorService = DQLParametersCalculatorService.getInstance();
         return calculatorService.mapParameters(defined, definitions);
     }
 }

@@ -4,13 +4,13 @@ import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Operator;
 import pl.thedeem.intellij.dql.definition.model.Signature;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 import pl.thedeem.intellij.dql.psi.elements.impl.AbstractOperatorElementImpl;
+import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 
 public class UnsupportedOperatorDataTypeInspection extends LocalInspectionTool {
     @Override
@@ -30,8 +30,7 @@ public class UnsupportedOperatorDataTypeInspection extends LocalInspectionTool {
                     return;
                 }
 
-                DQLParameterValueTypesValidator service = DQLParameterValueTypesValidator.getInstance(expression.getProject());
-
+                DQLParameterValueTypesValidator service = DQLParameterValueTypesValidator.getInstance();
                 for (MappedParameter parameter : operator.getParameters()) {
                     if (parameter.definition() != null) {
                         for (DQLParameterValueTypesValidator.ValueIssue issue : service.validate(parameter.holder(), parameter.definition())) {

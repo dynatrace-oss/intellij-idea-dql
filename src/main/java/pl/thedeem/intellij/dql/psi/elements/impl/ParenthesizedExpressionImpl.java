@@ -46,7 +46,7 @@ public abstract class ParenthesizedExpressionImpl extends ASTWrapperPsiElement i
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(findChildByClass(DQLExpression.class));
+        return DQLFieldNamesService.getInstance().calculateFieldName(findChildByClass(DQLExpression.class));
     }
 
     @Override

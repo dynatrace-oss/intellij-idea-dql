@@ -16,7 +16,7 @@ public abstract class UnaryExpressionImpl extends AbstractOperatorElementImpl im
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+        return DQLFieldNamesService.getInstance().calculateFieldName(
                 "not ",
                 getLeftExpression()
         );

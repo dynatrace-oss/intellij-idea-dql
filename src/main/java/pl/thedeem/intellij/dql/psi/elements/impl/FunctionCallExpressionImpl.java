@@ -124,7 +124,7 @@ public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement im
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+        return DQLFieldNamesService.getInstance().calculateFieldName(
                 getName(),
                 "(",
                 new DQLFieldNamesService.SeparatedChildren(getFunctionArguments(), ", "),
@@ -154,7 +154,7 @@ public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement im
         }
         List<DQLExpression> defined = getFunctionArguments();
         List<Parameter> available = Objects.requireNonNullElse(signature.parameters(), List.of());
-        DQLParametersCalculatorService service = DQLParametersCalculatorService.getInstance(getProject());
+        DQLParametersCalculatorService service = DQLParametersCalculatorService.getInstance();
         return service.mapParameters(defined, available);
     }
 

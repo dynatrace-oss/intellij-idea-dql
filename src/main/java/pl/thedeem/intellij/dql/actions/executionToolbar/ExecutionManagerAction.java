@@ -24,7 +24,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
         super(DQLBundle.message("action.DQLExecutionManagerToolbar.text"), null, AllIcons.Actions.Execute);
         this.myComponent = new DQLExecutionManagerToolbar();
         myComponent.init(() -> {
-            DQLQueryConfigurationService configService = DQLQueryConfigurationService.getInstance(file.getProject());
+            DQLQueryConfigurationService configService = DQLQueryConfigurationService.getInstance();
             return configService.getQueryConfiguration(file);
         }, file);
     }

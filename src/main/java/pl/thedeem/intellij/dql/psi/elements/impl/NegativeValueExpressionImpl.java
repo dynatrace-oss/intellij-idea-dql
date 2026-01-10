@@ -24,7 +24,7 @@ public abstract class NegativeValueExpressionImpl extends AbstractOperatorElemen
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName("-", getLeftExpression());
+        return DQLFieldNamesService.getInstance().calculateFieldName("-", getLeftExpression());
     }
 
     @Override

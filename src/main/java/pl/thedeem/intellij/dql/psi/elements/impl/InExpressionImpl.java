@@ -22,7 +22,7 @@ public abstract class InExpressionImpl extends AbstractOperatorElementImpl imple
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+        return DQLFieldNamesService.getInstance().calculateFieldName(
                 getLeftExpression(),
                 " in ",
                 getRightExpression());

@@ -3,7 +3,7 @@ package pl.thedeem.intellij.common.sdk.errors;
 import pl.thedeem.intellij.common.sdk.model.errors.DQLErrorResponse;
 import pl.thedeem.intellij.common.sdk.model.errors.DQLExecutionErrorResponse;
 
-public class DQLErrorResponseException extends DQLApiException {
+public class DQLErrorResponseException extends DQLInvalidResponseException {
     private final DQLErrorResponse<DQLExecutionErrorResponse> response;
 
     public DQLErrorResponseException(String message, DQLErrorResponse<DQLExecutionErrorResponse> response) {
@@ -13,5 +13,17 @@ public class DQLErrorResponseException extends DQLApiException {
 
     public DQLErrorResponse<DQLExecutionErrorResponse> getResponse() {
         return response;
+    }
+
+    @Override
+    protected String getResponseMessage() {
+        DQLErrorResponse<DQLExecutionErrorResponse> response = getResponse();
+        if (response != null) {
+            DQLExecutionErrorResponse reason = response.error;
+            if (reason != null && reason.details != null) {
+                return reason.details.errorMessage;
+            }
+        }
+        return null;
     }
 }

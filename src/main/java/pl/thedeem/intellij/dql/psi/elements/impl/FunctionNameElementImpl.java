@@ -28,7 +28,7 @@ public abstract class FunctionNameElementImpl extends ASTWrapperPsiElement imple
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getName());
+        return DQLFieldNamesService.getInstance().calculateFieldName(getName());
     }
 
     @Override

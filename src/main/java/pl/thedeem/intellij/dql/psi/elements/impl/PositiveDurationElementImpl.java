@@ -54,7 +54,7 @@ public abstract class PositiveDurationElementImpl extends ASTWrapperPsiElement i
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getText());
+        return DQLFieldNamesService.getInstance().calculateFieldName(getText());
     }
 
     @Override

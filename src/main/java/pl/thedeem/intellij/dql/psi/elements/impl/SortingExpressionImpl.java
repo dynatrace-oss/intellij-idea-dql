@@ -17,7 +17,7 @@ public abstract class SortingExpressionImpl extends ASTWrapperPsiElement impleme
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getText());
+        return DQLFieldNamesService.getInstance().calculateFieldName(getText());
     }
 
     @Override

@@ -5,7 +5,7 @@
 ### Features
 
 - Major rework for the DQL execution
-  - **Executing DQLs no longer require the user to create a Run Configuration** - each file will have its own context
+  - **Executing DQLs no longer requires the user to create a Run Configuration** - each file will have its own context
     stored in memory. The user can still create a run configuration to save settings inside IntelliJ project. If they
     do, the initial configuration for the file will be loaded from the correlated run configuration.
   - Adding a DQL toolbar at the top of each DQL file (similar to `.sql` files). The toolbar allows the user to set up
@@ -18,10 +18,10 @@
     a popup menu will be shown to the user allowing to select which part of the DQL file should be executed.
 - Autocompleting parameter values in all suitable places (for example, in nested expressions of different types)
 - Added autocompleting string quotes in suitable places
-- Adding support for scientific notation numbers in DQL
+- Adding support for scientific notation numbers in DQL (for example, `1.3e20`)
 - Adding support for calculating the expressions data types for supported operators (if possible, for example: `long` +
   `long`)
-- Added support for fields named via `alias:` parameter. Added intention to replace `alias` with
+- Added support for fields named via the `alias` parameter. Added an intention to replace `alias` with
   assigned expression (`=`)
 - Replacing manual inspections with automatically generated based on the DQL JSON definition
 - Added support for known Dynatrace Dashboards variables (`$variable`) replacement for live Notebooks autocompletion
@@ -37,8 +37,11 @@
     }
   }
   ```
-  
+
   If the `dql` property is not a string, the whole object will be parsed as DQL object.
+- When the plugin encounters any issues during the DQL query verification or autocompletion (connecting to the Dynatrace
+  tenant), an error balloon notification will be shown to the user containing the error details. Previously it was just
+  silently ignored by printing the error in IntelliJ logs.
 
 ## [1.2.0] - 2025-12-17
 
