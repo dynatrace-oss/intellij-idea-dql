@@ -48,7 +48,7 @@ public abstract class AbstractTextFieldAction<T> extends AnAction implements Cus
                             ActionUiKind.NONE,
                             null
                     );
-                    ActionUtil.performActionDumbAwareWithCallbacks(AbstractTextFieldAction.this, event);
+                    ActionUtil.invokeAction(AbstractTextFieldAction.this, event, null);
                 });
             }
         });

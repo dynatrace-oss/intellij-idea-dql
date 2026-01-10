@@ -49,6 +49,7 @@ public class DQLUtil {
             .toFormatter()
             .withZone(ZoneOffset.UTC);
     public final static DateTimeFormatter DQL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+    public final static DateTimeFormatter DQL_API_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     public final static DateTimeFormatter USER_FRIENDLY_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSXXX");
     public final static Pattern DURATION_PATTERN = Pattern.compile(
             "^\\s*(-?)\\s*(\\d+)\\s*("
@@ -201,12 +202,12 @@ public class DQLUtil {
                 throw new IllegalArgumentException("Invalid duration type: " + unit);
             }
             Instant instant = type.getInstant(amount, Instant.now());
-            return DQL_DATE_FORMATTER.format(instant.atZone(ZoneId.systemDefault()));
+            return DQL_API_DATE_FORMATTER.format(instant.atZone(ZoneId.systemDefault()));
         }
 
         try {
             TemporalAccessor parsed = DQL_FLEXIBLE_DATE_FORMATTER.parse(text);
-            return DQL_DATE_FORMATTER.format(ZonedDateTime.from(parsed));
+            return DQL_API_DATE_FORMATTER.format(ZonedDateTime.from(parsed));
         } catch (DateTimeParseException ex) {
             throw new IllegalArgumentException("Invalid date format", ex);
         }
