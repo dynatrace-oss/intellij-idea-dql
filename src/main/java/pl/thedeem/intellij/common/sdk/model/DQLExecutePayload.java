@@ -9,6 +9,7 @@ public class DQLExecutePayload {
     String defaultTimeframeStart;
     Long maxResultBytes;
     Long maxResultRecords;
+    String timezone;
     String query;
 
     public DQLExecutePayload(String query) {
@@ -61,5 +62,13 @@ public class DQLExecutePayload {
 
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
     }
 }

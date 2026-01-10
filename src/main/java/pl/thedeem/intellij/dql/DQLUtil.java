@@ -22,11 +22,13 @@ import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -34,13 +36,25 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class DQLUtil {
-    public final static DateTimeFormatter DQL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
-    public final static DateTimeFormatter USER_FRIENDLY_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    public final static DateTimeFormatter DQL_FLEXIBLE_DATE_FORMATTER = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy-MM-dd['T'HH:mm:ss]")
+            .appendFraction(ChronoField.MILLI_OF_SECOND, 0, 9, true)
+            .optionalStart()
+            .appendPattern("X")
+            .optionalEnd()
+            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+            .parseDefaulting(ChronoField.MILLI_OF_SECOND, 0)
+            .toFormatter()
+            .withZone(ZoneOffset.UTC);
+    public final static DateTimeFormatter DQL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+    public final static DateTimeFormatter USER_FRIENDLY_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSXXX");
     public final static Pattern DURATION_PATTERN = Pattern.compile(
             "^\\s*(-?)\\s*(\\d+)\\s*("
                     + String.join("|", DQLDurationType.getTypes()) +
                     ")$");
-    
+
     private final static String PARTIAL_DQL_NAME = ".partial.";
     private final static String CREDENTIALS_PREFIX = "pl.thedeem.intellij.dql/";
 
@@ -128,8 +142,10 @@ public class DQLUtil {
     }
 
     public static String getCurrentTimeTimestamp() {
-        LocalDateTime now = LocalDateTime.now();
-        return DQL_DATE_FORMATTER.format(now);
+        ZonedDateTime moment = Instant.now()
+                .atZone(ZoneId.systemDefault())
+                .withZoneSameInstant(ZoneOffset.UTC);
+        return DQL_DATE_FORMATTER.format(moment);
     }
 
     public static ZonedDateTime getDateFromTimestamp(@NotNull String timestamp) {
@@ -185,12 +201,12 @@ public class DQLUtil {
                 throw new IllegalArgumentException("Invalid duration type: " + unit);
             }
             Instant instant = type.getInstant(amount, Instant.now());
-            return DQLUtil.DQL_DATE_FORMATTER.format(instant.atZone(ZoneId.systemDefault()));
+            return DQL_DATE_FORMATTER.format(instant.atZone(ZoneId.systemDefault()));
         }
 
         try {
-            TemporalAccessor parsed = DQLUtil.DQL_DATE_FORMATTER.parse(text);
-            return DQLUtil.DQL_DATE_FORMATTER.format(parsed);
+            TemporalAccessor parsed = DQL_FLEXIBLE_DATE_FORMATTER.parse(text);
+            return DQL_DATE_FORMATTER.format(ZonedDateTime.from(parsed));
         } catch (DateTimeParseException ex) {
             throw new IllegalArgumentException("Invalid date format", ex);
         }
