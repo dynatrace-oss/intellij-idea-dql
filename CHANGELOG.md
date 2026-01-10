@@ -28,6 +28,7 @@
   and inspections
 - Adding support for replacing DQL variables with DQL query fragments (for example: `now() - 4h`). To limit the risk of
   code injections, the fragment must be explicitly set up using the object with the `$type: dql` property:
+
   ```json lines
   {
     "variableName": {
@@ -36,6 +37,7 @@
     }
   }
   ```
+  
   If the `dql` property is not a string, the whole object will be parsed as DQL object.
 
 ## [1.2.0] - 2025-12-17
