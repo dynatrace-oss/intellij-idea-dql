@@ -6030,8 +6030,7 @@
       "signatures": [
         {
           "outputs": [
-            "dql.dataType.array",
-            "dql.dataType.double"
+            "dql.dataType.array"
           ]
         }
       ]
@@ -6126,6 +6125,23 @@
               "valueTypes": [
                 "dql.dataType.double",
                 "dql.dataType.duration",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "weight",
+              "description": "The weight of the corresponding expression (e.g. its sampling ratio).",
+              "experimental": true,
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "1",
+              "minValue": "0",
+              "valueTypes": [
+                "dql.dataType.double",
                 "dql.dataType.long"
               ],
               "parameterValueTypes": [
@@ -6255,6 +6271,95 @@
         }
       ]
     },
+    "dql.function.expressionTimeseriesPercentRank": {
+      "name": "percentRank",
+      "description": "Calculates the percentile rank for a given value.",
+      "experimental": true,
+      "category": "dql.functionCategory.expression timeseries",
+      "synopsis": "percentRank(expression, value [, default] [, rate] [, scalar])",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "expression",
+              "description": "The expression the aggregation function shall be applied to.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.duration",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "value",
+              "description": "The percentile to compute, between 0 and 100.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.duration",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.primitiveValue"
+              ]
+            },
+            {
+              "name": "default",
+              "description": "The default value to fill gaps.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "NULL",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "rate",
+              "description": "The rate the series values shall be scaled to.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.duration"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "scalar",
+              "description": "Flag to indicate that a single scalar value spanning the whole timeframe shall be calculated.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "FALSE",
+              "valueTypes": [
+                "dql.dataType.boolean"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.primitiveValue"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.array",
+            "dql.dataType.double"
+          ]
+        }
+      ]
+    },
     "dql.function.expressionTimeseriesPercentile": {
       "name": "percentile",
       "description": "Calculates the requested percentile of the expression value in each bucket.",
@@ -6292,6 +6397,126 @@
               ],
               "parameterValueTypes": [
                 "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "weight",
+              "description": "The weight of the corresponding expression (e.g. its sampling ratio).",
+              "experimental": true,
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "1",
+              "minValue": "0",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "default",
+              "description": "The default value to fill gaps.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "NULL",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "rate",
+              "description": "The rate the series values shall be scaled to.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.duration"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "scalar",
+              "description": "Flag to indicate that a single scalar value spanning the whole timeframe shall be calculated.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "FALSE",
+              "valueTypes": [
+                "dql.dataType.boolean"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.primitiveValue"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.array",
+            "dql.dataType.double"
+          ]
+        }
+      ]
+    },
+    "dql.function.expressionTimeseriesPercentileFromSamples": {
+      "name": "percentileFromSamples",
+      "description": "Calculates the requested percentile of the array expression in each bucket.",
+      "experimental": true,
+      "category": "dql.functionCategory.expression timeseries",
+      "synopsis": "percentileFromSamples(expression, percentile [, originalCount] [, default] [, rate] [, scalar])",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "expression",
+              "description": "The expression the aggregation function shall be applied to.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.array"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "percentile",
+              "description": "The percentile to compute, between 0 and 100.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "minValue": "0",
+              "maxValue": "100",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "originalCount",
+              "description": "The original element count of the given array expression.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "minValue": "0",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
               ]
             },
             {
@@ -6352,8 +6577,7 @@
       "signatures": [
         {
           "outputs": [
-            "dql.dataType.array",
-            "dql.dataType.double"
+            "dql.dataType.array"
           ]
         }
       ]
@@ -9442,6 +9666,23 @@
               "parameterValueTypes": [
                 "dql.parameterValueType.expressionWithFieldAccess"
               ]
+            },
+            {
+              "name": "weight",
+              "description": "The weight of the corresponding expression (e.g. its sampling ratio).",
+              "experimental": true,
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "1",
+              "minValue": "0",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
             }
           ],
           "outputs": [
@@ -9695,8 +9936,7 @@
       "signatures": [
         {
           "outputs": [
-            "dql.dataType.array",
-            "dql.dataType.double"
+            "dql.dataType.array"
           ]
         }
       ]
@@ -9995,6 +10235,119 @@
         }
       ]
     },
+    "dql.function.metricTimeseriesPercentRank": {
+      "name": "percentRank",
+      "description": "Calculates the percentile rank for a given value.",
+      "experimental": true,
+      "category": "dql.functionCategory.timeseries",
+      "synopsis": "percentRank(metricKey, value [, rollup] [, default] [, rate] [, scalar] [, filter])",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "metricKey",
+              "description": "The metric key the aggregation function shall be applied to.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "parameterValueTypes": [
+                "dql.parameterValueType.metricKey"
+              ]
+            },
+            {
+              "name": "value",
+              "description": "The percentile to compute, between 0 and 100.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.primitiveValue"
+              ]
+            },
+            {
+              "name": "rollup",
+              "description": "The rollup type that shall be used for the metric.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "parameterValueTypes": [
+                "dql.parameterValueType.enum"
+              ],
+              "allowedEnumValues": [
+                "min",
+                "max",
+                "sum",
+                "avg",
+                "total"
+              ]
+            },
+            {
+              "name": "default",
+              "description": "The default value to fill gaps.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "NULL",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "rate",
+              "description": "The rate the series values shall be scaled to.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.duration"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "scalar",
+              "description": "Flag to indicate that a single scalar value spanning the whole timeframe shall be calculated.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "FALSE",
+              "valueTypes": [
+                "dql.dataType.boolean"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.primitiveValue"
+              ]
+            },
+            {
+              "name": "filter",
+              "description": "Filter condition that shall be applied for this aggregation.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.boolean"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.array",
+            "dql.dataType.double"
+          ]
+        }
+      ]
+    },
     "dql.function.metricTimeseriesPercentile": {
       "name": "percentile",
       "description": "Calculates the requested percentile of the metric values in each bucket.",
@@ -10116,8 +10469,7 @@
       "signatures": [
         {
           "outputs": [
-            "dql.dataType.array",
-            "dql.dataType.double"
+            "dql.dataType.array"
           ]
         }
       ]
@@ -10430,6 +10782,56 @@
         }
       ]
     },
+    "dql.function.percentRank": {
+      "name": "percentRank",
+      "description": "Calculates the percentile rank for a given value.",
+      "experimental": true,
+      "category": "dql.functionCategory.aggregation",
+      "synopsis": "percentRank(expression, value)",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "expression",
+              "description": "The expression for which to compute a percentile rank.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.boolean",
+                "dql.dataType.double",
+                "dql.dataType.duration",
+                "dql.dataType.long",
+                "dql.dataType.timestamp"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "value",
+              "description": "The value for which to retrieve the percentile.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.boolean",
+                "dql.dataType.double",
+                "dql.dataType.duration",
+                "dql.dataType.long",
+                "dql.dataType.timestamp"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.double"
+          ]
+        }
+      ]
+    },
     "dql.function.percentile": {
       "name": "percentile",
       "description": "Calculates the percentile value of a field for a list of records:percentile(x, 50) == median(x).",
@@ -10470,6 +10872,86 @@
               "parameterValueTypes": [
                 "dql.parameterValueType.expressionWithConstantValue"
               ]
+            },
+            {
+              "name": "weight",
+              "description": "The weight of the corresponding expression (e.g. its sampling ratio).",
+              "experimental": true,
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "1",
+              "minValue": "0",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.timestamp"
+          ]
+        }
+      ]
+    },
+    "dql.function.percentileFromSamples": {
+      "name": "percentileFromSamples",
+      "description": "Calculates the percentile value of array fields.",
+      "experimental": true,
+      "category": "dql.functionCategory.aggregation",
+      "synopsis": "percentileFromSamples(expression, percentile [, originalCount])",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "expression",
+              "description": "The array expression from which to compute a percentile.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.array"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "percentile",
+              "description": "The percentile to compute, between 0 and 100.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "minValue": "0",
+              "maxValue": "100",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "originalCount",
+              "description": "The original element count of the given array expression.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "minValue": "0",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
             }
           ],
           "outputs": [
@@ -10501,6 +10983,23 @@
                 "dql.dataType.duration",
                 "dql.dataType.long",
                 "dql.dataType.timestamp"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "weight",
+              "description": "The weight of the corresponding expression (e.g. its sampling ratio).",
+              "experimental": true,
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "1",
+              "minValue": "0",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
               ],
               "parameterValueTypes": [
                 "dql.parameterValueType.expressionWithFieldAccess"

@@ -38,6 +38,6 @@ public abstract class NullElementImpl extends ASTWrapperPsiElement implements Nu
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getName());
+        return DQLFieldNamesService.getInstance().calculateFieldName(getName());
     }
 }

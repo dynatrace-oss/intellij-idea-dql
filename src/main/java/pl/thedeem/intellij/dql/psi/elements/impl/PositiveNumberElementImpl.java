@@ -23,7 +23,7 @@ public abstract class PositiveNumberElementImpl extends ASTWrapperPsiElement imp
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getText());
+        return DQLFieldNamesService.getInstance().calculateFieldName(getText());
     }
 
     @Override

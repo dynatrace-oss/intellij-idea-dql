@@ -1,12 +1,9 @@
 package pl.thedeem.intellij.dql.actions.executionToolbar;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
-import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
@@ -14,7 +11,6 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
-import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsConfigurable;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
 import javax.swing.*;
@@ -69,15 +65,7 @@ public class TenantSelectorAction extends ComboBoxAction {
                 }
             });
         }
-        group.add(new AnAction(DQLBundle.message("action.DQL.SelectTenant.manage", AllIcons.Actions.Edit)) {
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-                ShowSettingsUtil.getInstance().editConfigurable(
-                        ProjectManager.getInstance().getDefaultProject(),
-                        new DynatraceTenantsConfigurable()
-                );
-            }
-        });
+        group.add(ActionManager.getInstance().getAction("DQL.ManageTenants"));
         return group;
     }
 

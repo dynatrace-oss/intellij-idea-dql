@@ -1,14 +1,14 @@
 package pl.thedeem.intellij.dql.services.query;
 
-import com.intellij.openapi.project.Project;
+import com.intellij.openapi.application.ApplicationManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
 public interface DQLFieldNamesService {
-    static @NotNull DQLFieldNamesService getInstance(@NotNull Project project) {
-        return project.getService(DQLFieldNamesService.class);
+    static @NotNull DQLFieldNamesService getInstance() {
+        return ApplicationManager.getApplication().getService(DQLFieldNamesService.class);
     }
 
     @NotNull String calculateFieldName(@Nullable Object... parts);

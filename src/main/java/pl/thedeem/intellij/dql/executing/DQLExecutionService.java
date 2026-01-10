@@ -309,7 +309,7 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
     }
 
     private @NotNull DQLExecutePayload preparePayload(@NotNull QueryConfiguration configuration, @NotNull Project project) {
-        DQLQueryParserService parser = DQLQueryParserService.getInstance(project);
+        DQLQueryParserService parser = DQLQueryParserService.getInstance();
         DQLQueryParserService.ParseResult parsed = WriteCommandAction.runWriteCommandAction(
                 project,
                 (Computable<DQLQueryParserService.ParseResult>) () -> parser.getSubstitutedQuery(configuration.query(), project, configuration.definedVariables()));

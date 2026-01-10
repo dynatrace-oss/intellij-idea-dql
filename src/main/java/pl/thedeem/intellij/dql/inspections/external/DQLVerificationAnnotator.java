@@ -5,6 +5,8 @@ import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.lang.annotation.HighlightSeverity;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
@@ -14,12 +16,15 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.sdk.DynatraceRestClient;
-import pl.thedeem.intellij.common.sdk.errors.DQLApiException;
+import pl.thedeem.intellij.common.sdk.errors.DQLInvalidResponseException;
+import pl.thedeem.intellij.common.sdk.errors.DQLNotAuthorizedException;
 import pl.thedeem.intellij.common.sdk.model.DQLSyntaxErrorPositionDetails;
 import pl.thedeem.intellij.common.sdk.model.DQLVerifyPayload;
 import pl.thedeem.intellij.common.sdk.model.DQLVerifyResponse;
+import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
+import pl.thedeem.intellij.dql.services.notifications.DQLNotificationsService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryParserService;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
@@ -27,6 +32,8 @@ import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
 import java.io.IOException;
+import java.net.ConnectException;
+import java.util.List;
 
 public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationAnnotator.Input, DQLVerificationAnnotator.Result> {
     public record Input(PsiFile file) {
@@ -46,9 +53,9 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
             return new Result(new DQLVerifyResponse(), null);
         }
         Project project = input.file.getProject();
-        DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance(project);
+        DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance();
         QueryConfiguration configuration = configurationService.getQueryConfiguration(input.file);
-        DQLQueryParserService parser = DQLQueryParserService.getInstance(project);
+        DQLQueryParserService parser = DQLQueryParserService.getInstance();
         DynatraceTenantsService tenantsService = DynatraceTenantsService.getInstance();
         DynatraceTenant tenant = tenantsService.findTenant(configuration.tenant());
         if (tenant != null) {
@@ -61,7 +68,37 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
                 );
                 DQLVerifyResponse response = client.verifyDQL(new DQLVerifyPayload(parseResult.parsed()), apiToken);
                 return new Result(response, parseResult);
-            } catch (IOException | InterruptedException | DQLApiException e) {
+            } catch (ConnectException e) {
+                ApplicationManager.getApplication().invokeLater(() -> DQLNotificationsService.getInstance(project).showErrorNotification(
+                        DQLBundle.message("notifications.error.invalidConnection.title", tenant.getName()),
+                        DQLBundle.message("notifications.error.invalidConnection.message", tenant.getName(), tenant.getUrl(), e.getMessage()),
+                        project,
+                        List.of(ActionManager.getInstance().getAction("DQL.ManageTenants"))
+                ));
+                return new Result(new DQLVerifyResponse(), null);
+            } catch (DQLNotAuthorizedException e) {
+                ApplicationManager.getApplication().invokeLater(() -> DQLNotificationsService.getInstance(project).showErrorNotification(
+                        DQLBundle.message("notifications.error.invalidAuth.title", tenant.getName()),
+                        DQLBundle.message("notifications.error.invalidAuth.message", tenant.getName(), e.getApiMessage()),
+                        project,
+                        List.of(ActionManager.getInstance().getAction("DQL.ManageTenants"))
+                ));
+                return new Result(new DQLVerifyResponse(), null);
+            } catch (DQLInvalidResponseException e) {
+                ApplicationManager.getApplication().invokeLater(() -> DQLNotificationsService.getInstance(project).showErrorNotification(
+                        DQLBundle.message("notifications.error.invalidResponse.title", tenant.getName()),
+                        DQLBundle.message("notifications.error.invalidResponse.message", e.getApiMessage()),
+                        project,
+                        List.of(ActionManager.getInstance().getAction("DQL.ManageTenants"))
+                ));
+                return new Result(new DQLVerifyResponse(), null);
+            } catch (IOException | InterruptedException e) {
+                ApplicationManager.getApplication().invokeLater(() -> DQLNotificationsService.getInstance(project).showErrorNotification(
+                        DQLBundle.message("notifications.error.unknownError.title", tenant.getName()),
+                        DQLBundle.message("notifications.error.unknownError.message", e.getMessage()),
+                        project,
+                        List.of(ActionManager.getInstance().getAction("DQL.ManageTenants"))
+                ));
                 return new Result(new DQLVerifyResponse(), null);
             }
         }

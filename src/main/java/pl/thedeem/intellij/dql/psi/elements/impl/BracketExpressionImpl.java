@@ -57,7 +57,7 @@ public abstract class BracketExpressionImpl extends ASTWrapperPsiElement impleme
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+        return DQLFieldNamesService.getInstance().calculateFieldName(
                 "{",
                 new DQLFieldNamesService.SeparatedChildren(List.of(getChildren()), ","),
                 "}"

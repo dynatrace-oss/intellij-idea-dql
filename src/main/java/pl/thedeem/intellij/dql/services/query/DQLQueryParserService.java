@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.services.query;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
@@ -10,8 +11,8 @@ import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 import java.util.List;
 
 public interface DQLQueryParserService {
-    static @NotNull DQLQueryParserService getInstance(@NotNull Project project) {
-        return project.getService(DQLQueryParserService.class);
+    static @NotNull DQLQueryParserService getInstance() {
+        return ApplicationManager.getApplication().getService(DQLQueryParserService.class);
     }
 
     @NotNull ParseResult getSubstitutedQuery(@NotNull PsiFile psiFile, @Nullable List<DQLVariablesService.VariableDefinition> variableDefinitions);

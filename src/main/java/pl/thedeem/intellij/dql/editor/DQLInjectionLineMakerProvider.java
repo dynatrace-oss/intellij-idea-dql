@@ -37,7 +37,7 @@ public class DQLInjectionLineMakerProvider extends RunLineMarkerContributor impl
             for (Pair<PsiElement, TextRange> pair : files) {
                 PsiFile file = pair.first.getContainingFile();
                 if (DQLFileType.INSTANCE.equals(file.getFileType())) {
-                    DQLQueryConfigurationService service = DQLQueryConfigurationService.getInstance(element.getProject());
+                    DQLQueryConfigurationService service = DQLQueryConfigurationService.getInstance();
                     QueryConfiguration configuration = service.getQueryConfiguration(file);
                     AnAction wrappedAction = createCustomAction(file, configuration);
                     return new Info(wrappedAction);

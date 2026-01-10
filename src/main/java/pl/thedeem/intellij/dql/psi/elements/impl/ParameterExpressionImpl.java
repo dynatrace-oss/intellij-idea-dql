@@ -45,7 +45,7 @@ public abstract class ParameterExpressionImpl extends ASTWrapperPsiElement imple
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+        return DQLFieldNamesService.getInstance().calculateFieldName(
                 getName(),
                 ": ",
                 getExpression());

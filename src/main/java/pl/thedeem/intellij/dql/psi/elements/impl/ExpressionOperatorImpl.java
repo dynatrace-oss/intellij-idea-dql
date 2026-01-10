@@ -24,7 +24,7 @@ public abstract class ExpressionOperatorImpl extends ASTWrapperPsiElement implem
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+        return DQLFieldNamesService.getInstance().calculateFieldName(
                 getText()
         );
     }

@@ -82,7 +82,7 @@ public record MappedParameter(
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(holder.getProject()).calculateFieldName(holder);
+        return DQLFieldNamesService.getInstance().calculateFieldName(holder);
     }
 
     public @NotNull List<PsiElement> getExpressions() {

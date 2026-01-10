@@ -33,7 +33,7 @@ public abstract class AssignExpressionImpl extends AbstractOperatorElementImpl i
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getLeftExpression());
+        return DQLFieldNamesService.getInstance().calculateFieldName(getLeftExpression());
     }
 
     @Override

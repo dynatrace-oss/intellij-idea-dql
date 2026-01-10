@@ -14,7 +14,7 @@ public abstract class TimeAlignmentNowExpressionImpl extends TimeAlignmentExpres
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(
+        return DQLFieldNamesService.getInstance().calculateFieldName(
                 "@",
                 getRightExpression()
         );

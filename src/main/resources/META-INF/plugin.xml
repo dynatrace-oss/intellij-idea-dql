@@ -277,23 +277,28 @@
 
         <!-- Services -->
         <applicationService serviceImplementation="pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService"/>
-        <projectService serviceImplementation="pl.thedeem.intellij.dql.services.variables.DQLVariablesServiceImpl"
-                        serviceInterface="pl.thedeem.intellij.dql.services.variables.DQLVariablesService"/>
-        <projectService
+        <applicationService
                 serviceImplementation="pl.thedeem.intellij.dql.services.parameters.DQLParametersCalculatorServiceImpl"
                 serviceInterface="pl.thedeem.intellij.dql.services.parameters.DQLParametersCalculatorService"/>
-        <projectService
+        <applicationService serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLQueryParserServiceImpl"
+                            serviceInterface="pl.thedeem.intellij.dql.services.query.DQLQueryParserService"/>
+        <applicationService
                 serviceImplementation="pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidatorImpl"
                 serviceInterface="pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator"/>
-        <projectService serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLQueryParserServiceImpl"
-                        serviceInterface="pl.thedeem.intellij.dql.services.query.DQLQueryParserService"/>
-        <projectService serviceImplementation="pl.thedeem.intellij.dql.services.definition.DQLDefinitionServiceImpl"
-                        serviceInterface="pl.thedeem.intellij.dql.services.definition.DQLDefinitionService"/>
-        <projectService serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLFieldNamesServiceImpl"
-                        serviceInterface="pl.thedeem.intellij.dql.services.query.DQLFieldNamesService"/>
-        <projectService
+        <applicationService serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLFieldNamesServiceImpl"
+                            serviceInterface="pl.thedeem.intellij.dql.services.query.DQLFieldNamesService"/>
+        <applicationService
                 serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationServiceImpl"
                 serviceInterface="pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService"/>
+
+        <projectService serviceImplementation="pl.thedeem.intellij.dql.services.variables.DQLVariablesServiceImpl"
+                        serviceInterface="pl.thedeem.intellij.dql.services.variables.DQLVariablesService"/>
+        <projectService serviceImplementation="pl.thedeem.intellij.dql.services.definition.DQLDefinitionServiceImpl"
+                        serviceInterface="pl.thedeem.intellij.dql.services.definition.DQLDefinitionService"/>
+        <projectService
+                serviceImplementation="pl.thedeem.intellij.dql.services.notifications.DQLNotificationsServiceImpl"
+                serviceInterface="pl.thedeem.intellij.dql.services.notifications.DQLNotificationsService"/>
+
         <configurationType
                 implementation="pl.thedeem.intellij.dql.executing.runConfiguration.ExecuteDQLConfigurationType"/>
         <programRunner implementation="pl.thedeem.intellij.dql.executing.DQLProgramRunner"/>
@@ -305,6 +310,10 @@
         <editorNotificationProvider implementation="pl.thedeem.intellij.dql.editor.DQLToolbarProvider"/>
         <runLineMarkerContributor language=""
                                   implementationClass="pl.thedeem.intellij.dql.editor.DQLInjectionLineMakerProvider"/>
+
+        <notificationGroup id="DQL.Errors"
+                           displayType="BALLOON" bundle="messages.DQLBundle" key="notification.group.dql.errors"/>
+
         <!-- endregion -->
         <!-- region DPL -->
         <fileType name="DPL"
@@ -556,6 +565,10 @@
         </action>
         <action id="DQL.SelectTenant"
                 class="pl.thedeem.intellij.dql.actions.executionToolbar.TenantSelectorAction"
+        />
+        <action id="DQL.ManageTenants"
+                icon="AllIcons.General.GearPlain"
+                class="pl.thedeem.intellij.dql.actions.ManageTenantsAction"
         />
         <action id="DQL.SaveQueryConfiguration"
                 class="pl.thedeem.intellij.dql.actions.executionToolbar.SaveQueryConfigurationAction"

@@ -38,6 +38,6 @@ public abstract class BooleanElementImpl extends ASTWrapperPsiElement implements
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getName());
+        return DQLFieldNamesService.getInstance().calculateFieldName(getName());
     }
 }

@@ -28,7 +28,7 @@ public abstract class CommandKeywordElementImpl extends ASTWrapperPsiElement imp
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance(getProject()).calculateFieldName(getName());
+        return DQLFieldNamesService.getInstance().calculateFieldName(getName());
     }
 
     @Override

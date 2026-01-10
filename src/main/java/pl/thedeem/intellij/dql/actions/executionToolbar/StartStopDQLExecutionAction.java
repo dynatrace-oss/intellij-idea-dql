@@ -95,7 +95,7 @@ public class StartStopDQLExecutionAction extends AnAction {
             return;
         }
 
-        DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance(project);
+        DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance();
         QueryConfiguration config = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
         if (config == null) {
             config = configurationService.getQueryConfiguration(file);

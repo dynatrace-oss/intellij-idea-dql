@@ -5,11 +5,11 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
+import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class ParameterValueInspection extends LocalInspectionTool {
             @Override
             public void visitCommand(@NotNull DQLCommand expression) {
                 super.visitCommand(expression);
-                DQLParameterValueTypesValidator service = DQLParameterValueTypesValidator.getInstance(expression.getProject());
+                DQLParameterValueTypesValidator service = DQLParameterValueTypesValidator.getInstance();
                 for (MappedParameter parameter : expression.getParameters()) {
                     for (DQLParameterValueTypesValidator.ValueIssue issue : findIssues(parameter, service)) {
                         holder.registerProblem(issue.element(), issue.issue());
@@ -33,7 +33,7 @@ public class ParameterValueInspection extends LocalInspectionTool {
             @Override
             public void visitFunctionExpression(@NotNull DQLFunctionExpression expression) {
                 super.visitFunctionExpression(expression);
-                DQLParameterValueTypesValidator service = DQLParameterValueTypesValidator.getInstance(expression.getProject());
+                DQLParameterValueTypesValidator service = DQLParameterValueTypesValidator.getInstance();
                 for (MappedParameter parameter : expression.getParameters()) {
                     for (DQLParameterValueTypesValidator.ValueIssue issue : findIssues(parameter, service)) {
                         holder.registerProblem(issue.element(), issue.issue());
