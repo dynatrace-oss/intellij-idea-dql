@@ -106,6 +106,13 @@ public final class DQLVariablesServiceImpl implements DQLVariablesService {
             case JsonBooleanLiteral literal -> String.valueOf(literal.getValue());
             case JsonNullLiteral ignored -> "null";
             case JsonObject object -> {
+                JsonProperty $type = object.findProperty("$type");
+                if ($type != null && $type.getValue() instanceof JsonStringLiteral literal && literal.getValue().equals("dql")) {
+                    JsonProperty fragment = object.findProperty("dql");
+                    if (fragment != null && fragment.getValue() instanceof JsonStringLiteral valueLiteral) {
+                        yield valueLiteral.getValue();
+                    }
+                }
                 StringBuilder builder = new StringBuilder("record(");
                 boolean first = true;
                 for (JsonProperty jsonProperty : object.getPropertyList()) {

@@ -83,14 +83,20 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
     @Override
     public @NotNull Set<String> getDataType() {
         PsiElement definition = getDefinition();
-        // we need to add the "any" because the variable has only a placeholder, so it's possible it'll have a different type
         if (definition instanceof JsonProperty jsonProperty && jsonProperty.getValue() != null) {
             return switch (jsonProperty.getValue()) {
                 case JsonStringLiteral ignored -> Set.of("dql.dataType.string");
                 case JsonNumberLiteral ignored -> Set.of("dql.dataType.double", "dql.dataType.long");
                 case JsonNullLiteral ignored -> Set.of("dql.dataType.null");
                 case JsonBooleanLiteral ignored -> Set.of("dql.dataType.boolean");
-                case JsonObject ignored -> Set.of("dql.dataType.record");
+                case JsonObject object -> {
+                    JsonProperty $type = object.findProperty("$type");
+                    // for injected DQL fragments we do not know what type it produces
+                    if ($type != null && $type.getValue() instanceof JsonStringLiteral literal && literal.getValue().equals("dql")) {
+                        yield Set.of();
+                    }
+                    yield Set.of("dql.dataType.record");
+                }
                 case JsonArray ignored -> Set.of("dql.dataType.array");
                 default -> Set.of();
             };
