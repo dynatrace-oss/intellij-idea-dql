@@ -28,7 +28,7 @@ public class DynatraceRestClient {
         this.tenantUrl = tenantUrl;
     }
 
-    public DQLVerifyResponse verifyDQL(DQLVerifyPayload payload, String authToken) throws IOException, InterruptedException, DQLApiException {
+    public DQLVerifyResponse verifyDQL(DQLVerifyPayload payload, String authToken) throws IOException, InterruptedException {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:verify").normalize())
                     .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
@@ -43,7 +43,7 @@ public class DynatraceRestClient {
         }
     }
 
-    public DQLExecuteResponse executeDQL(DQLExecutePayload payload, String authToken) throws IOException, InterruptedException, DQLApiException {
+    public DQLExecuteResponse executeDQL(DQLExecutePayload payload, String authToken) throws IOException, InterruptedException {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:execute?enrich=metric-metadata").normalize())
                     .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
@@ -58,7 +58,7 @@ public class DynatraceRestClient {
         }
     }
 
-    public DQLPollResponse cancelDQL(String requestToken, String authToken) throws IOException, InterruptedException, DQLApiException {
+    public DQLPollResponse cancelDQL(String requestToken, String authToken) throws IOException, InterruptedException {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:cancel?request-token=" + URLEncoder.encode(requestToken, StandardCharsets.UTF_8) + "&enrich=metric-metadata").normalize())
                     .method("POST", HttpRequest.BodyPublishers.ofString(""))
@@ -73,7 +73,7 @@ public class DynatraceRestClient {
         }
     }
 
-    public DQLPollResponse pollDQLState(String requestToken, String authToken) throws IOException, InterruptedException, DQLApiException {
+    public DQLPollResponse pollDQLState(String requestToken, String authToken) throws IOException, InterruptedException {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:poll?enrich=metric-metadata&request-token=" + URLEncoder.encode(requestToken, StandardCharsets.UTF_8)).normalize())
                     .header("Accept", "application/json")
@@ -87,7 +87,7 @@ public class DynatraceRestClient {
         }
     }
 
-    public DQLAutocompleteResult autocomplete(@NotNull DQLAutocompletePayload payload, String authToken) throws IOException, InterruptedException, DQLApiException {
+    public DQLAutocompleteResult autocomplete(@NotNull DQLAutocompletePayload payload, String authToken) throws IOException, InterruptedException {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:autocomplete").normalize())
                     .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))

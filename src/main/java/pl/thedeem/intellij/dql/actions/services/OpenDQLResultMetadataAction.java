@@ -1,7 +1,5 @@
 package pl.thedeem.intellij.dql.actions.services;
 
-import com.intellij.openapi.actionSystem.ActionUpdateThread;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -9,18 +7,12 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.sdk.model.DQLResult;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.actions.ActionUtils;
 import pl.thedeem.intellij.dql.executing.DQLExecutionService;
 import pl.thedeem.intellij.dql.fileProviders.DQLMetadataVirtualFile;
 
-public class OpenDQLResultMetadataAction extends AnAction {
+public class OpenDQLResultMetadataAction extends AbstractServiceAction {
     @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-        DQLExecutionService service = ActionUtils.getService(e, DQLExecutionService.class);
-        Project project = e.getProject();
-        if (project == null || service == null) {
-            return;
-        }
+    protected void actionPerformed(@NotNull AnActionEvent e, @NotNull DQLExecutionService service, @NotNull Project project) {
         DQLResult result = service.getResult();
         if (result == null) {
             return;
@@ -35,19 +27,7 @@ public class OpenDQLResultMetadataAction extends AnAction {
     }
 
     @Override
-    public void update(@NotNull AnActionEvent e) {
-        DQLExecutionService service = ActionUtils.getService(e, DQLExecutionService.class);
-        Project project = e.getProject();
-        Presentation presentation = e.getPresentation();
-        if (project == null || service == null) {
-            presentation.setEnabledAndVisible(false);
-            return;
-        }
+    protected void update(@NotNull AnActionEvent e, @NotNull DQLExecutionService service, @NotNull Project project, @NotNull Presentation presentation) {
         presentation.setEnabledAndVisible(service.getResult() != null);
-    }
-
-    @Override
-    public @NotNull ActionUpdateThread getActionUpdateThread() {
-        return ActionUpdateThread.EDT;
     }
 }

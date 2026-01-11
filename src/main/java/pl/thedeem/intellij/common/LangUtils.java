@@ -2,8 +2,6 @@ package pl.thedeem.intellij.common;
 
 import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.patterns.PlatformPatterns;
-import com.intellij.psi.PsiElement;
 
 import java.util.Set;
 
@@ -28,21 +26,5 @@ public class LangUtils {
                 Math.max(0, startOffset),
                 Math.min(context.getDocument().getTextLength() - 1, endOffset)
         ));
-    }
-
-    public static PsiElement getPreviousElement(PsiElement element) {
-        PsiElement prev = element.getPrevSibling();
-        while (prev != null && PlatformPatterns.psiElement().whitespaceCommentEmptyOrError().accepts(prev)) {
-            prev = prev.getPrevSibling();
-        }
-        return prev;
-    }
-
-    public static PsiElement getNextElement(PsiElement element) {
-        PsiElement next = element.getNextSibling();
-        while (next != null && PlatformPatterns.psiElement().whitespaceCommentEmptyOrError().accepts(next)) {
-            next = next.getNextSibling();
-        }
-        return next;
     }
 }

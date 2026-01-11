@@ -18,6 +18,7 @@ import pl.thedeem.intellij.dpl.DynatracePatternLanguage;
 import pl.thedeem.intellij.dpl.psi.DPLExpressionDefinition;
 
 import javax.swing.*;
+import java.util.Objects;
 
 public class DPLExtractAsVariable extends PsiElementBaseIntentionAction implements Iconable {
     public DPLExtractAsVariable() {
@@ -95,13 +96,6 @@ public class DPLExtractAsVariable extends PsiElementBaseIntentionAction implemen
             return selectionEnd;
         }
         DPLExpressionDefinition expression = PsiTreeUtil.getParentOfType(foundElement, DPLExpressionDefinition.class);
-        if (expression != null) {
-            return expression.getTextRange().getEndOffset();
-        }
-        if (TokenType.WHITE_SPACE.equals(foundElement.getNode().getElementType())) {
-            return foundElement.getTextRange().getEndOffset();
-        }
-        return foundElement.getTextRange().getEndOffset();
+        return Objects.requireNonNullElse(expression, foundElement).getTextRange().getEndOffset();
     }
-
 }

@@ -39,8 +39,8 @@ public class DQLSettingsConfigurable implements Configurable {
 
     @Override
     public void apply() {
-        mySettings.setCalculatingFieldsDataTypesEnabled(mySettingsComponent.isCalculatingFieldsDataTypesEnabled());
         mySettings.setAllowingExperimentalFeatures(mySettingsComponent.isAllowingExperimentalFeatures());
+        mySettings.setCalculatingFieldsDataTypesEnabled(mySettingsComponent.isCalculatingFieldsDataTypesEnabled());
         mySettings.setPerformingLiveValidationEnabled(mySettingsComponent.isPerformingLiveValidationEnabled());
         mySettings.setUseDynatraceAutocompleteEnabled(mySettingsComponent.isUseDynatraceAutocompleteEnabled());
         mySettings.setDQLExecutionToolbarVisible(mySettingsComponent.isDQLExecutionToolbarVisible());

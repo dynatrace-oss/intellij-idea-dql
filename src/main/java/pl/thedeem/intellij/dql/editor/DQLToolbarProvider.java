@@ -60,7 +60,7 @@ public class DQLToolbarProvider implements EditorNotificationProvider {
         DefaultActionGroup group = new DefaultActionGroup();
         group.setInjectedContext(true);
         group.addAction(new ExecutionManagerAction(file));
-        ActionToolbar toolbar = actionManager.createActionToolbar("DQLFloatingToolbar", group, true);
+        ActionToolbar toolbar = actionManager.createActionToolbar("DQL.FloatingToolbar", group, true);
         toolbar.getComponent().setOpaque(false);
         toolbar.getComponent().setBorder(BorderFactory.createEmptyBorder());
         return toolbar;
@@ -68,7 +68,7 @@ public class DQLToolbarProvider implements EditorNotificationProvider {
 
 
     private static @NotNull ActionToolbar createManagerToolbar(@NotNull ActionManager actionManager) {
-        ActionToolbar toolbar = actionManager.createActionToolbar("DQLFloatingToolbarManagerActions", (ActionGroup) actionManager.getAction("DQL.FloatingToolbarManager"), true);
+        ActionToolbar toolbar = actionManager.createActionToolbar("DQL.FloatingToolbarManagerActions", (ActionGroup) actionManager.getAction("DQL.FloatingToolbarManager"), true);
         toolbar.getComponent().setOpaque(false);
         toolbar.getComponent().setBorder(BorderFactory.createEmptyBorder());
         return toolbar;

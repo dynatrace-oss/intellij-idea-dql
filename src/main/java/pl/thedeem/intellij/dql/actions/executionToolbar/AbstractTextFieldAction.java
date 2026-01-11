@@ -22,8 +22,8 @@ public abstract class AbstractTextFieldAction<T> extends AnAction implements Cus
     private final Icon myIcon;
     private final String myDescription;
     private final String myText;
-    protected JBTextField myField;
-    protected JBLabel myLabel;
+    protected final JBTextField myField;
+    protected final JBLabel myLabel;
     protected String error;
 
     public AbstractTextFieldAction(@Nullable String value, @NotNull String text, @Nullable String description, @Nullable Icon icon) {
