@@ -2,8 +2,6 @@ package pl.thedeem.intellij.dql.actions.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.intellij.openapi.actionSystem.ActionUpdateThread;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.fileChooser.FileChooserFactory;
@@ -16,7 +14,6 @@ import com.intellij.openapi.vfs.VirtualFileWrapper;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.sdk.model.DQLResult;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.actions.ActionUtils;
 import pl.thedeem.intellij.dql.executing.DQLExecutionService;
 
 import java.io.File;
@@ -24,16 +21,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 
-public class SaveDQLResultsAsFileAction extends AnAction {
+public class SaveDQLResultsAsFileAction extends AbstractServiceAction {
     protected final static ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-        DQLExecutionService service = ActionUtils.getService(e, DQLExecutionService.class);
-        Project project = e.getProject();
-        if (project == null || service == null) {
-            return;
-        }
+    protected void actionPerformed(@NotNull AnActionEvent e, @NotNull DQLExecutionService service, @NotNull Project project) {
         DQLResult result = service.getResult();
         if (result == null) {
             return;
@@ -77,20 +69,8 @@ public class SaveDQLResultsAsFileAction extends AnAction {
     }
 
     @Override
-    public void update(@NotNull AnActionEvent e) {
-        DQLExecutionService service = ActionUtils.getService(e, DQLExecutionService.class);
-        Project project = e.getProject();
-        Presentation presentation = e.getPresentation();
-        if (project == null || service == null) {
-            presentation.setEnabledAndVisible(false);
-            return;
-        }
+    protected void update(@NotNull AnActionEvent e, @NotNull DQLExecutionService service, @NotNull Project project, @NotNull Presentation presentation) {
         presentation.setEnabledAndVisible(service.getResult() != null);
-    }
-
-    @Override
-    public @NotNull ActionUpdateThread getActionUpdateThread() {
-        return ActionUpdateThread.EDT;
     }
 
     // This method exists due to combability issues with older versions of IntelliJ

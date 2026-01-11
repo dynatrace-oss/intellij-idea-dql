@@ -19,10 +19,10 @@ public class InvalidModifierOrderInspection extends LocalInspectionTool {
             @Override
             public void visitExpressionDefinition(@NotNull DPLExpressionDefinition expression) {
                 super.visitExpressionDefinition(expression);
-
+                
+                DPLMatchersExpression matchers = expression.getMatchers();
                 DPLLookaroundExpression lookaround = expression.getLookaround();
                 DPLDefinitionExpression definedExpression = expression.getDefinedExpression();
-                DPLMatchersExpression matchers = expression.getMatchers();
                 DPLConfigurationExpression configuration = expression.getConfiguration();
                 DPLQuantifierExpression quantifier = expression.getQuantifier();
                 DPLNullableExpression nullable = expression.getNullable();

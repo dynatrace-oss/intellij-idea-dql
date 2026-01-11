@@ -11,7 +11,7 @@ public class DQLShowUsedQueryAction extends ToggleAction {
     @Override
     public void update(@NotNull AnActionEvent e) {
         DQLExecutionService service = ActionUtils.getService(e, DQLExecutionService.class);
-        if (service == null || service.isRunning() || service.getConfiguration() == null || service.getConfiguration().query() == null) {
+        if (service == null || service.isRunning() || service.getConfiguration().query() == null) {
             e.getPresentation().setEnabledAndVisible(false);
         }
         super.update(e);

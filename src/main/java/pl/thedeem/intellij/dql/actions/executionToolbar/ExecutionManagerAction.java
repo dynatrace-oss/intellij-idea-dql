@@ -98,7 +98,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
                 group.addSeparator();
                 group.add(actionManager.getAction("DQL.SaveQueryConfiguration"));
             }
-            ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("DQLExecutionManagerAction", group, true);
+            ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("DQL.ExecutionManagerAction", group, true);
             toolbar.setTargetComponent(this);
             JComponent toolbarComponent = toolbar.getComponent();
             toolbarComponent.setOpaque(false);

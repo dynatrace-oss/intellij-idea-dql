@@ -25,7 +25,7 @@ public class DefinitionUtils {
             if (inputStream == null) {
                 throw new FileNotFoundException("Definition file not found: " + filePath);
             }
-            return mapper.readValue(inputStream, new TypeReference<T>() {
+            return mapper.readValue(inputStream, new TypeReference<>() {
                 @Override
                 public Type getType() {
                     return ref;

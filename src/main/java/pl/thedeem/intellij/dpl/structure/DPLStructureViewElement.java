@@ -56,7 +56,7 @@ public class DPLStructureViewElement implements StructureViewTreeElement, Sortab
     }
 
     @Override
-    public @NotNull TreeElement[] getChildren() {
+    public TreeElement @NotNull [] getChildren() {
         List<TreeElement> result = new ArrayList<>();
 
         switch (element) {
