@@ -1,9 +1,7 @@
 package pl.thedeem.intellij.dql.actions.executionToolbar;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.DumbAware;
@@ -40,16 +38,13 @@ public abstract class AbstractTextFieldAction<T> extends AnAction implements Cus
             protected void textChanged(@NotNull DocumentEvent documentEvent) {
                 resizeToFit();
                 error = validate();
-                ApplicationManager.getApplication().invokeLater(() -> {
-                    AnActionEvent event = AnActionEvent.createEvent(
-                            DataManager.getInstance().getDataContext(myField),
-                            getTemplatePresentation().clone(),
-                            ActionPlaces.UNKNOWN,
-                            ActionUiKind.NONE,
-                            null
-                    );
-                    ActionUtil.invokeAction(AbstractTextFieldAction.this, event, null);
-                });
+                ApplicationManager.getApplication().invokeLater(() -> ActionManager.getInstance().tryToExecute(
+                        AbstractTextFieldAction.this,
+                        null,
+                        myField,
+                        ActionPlaces.UNKNOWN,
+                        true
+                ));
             }
         });
         if (value != null) {
