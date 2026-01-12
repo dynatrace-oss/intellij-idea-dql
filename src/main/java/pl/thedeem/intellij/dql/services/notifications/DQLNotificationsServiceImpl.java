@@ -24,7 +24,7 @@ public class DQLNotificationsServiceImpl implements DQLNotificationsService {
     public Notification showNotification(@NotNull String group, @NotNull String title, @NotNull String message, @NotNull NotificationType type, @NotNull Project project, @NotNull Collection<AnAction> actions) {
         Notification notification = activeNotifications.get(title);
         if (notification == null || notification.isExpired()) {
-            notification = NotificationGroupManager.getInstance().getNotificationGroup(group).createNotification(title, message, NotificationType.ERROR);
+            notification = NotificationGroupManager.getInstance().getNotificationGroup(group).createNotification(title, message, type);
             activeNotifications.put(title, notification);
             notification.setRemoveWhenExpired(true);
             notification.whenExpired(() -> activeNotifications.remove(title));
