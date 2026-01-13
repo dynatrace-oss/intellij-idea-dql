@@ -11,7 +11,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.LangUtils;
-import pl.thedeem.intellij.dpl.definition.model.ExpressionDescription;
 import pl.thedeem.intellij.dpl.psi.DPLAlternativesExpression;
 import pl.thedeem.intellij.dpl.psi.DPLExpressionDefinition;
 
@@ -20,10 +19,10 @@ import java.util.Set;
 public class DPLCommandInsertionHandler implements InsertHandler<LookupElement> {
     private final static Set<Character> VALID_ALT_GROUP_CHARACTERS_BEHIND = Set.of('(', '|');
 
-    private final @NotNull ExpressionDescription definition;
+    private final @NotNull String commandName;
 
-    public DPLCommandInsertionHandler(@NotNull ExpressionDescription definition) {
-        this.definition = definition;
+    public DPLCommandInsertionHandler(@NotNull String commandName) {
+        this.commandName = commandName;
     }
 
     @Override
@@ -42,7 +41,7 @@ public class DPLCommandInsertionHandler implements InsertHandler<LookupElement> 
         if (firstElement != null && firstElement.getTextOffset() < startOffset && LangUtils.shouldAddSeparatorBefore(context, VALID_ALT_GROUP_CHARACTERS_BEHIND)) {
             template.addTextSegment("|");
         }
-        template.addTextSegment(definition.name().toUpperCase());
+        template.addTextSegment(commandName.toUpperCase());
 
         context.getDocument().deleteString(startOffset, context.getTailOffset());
 
