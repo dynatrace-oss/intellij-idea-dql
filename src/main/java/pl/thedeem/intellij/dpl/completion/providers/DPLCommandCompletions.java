@@ -37,7 +37,7 @@ public class DPLCommandCompletions {
         DPLDefinitionService service = DPLDefinitionService.getInstance(position.getProject());
 
         for (ExpressionDescription value : service.commands().values()) {
-            result.addElement(DPLCompletions.createConfigurationParameterLookup(value));
+            DPLCompletions.createConfigurationParameterLookup(value, result);
         }
     }
 

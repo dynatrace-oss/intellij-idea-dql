@@ -726,6 +726,9 @@
     },
     "boolean": {
       "name": "boolean",
+      "aliases": [
+        "bool"
+      ],
       "output": "boolean",
       "description": "Matches case insensitive strings true and false"
     },

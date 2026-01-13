@@ -29,7 +29,7 @@ public class DPLConfigurationParameterCompletion {
 
     private void showConfigurationOptions(@NotNull DPLGroupExpression group, @NotNull DPLExpressionDefinition expression, @NotNull CompletionResultSet result) {
         for (Configuration parameter : expression.getAvailableConfiguration(group)) {
-            result.addElement(DPLCompletions.createConfigurationParameterLookup(parameter));
+            DPLCompletions.createConfigurationParameterLookup(parameter, result);
         }
     }
 }

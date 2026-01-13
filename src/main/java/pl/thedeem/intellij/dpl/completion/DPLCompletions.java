@@ -1,6 +1,6 @@
 package pl.thedeem.intellij.dpl.completion;
 
-import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.codeInsight.completion.CompletionResultSet;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.completion.CompletionUtils;
 import pl.thedeem.intellij.dpl.DPLBundle;
@@ -15,25 +15,34 @@ public class DPLCompletions {
     public static final String COMMAND = DPLBundle.message("completion.command");
     public static final String VARIABLE = DPLBundle.message("completion.variable");
 
-    @NotNull
-    public static LookupElementBuilder createConfigurationParameterLookup(@NotNull Configuration parameter) {
-        return CompletionUtils.createLookupElement(
+    public static void createConfigurationParameterLookup(@NotNull Configuration parameter, @NotNull CompletionResultSet result) {
+        result.addElement(CompletionUtils.createLookupElement(
                 parameter.name(),
                 DPLIcon.CONFIGURATION_PARAMETER,
                 CONFIGURATION_PARAMETER,
                 parameter.suggestion(),
                 new DPLConfigurationInsertionHandler(parameter)
-        );
+        ));
     }
 
-    @NotNull
-    public static LookupElementBuilder createConfigurationParameterLookup(@NotNull ExpressionDescription description) {
-        return CompletionUtils.createLookupElement(
+    public static void createConfigurationParameterLookup(@NotNull ExpressionDescription description, @NotNull CompletionResultSet result) {
+        result.addElement(CompletionUtils.createLookupElement(
                 description.name().toUpperCase(),
                 DPLIcon.COMMAND,
                 COMMAND,
                 null,
-                new DPLCommandInsertionHandler(description)
-        );
+                new DPLCommandInsertionHandler(description.name())
+        ));
+        if (description.aliases() != null) {
+            for (String alias : description.aliases()) {
+                result.addElement(CompletionUtils.createLookupElement(
+                        alias.toUpperCase(),
+                        DPLIcon.COMMAND,
+                        COMMAND,
+                        null,
+                        new DPLCommandInsertionHandler(alias)
+                ));
+            }
+        }
     }
 }
