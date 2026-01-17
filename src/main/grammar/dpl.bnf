@@ -40,10 +40,14 @@
         OR = '|'
         SEMICOLON = ';'
         NEGATION='!'
+        EOL_COMMENT = 'regexp://.*'
+        ML_COMMENT_START = '/*'
+        ML_COMMENT_FINISH = '*/'
     ]
 }
 
-root ::= dpl
+root ::= (comment?) dpl
+comment ::= EOL_COMMENT | ML_COMMENT
 dpl ::= macro_definition_expression* expressions_sequence? expression_end?
 expressions_sequence ::= expression_definition (COMMA? expression_definition)* {
     implements="pl.thedeem.intellij.dpl.psi.elements.SequenceElement"

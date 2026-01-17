@@ -51,4 +51,8 @@ public interface DPLColorScheme {
             createTextAttributesKey("DPL_CONFIGURATION_NAME", DefaultLanguageHighlighterColors.STATIC_METHOD);
     TextAttributesKey REGEX =
             createTextAttributesKey("DPL_REGEX", DefaultLanguageHighlighterColors.HIGHLIGHTED_REFERENCE);
+    TextAttributesKey LINE_COMMENT =
+            createTextAttributesKey("DPL_LINE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
+    TextAttributesKey BLOCK_COMMENT =
+            createTextAttributesKey("DPL_BLOCK_COMMENT", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
 }

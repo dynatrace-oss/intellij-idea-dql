@@ -6,6 +6,7 @@
 
 - Autocompleting aliases for commands in DPL (for example, both short notation `INT` and the long one `INTEGER` will be
   shown during the autocompletion).
+- Added line (`//`) and block (`/* */`) comments support for DPL patterns.
 
 ## [1.3.0] - 2026-01-11
 

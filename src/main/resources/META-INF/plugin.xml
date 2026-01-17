@@ -339,6 +339,9 @@
                 implementationClass="pl.thedeem.intellij.dpl.code.DPLFoldingBuilder"/>
         <lang.braceMatcher language="DPL"
                            implementationClass="pl.thedeem.intellij.dpl.code.DPLPairedBraceMatcher"/>
+        <lang.commenter
+                language="DPL"
+                implementationClass="pl.thedeem.intellij.dpl.code.DPLCommenter"/>
         <quoteHandler className="pl.thedeem.intellij.dpl.code.DPLQuoteHandler" fileType="DPL"/>
         <multiHostInjector
                 implementation="pl.thedeem.intellij.dpl.code.DPLLanguagesInjector"/>

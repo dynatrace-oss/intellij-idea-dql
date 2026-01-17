@@ -72,9 +72,7 @@ public class DPLBlock extends AbstractBlock {
             if (childType == DPLTypes.L_PAREN || childType == DPLTypes.R_PAREN) {
                 return Indent.getNoneIndent();
             }
-            if (childType == DPLTypes.CONFIGURATION_CONTENT) {
-                return Indent.getNormalIndent();
-            }
+            return Indent.getNormalIndent();
         }
         if (parent instanceof DPLCharacterGroupExpression) {
             if (childType == DPLTypes.L_BRACKET || childType == DPLTypes.R_BRACKET) {
@@ -86,7 +84,7 @@ public class DPLBlock extends AbstractBlock {
             if (childType == DPLTypes.L_BRACE || childType == DPLTypes.R_BRACE) {
                 return Indent.getNoneIndent();
             }
-            if (childType == DPLTypes.COMMAND_MATCHERS_CONTENT) {
+            if (childType == DPLTypes.COMMAND_MATCHERS_CONTENT || isComment(childType)) {
                 return Indent.getNormalIndent();
             }
             return Indent.getNoneIndent();
@@ -95,7 +93,7 @@ public class DPLBlock extends AbstractBlock {
             if (childType == DPLTypes.L_BRACE || childType == DPLTypes.R_BRACE) {
                 return Indent.getNoneIndent();
             }
-            if (element instanceof DPLLimitedQuantifierRanges) {
+            if (element instanceof DPLLimitedQuantifierRanges || isComment(childType)) {
                 return Indent.getNormalIndent();
             }
             return Indent.getNoneIndent();
@@ -120,6 +118,10 @@ public class DPLBlock extends AbstractBlock {
             }
         }
         return Indent.getNoneIndent();
+    }
+
+    private static boolean isComment(IElementType childType) {
+        return childType == DPLTypes.EOL_COMMENT || childType == DPLTypes.ML_COMMENT;
     }
 
     private Wrap getChildWrap() {

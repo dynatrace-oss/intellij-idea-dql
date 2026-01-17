@@ -8,8 +8,8 @@ import com.intellij.openapi.options.colors.ColorSettingsPage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dpl.DPLBundle;
-import pl.thedeem.intellij.dpl.DynatracePatternLanguage;
 import pl.thedeem.intellij.dpl.DPLIcon;
+import pl.thedeem.intellij.dpl.DynatracePatternLanguage;
 
 import javax.swing.*;
 import java.util.Map;
@@ -17,6 +17,8 @@ import java.util.Map;
 public class DPLColorSettingsPage implements ColorSettingsPage {
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
             new AttributesDescriptor(DPLBundle.message("settings.color.badValue"), DPLColorScheme.BAD_CHARACTER),
+            new AttributesDescriptor(DPLBundle.message("settings.color.lineComment"), DPLColorScheme.LINE_COMMENT),
+            new AttributesDescriptor(DPLBundle.message("settings.color.blockComment"), DPLColorScheme.BLOCK_COMMENT),
             new AttributesDescriptor(DPLBundle.message("settings.color.strings"), DPLColorScheme.STRING),
             new AttributesDescriptor(DPLBundle.message("settings.color.numbers"), DPLColorScheme.NUMBER),
             new AttributesDescriptor(DPLBundle.message("settings.color.booleans"), DPLColorScheme.BOOLEAN),
@@ -52,9 +54,13 @@ public class DPLColorSettingsPage implements ColorSettingsPage {
     @Override
     public String getDemoText() {
         return """
+                /*
+                 This is a block comment
+                 that can contain multiple lines.
+                */
                 $syslog_hdr = <keyword>TIMESTAMP</keyword>('MMM d HH:mm:ss'):<fieldName>ts</fieldName> ' ' <keyword>LD</keyword>:<fieldName>host</fieldName>;
                 
-                <keyword>LD</keyword>:<fieldName>username</fieldName> ';'
+                <keyword>LD</keyword>:<fieldName>username</fieldName> ';' // this is a line comment
                 !<<<keyword>ENUM</keyword>{
                     ''=-3, 'success'=0, 'Wrong password'=1, 'tech error'=2
                 }(<configurationName>cis</configurationName>=true):<fieldName>result</fieldName> ';'
