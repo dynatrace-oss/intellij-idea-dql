@@ -109,6 +109,15 @@ public class DPLBlock extends AbstractBlock {
                 return Indent.getContinuationIndent();
             }
         }
+        if (parent instanceof DPLMetaExpression) {
+            if (childType == DPLTypes.L_ARROW || childType == DPLTypes.R_ARROW) {
+                return Indent.getNormalIndent();
+            }
+            if (childType == DPLTypes.META_EXPRESSION_CONTENT) {
+                return Indent.getContinuationIndent();
+            }
+            return Indent.getNoneIndent();
+        }
         if (parent instanceof DPLExportNameExpression) {
             if (childType == DPLTypes.COLON) {
                 return Indent.getNormalIndent();

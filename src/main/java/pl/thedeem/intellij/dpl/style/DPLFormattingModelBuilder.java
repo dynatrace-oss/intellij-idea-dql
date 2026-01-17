@@ -28,22 +28,10 @@ public class DPLFormattingModelBuilder implements FormattingModelBuilder {
 
     private static SpacingBuilder createSpaceBuilder(CodeStyleSettings settings, DPLCodeStyleSettings langSettings) {
         SpacingBuilder spacingBuilder = new SpacingBuilder(settings, DynatracePatternLanguage.INSTANCE);
-        spacingBuilder = getDefaultSettings(spacingBuilder);
         spacingBuilder = getSettingsForCommands(spacingBuilder, langSettings);
         spacingBuilder = getSettingsForGroups(spacingBuilder, langSettings);
         spacingBuilder = getSettingsForExpressions(spacingBuilder, langSettings);
         return spacingBuilder;
-    }
-
-    private static SpacingBuilder getDefaultSettings(SpacingBuilder base) {
-        return base
-                .before(DPLTypes.EOL_COMMENT)
-                .spaceIf(true)
-                .after(DPLTypes.EOL_COMMENT)
-                .lineBreakInCode()
-                .around(DPLTypes.ML_COMMENT)
-                .spaceIf(true)
-                ;
     }
 
     private static SpacingBuilder getSettingsForCommands(SpacingBuilder base, DPLCodeStyleSettings langSettings) {
@@ -121,6 +109,12 @@ public class DPLFormattingModelBuilder implements FormattingModelBuilder {
                 .spaceIf(langSettings.SPACE_AFTER_CONFIGURATION_PARAMETERS)
                 .afterInside(DPLTypes.COMMA, DPLTypes.CONFIGURATION_CONTENT)
                 .lineBreakInCodeIf(langSettings.LB_AFTER_CONFIGURATION_PARAMETERS)
+                .afterInside(DPLTypes.L_ARROW, DPLTypes.META_EXPRESSION)
+                .spaceIf(langSettings.SPACE_INSIDE_META_DIAMONDS)
+                .beforeInside(DPLTypes.R_ARROW, DPLTypes.META_EXPRESSION)
+                .spaceIf(langSettings.SPACE_INSIDE_META_DIAMONDS)
+                .beforeInside(DPLTypes.L_ARROW, DPLTypes.META_EXPRESSION)
+                .spaceIf(langSettings.SPACE_AROUND_META_DIAMONDS)
 
                 // default spacing
                 .between(DPLTypes.EXPRESSION_DEFINITION, DPLTypes.EXPRESSION_DEFINITION)
@@ -137,6 +131,12 @@ public class DPLFormattingModelBuilder implements FormattingModelBuilder {
                 .none()
                 .around(DPLTypes.NULLABLE_EXPRESSION)
                 .none()
+                .before(DPLTypes.EOL_COMMENT)
+                .spaceIf(true)
+                .after(DPLTypes.EOL_COMMENT)
+                .lineBreakInCode()
+                .around(DPLTypes.ML_COMMENT)
+                .spaceIf(true)
                 ;
     }
 

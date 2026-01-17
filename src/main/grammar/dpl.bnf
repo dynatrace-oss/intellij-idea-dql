@@ -19,6 +19,8 @@
         IDENTIFIER = 'regexp:[A-Za-z_][A-Za-z0-9_]*'
         LONG = 'regexp:-?[0-9]+'
         DOUBLE = 'regexp:-?[0-9]+\.[0-9]+'
+        SI_NUMBER = 'regexp:-?[0-9]+(\.[0-9]+)?e-?[0-9]+'
+        HEX_NUMBER = 'regexp:-?0[xX][0-9A-Fa-f]+'
         SET = '='
         L_BRACE = '{'
         R_BRACE = '}'
@@ -26,6 +28,8 @@
         R_PAREN = ')'
         L_BRACKET = '['
         R_BRACKET = ']'
+        L_ARROW = '<'
+        R_ARROW = '>'
         COMMA = ','
         COLON = ':'
         NULL_TYPE = 'null'
@@ -65,6 +69,7 @@ expression ::=
 }
 
 private modifier_expression ::=
+    meta_expression |
     nullable_expression |
     export_name_expression |
     lookaround_expression |
@@ -118,8 +123,19 @@ variable_usage_expression ::= variable {
     implements="pl.thedeem.intellij.dpl.psi.elements.VariableUsageExpressionElement"
 }
 
+meta_expression ::= expression L_ARROW meta_expression_content? R_ARROW {
+    extends=expression
+    pin=2
+    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.MetaExpressionElementImpl"
+    implements="pl.thedeem.intellij.dpl.psi.elements.MetaExpressionElement"
+}
+
+meta_expression_content ::= simple_expression | expression {
+  recoverWhile=recover_meta_expression_content
+}
+
 // Groups
-group_expression ::= L_PAREN group_expression_content? R_PAREN{
+group_expression ::= L_PAREN group_expression_content? R_PAREN {
     pin=1
     extends=definition_expression
     implements="pl.thedeem.intellij.dpl.psi.elements.GroupElement"
@@ -296,7 +312,7 @@ null ::= NULL_TYPE {
    implements="pl.thedeem.intellij.dpl.psi.elements.NullElement"
    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.NullElementImpl"
 }
-number ::= LONG | DOUBLE {
+number ::= LONG | DOUBLE | SI_NUMBER | HEX_NUMBER {
    extends=simple_expression
    implements="pl.thedeem.intellij.dpl.psi.elements.NumberElement"
    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.NumberElementImpl"
@@ -315,3 +331,4 @@ lookaround ::= NEGATION? (PLA | PLB) {
 
 private recover_configuration_content ::= !(IDENTIFIER|OR|R_PAREN|L_PAREN|L_BRACE|L_BRACKET)
 private recover_alternative_content ::= !(OR|R_PAREN)
+private recover_meta_expression_content ::= !(R_ARROW)

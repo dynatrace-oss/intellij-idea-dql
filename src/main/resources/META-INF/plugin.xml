@@ -431,6 +431,14 @@
                          enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dpl" key="inspection.invalidModifierOrder.display.name"
                          implementationClass="pl.thedeem.intellij.dpl.inspections.expressions.InvalidModifierOrderInspection"/>
+        <localInspection language="DPL" bundle="messages.DPLBundle" shortName="DPLMissingMetaContent"
+                         enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dpl" key="inspection.missingMetaContent.display.name"
+                         implementationClass="pl.thedeem.intellij.dpl.inspections.expressions.MissingMetaContentInspection"/>
+        <localInspection language="DPL" bundle="messages.DPLBundle" shortName="DPLInvalidMetaContent"
+                         enabledByDefault="true" level="ERROR"
+                         groupKey="inspection.groups.dpl" key="inspection.invalidMetaContent.display.name"
+                         implementationClass="pl.thedeem.intellij.dpl.inspections.expressions.InvalidMetaContentInspection"/>
 
         <!--- Matcher inspections -->
         <localInspection language="DPL" bundle="messages.DPLBundle" shortName="DPLMatchersNotSupported"

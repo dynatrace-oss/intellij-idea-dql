@@ -21,6 +21,8 @@ public interface DPLColorScheme {
             createTextAttributesKey("DPL_MACRO", DefaultLanguageHighlighterColors.LOCAL_VARIABLE);
     TextAttributesKey PARENTHESES =
             createTextAttributesKey("DPL_PARENTHESES", DefaultLanguageHighlighterColors.PARENTHESES);
+    TextAttributesKey DIAMOND =
+            createTextAttributesKey("DPL_DIAMOND", DefaultLanguageHighlighterColors.BRACKETS);
     TextAttributesKey BRACES =
             createTextAttributesKey("DPL_BRACES", DefaultLanguageHighlighterColors.BRACES);
     TextAttributesKey BRACKETS =

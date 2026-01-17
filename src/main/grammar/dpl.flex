@@ -59,6 +59,8 @@ IDENTIFIER_START=[A-Za-z_]
 IDENTIFIER_EXTENSION=[A-Za-z0-9_]+
 LONG=-?[0-9]+
 DOUBLE=-?[0-9]+\.[0-9]+
+SI_NUMBER=-?[0-9]+(\.[0-9]+)?e-?[0-9]+
+HEX_NUMBER=-?0[xX][0-9A-Fa-f]+
 EOL_COMMENT="//".*
 ML_COMMENT_START="/*"
 ML_COMMENT_FINISH="*/"
@@ -83,6 +85,10 @@ ML_COMMENT_FINISH="*/"
   "|"                              { return DPLTypes.OR; }
   ";"                              { return DPLTypes.SEMICOLON; }
   "!"                              { return DPLTypes.NEGATION; }
+  "<"                              { return DPLTypes.L_ARROW; }
+  ">"                              { return DPLTypes.R_ARROW; }
+  {SI_NUMBER}                      { return DPLTypes.SI_NUMBER; }
+  {HEX_NUMBER}                     { return DPLTypes.HEX_NUMBER; }
   {LONG}                           { return DPLTypes.LONG; }
   {DOUBLE}                         { return DPLTypes.DOUBLE; }
   "$"{IDENTIFIER_START}{IDENTIFIER_EXTENSION}? {

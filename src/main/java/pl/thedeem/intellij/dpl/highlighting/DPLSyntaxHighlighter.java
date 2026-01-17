@@ -17,6 +17,7 @@ public class DPLSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] BOOLEAN_KEYS = new TextAttributesKey[]{DPLColorScheme.BOOLEAN};
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
     private static final TextAttributesKey[] PARENTHESES_KEYS = new TextAttributesKey[]{DPLColorScheme.PARENTHESES};
+    private static final TextAttributesKey[] DIAMOND_KEYS = new TextAttributesKey[]{DPLColorScheme.DIAMOND};
     private static final TextAttributesKey[] BRACES_KEYS = new TextAttributesKey[]{DPLColorScheme.BRACES};
     private static final TextAttributesKey[] BRACKETS_KEYS = new TextAttributesKey[]{DPLColorScheme.BRACKETS};
     private static final TextAttributesKey[] COMMA_KEYS = new TextAttributesKey[]{DPLColorScheme.COMMA};
@@ -57,6 +58,9 @@ public class DPLSyntaxHighlighter extends SyntaxHighlighterBase {
         }
         if (DPLTokenSets.PARENTHESES.contains(tokenType)) {
             return PARENTHESES_KEYS;
+        }
+        if (DPLTokenSets.DIAMOND.contains(tokenType)) {
+            return DIAMOND_KEYS;
         }
         if (DPLTokenSets.BRACKETS.contains(tokenType)) {
             return BRACKETS_KEYS;

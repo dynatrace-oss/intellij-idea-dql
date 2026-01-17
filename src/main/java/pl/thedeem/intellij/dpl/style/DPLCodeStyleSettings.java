@@ -19,6 +19,8 @@ public class DPLCodeStyleSettings extends CustomCodeStyleSettings {
     public boolean SPACE_AROUND_GROUP_OR_OPERATOR = true;
     public boolean SPACE_AROUND_CONFIGURATION_SET = true;
     public boolean SPACE_AROUND_CONFIGURATION_PARENTHESES = false;
+    public boolean SPACE_INSIDE_META_DIAMONDS = false;
+    public boolean SPACE_AROUND_META_DIAMONDS = false;
     public boolean SPACE_AFTER_CONFIGURATION_PARAMETERS = true;
     public boolean LB_AFTER_CONFIGURATION_PARAMETERS = false;
     public boolean LB_AFTER_MACRO_DEFINITION = true;
