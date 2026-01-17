@@ -52,25 +52,28 @@ public class DQLInjectionLineMakerProvider extends RunLineMarkerContributor impl
         AnAction wrappedAction = new AnAction() {
             @Override
             public void update(@NotNull AnActionEvent e) {
-                originalAction.update(e);
+                originalAction.update(createCustomEvent(e));
             }
 
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
-                DataContext customContext = SimpleDataContext.builder()
-                        .setParent(e.getDataContext())
-                        .add(CommonDataKeys.PSI_FILE, file)
-                        .add(CommonDataKeys.PSI_ELEMENT, file)
-                        .add(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, configuration)
-                        .build();
-
-                AnActionEvent newEvent = e.withDataContext(customContext);
-                originalAction.actionPerformed(newEvent);
+                originalAction.actionPerformed(createCustomEvent(e));
             }
 
             @Override
             public @NotNull ActionUpdateThread getActionUpdateThread() {
                 return ActionUpdateThread.BGT;
+            }
+
+            private @NotNull AnActionEvent createCustomEvent(@NotNull AnActionEvent original) {
+                DataContext customContext = SimpleDataContext.builder()
+                        .setParent(original.getDataContext())
+                        .add(CommonDataKeys.PSI_FILE, file)
+                        .add(CommonDataKeys.PSI_ELEMENT, file)
+                        .add(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, configuration)
+                        .build();
+
+                return original.withDataContext(customContext);
             }
         };
         wrappedAction.copyFrom(originalAction);
