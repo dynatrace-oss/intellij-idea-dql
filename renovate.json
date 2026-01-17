@@ -36,7 +36,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "^gradle\\.properties$"
+        "gradle.properties"
       ],
       "matchStrings": [
         "platformVersion\\s*=\\s*(?<currentValue>.*)"
@@ -47,7 +47,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "^gradle\\.properties$"
+        "gradle.properties"
       ],
       "matchStrings": [
         "gradleVersion\\s*=\\s*(?<currentValue>.*)"
@@ -58,7 +58,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "^qodana\\.yml$"
+        "qodana.yml"
       ],
       "matchStrings": [
         "linter:\\s+(?<depName>[^:]+):(?<currentValue>.*)"
