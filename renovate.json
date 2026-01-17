@@ -54,6 +54,16 @@
       ],
       "depNameTemplate": "gradle",
       "datasourceTemplate": "gradle-version"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^qodana\\.yaml$"
+      ],
+      "matchStrings": [
+        "linter:\\s+(?<depName>[^:]+):(?<currentValue>.*)"
+      ],
+      "datasourceTemplate": "docker"
     }
   ]
 }
