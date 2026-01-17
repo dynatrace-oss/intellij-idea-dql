@@ -18,6 +18,8 @@ out/
 !**/src/test/**/out/
 .intellijPlatform
 .idea
+idea-flex.skeleton
+jflex-1.9.2.jar
 
 ### Eclipse ###
 .apt_generated
