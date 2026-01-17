@@ -29,6 +29,8 @@ public class DPLSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] NEGATION_KEYS = new TextAttributesKey[]{DPLColorScheme.NEGATION};
     private static final TextAttributesKey[] MACRO_KEYS = new TextAttributesKey[]{DPLColorScheme.MACRO};
     private static final TextAttributesKey[] REGEX_KEYS = new TextAttributesKey[]{DPLColorScheme.REGEX};
+    private static final TextAttributesKey[] EOL_COMMENT_KEYS = new TextAttributesKey[]{DPLColorScheme.LINE_COMMENT};
+    private static final TextAttributesKey[] BLOCK_COMMENT_KEYS = new TextAttributesKey[]{DPLColorScheme.BLOCK_COMMENT};
 
     @NotNull
     @Override
@@ -88,6 +90,12 @@ public class DPLSyntaxHighlighter extends SyntaxHighlighterBase {
         }
         if (DPLTypes.CHARACTER_CLASS.equals(tokenType)) {
             return REGEX_KEYS;
+        }
+        if (DPLTypes.EOL_COMMENT.equals(tokenType)) {
+            return EOL_COMMENT_KEYS;
+        }
+        if (DPLTypes.ML_COMMENT.equals(tokenType)) {
+            return BLOCK_COMMENT_KEYS;
         }
 
         return EMPTY_KEYS;

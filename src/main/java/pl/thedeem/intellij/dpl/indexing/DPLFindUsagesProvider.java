@@ -6,7 +6,6 @@ import com.intellij.lang.findUsages.FindUsagesProvider;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
-import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +22,7 @@ public class DPLFindUsagesProvider implements FindUsagesProvider {
         return new DefaultWordsScanner(
                 new DPLLexerAdapter(),
                 DPLTokenSets.IDENTIFIERS,
-                TokenSet.EMPTY,
+                DPLTokenSets.COMMENTS,
                 DPLTokenSets.STRING_LITERALS
         );
     }

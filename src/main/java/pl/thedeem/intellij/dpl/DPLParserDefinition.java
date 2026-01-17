@@ -26,7 +26,7 @@ final class DPLParserDefinition implements ParserDefinition {
     @NotNull
     @Override
     public TokenSet getCommentTokens() {
-        return TokenSet.EMPTY;
+        return DPLTokenSets.COMMENTS;
     }
 
     @NotNull

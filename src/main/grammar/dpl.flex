@@ -50,6 +50,7 @@ import static com.intellij.psi.TokenType.ERROR_ELEMENT;
 %state IN_SQ_STRING
 %state IN_IDENTIFIER
 %state IN_CHARACTER_CLASS
+%state IN_ML_COMMENT
 
 WHITE_SPACE=\s+
 DOUBLE_QUOTE="\""
@@ -58,6 +59,9 @@ IDENTIFIER_START=[A-Za-z_]
 IDENTIFIER_EXTENSION=[A-Za-z0-9_]+
 LONG=-?[0-9]+
 DOUBLE=-?[0-9]+\.[0-9]+
+EOL_COMMENT="//".*
+ML_COMMENT_START="/*"
+ML_COMMENT_FINISH="*/"
 
 %%
 
@@ -84,6 +88,7 @@ DOUBLE=-?[0-9]+\.[0-9]+
   "$"{IDENTIFIER_START}{IDENTIFIER_EXTENSION}? {
     return DPLTypes.VARIABLE_NAME;
   }
+  {EOL_COMMENT}                    { return DPLTypes.EOL_COMMENT; }
   {IDENTIFIER_START} {
     yybegin(IN_IDENTIFIER);
   }
@@ -98,6 +103,9 @@ DOUBLE=-?[0-9]+\.[0-9]+
   "[" {
       yybegin(IN_CHARACTER_CLASS);
       return DPLTypes.L_BRACKET;
+  }
+  {ML_COMMENT_START} {
+   yybegin(IN_ML_COMMENT);
   }
 }
 
@@ -175,6 +183,24 @@ DOUBLE=-?[0-9]+\.[0-9]+
         IElementType result = getIdentifierToken();
         yybegin(YYINITIAL);
         return result;
+    }
+}
+
+<IN_ML_COMMENT> {
+    "\\\""/{ML_COMMENT_FINISH} {
+
+    }
+    {ML_COMMENT_FINISH} {
+        yybegin(YYINITIAL);
+        return DPLTypes.ML_COMMENT;
+    }
+    [^]/{ML_COMMENT_FINISH} {
+    }
+    [^] {
+    }
+    <<EOF>> {
+        yybegin(YYINITIAL);
+        return ERROR_ELEMENT;
     }
 }
 

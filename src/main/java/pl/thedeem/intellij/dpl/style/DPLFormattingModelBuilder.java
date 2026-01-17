@@ -28,10 +28,22 @@ public class DPLFormattingModelBuilder implements FormattingModelBuilder {
 
     private static SpacingBuilder createSpaceBuilder(CodeStyleSettings settings, DPLCodeStyleSettings langSettings) {
         SpacingBuilder spacingBuilder = new SpacingBuilder(settings, DynatracePatternLanguage.INSTANCE);
+        spacingBuilder = getDefaultSettings(spacingBuilder);
         spacingBuilder = getSettingsForCommands(spacingBuilder, langSettings);
         spacingBuilder = getSettingsForGroups(spacingBuilder, langSettings);
         spacingBuilder = getSettingsForExpressions(spacingBuilder, langSettings);
         return spacingBuilder;
+    }
+
+    private static SpacingBuilder getDefaultSettings(SpacingBuilder base) {
+        return base
+                .before(DPLTypes.EOL_COMMENT)
+                .spaceIf(true)
+                .after(DPLTypes.EOL_COMMENT)
+                .lineBreakInCode()
+                .around(DPLTypes.ML_COMMENT)
+                .spaceIf(true)
+                ;
     }
 
     private static SpacingBuilder getSettingsForCommands(SpacingBuilder base, DPLCodeStyleSettings langSettings) {

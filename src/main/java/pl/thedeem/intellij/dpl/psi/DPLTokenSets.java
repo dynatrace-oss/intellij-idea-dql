@@ -14,4 +14,5 @@ public interface DPLTokenSets {
     TokenSet QUANTIFIERS = TokenSet.create(DPLTypes.OPTIONAL, DPLTypes.MULTIPLY, DPLTypes.ADD);
     TokenSet IDENTIFIERS = TokenSet.create(
             DPLTypes.IDENTIFIER, DPLTypes.FIELD_NAME, DPLTypes.PARAMETER_NAME, DPLTypes.MATCHER_NAME, DPLTypes.VARIABLE_NAME);
+    TokenSet COMMENTS = TokenSet.create(DPLTypes.EOL_COMMENT, DPLTypes.ML_COMMENT);
 }
