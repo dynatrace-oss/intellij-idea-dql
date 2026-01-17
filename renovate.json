@@ -32,18 +32,12 @@
       "groupName": "Gradle Wrapper updates"
     }
   ],
+  "maven": {
+    "repositories": [
+      "https://www.jetbrains.com/intellij-repository/releases"
+    ]
+  },
   "customManagers": [
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "gradle.properties"
-      ],
-      "matchStrings": [
-        "platformVersion\\s*=\\s*(?<currentValue>.*)"
-      ],
-      "depNameTemplate": "com.jetbrains.intellij.platform:intellij-platform-desktop",
-      "datasourceTemplate": "maven"
-    },
     {
       "customType": "regex",
       "managerFilePatterns": [
