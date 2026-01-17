@@ -5,6 +5,7 @@ import com.intellij.ide.ActivityTracker;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,6 +41,11 @@ public class StartStopDQLExecutionAction extends AnAction {
         } else {
             presentation.setText(DQLBundle.message("action.DQL.StartStopExecution.text"));
             presentation.setIcon(AllIcons.Actions.Execute);
+        }
+        DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance();
+        QueryConfiguration configuration = service != null ? service.getConfiguration() : file != null ? configurationService.getQueryConfiguration(file) : null;
+        if (configuration == null || StringUtil.isEmpty(configuration.tenant())) {
+            presentation.setEnabled(false);
         }
     }
 

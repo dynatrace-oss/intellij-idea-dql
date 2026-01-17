@@ -279,7 +279,7 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
                         } else {
                             FormattedLanguageText panel = new FormattedLanguageText(true);
                             updatePanel(panel);
-                            panel.showResult(mapper.writeValueAsString(result.getResult()), JsonFileType.INSTANCE, project);
+                            panel.showResult(result != null ? mapper.writeValueAsString(result.getResult()) : null, JsonFileType.INSTANCE, project);
                         }
                     }
                     case TABLE -> {
