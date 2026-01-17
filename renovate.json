@@ -32,11 +32,6 @@
       "groupName": "Gradle Wrapper updates"
     }
   ],
-  "maven": {
-    "repositories": [
-      "https://www.jetbrains.com/intellij-repository/releases"
-    ]
-  },
   "customManagers": [
     {
       "customType": "regex",
