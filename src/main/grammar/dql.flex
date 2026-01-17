@@ -69,6 +69,7 @@ NUMBERED_IDENTIFIER=[0-9]+[a-zA-Z_]+
 POSITIVE_LONG=[0-9]+
 POSITIVE_DOUBLE=[0-9]+\.[0-9]+
 POSITIVE_SCIENTIFIC_NOTATION=[0-9]+(\.[0-9]+)?e-?[0-9]+
+HEX_NUMBER=0[xX][0-9a-fA-F]+
 EOL_COMMENT="//".*
 MULTILINE_STRING_QUOTE="\"\"\""
 DOUBLE_QUOTE="\""
@@ -107,6 +108,7 @@ ML_COMMENT_FINISH="*/"
   "~"                              { return DQLTypes.SEARCH; }
   "$"{IDENTIFIER}                  { return DQLTypes.VARIABLE; }
   {POSITIVE_SCIENTIFIC_NOTATION}   { return DQLTypes.POSITIVE_SCIENTIFIC_NOTATION; }
+  {HEX_NUMBER}                     { return DQLTypes.HEX_NUMBER; }
   {NUMBERED_IDENTIFIER}            { return DQLTypes.NUMBERED_IDENTIFIER; }
   {POSITIVE_LONG}                  { return DQLTypes.POSITIVE_LONG; }
   {POSITIVE_DOUBLE}                { return DQLTypes.POSITIVE_DOUBLE; }

@@ -4,6 +4,7 @@
 
 ### Features
 
+- DQL now supports HEX representations (for example `0x1A3F`) for numbers
 - Autocompleting aliases for commands in DPL (for example, both short notation `INT` and the long one `INTEGER` will be
   shown during the autocompletion).
 - Added line (`//`) and block (`/* */`) comments support for DPL patterns.
