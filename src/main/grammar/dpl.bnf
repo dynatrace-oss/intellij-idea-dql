@@ -19,6 +19,8 @@
         IDENTIFIER = 'regexp:[A-Za-z_][A-Za-z0-9_]*'
         LONG = 'regexp:-?[0-9]+'
         DOUBLE = 'regexp:-?[0-9]+\.[0-9]+'
+        SI_NUMBER = 'regexp:-?[0-9]+(\.[0-9]+)?e-?[0-9]+'
+        HEX_NUMBER = 'regexp:-?0[xX][0-9A-Fa-f]+'
         SET = '='
         L_BRACE = '{'
         R_BRACE = '}'
@@ -78,6 +80,7 @@ private modifier_expression ::=
 definition_expression ::=
     literal_expression |
     variable_usage_expression |
+    parameter_expression |
     command_expression |
     group_expression |
     character_group_expression {
