@@ -8,22 +8,22 @@
     "gradle",
     "gradle-wrapper",
     "github-actions",
-    "regex"
+    "custom.regex"
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": [
-        "^org\\.jetbrains\\.intellij\\.platform",
-        "^com\\.jetbrains"
-      ],
-      "groupName": "IntelliJ Platform dependencies"
+      "groupName": "IntelliJ Platform dependencies",
+      "matchPackageNames": [
+        "/^org\\.jetbrains\\.intellij\\.platform/",
+        "/^com\\.jetbrains/"
+      ]
     },
     {
       "description": "Group Kotlin updates",
-      "matchPackagePatterns": [
-        "^org\\.jetbrains\\.kotlin"
-      ],
-      "groupName": "Kotlin"
+      "groupName": "Kotlin",
+      "matchPackageNames": [
+        "/^org\\.jetbrains\\.kotlin/"
+      ]
     },
     {
       "matchManagers": [
@@ -32,9 +32,10 @@
       "groupName": "Gradle Wrapper updates"
     }
   ],
-  "regexManagers": [
+  "customManagers": [
     {
-      "fileMatch": [
+      "customType": "regex",
+      "managerFilePatterns": [
         "^gradle\\.properties$"
       ],
       "matchStrings": [
@@ -44,7 +45,8 @@
       "datasourceTemplate": "maven"
     },
     {
-      "fileMatch": [
+      "customType": "regex",
+      "managerFilePatterns": [
         "^gradle\\.properties$"
       ],
       "matchStrings": [
