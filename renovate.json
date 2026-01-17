@@ -58,7 +58,7 @@
     {
       "customType": "regex",
       "fileMatch": [
-        "^qodana\\.yaml$"
+        "^qodana\\.yml$"
       ],
       "matchStrings": [
         "linter:\\s+(?<depName>[^:]+):(?<currentValue>.*)"
