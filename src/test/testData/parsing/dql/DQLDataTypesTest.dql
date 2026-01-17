@@ -2,6 +2,7 @@ data record(
   long = 1233,
   double = 123.4567,
   scientific_notation = 99.123e-13,
+  hex_number = 0x1A2B3C,
   negative_number = -9876e123,
   duration = 4min,
   string = "something",
