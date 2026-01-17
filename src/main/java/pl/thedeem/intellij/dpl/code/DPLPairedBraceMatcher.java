@@ -13,6 +13,7 @@ public class DPLPairedBraceMatcher implements PairedBraceMatcher {
             new BracePair(DPLTypes.L_PAREN, DPLTypes.R_PAREN, false),
             new BracePair(DPLTypes.L_BRACE, DPLTypes.R_BRACE, true),
             new BracePair(DPLTypes.L_BRACKET, DPLTypes.R_BRACKET, true),
+            new BracePair(DPLTypes.L_ARROW, DPLTypes.R_ARROW, true),
     };
 
     @Override

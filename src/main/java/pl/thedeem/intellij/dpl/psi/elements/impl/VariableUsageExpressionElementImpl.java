@@ -8,9 +8,9 @@ import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dpl.DPLBundle;
 import pl.thedeem.intellij.dpl.DPLIcon;
 import pl.thedeem.intellij.dpl.impl.DPLSimpleExpressionImpl;
-import pl.thedeem.intellij.dpl.psi.elements.LiteralExpressionElement;
+import pl.thedeem.intellij.dpl.psi.elements.VariableUsageExpressionElement;
 
-public abstract class VariableUsageExpressionElementImpl extends DPLSimpleExpressionImpl implements LiteralExpressionElement {
+public abstract class VariableUsageExpressionElementImpl extends DPLSimpleExpressionImpl implements VariableUsageExpressionElement {
     public VariableUsageExpressionElementImpl(@NotNull ASTNode node) {
         super(node);
     }

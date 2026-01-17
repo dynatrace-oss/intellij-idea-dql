@@ -34,6 +34,7 @@ public class DPLColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor(DPLBundle.message("settings.color.brackets"), DPLColorScheme.BRACKETS),
             new AttributesDescriptor(DPLBundle.message("settings.color.braces"), DPLColorScheme.BRACES),
             new AttributesDescriptor(DPLBundle.message("settings.color.parentheses"), DPLColorScheme.PARENTHESES),
+            new AttributesDescriptor(DPLBundle.message("settings.color.diamond"), DPLColorScheme.DIAMOND),
             new AttributesDescriptor(DPLBundle.message("settings.color.keywords"), DPLColorScheme.KEYWORD),
             new AttributesDescriptor(DPLBundle.message("settings.color.negation"), DPLColorScheme.NEGATION),
             new AttributesDescriptor(DPLBundle.message("settings.color.regex"), DPLColorScheme.REGEX),

@@ -5,8 +5,13 @@
 ### Features
 
 - Autocompleting aliases for commands in DPL (for example, both short notation `INT` and the long one `INTEGER` will be
-  shown during the autocompletion).
-- Added line (`//`) and block (`/* */`) comments support for DPL patterns.
+  shown during the autocompletion). Added the missing alias `BOOL` for the `BOOLEAN` command.
+- DPL now supports line (`//`) and block (`/* */`) comments.
+- DPL now supports SI number (scientific notation, for example (`1e23`)) and HEX representations (for example,
+  `0x1A3F`).
+- DPL now supports "meta" expressions that allow converting the found value into a different type, for example:
+  `(('t' <true>:is_found) | ('f' <false>:is_found))` will convert `t` into `true` and `f` into `false`. Added code
+  style & highlighting settings for such expressions.
 
 ## [1.3.0] - 2026-01-11
 

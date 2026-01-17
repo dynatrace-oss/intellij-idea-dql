@@ -23,10 +23,13 @@ public class DPLLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
             consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AROUND_BRACE_IN_MATCHER", DPLBundle.message("settings.style.spaceAroundMatchersBraces"), DPLBundle.message("settings.style.groups.commands"));
             consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AROUND_EXPRESSIONS_IN_MATCHER", DPLBundle.message("settings.style.spaceAroundMatchers"), DPLBundle.message("settings.style.groups.commands"));
             consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AROUND_CONFIGURATION_PARENTHESES", DPLBundle.message("settings.style.spaceAroundConfiguration"), DPLBundle.message("settings.style.groups.commands"));
+            consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AROUND_CONFIGURATION_PARENTHESES", DPLBundle.message("settings.style.spaceAroundConfiguration"), DPLBundle.message("settings.style.groups.commands"));
             consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AFTER_CONFIGURATION_PARAMETERS", DPLBundle.message("settings.style.spaceAfterConfigurationParameters"), DPLBundle.message("settings.style.groups.commands"));
             consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_INSIDE_COMPLEX_QUANTIFIER", DPLBundle.message("settings.style.spaceInsideComplexQuantifiers"), DPLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AROUND_CONFIGURATION_SET", DPLBundle.message("settings.style.spaceAroundConfigurationSet"), DPLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AROUND_SET_IN_MACRO_DEFINITION", DPLBundle.message("settings.style.spaceAroundMacroDefinitionSet"), DPLBundle.message("settings.style.groups.expressions"));
+            consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_INSIDE_META_DIAMONDS", DPLBundle.message("settings.style.spaceInsideMetaDiamonds"), DPLBundle.message("settings.style.groups.expressions"));
+            consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AROUND_META_DIAMONDS", DPLBundle.message("settings.style.spaceAroundMetaDiamonds"), DPLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AROUND_PARENTHESES_IN_GROUPS", DPLBundle.message("settings.style.spaceAroundGroupParentheses"), DPLBundle.message("settings.style.groups.groups"));
             consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AROUND_GROUP_OR_OPERATOR", DPLBundle.message("settings.style.spaceAroundGroupOrOperator"), DPLBundle.message("settings.style.groups.groups"));
         } else if (settingsType == SettingsType.WRAPPING_AND_BRACES_SETTINGS) {
@@ -50,11 +53,12 @@ public class DPLLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
 
     @Override
     public String getCodeSample(@NotNull SettingsType settingsType) {
-        return /* language=DPL */ """
+        return """
+                /* an example DPL pattern */
                 $macro1 = (INT* 'some string' DIGIT{1,10})?:sequence;$macro2 = (LD | ENUM{'success'=1, 'error'=2}):alternative_group;
-                JSON{ IPADDR:"ip",INT:"port",TIMESTAMP('yyyy-MM-dd HH:mm:ss Z'):"client time" }(greedy='other members'):host
+                JSON{ IPADDR:"ip",INT:"port",TIMESTAMP('yyyy-MM-dd HH:mm:ss Z'):"client time" }(greedy='other members'):host // a comment
                 KVP{ [a-z]:key '='{2} INT:value ' '? }:attr TIMESTAMP:date_time ','{,1} IPADDR:ip           ','+ LD:username         ','{1,} LD
-                !<<IPADDR:ip_addr <<INT(min=50,max=100) EOL
+                !<<IPADDR:ip_addr <<INT(min=50,max=100) (('1' <true>:is_valid) | ('0' <true>:is_valid)) EOL
                 """;
     }
 
