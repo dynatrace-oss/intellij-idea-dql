@@ -118,6 +118,7 @@ changelog {
 grammarKit {
     tasks {
         register<GenerateParserTask>("generateDplParser") {
+            mustRunAfter("compileKotlin")
             sourceFile.set(File("src/main/grammar/dpl.bnf"))
             targetRootOutputDir.set(File("src/main/gen"))
             pathToParser.set("pl/thedeem/intellij/dpl/DPLParser.java")
