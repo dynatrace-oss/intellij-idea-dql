@@ -1,24 +1,57 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    ":pinDigestsDisabled"
   ],
   "enabledManagers": [
     "gradle",
-    "github-actions"
+    "gradle-wrapper",
+    "github-actions",
+    "regex"
   ],
   "packageRules": [
     {
       "matchPackagePatterns": [
-        "org.jetbrains.intellij"
+        "^org\\.jetbrains\\.intellij\\.platform",
+        "^com\\.jetbrains"
       ],
       "groupName": "IntelliJ Platform dependencies"
+    },
+    {
+      "description": "Group Kotlin updates",
+      "matchPackagePatterns": [
+        "^org\\.jetbrains\\.kotlin"
+      ],
+      "groupName": "Kotlin"
     },
     {
       "matchManagers": [
         "gradle-wrapper"
       ],
       "groupName": "Gradle Wrapper updates"
+    }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "^gradle\\.properties$"
+      ],
+      "matchStrings": [
+        "platformVersion\\s*=\\s*(?<currentValue>.*)"
+      ],
+      "depNameTemplate": "com.jetbrains.intellij.platform:intellij-platform-desktop",
+      "datasourceTemplate": "maven"
+    },
+    {
+      "fileMatch": [
+        "^gradle\\.properties$"
+      ],
+      "matchStrings": [
+        "gradleVersion\\s*=\\s*(?<currentValue>.*)"
+      ],
+      "depNameTemplate": "gradle",
+      "datasourceTemplate": "gradle-version"
     }
   ]
 }
