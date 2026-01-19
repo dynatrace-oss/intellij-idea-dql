@@ -30,6 +30,7 @@ import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
 import javax.swing.*;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledFuture;
@@ -64,7 +65,8 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
 
     @Override
     public void startExecution(@NotNull QueryConfiguration params) {
-        this.resultPanel.update(params);
+        this.resultPanel.setQueryConfiguration(params);
+        this.resultPanel.setExecutionTime(Instant.now().atZone(ZoneId.systemDefault()));
         this.configuration = params;
         if (params.query() == null) {
             resultPanel.show(new DQLExecutionErrorPanel(DQLBundle.message("services.executeDQL.errors.invalidPayload")));

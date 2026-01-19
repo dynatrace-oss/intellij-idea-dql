@@ -5,21 +5,25 @@ import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.components.BorderLayoutPanel;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.components.CommonTable;
 import pl.thedeem.intellij.common.sdk.model.DQLResult;
 import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.DQLUtil;
 
 import javax.swing.*;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DQLMetadataPanel extends BorderLayoutPanel {
-    public DQLMetadataPanel(DQLResult.DQLGrailMetadata metadata) {
+    public DQLMetadataPanel(@NotNull DQLResult.DQLGrailMetadata metadata, @Nullable ZonedDateTime executionTime) {
         super();
         setOpaque(false);
         setBorder(JBUI.Borders.empty());
         List<MetadataRow> records = List.of(
+                new MetadataRow(DQLBundle.message("components.queryDetails.values.executedOn"), executionTime != null ? executionTime.format(DQLUtil.USER_FRIENDLY_DATE_FORMATTER) : "-"),
                 new MetadataRow(DQLBundle.message("components.queryDetails.values.queryID"), metadata.getQueryId()),
                 new MetadataRow(DQLBundle.message("components.queryDetails.values.scannedRecords"), String.valueOf(metadata.getScannedRecords())),
                 new MetadataRow(DQLBundle.message("components.queryDetails.values.scannedDataPoints"), String.valueOf(metadata.getScannedDataPoints())),
@@ -38,7 +42,7 @@ public class DQLMetadataPanel extends BorderLayoutPanel {
         addToCenter(scroll);
     }
 
-    private List<ColumnInfo<MetadataRow, Object>> calculateColumns() {
+    private @NotNull List<ColumnInfo<MetadataRow, Object>> calculateColumns() {
         List<ColumnInfo<MetadataRow, Object>> result = new ArrayList<>(2);
         result.add(new ColumnInfo<>(DQLBundle.message("components.queryDetails.columns.property")) {
             @Override

@@ -18,6 +18,7 @@ import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 
 import java.awt.*;
+import java.time.ZonedDateTime;
 
 public class DQLExecutionResult extends BorderLayoutPanel {
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -29,6 +30,7 @@ public class DQLExecutionResult extends BorderLayoutPanel {
     private Exception exception;
     private DQLExecutionService.ResultsDisplayMode displayMode;
     private QueryConfiguration params;
+    private ZonedDateTime executionTime;
 
     public DQLExecutionResult(@NotNull Project project) {
         this.setOpaque(false);
@@ -45,8 +47,12 @@ public class DQLExecutionResult extends BorderLayoutPanel {
         this.repaint();
     }
 
-    public void update(@NotNull QueryConfiguration params) {
+    public void setQueryConfiguration(@NotNull QueryConfiguration params) {
         this.params = params;
+    }
+
+    public void setExecutionTime(@NotNull ZonedDateTime executionTime) {
+        this.executionTime = executionTime;
     }
 
     public void update(@NotNull DQLExecuteResponse response) {
@@ -99,14 +105,14 @@ public class DQLExecutionResult extends BorderLayoutPanel {
                     show(new DQLExecutionErrorPanel(e));
                 }
             }
-            case METADATA -> show(new DQLMetadataPanel(response.getResult().getGrailMetadata()));
+            case METADATA -> show(new DQLMetadataPanel(response.getResult().getGrailMetadata(), executionTime));
             case null, default -> show(new DQLTableResultPanel(response, project));
         }
         addToBottom(createTableSummary(response.getResult()));
     }
 
-    private JBScrollPane createTableSummary(DQLResult result) {
-        DQLExecutionSummary summaryPanel = new DQLExecutionSummary(result);
+    private @NotNull JBScrollPane createTableSummary(@NotNull DQLResult result) {
+        DQLExecutionSummary summaryPanel = new DQLExecutionSummary(result, executionTime);
         JBScrollPane res = new JBScrollPane(summaryPanel);
         res.setBorder(JBUI.Borders.empty());
         return res;
