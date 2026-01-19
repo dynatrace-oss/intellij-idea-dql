@@ -11,10 +11,11 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.EditorNotificationProvider;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLFileType;
-import pl.thedeem.intellij.dql.actions.executionToolbar.ExecutionManagerAction;
+import pl.thedeem.intellij.dql.editor.actions.ExecutionManagerAction;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 
 import javax.swing.*;
@@ -36,20 +37,20 @@ public class DQLToolbarProvider implements EditorNotificationProvider {
         }
         ActionManager actionManager = ActionManager.getInstance();
         return fileEditor -> {
-            JComponent container = new JPanel(new BorderLayout());
+            JComponent container = JBUI.Panels.simplePanel();
             ActionToolbar toolbar = createToolbarPanel(actionManager, file);
             toolbar.setTargetComponent(container);
             container.add(toolbar.getComponent(), BorderLayout.WEST);
             ActionToolbar closeToolbar = createManagerToolbar(actionManager);
             closeToolbar.setTargetComponent(container);
             JComponent toolbarComponent = closeToolbar.getComponent();
-            toolbarComponent.setBorder(BorderFactory.createEmptyBorder());
+            toolbarComponent.setBorder(JBUI.Borders.empty());
             toolbarComponent.setOpaque(false);
             container.add(toolbarComponent, BorderLayout.EAST);
             container.setOpaque(false);
-            container.setBorder(BorderFactory.createEmptyBorder());
+            container.setBorder(JBUI.Borders.empty());
             JBScrollPane scrollPane = new JBScrollPane(container);
-            scrollPane.setBorder(BorderFactory.createEmptyBorder());
+            scrollPane.setBorder(JBUI.Borders.empty());
             scrollPane.setOpaque(false);
             scrollPane.getViewport().setOpaque(false);
             return scrollPane;
@@ -62,7 +63,7 @@ public class DQLToolbarProvider implements EditorNotificationProvider {
         group.addAction(new ExecutionManagerAction(file));
         ActionToolbar toolbar = actionManager.createActionToolbar("DQL.FloatingToolbar", group, true);
         toolbar.getComponent().setOpaque(false);
-        toolbar.getComponent().setBorder(BorderFactory.createEmptyBorder());
+        toolbar.getComponent().setBorder(JBUI.Borders.empty());
         return toolbar;
     }
 
@@ -70,7 +71,7 @@ public class DQLToolbarProvider implements EditorNotificationProvider {
     private static @NotNull ActionToolbar createManagerToolbar(@NotNull ActionManager actionManager) {
         ActionToolbar toolbar = actionManager.createActionToolbar("DQL.FloatingToolbarManagerActions", (ActionGroup) actionManager.getAction("DQL.FloatingToolbarManager"), true);
         toolbar.getComponent().setOpaque(false);
-        toolbar.getComponent().setBorder(BorderFactory.createEmptyBorder());
+        toolbar.getComponent().setBorder(JBUI.Borders.empty());
         return toolbar;
     }
 }

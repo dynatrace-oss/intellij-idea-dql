@@ -1,5 +1,7 @@
 package pl.thedeem.intellij.common.components;
 
+import com.intellij.util.ui.JBUI;
+
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -10,7 +12,7 @@ public class MultiLineCellRenderer extends JTextArea implements TableCellRendere
         setLineWrap(true);
         setWrapStyleWord(true);
         setOpaque(true);
-        setBorder(BorderFactory.createCompoundBorder(getBorder(), ComponentsUtils.DEFAULT_BORDER));
+        setBorder(JBUI.Borders.compound(getBorder(), ComponentsUtils.DEFAULT_BORDER));
     }
 
     @Override

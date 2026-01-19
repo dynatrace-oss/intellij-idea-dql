@@ -300,8 +300,8 @@
                 serviceInterface="pl.thedeem.intellij.dql.services.notifications.DQLNotificationsService"/>
 
         <configurationType
-                implementation="pl.thedeem.intellij.dql.executing.runConfiguration.ExecuteDQLConfigurationType"/>
-        <programRunner implementation="pl.thedeem.intellij.dql.executing.DQLProgramRunner"/>
+                implementation="pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLConfigurationType"/>
+        <programRunner implementation="pl.thedeem.intellij.dql.exec.DQLProgramRunner"/>
         <serviceViewContributor implementation="pl.thedeem.intellij.dql.services.ui.DQLServiceViewContributor"/>
 
         <fileEditorProvider implementation="pl.thedeem.intellij.dql.fileProviders.DQLFileEditorProvider"/>
@@ -542,32 +542,8 @@
                 icon="AllIcons.Actions.Close">
             <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="RunnerActions"/>
         </action>
-        <action id="DQL.SaveDQLResultsAsFileAction"
-                class="pl.thedeem.intellij.dql.actions.services.SaveDQLResultsAsFileAction"
-                icon="AllIcons.Actions.Install"
-        />
-        <action id="DQL.OpenDQLResultMetadata"
-                class="pl.thedeem.intellij.dql.actions.services.OpenDQLResultMetadataAction"
-                icon="AllIcons.Actions.Annotate"
-        />
-        <action id="DQL.ResultsAsTableAction"
-                class="pl.thedeem.intellij.dql.actions.services.DQLResultsAsTableAction"
-                icon="AllIcons.Nodes.DataTables"
-        />
-        <action id="DQL.ResultsAsJsonAction"
-                class="pl.thedeem.intellij.dql.actions.services.DQLResultsAsJsonAction"
-                icon="AllIcons.FileTypes.Json"
-        />
-        <action id="DQL.ShowUsedDQLQuery"
-                class="pl.thedeem.intellij.dql.actions.services.DQLShowUsedQueryAction"
-                icon="AllIcons.Actions.Preview"
-        />
-        <action id="DQL.CloseDQLResult"
-                class="pl.thedeem.intellij.dql.actions.services.CloseDQLResultAction"
-                icon="AllIcons.General.Close"
-        />
         <action id="DQL.StartStopExecution"
-                class="pl.thedeem.intellij.dql.actions.executionToolbar.StartStopDQLExecutionAction"
+                class="pl.thedeem.intellij.dql.editor.actions.StartStopDQLExecutionAction"
                 icon="AllIcons.Actions.Execute"
         >
             <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="RunnerActions"/>
@@ -575,28 +551,50 @@
             <keyboard-shortcut keymap="$default" first-keystroke="control alt E"/>
         </action>
         <action id="DQL.SelectTenant"
-                class="pl.thedeem.intellij.dql.actions.executionToolbar.TenantSelectorAction"
+                class="pl.thedeem.intellij.dql.editor.actions.TenantSelectorAction"
         />
         <action id="DQL.ManageTenants"
                 icon="AllIcons.General.GearPlain"
                 class="pl.thedeem.intellij.dql.actions.ManageTenantsAction"
         />
         <action id="DQL.SaveQueryConfiguration"
-                class="pl.thedeem.intellij.dql.actions.executionToolbar.SaveQueryConfigurationAction"
+                class="pl.thedeem.intellij.dql.editor.actions.SaveQueryConfigurationAction"
                 icon="AllIcons.Actions.AddToDictionary"
         />
         <group id="DQL.FloatingToolbarManager">
             <reference ref="DQL.ToggleDQLExecutionToolbar"/>
         </group>
         <group id="DQL.ExecutionServiceActions">
-            <reference ref="DQL.ResultsAsJsonAction"/>
-            <reference ref="DQL.ResultsAsTableAction"/>
-            <reference ref="DQL.ShowUsedDQLQuery"/>
+            <action id="DQL.ResultsAsTableAction"
+                    class="pl.thedeem.intellij.dql.exec.actions.DQLResultsAsTableAction"
+                    icon="AllIcons.Nodes.DataTables"
+            />
+            <action id="DQL.ResultsAsJsonAction"
+                    class="pl.thedeem.intellij.dql.exec.actions.DQLResultsAsJsonAction"
+                    icon="AllIcons.FileTypes.Json"
+            />
+            <action id="DQL.ShowUsedDQLQuery"
+                    class="pl.thedeem.intellij.dql.exec.actions.DQLShowUsedQueryAction"
+                    icon="AllIcons.Actions.Preview"
+            />
+            <action id="DQL.ShowQueryMetadata"
+                    class="pl.thedeem.intellij.dql.exec.actions.DQLResultsMetadataAction"
+                    icon="AllIcons.Actions.Annotate"
+            />
             <separator/>
-            <reference ref="DQL.SaveDQLResultsAsFileAction"/>
-            <reference ref="DQL.OpenDQLResultMetadata"/>
+            <action id="DQL.SaveDQLResultsAsFileAction"
+                    class="pl.thedeem.intellij.dql.exec.actions.SaveDQLResultsAsFileAction"
+                    icon="AllIcons.Actions.Install"
+            />
+            <action id="DQL.OpenDQLResultInNewTab"
+                    class="pl.thedeem.intellij.dql.exec.actions.OpenDQLResultInNewTab"
+                    icon="AllIcons.Actions.MoveTo2"
+            />
             <separator/>
-            <reference ref="DQL.CloseDQLResult"/>
+            <action id="DQL.CloseDQLResult"
+                    class="pl.thedeem.intellij.dql.exec.actions.CloseDQLResultAction"
+                    icon="AllIcons.General.Close"
+            />
         </group>
 
     </actions>
