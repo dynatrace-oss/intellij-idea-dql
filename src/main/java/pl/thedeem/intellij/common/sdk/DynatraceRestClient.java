@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.diagnostic.Logger;
-import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.sdk.errors.*;
 import pl.thedeem.intellij.common.sdk.model.*;
 import pl.thedeem.intellij.common.sdk.model.errors.DQLAuthErrorResponse;
@@ -87,7 +86,7 @@ public class DynatraceRestClient {
         }
     }
 
-    public DQLAutocompleteResult autocomplete(@NotNull DQLAutocompletePayload payload, String authToken) throws IOException, InterruptedException {
+    public DQLAutocompleteResult autocomplete(DQLAutocompletePayload payload, String authToken) throws IOException, InterruptedException {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:autocomplete").normalize())
                     .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
