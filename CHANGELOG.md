@@ -13,6 +13,7 @@
 - DPL now supports "meta" expressions that allow converting the found value into a different type, for example:
   `(('t' <true>:is_found) | ('f' <false>:is_found))` will convert `t` into `true` and `f` into `false`. Added code
   style & highlighting settings for such expressions.
+- When a part of DQL query is selected when executed, the selected fragment will be shown as the default option
 
 ## [1.3.0] - 2026-01-11
 

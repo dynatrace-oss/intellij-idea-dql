@@ -116,11 +116,11 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
         PsiElement startingCommand = findMatchingElement(file.findElementAt(start));
         PsiElement endCommand = findMatchingElement(file.findElementAt(end));
         List<SelectionContext> queries = new ArrayList<>(2);
-        queries.add(new SelectionContext(file.getTextRange(), DQLBundle.message("services.executeDQL.selectQuery.wholeFile")));
         queries.add(new SelectionContext(new TextRange(
                 startingCommand != null ? startingCommand.getTextRange().getStartOffset() : start,
                 endCommand != null ? endCommand.getTextRange().getEndOffset() : end
         ), DQLBundle.message("services.executeDQL.selectQuery.selectedText")));
+        queries.add(new SelectionContext(file.getTextRange(), DQLBundle.message("services.executeDQL.selectQuery.wholeFile")));
         createSelectionPopup(editor, queries, textRange -> consumer.accept(textRange != null ? file.getFileDocument().getText(textRange) : file.getText()));
     }
 
@@ -139,7 +139,7 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
         JBPopupFactory.getInstance()
                 .createPopupChooserBuilder(queries)
                 .setTitle(DQLBundle.message("services.executeDQL.selectQuery.title"))
-                .setItemChosenCallback(e -> selectedCallback.accept(e == queries.getFirst() ? null : e.range()))
+                .setItemChosenCallback(e -> selectedCallback.accept(e.range()))
                 .setRenderer(new ColoredListCellRenderer<>() {
                     @Override
                     protected void customizeCellRenderer(@NotNull JList<? extends SelectionContext> jList, SelectionContext context, int index, boolean selected, boolean hasFocus) {
@@ -161,7 +161,7 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
                 .addListener(new JBPopupListener() {
                     @Override
                     public void beforeShown(@NotNull LightweightWindowEvent event) {
-                        SelectionContext context = queries.getLast();
+                        SelectionContext context = queries.getFirst();
                         markupModel.addRangeHighlighter(
                                 context.range().getStartOffset(),
                                 context.range().getEndOffset(),
