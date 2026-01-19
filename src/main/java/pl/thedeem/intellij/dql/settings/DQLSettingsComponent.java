@@ -45,7 +45,6 @@ public class DQLSettingsComponent {
         useDynatraceAutocomplete.setSelected(settings.isUseDynatraceAutocompleteEnabled());
         showDqlExecutionToolbar.setSelected(settings.isDQLExecutionToolbarVisible());
         showDqlInjectionGutterIcon.setSelected(settings.isDQLInjectionGutterIconVisible());
-        tenantsSelectorPanel.setVisible(settings.isPerformingLiveValidationEnabled());
         defaultDynatraceTenant.refreshTenantsComboBox();
     }
 

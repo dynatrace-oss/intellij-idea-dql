@@ -5,6 +5,7 @@ import com.intellij.openapi.fileEditor.FileEditorState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +22,7 @@ public class DQLFileEditor extends UserDataHolderBase implements FileEditor {
         if (virtualFile instanceof DQLVirtualFile<?> file) {
             this.component = file.createComponent(project);
         } else {
-            this.component = new JPanel();
+            this.component = JBUI.Panels.simplePanel();
         }
     }
 

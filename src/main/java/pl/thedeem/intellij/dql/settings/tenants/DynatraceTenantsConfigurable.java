@@ -8,16 +8,15 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
-import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
+import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLUtil;
 
 import javax.swing.*;
-import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -49,8 +48,8 @@ public class DynatraceTenantsConfigurable implements Configurable {
                 .setEditAction(button -> editTenant())
                 .setRemoveAction(button -> removeTenant());
 
-        JBPanel<?> panel = new JBPanel<>(new BorderLayout());
-        panel.add(decorator.createPanel(), BorderLayout.CENTER);
+        BorderLayoutPanel panel = new BorderLayoutPanel();
+        panel.addToCenter(decorator.createPanel());
         return panel;
     }
 

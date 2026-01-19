@@ -2,6 +2,7 @@ package pl.thedeem.intellij.common.components;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLUtil;
@@ -20,7 +21,7 @@ import java.util.Map;
 
 public class ComponentsUtils {
     private static final ObjectMapper mapper = new ObjectMapper();
-    public static final Border DEFAULT_BORDER = BorderFactory.createEmptyBorder(5, 5, 5, 5);
+    public static final Border DEFAULT_BORDER = JBUI.Borders.empty(5);
 
     public static void addCopyingCellValuesSupport(@NotNull JTable table) {
         addCopyingCellValuesSupport(table, table);

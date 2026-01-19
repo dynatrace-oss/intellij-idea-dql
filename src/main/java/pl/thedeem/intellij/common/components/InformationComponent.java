@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.common.components;
 
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -8,7 +9,7 @@ import java.awt.*;
 public class InformationComponent extends JPanel {
     public InformationComponent(@NotNull String message, @NotNull Icon icon) {
         setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createEmptyBorder());
+        setBorder(JBUI.Borders.empty());
         setOpaque(false);
         add(new JLabel(message, icon, JLabel.LEFT));
     }

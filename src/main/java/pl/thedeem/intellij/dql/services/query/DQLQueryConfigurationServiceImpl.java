@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
-import pl.thedeem.intellij.dql.executing.runConfiguration.ExecuteDQLRunConfiguration;
+import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLRunConfiguration;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
 import pl.thedeem.intellij.dql.psi.DQLSubqueryExpression;

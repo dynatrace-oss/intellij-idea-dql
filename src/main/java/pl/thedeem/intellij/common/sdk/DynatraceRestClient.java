@@ -6,9 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.diagnostic.Logger;
 import pl.thedeem.intellij.common.sdk.errors.*;
 import pl.thedeem.intellij.common.sdk.model.*;
-import pl.thedeem.intellij.common.sdk.model.errors.DQLAuthErrorResponse;
-import pl.thedeem.intellij.common.sdk.model.errors.DQLErrorResponse;
-import pl.thedeem.intellij.common.sdk.model.errors.DQLExecutionErrorResponse;
 
 import java.io.IOException;
 import java.net.URI;
@@ -113,14 +110,13 @@ public class DynatraceRestClient {
                 throw new DQLResponseRedirectedException("The request was redirected", location);
             } else if (status == 401 || status == 403) {
                 logger.warn(String.format("Could not authorize the user. Reason: %s", body));
-                TypeReference<DQLErrorResponse<DQLAuthErrorResponse>> errorRef = new TypeReference<>() {
-                };
-                throw new DQLNotAuthorizedException("Unauthorized", mapper.readValue(body, errorRef));
+                throw new DQLNotAuthorizedException("Unauthorized", mapper.readValue(body, new TypeReference<>() {
+                }));
             } else {
                 logger.warn(String.format("Could not execute the query. Reason: %s", body));
-                TypeReference<DQLErrorResponse<DQLExecutionErrorResponse>> errorRef = new TypeReference<>() {
-                };
-                throw new DQLErrorResponseException("Error response", mapper.readValue(body, errorRef));
+
+                throw new DQLErrorResponseException("Error response", mapper.readValue(body, new TypeReference<>() {
+                }));
             }
         } catch (JsonProcessingException jsonError) {
             logger.warn(String.format("The response returned by Dynatrace was not a JSON. String response: %s", body), jsonError);

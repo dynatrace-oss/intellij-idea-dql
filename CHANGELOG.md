@@ -13,7 +13,11 @@
 - DPL now supports "meta" expressions that allow converting the found value into a different type, for example:
   `(('t' <true>:is_found) | ('f' <false>:is_found))` will convert `t` into `true` and `f` into `false`. Added code
   style & highlighting settings for such expressions.
-- When a part of DQL query is selected when executed, the selected fragment will be shown as the default option
+- When a part of DQL query is selected when executed, the selected fragment will be shown as the default option.
+- The DQL execution metadata now appears as a tab in the service panel instead of a separate tab.
+- Adding an option to open DQL results as a new tab after executing the query.
+- Improved the DQL execution errors panel. The plugin will now show more details about the reason for an unsuccessful
+  execution.
 
 ## [1.3.0] - 2026-01-11
 

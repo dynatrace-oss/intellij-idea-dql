@@ -14,9 +14,10 @@ import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.EditorTextField;
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.dql.executing.runConfiguration.ExecuteDQLRunConfiguration;
+import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLRunConfiguration;
 
 import javax.swing.*;
 import java.util.concurrent.ExecutionException;
@@ -41,11 +42,11 @@ public class IntelliJUtils {
                 settings.setWhitespacesShown(false);
                 settings.setIndentGuidesShown(true);
                 settings.setLineMarkerAreaShown(false);
-                editor.setBorder(BorderFactory.createEmptyBorder());
+                editor.setBorder(JBUI.Borders.empty());
                 return editor;
             }
         };
-        result.setBorder(BorderFactory.createEmptyBorder());
+        result.setBorder(JBUI.Borders.empty());
         result.setOpaque(false);
         return result;
     }

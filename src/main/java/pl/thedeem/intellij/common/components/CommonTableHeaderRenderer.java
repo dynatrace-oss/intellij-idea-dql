@@ -1,5 +1,7 @@
 package pl.thedeem.intellij.common.components;
 
+import com.intellij.util.ui.JBUI;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
@@ -18,7 +20,7 @@ public class CommonTableHeaderRenderer extends DefaultTableCellRenderer {
                 defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)
                 : super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         if (c instanceof JLabel label) {
-            label.setBorder(BorderFactory.createCompoundBorder(label.getBorder(), ComponentsUtils.DEFAULT_BORDER));
+            label.setBorder(JBUI.Borders.compound(label.getBorder(), ComponentsUtils.DEFAULT_BORDER));
             label.setFont(label.getFont().deriveFont(Font.BOLD));
             label.setBorder(ComponentsUtils.DEFAULT_BORDER);
             return c;

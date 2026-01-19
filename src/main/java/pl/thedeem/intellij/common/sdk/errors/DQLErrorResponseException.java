@@ -1,29 +1,9 @@
 package pl.thedeem.intellij.common.sdk.errors;
 
-import pl.thedeem.intellij.common.sdk.model.errors.DQLErrorResponse;
-import pl.thedeem.intellij.common.sdk.model.errors.DQLExecutionErrorResponse;
+import pl.thedeem.intellij.common.sdk.model.DQLErrorResponse;
 
-public class DQLErrorResponseException extends DQLInvalidResponseException {
-    private final DQLErrorResponse<DQLExecutionErrorResponse> response;
-
-    public DQLErrorResponseException(String message, DQLErrorResponse<DQLExecutionErrorResponse> response) {
-        super(message);
-        this.response = response;
-    }
-
-    public DQLErrorResponse<DQLExecutionErrorResponse> getResponse() {
-        return response;
-    }
-
-    @Override
-    protected String getResponseMessage() {
-        DQLErrorResponse<DQLExecutionErrorResponse> response = getResponse();
-        if (response != null) {
-            DQLExecutionErrorResponse reason = response.error;
-            if (reason != null && reason.details != null) {
-                return reason.details.errorMessage;
-            }
-        }
-        return null;
+public class DQLErrorResponseException extends DQLDetailedErrorException {
+    public DQLErrorResponseException(String message, DQLErrorResponse response) {
+        super(message, response);
     }
 }
