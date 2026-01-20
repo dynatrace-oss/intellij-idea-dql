@@ -10,6 +10,7 @@ import com.intellij.execution.impl.EditConfigurationsDialog;
 import com.intellij.ide.DataManager;
 import com.intellij.lang.Language;
 import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.ex.EditorEx;
@@ -33,6 +34,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 public class IntelliJUtils {
+    private static final Logger logger = Logger.getInstance(IntelliJUtils.class);
     private static final ObjectMapper mapper = new ObjectMapper();
 
     public static @NotNull EditorTextField createEditorPanel(@NotNull Project project, @Nullable Language language, boolean isViewer, @NotNull List<EditorCustomization> customizations) {
@@ -101,7 +103,7 @@ public class IntelliJUtils {
         }
     }
 
-    public static @NotNull String prettyPrintJson(@Nullable Object json) {
+    public static @Nullable String prettyPrintJson(@Nullable Object json) {
         if (json == null) {
             return "";
         }
@@ -112,7 +114,8 @@ public class IntelliJUtils {
             printer.indentArraysWith(indenter);
             return mapper.writer(printer).writeValueAsString(json);
         } catch (JsonProcessingException e) {
-            return e.getMessage();
+            logger.warn("Failed to pretty print JSON", e);
+            return null;
         }
     }
 }

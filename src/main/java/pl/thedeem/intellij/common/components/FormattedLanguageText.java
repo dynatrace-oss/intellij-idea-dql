@@ -21,6 +21,7 @@ import pl.thedeem.intellij.dql.DQLBundle;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 public class FormattedLanguageText extends BorderLayoutPanel implements Disposable {
@@ -57,12 +58,12 @@ public class FormattedLanguageText extends BorderLayoutPanel implements Disposab
 
             @Override
             public void onSuccess() {
-                if (project.isDisposed() || resultText == null) {
+                if (project.isDisposed()) {
                     return;
                 }
 
                 WriteCommandAction.runWriteCommandAction(project, () -> {
-                    editorField.setText(resultText);
+                    editorField.setText(Objects.requireNonNullElse(resultText, ""));
                     setEditorFieldVisible();
                 });
 
@@ -95,10 +96,7 @@ public class FormattedLanguageText extends BorderLayoutPanel implements Disposab
         repaint();
     }
 
-    public String getText() {
-        if (editorField == null) {
-            return null;
-        }
+    public @NotNull String getText() {
         return editorField.getText();
     }
 
