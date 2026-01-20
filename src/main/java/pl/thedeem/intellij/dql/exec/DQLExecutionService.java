@@ -187,7 +187,7 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
         return result != null ? result : null;
     }
 
-    public @Nullable ResultsDisplayMode getDisplayMode() {
+    public @NotNull ResultsDisplayMode getDisplayMode() {
         return resultPanel.getDisplayMode();
     }
 

@@ -1,6 +1,5 @@
 package pl.thedeem.intellij.dql.exec.panel;
 
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.components.BorderLayoutPanel;
@@ -8,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.components.CommonTable;
 import pl.thedeem.intellij.common.components.MultiLineCellRenderer;
+import pl.thedeem.intellij.common.components.TransparentScrollPane;
 import pl.thedeem.intellij.dql.DQLBundle;
 
 import javax.swing.*;
@@ -26,9 +26,8 @@ public class DQLRecordPanel extends BorderLayoutPanel {
         MultiLineCellRenderer.installOn(table);
         table.setDefaultRenderer(Object.class, new MultiLineCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        JBScrollPane scroll = new JBScrollPane(table);
         table.setColumnPreferredWidthInCharacters(0, 30);
-        addToCenter(scroll);
+        addToCenter(new TransparentScrollPane(table));
     }
 
     private List<ColumnInfo<Map.Entry<String, Object>, Object>> getColumnInfos() {

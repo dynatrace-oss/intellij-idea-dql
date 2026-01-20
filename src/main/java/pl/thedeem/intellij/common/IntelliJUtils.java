@@ -1,54 +1,54 @@
 package pl.thedeem.intellij.common;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.impl.EditConfigurationsDialog;
 import com.intellij.ide.DataManager;
+import com.intellij.lang.Language;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.fileTypes.PlainTextLanguage;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
+import com.intellij.ui.EditorCustomization;
 import com.intellij.ui.EditorTextField;
+import com.intellij.ui.EditorTextFieldProvider;
+import com.intellij.ui.SoftWrapsEditorCustomization;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLRunConfiguration;
 
-import javax.swing.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 public class IntelliJUtils {
-    public static @NotNull EditorTextField createEditorPanel(@NotNull PsiFile file, boolean isViewer) {
-        EditorTextField result = new EditorTextField(file.getFileDocument(), file.getProject(), file.getFileType()) {
-            @Override
-            protected @NotNull EditorEx createEditor() {
-                EditorEx editor = super.createEditor();
-                editor.setViewer(isViewer);
-                editor.setOneLineMode(false);
-                editor.getScrollPane().setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-                editor.getScrollPane().setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                editor.setColorsScheme(EditorColorsManager.getInstance().getGlobalScheme());
-                editor.getFoldingModel().setFoldingEnabled(true);
-                EditorSettings settings = editor.getSettings();
-                settings.setLineNumbersShown(true);
-                settings.setFoldingOutlineShown(true);
-                settings.setAutoCodeFoldingEnabled(true);
-                settings.setWhitespacesShown(false);
-                settings.setIndentGuidesShown(true);
-                settings.setLineMarkerAreaShown(false);
-                editor.setBorder(JBUI.Borders.empty());
-                return editor;
-            }
-        };
-        result.setBorder(JBUI.Borders.empty());
-        result.setOpaque(false);
-        return result;
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    public static @NotNull EditorTextField createEditorPanel(@NotNull Project project, @Nullable Language language, boolean isViewer, @NotNull List<EditorCustomization> customizations) {
+        EditorTextField editorField = EditorTextFieldProvider.getInstance().getEditorField(Objects.requireNonNullElse(language, PlainTextLanguage.INSTANCE), project, customizations);
+        editorField.setViewer(isViewer);
+        editorField.setBorder(JBUI.Borders.empty());
+        editorField.setOpaque(false);
+        return editorField;
+    }
+
+    public static @NotNull EditorTextField createEditorPanel(@NotNull Project project, @Nullable Language language, boolean isViewer) {
+        return createEditorPanel(project, language, isViewer, List.of(
+                new StandardEditorCustomization(),
+                new EmptyBorderEditorCustomization(),
+                SoftWrapsEditorCustomization.ENABLED
+        ));
     }
 
     public static void openRunConfiguration(@NotNull Project project) {
@@ -76,5 +76,43 @@ public class IntelliJUtils {
             return null;
         }
         return VfsUtilCore.getRelativePath(file, baseDir, '/');
+    }
+
+    public static class StandardEditorCustomization implements EditorCustomization {
+        @Override
+        public void customize(@NotNull EditorEx editor) {
+            editor.setOneLineMode(false);
+            editor.setColorsScheme(EditorColorsManager.getInstance().getGlobalScheme());
+            editor.getFoldingModel().setFoldingEnabled(true);
+            EditorSettings settings = editor.getSettings();
+            settings.setLineNumbersShown(true);
+            settings.setFoldingOutlineShown(true);
+            settings.setAutoCodeFoldingEnabled(true);
+            settings.setWhitespacesShown(false);
+            settings.setIndentGuidesShown(true);
+            settings.setLineMarkerAreaShown(false);
+        }
+    }
+
+    public static class EmptyBorderEditorCustomization implements EditorCustomization {
+        @Override
+        public void customize(@NotNull EditorEx editor) {
+            editor.setBorder(JBUI.Borders.empty());
+        }
+    }
+
+    public static @NotNull String prettyPrintJson(@Nullable Object json) {
+        if (json == null) {
+            return "";
+        }
+        try {
+            DefaultIndenter indenter = new DefaultIndenter("  ", DefaultIndenter.SYS_LF);
+            DefaultPrettyPrinter printer = new DefaultPrettyPrinter();
+            printer.indentObjectsWith(indenter);
+            printer.indentArraysWith(indenter);
+            return mapper.writer(printer).writeValueAsString(json);
+        } catch (JsonProcessingException e) {
+            return e.getMessage();
+        }
     }
 }

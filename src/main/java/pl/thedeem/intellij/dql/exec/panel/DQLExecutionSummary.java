@@ -30,14 +30,11 @@ public class DQLExecutionSummary extends JPanel {
 
         installLazyRelativeTimeTooltip(summary, executionTime);
 
-        add(summary, BorderLayout.WEST);
+        add(summary);
 
         for (DQLResult.DQLNotification notification : result.getGrailMetadata().getNotifications()) {
-            JPanel notificationPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            notificationPanel.setBorder(JBUI.Borders.empty());
-            notificationPanel.add(new JSeparator(SwingConstants.VERTICAL), BorderLayout.WEST);
-            notificationPanel.add(new JBLabel(notification.getMessage(), AllIcons.General.Warning, JLabel.LEFT), BorderLayout.EAST);
-            add(notificationPanel, BorderLayout.EAST);
+            add(new JSeparator(SwingConstants.VERTICAL));
+            add(new JBLabel(notification.getMessage(), AllIcons.General.Warning, JLabel.LEFT));
         }
     }
 
