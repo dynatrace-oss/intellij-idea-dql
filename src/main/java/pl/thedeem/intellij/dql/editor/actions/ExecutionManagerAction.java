@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
@@ -15,7 +16,6 @@ import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.concurrent.Callable;
 
 public class ExecutionManagerAction extends AnAction implements CustomComponentAction {
@@ -56,7 +56,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
         return myComponent;
     }
 
-    private static final class DQLExecutionManagerToolbar extends JPanel implements UiDataProvider {
+    private static final class DQLExecutionManagerToolbar extends BorderLayoutPanel implements UiDataProvider {
         private static final DataKey<Boolean> SHOW_MORE_OPTIONS = DataKey.create("DQL_SHOW_MORE_OPTIONS");
         private QueryConfiguration configuration;
         private PsiFile file;
@@ -104,7 +104,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
             JComponent toolbarComponent = toolbar.getComponent();
             toolbarComponent.setOpaque(false);
             toolbarComponent.setBorder(JBUI.Borders.empty());
-            add(toolbarComponent, BorderLayout.WEST);
+            addToTop(toolbarComponent);
         }
 
         private void addQueryConfiguration(@NotNull DefaultActionGroup group) {

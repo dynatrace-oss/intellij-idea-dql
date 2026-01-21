@@ -6,7 +6,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.psi.PsiFileFactory;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.RoundedLineBorder;
@@ -16,7 +15,7 @@ import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.DQLFileType;
+import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import pl.thedeem.intellij.dql.components.DynatraceTenantSelector;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 
@@ -34,7 +33,7 @@ public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfig
 
     public ExecuteDQLSettingsEditor(@NotNull Project project) {
         dqlFilePath = new TextFieldWithBrowseButton();
-        dqlQuery = IntelliJUtils.createEditorPanel(PsiFileFactory.getInstance(project).createFileFromText("temp.dql", DQLFileType.INSTANCE, ""), false);
+        dqlQuery = IntelliJUtils.createEditorPanel(project, DynatraceQueryLanguage.INSTANCE, false);
         dqlQuery.setBorder(new RoundedLineBorder(JBColor.namedColor("Editor.Toolbar.borderColor", JBColor.border()), JBUI.scale(8), JBUI.scale(1)));
         FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, false, false, false, false);
         dqlFilePath.addBrowseFolderListener(new TextBrowseFolderListener(
@@ -115,7 +114,7 @@ public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfig
             super();
             setBorder(JBUI.Borders.empty(10, 0));
             JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
-            JPanel selectionPanel = JBUI.Panels.simplePanel();
+            BorderLayoutPanel selectionPanel = JBUI.Panels.simplePanel();
             ButtonGroup group = new ButtonGroup();
             this.fileComponent = fileComponent;
             this.textComponent = textComponent;

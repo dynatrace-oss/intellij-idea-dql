@@ -10,16 +10,16 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.EditorNotificationProvider;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.components.TransparentScrollPane;
 import pl.thedeem.intellij.dql.DQLFileType;
 import pl.thedeem.intellij.dql.editor.actions.ExecutionManagerAction;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.function.Function;
 
 public class DQLToolbarProvider implements EditorNotificationProvider {
@@ -37,23 +37,19 @@ public class DQLToolbarProvider implements EditorNotificationProvider {
         }
         ActionManager actionManager = ActionManager.getInstance();
         return fileEditor -> {
-            JComponent container = JBUI.Panels.simplePanel();
+            BorderLayoutPanel container = JBUI.Panels.simplePanel();
             ActionToolbar toolbar = createToolbarPanel(actionManager, file);
             toolbar.setTargetComponent(container);
-            container.add(toolbar.getComponent(), BorderLayout.WEST);
+            container.addToLeft(toolbar.getComponent());
             ActionToolbar closeToolbar = createManagerToolbar(actionManager);
             closeToolbar.setTargetComponent(container);
             JComponent toolbarComponent = closeToolbar.getComponent();
             toolbarComponent.setBorder(JBUI.Borders.empty());
             toolbarComponent.setOpaque(false);
-            container.add(toolbarComponent, BorderLayout.EAST);
+            container.addToRight(toolbarComponent);
             container.setOpaque(false);
             container.setBorder(JBUI.Borders.empty());
-            JBScrollPane scrollPane = new JBScrollPane(container);
-            scrollPane.setBorder(JBUI.Borders.empty());
-            scrollPane.setOpaque(false);
-            scrollPane.getViewport().setOpaque(false);
-            return scrollPane;
+            return new TransparentScrollPane(container);
         };
     }
 

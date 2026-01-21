@@ -7,7 +7,6 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.ListTableModel;
@@ -45,7 +44,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel {
         setOpaque(false);
         setBorder(JBUI.Borders.empty());
         if (result == null || result.getResult() == null || result.getResult().getRecords() == null || result.getResult().getRecords().isEmpty()) {
-            addToCenter(createScrollPane(new InformationComponent(
+            addToCenter(new TransparentScrollPane(new InformationComponent(
                     DQLBundle.message("runConfiguration.executeDQL.infos.emptyRecords"),
                     AllIcons.General.Information
             )));
@@ -54,13 +53,6 @@ public class DQLTableResultPanel extends BorderLayoutPanel {
             CommonTable table = createTableComponent(dqlResult, project);
             addToCenter(createTableView(table, project));
         }
-    }
-
-    private @NotNull JBScrollPane createScrollPane(@NotNull JComponent content) {
-        JBScrollPane panel = new JBScrollPane(content);
-        panel.setOpaque(false);
-        panel.setBorder(JBUI.Borders.empty());
-        return panel;
     }
 
     private @NotNull CommonTable createTableComponent(@NotNull DQLResult result, @NotNull Project project) {
@@ -87,9 +79,9 @@ public class DQLTableResultPanel extends BorderLayoutPanel {
         return table;
     }
 
-    private @NotNull JBScrollPane createTableView(@NotNull CommonTable table, @NotNull Project project) {
+    private @NotNull TransparentScrollPane createTableView(@NotNull CommonTable table, @NotNull Project project) {
         JTable recordNumberTable = new RowCountTable(table);
-        JBScrollPane result = createScrollPane(table);
+        TransparentScrollPane result = new TransparentScrollPane(table);
         result.setRowHeaderView(recordNumberTable);
         result.getRowHeader().setPreferredSize(recordNumberTable.getPreferredScrollableViewportSize());
 

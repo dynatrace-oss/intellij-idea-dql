@@ -1,12 +1,12 @@
 package pl.thedeem.intellij.dql.exec.panel;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.components.InformationComponent;
+import pl.thedeem.intellij.common.components.TransparentScrollPane;
 import pl.thedeem.intellij.common.sdk.errors.*;
 import pl.thedeem.intellij.dql.DQLBundle;
 
@@ -56,9 +56,7 @@ public class DQLExecutionErrorPanel extends BorderLayoutPanel {
         JPanel centeringWrapper = new JPanel(new GridBagLayout());
         centeringWrapper.setOpaque(false);
         centeringWrapper.add(errorPanel, new GridBagConstraints());
-        JBScrollPane scroll = new JBScrollPane(centeringWrapper);
-        scroll.setBorder(JBUI.Borders.empty());
-        addToCenter(scroll);
+        addToCenter(new TransparentScrollPane(centeringWrapper));
     }
 
     private static String getErrorMessage(@NotNull Exception exception) {
@@ -129,10 +127,7 @@ public class DQLExecutionErrorPanel extends BorderLayoutPanel {
         field.setFocusable(true);
         field.setAlignmentX(JTextPane.CENTER_ALIGNMENT);
         field.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
-        JBScrollPane panel = new JBScrollPane(field, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER);
-        panel.setBorder(JBUI.Borders.empty());
-        panel.setOpaque(false);
-        return panel;
+        return new TransparentScrollPane(field, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER);
     }
 
     private static @NotNull String getRangeSummary(@Nullable Object start, @Nullable Object end) {
