@@ -55,7 +55,9 @@ public class DQLPostFormatProcessor implements PostFormatProcessor {
                     String text = comment.getText().replaceFirst("//", "");
                     if (!text.startsWith(" ") && dqlSettings.SPACES_BETWEEN_COMMENT_TOKENS) {
                         PsiComment updatedComment = DQLElementFactory.createInlineComment(hostFile.getProject(), " " + text);
-                        comment.replace(updatedComment);
+                        if (updatedComment.isValid()) {
+                            comment.replace(updatedComment);
+                        }
                     }
                 } else if (comment.getNode().getElementType() == DQLTypes.ML_COMMENT) {
                     String text = comment.getText().replaceFirst("/\\*", "").replaceAll("\\*/$", "");
@@ -71,7 +73,9 @@ public class DQLPostFormatProcessor implements PostFormatProcessor {
                         }
                         if (update) {
                             PsiComment updatedComment = DQLElementFactory.createMultiLineComment(hostFile.getProject(), text);
-                            comment.replace(updatedComment);
+                            if (updatedComment.isValid()) {
+                                comment.replace(updatedComment);
+                            }
                         }
                     }
                 }
@@ -112,9 +116,11 @@ public class DQLPostFormatProcessor implements PostFormatProcessor {
                     return;
                 }
                 CommandProcessor.getInstance().runUndoTransparentAction(() -> {
-                    injectionHost.updateText(formatted);
-                    documentManager.doPostponedOperationsAndUnblockDocument(document);
-                    documentManager.commitDocument(document);
+                    if (injectionHost.isValid()) {
+                        injectionHost.updateText(formatted);
+                        documentManager.doPostponedOperationsAndUnblockDocument(document);
+                        documentManager.commitDocument(document);
+                    }
                 });
             });
         }
