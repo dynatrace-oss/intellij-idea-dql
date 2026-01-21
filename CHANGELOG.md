@@ -19,6 +19,10 @@
 - Improved the DQL execution errors panel. The plugin will now show more details about the reason for an unsuccessful
   execution.
 
+### Bug fixes
+
+- [#87] Avoiding outdated document modifications during injected fragments reformat action
+
 ## [1.3.0] - 2026-01-11
 
 ### Features
