@@ -3,7 +3,6 @@ package pl.thedeem.intellij.dql.style;
 import com.intellij.application.options.CodeStyle;
 import com.intellij.lang.Language;
 import com.intellij.lang.injection.InjectedLanguageManager;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
@@ -101,31 +100,23 @@ public class DQLPostFormatProcessor implements PostFormatProcessor {
                 continue;
             }
 
-            SmartPsiElementPointer<PsiLanguageInjectionHost> hostPtr = SmartPointerManager.getInstance(project).createSmartPsiElementPointer(injectionHost);
             String formatted = reformatCode(settings, documentManager, project, dqlSettings, injectedPsi, injectionHost, styleManager);
-            ApplicationManager.getApplication().invokeLater(() -> {
-                        PsiLanguageInjectionHost host = hostPtr.getElement();
-                        if (host == null || !host.isValid()) {
-                            return;
-                        }
-                        Document document = documentManager.getDocument(host.getContainingFile());
-                        if (document == null) {
-                            return;
-                        }
-                        WriteAction.run(() -> {
-                            documentManager.doPostponedOperationsAndUnblockDocument(document);
-                            documentManager.commitDocument(document);
-                            if (Objects.equals(host.getText(), formatted)) {
-                                return;
-                            }
-                            CommandProcessor.getInstance().runUndoTransparentAction(() -> {
-                                host.updateText(formatted);
-                                documentManager.doPostponedOperationsAndUnblockDocument(document);
-                                documentManager.commitDocument(document);
-                            });
-                        });
-                    }
-            );
+            Document document = documentManager.getDocument(injectionHost.getContainingFile());
+            if (document == null) {
+                return;
+            }
+            WriteAction.run(() -> {
+                documentManager.doPostponedOperationsAndUnblockDocument(document);
+                documentManager.commitDocument(document);
+                if (Objects.equals(injectionHost.getText(), formatted)) {
+                    return;
+                }
+                CommandProcessor.getInstance().runUndoTransparentAction(() -> {
+                    injectionHost.updateText(formatted);
+                    documentManager.doPostponedOperationsAndUnblockDocument(document);
+                    documentManager.commitDocument(document);
+                });
+            });
         }
     }
 
