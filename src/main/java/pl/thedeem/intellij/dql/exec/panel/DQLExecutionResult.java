@@ -19,8 +19,6 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public class DQLExecutionResult extends BorderLayoutPanel {
-
-
     private final DQLExecuteInProgressPanel progressPanel;
     private final Project project;
 

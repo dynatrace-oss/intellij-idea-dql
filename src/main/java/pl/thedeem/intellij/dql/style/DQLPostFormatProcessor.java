@@ -3,6 +3,9 @@ package pl.thedeem.intellij.dql.style;
 import com.intellij.application.options.CodeStyle;
 import com.intellij.lang.Language;
 import com.intellij.lang.injection.InjectedLanguageManager;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
@@ -23,6 +26,7 @@ import pl.thedeem.intellij.dql.psi.DQLTypes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,30 +80,76 @@ public class DQLPostFormatProcessor implements PostFormatProcessor {
         }
     }
 
-    private void processInjectedHosts(@NotNull PsiFile hostFile, @NotNull TextRange range, @NotNull CodeStyleSettings settings, @NotNull PsiDocumentManager documentManager, @NotNull Project project, @NotNull DQLCodeStyleSettings dqlSettings) {
+    private void processInjectedHosts(
+            @NotNull PsiFile hostFile,
+            @NotNull TextRange range,
+            @NotNull CodeStyleSettings settings,
+            @NotNull PsiDocumentManager documentManager,
+            @NotNull Project project,
+            @NotNull DQLCodeStyleSettings dqlSettings
+    ) {
         InjectedLanguageManager injector = InjectedLanguageManager.getInstance(project);
         CodeStyleManager styleManager = CodeStyleManager.getInstance(project);
         Collection<PsiFile> injectedFiles = findInjectionHosts(hostFile, injector, range, settings);
-        if (!injectedFiles.isEmpty()) {
-            for (PsiFile host : injectedFiles) {
-                PsiLanguageInjectionHost injectionHost = injector.getInjectionHost(host);
-                if (injectionHost != null) {
-                    PsiFile updated = PsiFileFactory.getInstance(project).createFileFromText(host.getLanguage(), host.getText());
-                    CodeStyleSettings temporarySettings = createTemporarySettings(settings, injectionHost);
-                    CodeStyle.runWithLocalSettings(project, temporarySettings, () -> {
-                        styleManager.reformat(updated);
-                        Document d = documentManager.getDocument(host);
-                        if (d != null) {
-                            d.setText(prepareFormattedText(updated, dqlSettings, injectionHost, documentManager));
-                            documentManager.commitDocument(d);
-                        }
-                    });
-                }
+        if (injectedFiles.isEmpty()) {
+            return;
+        }
+
+        for (PsiFile injectedPsi : injectedFiles) {
+            PsiLanguageInjectionHost injectionHost = injector.getInjectionHost(injectedPsi);
+            if (injectionHost == null || !injectionHost.isValid()) {
+                continue;
             }
+
+            SmartPsiElementPointer<PsiLanguageInjectionHost> hostPtr = SmartPointerManager.getInstance(project).createSmartPsiElementPointer(injectionHost);
+            String formatted = reformatCode(settings, documentManager, project, dqlSettings, injectedPsi, injectionHost, styleManager);
+            ApplicationManager.getApplication().invokeLater(() -> {
+                        PsiLanguageInjectionHost host = hostPtr.getElement();
+                        if (host == null || !host.isValid()) {
+                            return;
+                        }
+                        Document document = documentManager.getDocument(host.getContainingFile());
+                        if (document == null) {
+                            return;
+                        }
+                        WriteAction.run(() -> {
+                            documentManager.doPostponedOperationsAndUnblockDocument(document);
+                            documentManager.commitDocument(document);
+                            if (Objects.equals(host.getText(), formatted)) {
+                                return;
+                            }
+                            CommandProcessor.getInstance().runUndoTransparentAction(() -> {
+                                host.updateText(formatted);
+                                documentManager.doPostponedOperationsAndUnblockDocument(document);
+                                documentManager.commitDocument(document);
+                            });
+                        });
+                    }
+            );
         }
     }
 
-    private @NotNull Collection<PsiFile> findInjectionHosts(@NotNull PsiFile file, @NotNull InjectedLanguageManager injector, @NotNull TextRange range, @NotNull CodeStyleSettings settings) {
+    private String reformatCode(
+            @NotNull CodeStyleSettings settings,
+            @NotNull PsiDocumentManager documentManager,
+            @NotNull Project project,
+            @NotNull DQLCodeStyleSettings dqlSettings,
+            @NotNull PsiFile injectedPsi,
+            @NotNull PsiLanguageInjectionHost injectionHost,
+            @NotNull CodeStyleManager styleManager
+    ) {
+        PsiFile copy = PsiFileFactory.getInstance(project).createFileFromText(injectedPsi.getLanguage(), injectedPsi.getText());
+        CodeStyleSettings temporarySettings = createTemporarySettings(settings, injectionHost);
+        CodeStyle.runWithLocalSettings(project, temporarySettings, () -> styleManager.reformat(copy));
+        return prepareFormattedText(copy, dqlSettings, injectionHost, documentManager);
+    }
+
+    private @NotNull Collection<PsiFile> findInjectionHosts(
+            @NotNull PsiFile file,
+            @NotNull InjectedLanguageManager injector,
+            @NotNull TextRange range,
+            @NotNull CodeStyleSettings settings
+    ) {
         PsiLanguageInjectionHost injectionHost = injector.getInjectionHost(file);
         List<PsiFile> result = new ArrayList<>();
         Collection<PsiLanguageInjectionHost> hosts;
@@ -168,7 +218,12 @@ public class DQLPostFormatProcessor implements PostFormatProcessor {
         return temp;
     }
 
-    private String prepareFormattedText(PsiFile updated, DQLCodeStyleSettings dqlSettings, PsiLanguageInjectionHost injectionHost, PsiDocumentManager documentManager) {
+    private String prepareFormattedText(
+            PsiFile updated,
+            DQLCodeStyleSettings dqlSettings,
+            PsiLanguageInjectionHost injectionHost,
+            PsiDocumentManager documentManager
+    ) {
         boolean codeBlock = injectionHost instanceof DQLMultilineString;
         String text = updated.getText().trim();
         int parentIndent = calculateParentIndent(injectionHost, documentManager);
@@ -192,8 +247,12 @@ public class DQLPostFormatProcessor implements PostFormatProcessor {
         if (originalDocument == null) {
             return 0;
         }
+
         int lineNumber = originalDocument.getLineNumber(host.getTextRange().getStartOffset());
-        String lineText = originalDocument.getText(new TextRange(originalDocument.getLineStartOffset(lineNumber), originalDocument.getLineEndOffset(lineNumber)));
+        String lineText = originalDocument.getText(new TextRange(
+                originalDocument.getLineStartOffset(lineNumber),
+                originalDocument.getLineEndOffset(lineNumber)
+        ));
         Matcher matcher = INDENT_PATTERN.matcher(lineText);
         if (matcher.find()) {
             return matcher.group(0).length();

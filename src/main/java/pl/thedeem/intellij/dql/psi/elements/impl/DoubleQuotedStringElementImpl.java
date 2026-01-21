@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.common.code.StringLiteralEscaper;
 import pl.thedeem.intellij.dql.DQLIcon;
+import pl.thedeem.intellij.dql.psi.DQLElementFactory;
 import pl.thedeem.intellij.dql.psi.elements.StringElement;
 import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
@@ -79,13 +80,17 @@ public abstract class DoubleQuotedStringElementImpl extends ASTWrapperPsiElement
     }
 
     @Override
-    public PsiLanguageInjectionHost updateText(@NotNull String s) {
-        return this;
+    public PsiLanguageInjectionHost updateText(@NotNull String newText) {
+        return (PsiLanguageInjectionHost) this.replace(createNewElement(newText));
     }
 
     @Override
     public @NotNull LiteralTextEscaper<? extends PsiLanguageInjectionHost> createLiteralTextEscaper() {
         return new StringLiteralEscaper<>(this);
+    }
+
+    protected @NotNull StringElement createNewElement(@NotNull String text) {
+        return DQLElementFactory.createStringElement(getProject(), text);
     }
 
     private Set<String> recalculateDataType() {
