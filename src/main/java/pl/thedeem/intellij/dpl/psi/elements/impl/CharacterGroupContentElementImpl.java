@@ -37,7 +37,7 @@ public abstract class CharacterGroupContentElementImpl extends ASTWrapperPsiElem
 
     @Override
     public ItemPresentation getPresentation() {
-        return new StandardItemPresentation(DPLBundle.message("presentation.characterClass"), this, DPLIcon.EXPRESSION);
+        return new StandardItemPresentation(DPLBundle.message("presentation.characterClass"), this, DPLIcon.CHARACTER_GROUP);
     }
 
     @Override

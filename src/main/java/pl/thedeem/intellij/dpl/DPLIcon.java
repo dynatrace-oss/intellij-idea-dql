@@ -16,6 +16,7 @@ public interface DPLIcon {
     Icon INTENTION = AllIcons.Actions.Edit;
     Icon LITERAL = AllIcons.Nodes.Word;
     Icon EXPRESSION = AllIcons.Nodes.Method;
+    Icon CHARACTER_GROUP = AllIcons.Nodes.Record;
     Icon NUMBER = AllIcons.Nodes.PropertyReadStatic;
     Icon LOOKAROUND = AllIcons.Actions.Redo;
     Icon NULL = AllIcons.Nodes.C_private;

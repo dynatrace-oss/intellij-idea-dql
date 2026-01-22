@@ -5,34 +5,36 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.impl.PsiElementBase;
-import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.documentation.GenericDocumentationProvider;
+import pl.thedeem.intellij.dpl.DPLBundle;
 import pl.thedeem.intellij.dpl.documentation.providers.*;
 import pl.thedeem.intellij.dpl.psi.*;
 
 public class DPLDocumentationProvider extends AbstractDocumentationProvider {
     @Override
     public @Nullable String generateDoc(@NotNull PsiElement element, @Nullable PsiElement originalElement) {
-        return switch (element) {
+        GenericDocumentationProvider<?> provider = switch (element) {
             case DPLCommandKeyword keyword when keyword.getParent() instanceof DPLCommandExpression command ->
-                    new DPLCommandDocumentationProvider(command).generateDocumentation();
-            case DPLVariable variable -> new DPLVariableDocumentationProvider(variable).generateDocumentation();
-            case DPLFieldName fieldName -> new DPLFieldNameDocumentationProvider(fieldName).generateDocumentation();
+                    new DPLCommandDocumentationProvider(command);
+            case DPLVariable variable -> new DPLVariableDocumentationProvider(variable);
+            case DPLFieldName fieldName -> new DPLFieldNameDocumentationProvider(fieldName);
             case DPLDoubleQuotedString string when string.getStringContentElement() != null ->
-                    new DPLStringDocumentationProvider(string.getStringContentElement()).generateDocumentation();
+                    new DPLStringDocumentationProvider(string.getStringContentElement());
             case DPLSingleQuotedString string when string.getStringContentElement() != null ->
-                    new DPLStringDocumentationProvider(string.getStringContentElement()).generateDocumentation();
-            case DPLStringContentElement string -> new DPLStringDocumentationProvider(string).generateDocumentation();
-            case DPLCharacterGroupContent regex ->
-                    new DPLCharacterClassDocumentationProvider(regex).generateDocumentation();
-            case DPLParameterName parameter -> {
-                DPLExpressionDefinition definition = PsiTreeUtil.getParentOfType(parameter, DPLExpressionDefinition.class);
-                yield definition != null ? new DPLConfigurationDocumentationProvider(definition).generateDocumentation() : null;
-            }
-            case PsiElementBase generic -> new BaseElementDocumentationProvider(generic).generateDocumentation();
+                    new DPLStringDocumentationProvider(string.getStringContentElement());
+            case DPLStringContentElement string -> new DPLStringDocumentationProvider(string);
+            case DPLCharacterGroupContent regex -> new DPLCharacterClassDocumentationProvider(regex);
+            case DPLParameterName parameter -> new ExpressionPartDocumentationProvider<>(
+                    parameter,
+                    DPLBundle.message("documentation.configurationParameter.type"),
+                    "AllIcons.Actions.Edit"
+            );
+            case PsiElementBase generic -> new GenericDocumentationProvider<>(generic);
             default -> null;
         };
+        return provider != null ? provider.generateDocumentation() : null;
     }
 
     @Override
