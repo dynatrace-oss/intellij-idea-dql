@@ -24,7 +24,6 @@
 ### Bug fixes
 
 - [#87] Avoiding outdated document modifications during injected fragments reformat action
-- DPL meta expression is not treated as a modifier expression anymore
 
 ## [1.3.0] - 2026-01-11
 
