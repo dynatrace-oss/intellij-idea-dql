@@ -18,6 +18,8 @@
 - Adding an option to open DQL results as a new tab after executing the query.
 - Improved the DQL execution errors panel. The plugin will now show more details about the reason for an unsuccessful
   execution.
+- Reworked hover documentation for both DQL and DPL. The documentation pop-up will now show more details about
+  expression, their parameters & types or possible values. The UI for both languages docs has been unified.
 
 ### Bug fixes
 
