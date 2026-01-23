@@ -28,7 +28,6 @@ public class DPLLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
             consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AROUND_CONFIGURATION_SET", DPLBundle.message("settings.style.spaceAroundConfigurationSet"), DPLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AROUND_SET_IN_MACRO_DEFINITION", DPLBundle.message("settings.style.spaceAroundMacroDefinitionSet"), DPLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_INSIDE_META_DIAMONDS", DPLBundle.message("settings.style.spaceInsideMetaDiamonds"), DPLBundle.message("settings.style.groups.expressions"));
-            consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AROUND_META_DIAMONDS", DPLBundle.message("settings.style.spaceAroundMetaDiamonds"), DPLBundle.message("settings.style.groups.expressions"));
             consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AROUND_PARENTHESES_IN_GROUPS", DPLBundle.message("settings.style.spaceAroundGroupParentheses"), DPLBundle.message("settings.style.groups.groups"));
             consumer.showCustomOption(DPLCodeStyleSettings.class, "SPACE_AROUND_GROUP_OR_OPERATOR", DPLBundle.message("settings.style.spaceAroundGroupOrOperator"), DPLBundle.message("settings.style.groups.groups"));
         } else if (settingsType == SettingsType.WRAPPING_AND_BRACES_SETTINGS) {

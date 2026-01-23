@@ -113,8 +113,6 @@ public class DPLFormattingModelBuilder implements FormattingModelBuilder {
                 .spaceIf(langSettings.SPACE_INSIDE_META_DIAMONDS)
                 .beforeInside(DPLTypes.R_ARROW, DPLTypes.META_EXPRESSION)
                 .spaceIf(langSettings.SPACE_INSIDE_META_DIAMONDS)
-                .beforeInside(DPLTypes.L_ARROW, DPLTypes.META_EXPRESSION)
-                .spaceIf(langSettings.SPACE_AROUND_META_DIAMONDS)
 
                 // default spacing
                 .between(DPLTypes.EXPRESSION_DEFINITION, DPLTypes.EXPRESSION_DEFINITION)

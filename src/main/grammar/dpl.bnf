@@ -123,9 +123,9 @@ variable_usage_expression ::= variable {
     implements="pl.thedeem.intellij.dpl.psi.elements.VariableUsageExpressionElement"
 }
 
-meta_expression ::= expression L_ARROW meta_expression_content? R_ARROW {
+meta_expression ::= L_ARROW meta_expression_content? R_ARROW {
     extends=expression
-    pin=2
+    pin=1
     mixin="pl.thedeem.intellij.dpl.psi.elements.impl.MetaExpressionElementImpl"
     implements="pl.thedeem.intellij.dpl.psi.elements.MetaExpressionElement"
 }
