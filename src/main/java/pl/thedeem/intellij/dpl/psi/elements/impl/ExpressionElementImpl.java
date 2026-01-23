@@ -247,7 +247,6 @@ public abstract class ExpressionElementImpl extends ASTWrapperPsiElement impleme
                     names.add(element);
                     yield element.getExpression();
                 }
-                case DPLMetaExpression element -> element.getExpression();
                 case DPLDefinitionExpression element -> {
                     expr = element;
                     yield null;
