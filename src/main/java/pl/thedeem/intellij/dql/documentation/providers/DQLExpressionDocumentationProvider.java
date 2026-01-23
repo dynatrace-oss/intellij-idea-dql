@@ -2,6 +2,7 @@ package pl.thedeem.intellij.dql.documentation.providers;
 
 import com.intellij.openapi.util.text.HtmlChunk;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
@@ -10,31 +11,28 @@ import pl.thedeem.intellij.dql.psi.elements.OperatorElement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DQLExpressionDocumentationProvider extends BaseTypedElementDocumentationProvider {
-    private final DQLExpression expression;
-
-    public DQLExpressionDocumentationProvider(DQLExpression expression) {
-        super(expression, DQLBundle.message("documentation.twoSidedExpression.type"));
-        this.expression = expression;
+public class DQLExpressionDocumentationProvider extends BaseTypedElementDocumentationProvider<DQLExpression> {
+    public DQLExpressionDocumentationProvider(@NotNull DQLExpression expression) {
+        super(expression, DQLBundle.message("documentation.twoSidedExpression.type"), "AllIcons.Nodes.Method");
     }
 
     @Override
-    protected List<HtmlChunk.Element> getSections() {
-        List<HtmlChunk.Element> sections = new ArrayList<>();
+    protected @NotNull List<HtmlChunk> getSections() {
+        List<HtmlChunk> sections = new ArrayList<>();
 
-        if (expression instanceof OperatorElement operator) {
+        if (element instanceof OperatorElement operator) {
             PsiElement left = operator.getLeftExpression();
             PsiElement right = operator.getRightExpression();
-            if (left instanceof BaseTypedElement element) {
-                sections.add(buildStandardSection(
+            if (left instanceof BaseTypedElement el) {
+                sections.add(buildTitledSection(
                         DQLBundle.message("documentation.twoSidedExpression.leftType"),
-                        DQLBundle.types(element.getDataType(), expression.getProject())
+                        prepareValuesDescription(el.getDataType(), element.getProject())
                 ));
             }
-            if (right instanceof BaseTypedElement element) {
-                sections.add(buildStandardSection(
+            if (right instanceof BaseTypedElement el) {
+                sections.add(buildTitledSection(
                         DQLBundle.message("documentation.twoSidedExpression.rightType"),
-                        DQLBundle.types(element.getDataType(), expression.getProject())
+                        prepareValuesDescription(el.getDataType(), element.getProject())
                 ));
             }
         }

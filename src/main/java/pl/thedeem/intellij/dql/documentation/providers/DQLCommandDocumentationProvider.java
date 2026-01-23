@@ -9,20 +9,20 @@ import pl.thedeem.intellij.dql.psi.DQLCommand;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DQLCommandDocumentationProvider extends BaseDocumentationProvider {
-    private final DQLCommand command;
-
+public class DQLCommandDocumentationProvider extends BaseDocumentationProvider<DQLCommand> {
     public DQLCommandDocumentationProvider(@NotNull DQLCommand command) {
-        super(command, DQLBundle.message("documentation.command.type"));
-        this.command = command;
+        super(command, DQLBundle.message("documentation.command.type"), "AllIcons.Nodes.Class");
     }
 
     @Override
-    protected List<HtmlChunk.Element> getSections() {
-        List<HtmlChunk.Element> sections = new ArrayList<>();
-
-        Command definition = command.getDefinition();
-        sections.add(buildDescription(definition));
+    protected @NotNull List<HtmlChunk> getSections() {
+        List<HtmlChunk> sections = new ArrayList<>();
+        Command definition = element.getDefinition();
+        sections.add(buildDescription(
+                definition != null
+                        ? definition.description()
+                        : DQLBundle.message("documentation.command.unknown")
+        ));
         if (definition != null) {
             if (definition.synopsis() != null && !definition.synopsis().isEmpty()) {
                 sections.add(buildSyntaxSection(definition.synopsis()));
@@ -33,9 +33,5 @@ public class DQLCommandDocumentationProvider extends BaseDocumentationProvider {
             sections.add(buildMoreInfoLink(DQLBundle.message("documentation.statement.moreInfoLink")));
         }
         return sections;
-    }
-
-    protected HtmlChunk.Element buildDescription(Command definition) {
-        return HtmlChunk.p().addText(definition != null ? definition.description() : DQLBundle.message("documentation.command.unknown"));
     }
 }

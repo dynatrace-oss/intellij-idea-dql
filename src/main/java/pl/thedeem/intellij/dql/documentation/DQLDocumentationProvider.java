@@ -17,7 +17,7 @@ import java.util.Objects;
 public class DQLDocumentationProvider extends AbstractDocumentationProvider {
     @Override
     public @Nullable String generateDoc(@NotNull PsiElement element, @Nullable PsiElement originalElement) {
-        BaseDocumentationProvider docsProvider = switch (element) {
+        BaseDocumentationProvider<?> docsProvider = switch (element) {
             case DQLCommandKeyword keyword when keyword.getParent() instanceof DQLCommand command ->
                     new DQLCommandDocumentationProvider(command);
             case DQLParameterName parameterName -> {
@@ -28,42 +28,42 @@ public class DQLDocumentationProvider extends AbstractDocumentationProvider {
                         yield new DQLParameterDocumentationProvider(Objects.requireNonNull(function.getParameter(parameter)));
                     }
                 }
-                yield new BaseDocumentationProvider(parameterName, DQLBundle.message("documentation.parameter.type"));
+                yield new BaseDocumentationProvider<>(parameterName, DQLBundle.message("documentation.parameter.type"), "AllIcons.Nodes.Parameter");
             }
             case DQLFunctionExpression func -> new DQLFunctionDocumentationProvider(func);
             case DQLFunctionName func when func.getParent() instanceof DQLFunctionExpression function ->
                     new DQLFunctionDocumentationProvider(function);
-            case DQLFieldExpression field -> new BaseTypedElementDocumentationProvider(
+            case DQLFieldExpression field -> new BaseTypedElementDocumentationProvider<>(
                     originalElement != null && originalElement.getParent() instanceof DQLFieldExpression originalField ? originalField : field,
-                    DQLBundle.message("documentation.field.type")
-            );
+                    DQLBundle.message("documentation.field.type"),
+                    "AllIcons.Nodes.Method");
             case DQLVariableExpression variable -> new DQLVariableDocumentationProvider(variable);
             case ExpressionOperatorImpl operator -> {
                 if (operator.getParent() instanceof DQLExpression expression) {
                     yield new DQLExpressionDocumentationProvider(expression);
                 }
-                yield new BaseDocumentationProvider(operator, DQLBundle.message("documentation.operator.type"));
+                yield new BaseDocumentationProvider<>(operator, DQLBundle.message("documentation.operator.type"), "AllIcons.Nodes.Lambda");
             }
             case DQLNumber number ->
-                    new BaseDocumentationProvider(number, DQLBundle.message("documentation.number.type"));
+                    new BaseDocumentationProvider<>(number, DQLBundle.message("documentation.number.type"), "AllIcons.Nodes.PropertyReadStatic");
             case DQLDuration duration ->
-                    new BaseDocumentationProvider(duration, DQLBundle.message("documentation.duration.type"));
+                    new BaseDocumentationProvider<>(duration, DQLBundle.message("documentation.duration.type"), "AllIcons.Nodes.Type");
             case DQLSortDirection sortKeyword ->
-                    new BaseDocumentationProvider(sortKeyword, DQLBundle.message("documentation.sorting.type"));
+                    new BaseDocumentationProvider<>(sortKeyword, DQLBundle.message("documentation.sorting.type"), "AllIcons.Nodes.Target");
             case DQLBoolean bool ->
-                    new BaseDocumentationProvider(bool, DQLBundle.message("documentation.boolean.type"));
+                    new BaseDocumentationProvider<>(bool, DQLBundle.message("documentation.boolean.type"), "AllIcons.Nodes.Static");
             case DQLNull nullElement ->
-                    new BaseDocumentationProvider(nullElement, DQLBundle.message("documentation.null.type"));
+                    new BaseDocumentationProvider<>(nullElement, DQLBundle.message("documentation.null.type"), "AllIcons.Nodes.C_private");
             case DQLString ignored ->
-                    new BaseDocumentationProvider(element, DQLBundle.message("documentation.string.type"));
+                    new BaseDocumentationProvider<>(element, null, DQLBundle.message("documentation.string.type"), "AllIcons.Nodes.Word");
             default -> {
                 if (originalElement != null && originalElement.getParent() instanceof DQLVariableExpression variable) {
                     yield new DQLVariableDocumentationProvider(variable);
                 }
-                yield new BaseDocumentationProvider(element);
+                yield new BaseDocumentationProvider<>(element);
             }
         };
-        return docsProvider.buildDocumentation();
+        return docsProvider.generateDocumentation();
     }
 
     @Override

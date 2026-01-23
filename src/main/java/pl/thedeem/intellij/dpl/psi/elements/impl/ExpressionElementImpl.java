@@ -207,10 +207,7 @@ public abstract class ExpressionElementImpl extends ASTWrapperPsiElement impleme
             String commandName = command.getName();
             return service.commands().get(commandName != null ? commandName.toUpperCase() : "");
         }
-
-        Map<String, ExpressionDescription> expressions = service.expressions();
-        String expressionName = expression.getExpressionName();
-        return expressionName != null ? expressions.get(expressionName) : null;
+        return expression.getDefinition();
     }
 
     private @NotNull ExpressionParts recalculateExpressionParts() {
@@ -250,6 +247,7 @@ public abstract class ExpressionElementImpl extends ASTWrapperPsiElement impleme
                     names.add(element);
                     yield element.getExpression();
                 }
+                case DPLMetaExpression element -> element.getExpression();
                 case DPLDefinitionExpression element -> {
                     expr = element;
                     yield null;

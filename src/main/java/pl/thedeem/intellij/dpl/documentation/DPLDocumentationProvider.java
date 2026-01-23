@@ -8,31 +8,40 @@ import com.intellij.psi.impl.PsiElementBase;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.documentation.GenericDocumentationProvider;
+import pl.thedeem.intellij.dpl.DPLBundle;
 import pl.thedeem.intellij.dpl.documentation.providers.*;
 import pl.thedeem.intellij.dpl.psi.*;
 
 public class DPLDocumentationProvider extends AbstractDocumentationProvider {
     @Override
     public @Nullable String generateDoc(@NotNull PsiElement element, @Nullable PsiElement originalElement) {
-        return switch (element) {
+        GenericDocumentationProvider<?> provider = switch (element) {
             case DPLCommandKeyword keyword when keyword.getParent() instanceof DPLCommandExpression command ->
-                    new DPLCommandDocumentationProvider(command).generateDocumentation();
-            case DPLVariable variable -> new DPLVariableDocumentationProvider(variable).generateDocumentation();
-            case DPLFieldName fieldName -> new DPLFieldNameDocumentationProvider(fieldName).generateDocumentation();
+                    new DPLCommandDocumentationProvider(command);
+            case DPLVariable variable -> new DPLVariableDocumentationProvider(variable);
+            case DPLFieldName fieldName -> new DPLFieldNameDocumentationProvider(fieldName);
             case DPLDoubleQuotedString string when string.getStringContentElement() != null ->
-                    new DPLStringDocumentationProvider(string.getStringContentElement()).generateDocumentation();
+                    new DPLStringDocumentationProvider(string.getStringContentElement());
             case DPLSingleQuotedString string when string.getStringContentElement() != null ->
-                    new DPLStringDocumentationProvider(string.getStringContentElement()).generateDocumentation();
-            case DPLStringContentElement string -> new DPLStringDocumentationProvider(string).generateDocumentation();
-            case DPLCharacterGroupContent regex ->
-                    new DPLCharacterClassDocumentationProvider(regex).generateDocumentation();
-            case DPLParameterName parameter -> {
-                DPLExpressionDefinition definition = PsiTreeUtil.getParentOfType(parameter, DPLExpressionDefinition.class);
-                yield definition != null ? new DPLConfigurationDocumentationProvider(definition).generateDocumentation() : null;
-            }
-            case PsiElementBase generic -> new BaseElementDocumentationProvider(generic).generateDocumentation();
+                    new DPLStringDocumentationProvider(string.getStringContentElement());
+            case DPLStringContentElement string -> new DPLStringDocumentationProvider(string);
+            case DPLCharacterGroupContent regex -> new DPLCharacterClassDocumentationProvider(regex);
+            case DPLExpressionDefinition def -> new ExpressionDefinitionDocumentationProvider<>(def);
+            case DPLParameterName parameter -> new DPLConfigurationParameterDocumentationProvider(parameter);
+            case DPLLookaround lookaround -> new ExpressionDefinitionDocumentationProvider<>(lookaround);
+            case DPLNumber number -> new GenericDocumentationProvider<>(number,
+                    DPLBundle.message("documentation.number.type"),
+                    "AllIcons.Nodes.PropertyReadStatic"
+            );
+            case DPLBoolean bool -> new GenericDocumentationProvider<>(
+                    bool,
+                    DPLBundle.message("documentation.boolean.type"),
+                    "AllIcons.Nodes.Static");
+            case PsiElementBase generic -> new GenericDocumentationProvider<>(generic);
             default -> null;
         };
+        return provider != null ? provider.generateDocumentation() : null;
     }
 
     @Override
@@ -52,6 +61,12 @@ public class DPLDocumentationProvider extends AbstractDocumentationProvider {
         }
         if (context instanceof PsiElement psi && psi.getParent() instanceof DPLString string && string.getParent() instanceof DPLFieldName fieldName) {
             return fieldName;
+        }
+        if (context != null && DPLTokenSets.EXPRESSION_PARTS.contains(context.getNode().getElementType())) {
+            DPLExpressionDefinition def = PsiTreeUtil.getParentOfType(context, DPLExpressionDefinition.class);
+            if (def != null) {
+                return def;
+            }
         }
         return result;
     }

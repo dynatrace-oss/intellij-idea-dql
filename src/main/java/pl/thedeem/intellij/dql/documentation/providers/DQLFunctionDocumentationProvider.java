@@ -12,29 +12,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class DQLFunctionDocumentationProvider extends BaseDocumentationProvider {
-    private final DQLFunctionExpression function;
-
+public class DQLFunctionDocumentationProvider extends BaseDocumentationProvider<DQLFunctionExpression> {
     public DQLFunctionDocumentationProvider(@NotNull DQLFunctionExpression function) {
-        super(function, DQLBundle.message("documentation.function.type"));
-        this.function = function;
+        super(function, DQLBundle.message("documentation.function.type"), "AllIcons.Nodes.Function");
     }
 
     @Override
-    protected List<HtmlChunk.Element> getSections() {
-        List<HtmlChunk.Element> sections = new ArrayList<>();
-        Function definition = function.getDefinition();
-        sections.add(buildDescription(definition));
+    protected @NotNull List<HtmlChunk> getSections() {
+        List<HtmlChunk> sections = new ArrayList<>();
+        Function definition = element.getDefinition();
+        sections.add(buildDescription(
+                definition != null ?
+                        definition.description()
+                        : DQLBundle.message("documentation.function.unknown")
+        ));
         if (definition != null) {
             if (definition.synopsis() != null) {
                 sections.add(buildSyntaxSection(definition.synopsis()));
             }
-            Signature signature = function.getSignature();
+            Signature signature = element.getSignature();
             if (signature != null) {
                 if (signature.outputs() != null && !signature.outputs().isEmpty()) {
-                    sections.add(buildStandardSection(
+                    sections.add(buildTitledSection(
                             DQLBundle.message("documentation.function.returnValues"),
-                            DQLBundle.types(signature.outputs(), function.getProject())));
+                            prepareValuesDescription(signature.outputs(), element.getProject())));
                 }
                 List<Parameter> parameters = Objects.requireNonNullElse(signature.parameters(), List.of());
                 if (!parameters.isEmpty()) {
@@ -42,14 +43,7 @@ public class DQLFunctionDocumentationProvider extends BaseDocumentationProvider 
                 }
                 sections.add(buildMoreInfoLink(DQLBundle.message("documentation.function.moreInfoLink")));
             }
-
         }
         return sections;
-    }
-
-    protected HtmlChunk.Element buildDescription(Function definition) {
-        return HtmlChunk.p().addText(definition != null ?
-                definition.description()
-                : DQLBundle.message("documentation.function.unknown"));
     }
 }

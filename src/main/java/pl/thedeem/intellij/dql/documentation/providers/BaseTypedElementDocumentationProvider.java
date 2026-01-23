@@ -11,21 +11,21 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public class BaseTypedElementDocumentationProvider extends BaseDocumentationProvider {
-    private final PsiElement element;
-
-    public BaseTypedElementDocumentationProvider(@NotNull PsiElement element, @Nullable String type) {
-        super(element, type);
-        this.element = element;
+public class BaseTypedElementDocumentationProvider<T extends PsiElement> extends BaseDocumentationProvider<T> {
+    public BaseTypedElementDocumentationProvider(@NotNull T element, @Nullable String type, @Nullable String icon) {
+        super(element, type, icon);
     }
 
     @Override
-    protected List<HtmlChunk.Element> getSections() {
+    protected @NotNull List<HtmlChunk> getSections() {
         return List.of(buildTypeDescription());
     }
 
-    protected HtmlChunk.Element buildTypeDescription() {
+    protected @NotNull HtmlChunk buildTypeDescription() {
         Collection<String> types = element instanceof BaseElement el ? el.getDataType() : Set.of();
-        return buildStandardSection(DQLBundle.message("definition.returnedValues"), DQLBundle.types(types, element.getProject()));
+        return buildTitledSection(
+                DQLBundle.message("definition.returnedValues"),
+                prepareValuesDescription(types, getProject())
+        );
     }
 }

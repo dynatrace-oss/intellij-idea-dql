@@ -32,7 +32,9 @@ public class DQLMetadataPanel extends BorderLayoutPanel {
                 new MetadataRow(DQLBundle.message("components.queryDetails.values.timezone"), String.valueOf(metadata.getTimezone())),
                 new MetadataRow(DQLBundle.message("components.queryDetails.values.analysisTimeframeStart"), metadata.getAnalysisTimeframeStart()),
                 new MetadataRow(DQLBundle.message("components.queryDetails.values.analysisTimeframeEnd"), metadata.getAnalysisTimeframeEnd()),
-                new MetadataRow(DQLBundle.message("components.queryDetails.values.sampled"), String.valueOf(metadata.isSampled()))
+                new MetadataRow(DQLBundle.message("components.queryDetails.values.sampled"), String.valueOf(metadata.isSampled())),
+                new MetadataRow(DQLBundle.message("components.queryDetails.values.locale"), String.valueOf(metadata.getLocale())),
+                new MetadataRow(DQLBundle.message("components.queryDetails.values.dqlVersion"), String.valueOf(metadata.getDqlVersion()))
         );
         List<ColumnInfo<MetadataRow, Object>> columnInfos = calculateColumns();
         CommonTable table = new CommonTable(new ListTableModel<>(columnInfos.toArray(new ColumnInfo[]{}), records, 0));
