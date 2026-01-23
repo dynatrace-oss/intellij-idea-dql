@@ -25,6 +25,21 @@ public class DQLParameterDocumentationProvider extends BaseTypedElementDocumenta
         sections.add(prepareParameterAttributesDescription(definition));
         sections.add(describeParameter(definition, parameter.holder().getProject(), true));
         sections.add(buildTypeDescription());
+
+        if (definition != null) {
+            if (definition.defaultValue() != null) {
+                sections.add(buildTitledSection(
+                        DQLBundle.message("documentation.parameter.defaultValue"),
+                        buildCodeBlock(definition.defaultValue())
+                ));
+            }
+            if (definition.excludes() != null) {
+                sections.add(buildTitledSection(
+                        DQLBundle.message("documentation.parameter.excludes"),
+                        buildSeparatedElements(definition.excludes(), HtmlChunk.tag("tt"))
+                ));
+            }
+        }
         return sections;
     }
 }

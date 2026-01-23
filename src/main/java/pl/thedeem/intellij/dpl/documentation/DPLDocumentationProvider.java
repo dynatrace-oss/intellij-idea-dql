@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.impl.PsiElementBase;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.documentation.GenericDocumentationProvider;
@@ -26,11 +27,17 @@ public class DPLDocumentationProvider extends AbstractDocumentationProvider {
                     new DPLStringDocumentationProvider(string.getStringContentElement());
             case DPLStringContentElement string -> new DPLStringDocumentationProvider(string);
             case DPLCharacterGroupContent regex -> new DPLCharacterClassDocumentationProvider(regex);
-            case DPLParameterName parameter -> new ExpressionPartDocumentationProvider<>(
-                    parameter,
-                    DPLBundle.message("documentation.configurationParameter.type"),
-                    "AllIcons.Actions.Edit"
+            case DPLExpressionDefinition def -> new ExpressionDefinitionDocumentationProvider<>(def);
+            case DPLParameterName parameter -> new DPLConfigurationParameterDocumentationProvider(parameter);
+            case DPLLookaround lookaround -> new ExpressionDefinitionDocumentationProvider<>(lookaround);
+            case DPLNumber number -> new GenericDocumentationProvider<>(number,
+                    DPLBundle.message("documentation.number.type"),
+                    "AllIcons.Nodes.PropertyReadStatic"
             );
+            case DPLBoolean bool -> new GenericDocumentationProvider<>(
+                    bool,
+                    DPLBundle.message("documentation.boolean.type"),
+                    "AllIcons.Nodes.Static");
             case PsiElementBase generic -> new GenericDocumentationProvider<>(generic);
             default -> null;
         };
@@ -54,6 +61,12 @@ public class DPLDocumentationProvider extends AbstractDocumentationProvider {
         }
         if (context instanceof PsiElement psi && psi.getParent() instanceof DPLString string && string.getParent() instanceof DPLFieldName fieldName) {
             return fieldName;
+        }
+        if (context != null && DPLTokenSets.EXPRESSION_PARTS.contains(context.getNode().getElementType())) {
+            DPLExpressionDefinition def = PsiTreeUtil.getParentOfType(context, DPLExpressionDefinition.class);
+            if (def != null) {
+                return def;
+            }
         }
         return result;
     }

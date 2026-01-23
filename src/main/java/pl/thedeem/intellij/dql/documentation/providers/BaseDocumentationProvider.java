@@ -68,13 +68,36 @@ public class BaseDocumentationProvider<T extends PsiElement> extends GenericDocu
         List<HtmlChunk> sections = new ArrayList<>();
         sections.add(HtmlChunk.span().addText(Objects.requireNonNullElse(parameter.description(), DQLBundle.message("documentation.parameter.noDescription"))));
         HtmlChunk values = prepareValuesDescription(parameter.valueTypes(), project);
+        if (!values.isEmpty()) {
+            sections.add(main ?
+                    buildTitledSection(DQLBundle.message("documentation.parameter.allowedValues"), values)
+                    : buildEmbeddedSection(DQLBundle.message("documentation.parameter.allowedValues"), values));
+        }
+        HtmlChunk enumValues = prepareEnumValuesDescription(parameter);
+        if (!enumValues.isEmpty()) {
+            sections.add(main ?
+                    buildTitledSection(DQLBundle.message("documentation.parameter.allowedEnumValues"), enumValues)
+                    : buildEmbeddedSection(DQLBundle.message("documentation.parameter.allowedEnumValues"), enumValues));
+        }
         HtmlChunk types = prepareParameterTypesDescription(parameter, project);
-        sections.add(main ?
-                buildTitledSection(DQLBundle.message("documentation.parameter.allowedValues"), values)
-                : buildEmbeddedSection(DQLBundle.message("documentation.parameter.allowedValues"), values));
-        sections.add(main ?
-                buildTitledSection(DQLBundle.message("documentation.parameter.types"), types)
-                : buildEmbeddedSection(DQLBundle.message("documentation.parameter.types"), types));
+        if (!types.isEmpty()) {
+            sections.add(main ?
+                    buildTitledSection(DQLBundle.message("documentation.parameter.types"), types)
+                    : buildEmbeddedSection(DQLBundle.message("documentation.parameter.types"), types));
+        }
+        if (parameter.minValue() != null || parameter.maxValue() != null) {
+            List<String> limits = new ArrayList<>();
+            if (parameter.minValue() != null) {
+                limits.add(DQLBundle.message("documentation.parameter.minValue", parameter.minValue()));
+            }
+            if (parameter.maxValue() != null) {
+                limits.add(DQLBundle.message("documentation.parameter.maxValue", parameter.maxValue()));
+            }
+            HtmlChunk limitsElement = buildSeparatedElements(limits, HtmlChunk.tag("span"));
+            sections.add(main ?
+                    buildTitledSection(DQLBundle.message("documentation.parameter.rangeLimits"), limitsElement)
+                    : buildEmbeddedSection(DQLBundle.message("documentation.parameter.rangeLimits"), limitsElement));
+        }
         return HtmlChunk.span().children(sections);
     }
 
@@ -101,6 +124,13 @@ public class BaseDocumentationProvider<T extends PsiElement> extends GenericDocu
                             .filter(Objects::nonNull).map(ParameterValueType::name).toList(),
                     HtmlChunk.tag("em")
             );
+        }
+        return HtmlChunk.empty();
+    }
+
+    protected @NotNull HtmlChunk prepareEnumValuesDescription(@NotNull Parameter parameter) {
+        if (parameter.allowedEnumValues() != null) {
+            return buildSeparatedElements(parameter.allowedEnumValues(), HtmlChunk.tag("tt"));
         }
         return HtmlChunk.empty();
     }

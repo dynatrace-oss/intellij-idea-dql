@@ -16,4 +16,12 @@ public interface DPLTokenSets {
     TokenSet IDENTIFIERS = TokenSet.create(
             DPLTypes.IDENTIFIER, DPLTypes.FIELD_NAME, DPLTypes.PARAMETER_NAME, DPLTypes.MATCHER_NAME, DPLTypes.VARIABLE_NAME);
     TokenSet COMMENTS = TokenSet.create(DPLTypes.EOL_COMMENT, DPLTypes.ML_COMMENT);
+    TokenSet EXPRESSION_PARTS = TokenSet.orSet(
+            QUANTIFIERS,
+            DIAMOND,
+            PARENTHESES,
+            BRACES,
+            BRACKETS,
+            TokenSet.create(DPLTypes.COLON, DPLTypes.OR)
+    );
 }

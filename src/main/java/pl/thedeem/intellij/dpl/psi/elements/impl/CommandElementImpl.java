@@ -3,6 +3,9 @@ package pl.thedeem.intellij.dpl.psi.elements.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.CachedValue;
+import com.intellij.psi.util.CachedValueProvider;
+import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +21,8 @@ import pl.thedeem.intellij.dpl.psi.elements.CommandElement;
 import java.util.Objects;
 
 public abstract class CommandElementImpl extends DPLDefinitionExpressionImpl implements CommandElement {
+    private CachedValue<ExpressionDescription> definition;
+
     public CommandElementImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -34,13 +39,6 @@ public abstract class CommandElementImpl extends DPLDefinitionExpressionImpl imp
     }
 
     @Override
-    public @Nullable ExpressionDescription getDefinition() {
-        DPLDefinitionService service = DPLDefinitionService.getInstance(getProject());
-        String name = Objects.requireNonNullElse(getName(), "").toUpperCase();
-        return service.commands().get(name);
-    }
-
-    @Override
     public @Nullable String getExpressionName() {
         return "literal";
     }
@@ -48,5 +46,22 @@ public abstract class CommandElementImpl extends DPLDefinitionExpressionImpl imp
     @Override
     public ItemPresentation getPresentation() {
         return new StandardItemPresentation(DPLBundle.message("presentation.commandExpression", getName()), this, DPLIcon.COMMAND);
+    }
+
+    @Override
+    public @Nullable ExpressionDescription getDefinition() {
+        if (definition == null) {
+            definition = CachedValuesManager.getManager(getProject()).createCachedValue(
+                    () -> new CachedValueProvider.Result<>(recalculateDefinition(), this),
+                    false
+            );
+        }
+        return definition.getValue();
+    }
+
+    private @Nullable ExpressionDescription recalculateDefinition() {
+        DPLDefinitionService service = DPLDefinitionService.getInstance(getProject());
+        String name = Objects.requireNonNullElse(getName(), "").toUpperCase();
+        return service.commands().get(name);
     }
 }

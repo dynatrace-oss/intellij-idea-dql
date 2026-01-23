@@ -5,7 +5,7 @@ import pl.thedeem.intellij.dpl.DPLBundle;
 import pl.thedeem.intellij.dpl.psi.DPLFieldName;
 import pl.thedeem.intellij.dpl.psi.DPLMembersListMatchers;
 
-public class DPLFieldNameDocumentationProvider extends ExpressionPartDocumentationProvider<DPLFieldName> {
+public class DPLFieldNameDocumentationProvider extends ExpressionDefinitionDocumentationProvider<DPLFieldName> {
     public DPLFieldNameDocumentationProvider(@NotNull DPLFieldName field) {
         super(
                 field,

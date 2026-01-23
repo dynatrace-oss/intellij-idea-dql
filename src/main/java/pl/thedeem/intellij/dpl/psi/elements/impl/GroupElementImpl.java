@@ -3,12 +3,17 @@ package pl.thedeem.intellij.dpl.psi.elements.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.CachedValue;
+import com.intellij.psi.util.CachedValueProvider;
+import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dpl.DPLBundle;
 import pl.thedeem.intellij.dpl.DPLIcon;
+import pl.thedeem.intellij.dpl.definition.DPLDefinitionService;
+import pl.thedeem.intellij.dpl.definition.model.ExpressionDescription;
 import pl.thedeem.intellij.dpl.impl.DPLDefinitionExpressionImpl;
 import pl.thedeem.intellij.dpl.psi.*;
 import pl.thedeem.intellij.dpl.psi.elements.GroupElement;
@@ -17,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class GroupElementImpl extends DPLDefinitionExpressionImpl implements GroupElement {
+    private CachedValue<ExpressionDescription> definition;
+
     public GroupElementImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -73,5 +80,25 @@ public abstract class GroupElementImpl extends DPLDefinitionExpressionImpl imple
         }
 
         return result;
+    }
+
+    @Override
+    public @Nullable ExpressionDescription getDefinition() {
+        if (definition == null) {
+            definition = CachedValuesManager.getManager(getProject()).createCachedValue(
+                    () -> new CachedValueProvider.Result<>(recalculateDefinition(), this),
+                    false
+            );
+        }
+        return definition.getValue();
+    }
+
+    private @Nullable ExpressionDescription recalculateDefinition() {
+        String expressionName = getExpressionName();
+        if (expressionName == null) {
+            return null;
+        }
+        DPLDefinitionService service = DPLDefinitionService.getInstance(getProject());
+        return service.expressions().get(expressionName);
     }
 }

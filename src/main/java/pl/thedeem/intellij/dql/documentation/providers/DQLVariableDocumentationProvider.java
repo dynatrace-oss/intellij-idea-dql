@@ -1,6 +1,9 @@
 package pl.thedeem.intellij.dql.documentation.providers;
 
+import com.intellij.lang.documentation.DocumentationMarkup;
 import com.intellij.openapi.util.text.HtmlChunk;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
@@ -23,6 +26,22 @@ public class DQLVariableDocumentationProvider extends BaseTypedElementDocumentat
                         ? buildCodeBlock(element.getValue())
                         : HtmlChunk.span().addText(DQLBundle.message("documentation.variable.missingDefinition"))
         ));
+        PsiElement definition = element.getDefinition();
+        if (definition != null) {
+            String path = null;
+            VirtualFile virtualFile = definition.getContainingFile().getVirtualFile();
+            if (virtualFile != null) {
+                path = virtualFile.getUrl();
+            }
+
+            if (path != null) {
+                sections.add(buildTitledSection(
+                        DQLBundle.message("documentation.variable.source"),
+                        DocumentationMarkup.BOTTOM_ELEMENT
+                                .child(HtmlChunk.link(path, DocumentationMarkup.EXTERNAL_LINK_ICON.addText(virtualFile.getPresentableName())))
+                ));
+            }
+        }
         return sections;
     }
 }

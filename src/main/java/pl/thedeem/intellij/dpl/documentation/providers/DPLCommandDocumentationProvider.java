@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class DPLCommandDocumentationProvider extends ExpressionPartDocumentationProvider<DPLCommandExpression> {
+public class DPLCommandDocumentationProvider extends ExpressionDefinitionDocumentationProvider<DPLCommandExpression> {
     public DPLCommandDocumentationProvider(@NotNull DPLCommandExpression command) {
         super(command, DPLBundle.message("documentation.command.type"), "AllIcons.Nodes.Class");
     }

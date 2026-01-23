@@ -8,7 +8,7 @@ import pl.thedeem.intellij.dpl.psi.DPLCharacterGroupContent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DPLCharacterClassDocumentationProvider extends ExpressionPartDocumentationProvider<DPLCharacterGroupContent> {
+public class DPLCharacterClassDocumentationProvider extends ExpressionDefinitionDocumentationProvider<DPLCharacterGroupContent> {
     public DPLCharacterClassDocumentationProvider(@NotNull DPLCharacterGroupContent regex) {
         super(regex, DPLBundle.message("documentation.characterClass.type"), "AllIcons.Nodes.Record");
     }

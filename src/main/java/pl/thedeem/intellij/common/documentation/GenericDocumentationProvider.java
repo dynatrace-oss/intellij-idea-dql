@@ -27,7 +27,7 @@ public class GenericDocumentationProvider<T extends PsiElement> {
     public GenericDocumentationProvider(@NotNull T element, @Nullable String type, @Nullable String icon) {
         this(element, getName(element), type, icon);
     }
-    
+
     public GenericDocumentationProvider(@NotNull T element, @Nullable String name, @Nullable String type, @Nullable String icon) {
         this.element = element;
         this.name = name;
@@ -87,7 +87,7 @@ public class GenericDocumentationProvider<T extends PsiElement> {
             return HtmlChunk.empty();
         }
         return HtmlChunk.p()
-                .child(HtmlChunk.tag("strong").style("padding-top: 5px;").addText(title))
+                .child(HtmlChunk.tag("strong").style("padding-top: 10px;").addText(title))
                 .child(HtmlChunk.span().addText(": "))
                 .child(value);
     }

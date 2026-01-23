@@ -12,7 +12,7 @@ import pl.thedeem.intellij.dpl.psi.DPLVariable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DPLVariableDocumentationProvider extends ExpressionPartDocumentationProvider<DPLVariable> {
+public class DPLVariableDocumentationProvider extends ExpressionDefinitionDocumentationProvider<DPLVariable> {
     public DPLVariableDocumentationProvider(@NotNull DPLVariable variable) {
         super(variable, DPLBundle.message("documentation.variable.type"), "AllIcons.Nodes.Variable");
     }
