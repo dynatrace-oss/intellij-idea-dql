@@ -143,7 +143,7 @@ public class DQLFileQueryExecutionLineMarkerProvider extends LineMarkerProviderD
         // For injected DQL fragments, we need to show more options for the user
         return (mouseEvent, elt) -> {
             DefaultActionGroup group = new DefaultActionGroup();
-            ExecutionManagerAction executionManager = new ExecutionManagerAction(element.getContainingFile());
+            ExecutionManagerAction executionManager = new ExecutionManagerAction(element.getContainingFile(), false);
             group.add(mainAction);
             group.addSeparator();
             group.add(executionManager);
@@ -152,8 +152,8 @@ public class DQLFileQueryExecutionLineMarkerProvider extends LineMarkerProviderD
                 @Override
                 public void uiDataSnapshot(@NotNull DataSink dataSink) {
                     DQLQueryConfigurationService service = DQLQueryConfigurationService.getInstance();
-                    dataSink.set(CommonDataKeys.PSI_FILE, InjectedLanguageManager.getInstance(element.getProject()).getTopLevelFile(element));
-                    dataSink.set(CommonDataKeys.PSI_ELEMENT, element);
+                    dataSink.lazy(CommonDataKeys.PSI_FILE, () -> InjectedLanguageManager.getInstance(element.getProject()).getTopLevelFile(element));
+                    dataSink.lazy(CommonDataKeys.PSI_ELEMENT, () -> element);
                     QueryConfiguration configuration = service.getQueryConfiguration(element.getContainingFile());
                     dataSink.set(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, configuration);
                 }

@@ -28,13 +28,13 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
     private final DQLExecutionManagerToolbar myComponent;
     protected Set<Consumer<AnActionEvent>> listenerList = new HashSet<>();
 
-    protected ExecutionManagerAction() {
+    protected ExecutionManagerAction(boolean showExecuteAction) {
         super(DQLBundle.message("action.DQLExecutionManagerToolbar.text"), null, AllIcons.Actions.Execute);
-        this.myComponent = new DQLExecutionManagerToolbar(this);
+        this.myComponent = new DQLExecutionManagerToolbar(this, showExecuteAction);
     }
 
-    public ExecutionManagerAction(@NotNull PsiFile file) {
-        this();
+    public ExecutionManagerAction(@NotNull PsiFile file, boolean showExecuteAction) {
+        this(showExecuteAction);
         myComponent.init(() -> {
             DQLQueryConfigurationService configService = DQLQueryConfigurationService.getInstance();
             return ReadAction.compute(() -> configService.getQueryConfiguration(file));
@@ -42,7 +42,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
     }
 
     public ExecutionManagerAction(@NotNull DQLExecutionService service) {
-        this();
+        this(true);
         myComponent.init(service::getConfiguration, null);
     }
 
@@ -84,12 +84,14 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
     private static final class DQLExecutionManagerToolbar extends BorderLayoutPanel implements UiDataProvider {
         private static final DataKey<Boolean> SHOW_MORE_OPTIONS = DataKey.create("DQL_SHOW_MORE_OPTIONS");
         private final ExecutionManagerAction manager;
+        private final boolean showExecuteAction;
         private QueryConfiguration configuration;
         private PsiFile file;
         private boolean showMoreOptions = false;
 
-        public DQLExecutionManagerToolbar(@NotNull ExecutionManagerAction manager) {
+        public DQLExecutionManagerToolbar(@NotNull ExecutionManagerAction manager, boolean showExecuteAction) {
             this.manager = manager;
+            this.showExecuteAction = showExecuteAction;
             setBorder(JBUI.Borders.empty());
             setOpaque(false);
         }
@@ -119,8 +121,10 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
             DefaultActionGroup group = new DefaultActionGroup();
             ActionManager actionManager = ActionManager.getInstance();
             group.add(actionManager.getAction("DQL.SelectTenant"));
-            group.add(actionManager.getAction("DQL.StartStopExecution"));
-            group.addSeparator();
+            if (showExecuteAction) {
+                group.add(actionManager.getAction("DQL.StartStopExecution"));
+                group.addSeparator();
+            }
             if (file != null) {
                 addQueryConfiguration(group);
                 group.addSeparator();
