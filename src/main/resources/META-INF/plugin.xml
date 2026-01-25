@@ -308,8 +308,15 @@
         <editorNotificationProvider
                 implementation="pl.thedeem.intellij.dql.editor.DQLMissingTenantNotificationProvider"/>
         <editorNotificationProvider implementation="pl.thedeem.intellij.dql.editor.DQLToolbarProvider"/>
-        <runLineMarkerContributor language=""
-                                  implementationClass="pl.thedeem.intellij.dql.editor.DQLInjectionLineMakerProvider"/>
+        <codeInsight.lineMarkerProvider
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.editor.gutter.DQLFileQueryExecutionLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.editor.gutter.DQLSubqueryExecutionLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.editor.gutter.DQLInjectedFragmentExecutionLineMarkerProvider"/>
 
         <notificationGroup id="DQL.Errors"
                            displayType="BALLOON" bundle="messages.DQLBundle" key="notification.group.dql.errors"/>
@@ -601,3 +608,4 @@
     <resource-bundle>messages.DQLBundle</resource-bundle>
     <resource-bundle>messages.DPLBundle</resource-bundle>
 </idea-plugin>
+
