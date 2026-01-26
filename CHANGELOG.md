@@ -20,6 +20,11 @@
   execution.
 - Reworked hover documentation for both DQL and DPL. The documentation pop-up will now show more details about
   expression, their parameters & types or possible values. The UI for both languages docs has been unified.
+- Gutter icon for executing DQL queries now appears also on DQL subqueries. Replacing the plugin setting
+  to toggle gutter icons visibility with a dedicated IntelliJ view to manage all gutter icons in the project
+  (`Editor` -> `General` -> `Gutter icons`).
+- Gutter icon for injected DQL fragments will show the DQL execution management toolbar after clicking the action
+  button, allowing the user to overwrite the query configuration for the fragment.
 
 ### Bug fixes
 

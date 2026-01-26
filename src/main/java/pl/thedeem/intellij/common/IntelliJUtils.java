@@ -19,15 +19,14 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.EditorCustomization;
-import com.intellij.ui.EditorTextField;
-import com.intellij.ui.EditorTextFieldProvider;
-import com.intellij.ui.SoftWrapsEditorCustomization;
+import com.intellij.ui.*;
+import com.intellij.util.IconUtil;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLRunConfiguration;
 
+import javax.swing.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -117,5 +116,19 @@ public class IntelliJUtils {
             logger.warn("Failed to pretty print JSON", e);
             return null;
         }
+    }
+
+    public static Icon scaleToBottomRight(@NotNull Icon base, @NotNull Icon original, float scale) {
+        Icon scaled = IconUtil.scale(original, null, scale);
+
+        return new LayeredIcon(2) {{
+            setIcon(base, 0);
+            setIcon(
+                    scaled,
+                    1,
+                    base.getIconWidth() - scaled.getIconWidth(),
+                    base.getIconHeight() - scaled.getIconHeight()
+            );
+        }};
     }
 }

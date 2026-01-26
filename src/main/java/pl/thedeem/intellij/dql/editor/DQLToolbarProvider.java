@@ -56,7 +56,7 @@ public class DQLToolbarProvider implements EditorNotificationProvider {
     private static @NotNull ActionToolbar createToolbarPanel(@NotNull ActionManager actionManager, @NotNull PsiFile file) {
         DefaultActionGroup group = new DefaultActionGroup();
         group.setInjectedContext(true);
-        group.addAction(new ExecutionManagerAction(file));
+        group.addAction(new ExecutionManagerAction(file, true));
         ActionToolbar toolbar = actionManager.createActionToolbar("DQL.FloatingToolbar", group, true);
         toolbar.getComponent().setOpaque(false);
         toolbar.getComponent().setBorder(JBUI.Borders.empty());

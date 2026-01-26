@@ -17,7 +17,6 @@ public class DQLSettingsComponent {
     private final JBCheckBox performLiveValidations = new JBCheckBox(DQLBundle.message("settings.dql.features.performLiveValidations"));
     private final JBCheckBox useDynatraceAutocomplete = new JBCheckBox(DQLBundle.message("settings.dql.features.useDynatraceAutocomplete"));
     private final JBCheckBox showDqlExecutionToolbar = new JBCheckBox(DQLBundle.message("settings.dql.features.showDqlExecutionToolbar"));
-    private final JBCheckBox showDqlInjectionGutterIcon = new JBCheckBox(DQLBundle.message("settings.dql.features.showDqlInjectionGutterIcon"));
     private final DynatraceTenantSelector<?> defaultDynatraceTenant = new DynatraceTenantSelector<>(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
     public DQLSettingsComponent(DQLSettings settings) {
@@ -29,7 +28,6 @@ public class DQLSettingsComponent {
 
         myMainPanel = FormBuilder.createFormBuilder()
                 .addComponent(showDqlExecutionToolbar, 1)
-                .addComponent(showDqlInjectionGutterIcon, 1)
                 .addComponent(calculateFieldsDataType, 1)
                 .addComponent(allowExperimentalFeatures, 1)
                 .addComponent(tenantsSelectorPanel, 1)
@@ -44,7 +42,6 @@ public class DQLSettingsComponent {
         performLiveValidations.setSelected(settings.isPerformingLiveValidationEnabled());
         useDynatraceAutocomplete.setSelected(settings.isUseDynatraceAutocompleteEnabled());
         showDqlExecutionToolbar.setSelected(settings.isDQLExecutionToolbarVisible());
-        showDqlInjectionGutterIcon.setSelected(settings.isDQLInjectionGutterIconVisible());
         defaultDynatraceTenant.refreshTenantsComboBox();
     }
 
@@ -100,13 +97,4 @@ public class DQLSettingsComponent {
     public void setDQLExecutionToolbarVisible(boolean visible) {
         showDqlExecutionToolbar.setSelected(visible);
     }
-
-    public boolean isDQLInjectionGutterIconVisible() {
-        return showDqlInjectionGutterIcon.isSelected();
-    }
-
-    public void setDQLInjectionGutterIconVisible(boolean visible) {
-        showDqlInjectionGutterIcon.setSelected(visible);
-    }
-
 }

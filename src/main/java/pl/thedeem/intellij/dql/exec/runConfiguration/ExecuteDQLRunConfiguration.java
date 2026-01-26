@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.DQLFileType;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 import pl.thedeem.intellij.dql.exec.DQLProcessHandler;
@@ -109,8 +110,11 @@ public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLR
     public void loadFromConfiguration(@NotNull QueryConfiguration configuration, @Nullable PsiFile file) {
         ExecuteDQLRunConfigurationOptions options = getOptions();
         options.setSelectedTenant(configuration.tenant());
-        if (file != null) {
+        if (file != null && DQLFileType.INSTANCE.equals(file.getVirtualFile().getFileType())) {
             options.setDqlPath(IntelliJUtils.getRelativeProjectPath(file.getVirtualFile(), getProject()));
+            options.setFromFileSelected(true);
+        } else {
+            options.setFromFileSelected(false);
         }
         options.setDqlQuery(configuration.query());
         options.setDefaultScanLimit(configuration.defaultScanLimit());

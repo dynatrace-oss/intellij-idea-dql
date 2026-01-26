@@ -5,6 +5,7 @@ import com.intellij.ide.ActivityTracker;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
@@ -16,22 +17,32 @@ import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 
 import javax.swing.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 public class ExecutionManagerAction extends AnAction implements CustomComponentAction {
     private final DQLExecutionManagerToolbar myComponent;
+    protected Set<Consumer<AnActionEvent>> listeners = new HashSet<>();
 
-    public ExecutionManagerAction(@NotNull PsiFile file) {
+    protected ExecutionManagerAction(boolean showExecuteAction) {
         super(DQLBundle.message("action.DQLExecutionManagerToolbar.text"), null, AllIcons.Actions.Execute);
-        this.myComponent = new DQLExecutionManagerToolbar();
+        this.myComponent = new DQLExecutionManagerToolbar(this, showExecuteAction);
+    }
+
+    public ExecutionManagerAction(@NotNull PsiFile file, boolean showExecuteAction) {
+        this(showExecuteAction);
         myComponent.init(() -> {
             DQLQueryConfigurationService configService = DQLQueryConfigurationService.getInstance();
-            return configService.getQueryConfiguration(file);
+            return ReadAction.compute(() -> configService.getQueryConfiguration(file));
         }, file);
     }
 
     public ExecutionManagerAction(@NotNull DQLExecutionService service) {
-        this.myComponent = new DQLExecutionManagerToolbar();
+        this(true);
         myComponent.init(service::getConfiguration, null);
     }
 
@@ -51,6 +62,20 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
     }
 
+    public void settingChanged(@Nullable AnActionEvent e) {
+        for (Consumer<AnActionEvent> consumer : listeners) {
+            consumer.accept(e);
+        }
+    }
+
+    public void addActionListener(@NotNull Consumer<AnActionEvent> l) {
+        listeners.add(l);
+    }
+
+    public void removeActionListener(@NotNull Consumer<AnActionEvent> l) {
+        listeners.remove(l);
+    }
+
     @Override
     public @NotNull JComponent createCustomComponent(@NotNull Presentation presentation, @NotNull String place) {
         return myComponent;
@@ -58,11 +83,15 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
 
     private static final class DQLExecutionManagerToolbar extends BorderLayoutPanel implements UiDataProvider {
         private static final DataKey<Boolean> SHOW_MORE_OPTIONS = DataKey.create("DQL_SHOW_MORE_OPTIONS");
+        private final ExecutionManagerAction manager;
+        private final boolean showExecuteAction;
         private QueryConfiguration configuration;
         private PsiFile file;
         private boolean showMoreOptions = false;
 
-        public DQLExecutionManagerToolbar() {
+        public DQLExecutionManagerToolbar(@NotNull ExecutionManagerAction manager, boolean showExecuteAction) {
+            this.manager = manager;
+            this.showExecuteAction = showExecuteAction;
             setBorder(JBUI.Borders.empty());
             setOpaque(false);
         }
@@ -92,8 +121,10 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
             DefaultActionGroup group = new DefaultActionGroup();
             ActionManager actionManager = ActionManager.getInstance();
             group.add(actionManager.getAction("DQL.SelectTenant"));
-            group.add(actionManager.getAction("DQL.StartStopExecution"));
-            group.addSeparator();
+            if (showExecuteAction) {
+                group.add(actionManager.getAction("DQL.StartStopExecution"));
+                group.addSeparator();
+            }
             if (file != null) {
                 addQueryConfiguration(group);
                 group.addSeparator();
@@ -105,6 +136,12 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
             toolbarComponent.setOpaque(false);
             toolbarComponent.setBorder(JBUI.Borders.empty());
             addToTop(toolbarComponent);
+            toolbarComponent.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    SwingUtilities.invokeLater(() -> manager.settingChanged(null));
+                }
+            });
         }
 
         private void addQueryConfiguration(@NotNull DefaultActionGroup group) {
@@ -121,6 +158,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
                         return;
                     }
                     configuration.setTimeframeStart(getValue());
+                    manager.settingChanged(e);
                 }
             });
             group.add(new AbstractTimeFieldAction(
@@ -136,6 +174,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
                         return;
                     }
                     configuration.setTimeframeEnd(getValue());
+                    manager.settingChanged(e);
                 }
             });
 
@@ -150,7 +189,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
                 }
 
                 @Override
-                public void setSelected(@NotNull AnActionEvent anActionEvent, boolean selected) {
+                public void setSelected(@NotNull AnActionEvent e, boolean selected) {
                     showMoreOptions = selected;
                     ActivityTracker.getInstance().inc();
                 }
@@ -174,6 +213,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
                         return;
                     }
                     configuration.setDefaultScanLimit(getValue());
+                    manager.settingChanged(e);
                 }
 
                 @Override
@@ -194,6 +234,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
                         return;
                     }
                     configuration.setMaxResultBytes(getValue());
+                    manager.settingChanged(e);
                 }
 
                 @Override
@@ -214,6 +255,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
                         return;
                     }
                     configuration.setMaxResultRecords(getValue());
+                    manager.settingChanged(e);
                 }
 
                 @Override
