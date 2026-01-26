@@ -46,6 +46,20 @@ in the result's panel header.
 
 If the time range is correct, then most probably your token is missing required permission to access this sort of data.
 
+## Executing a DQL query results with "Request forbidden by administrative rules"
+
+The error:
+
+```
+<html><body><h1>403 Forbidden</h1>
+Request forbidden by administrative rules.
+</body></html>
+```
+
+is usually thrown if the path to the Dynatrace Platform REST API is incorrect. This can be verified by manually opening
+the URL in your browser: `https://YOUR_TENANT_URL/platform`. If the same error is shown, then you need to change
+the address to contain the `.apps.` subdomain.
+
 ## The plugin reports a lot of errors in Monaco templates
 
 If your Monaco templates contain interpolation (`{{ }}`) or code injections like `for`/`if`, then the DQL/DPL file will
