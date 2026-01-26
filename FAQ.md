@@ -46,11 +46,11 @@ in the result's panel header.
 
 If the time range is correct, then most probably your token is missing required permission to access this sort of data.
 
-## Executing a DQL query results with "Request forbidden by administrative rules"
+## Executing a DQL query results in "Request forbidden by administrative rules" error
 
 The error:
 
-```
+```text
 <html><body><h1>403 Forbidden</h1>
 Request forbidden by administrative rules.
 </body></html>
