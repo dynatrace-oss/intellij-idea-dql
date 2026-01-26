@@ -27,4 +27,5 @@ public interface DQLIcon {
     Icon DQL_RECORD = AllIcons.FileTypes.Json;
     Icon INTENTION = AllIcons.Actions.Edit;
     Icon GUTTER_EXECUTE_DQL = IntelliJUtils.scaleToBottomRight(AllIcons.Actions.Execute, DYNATRACE_LOGO, 0.5f);
+    Icon GUTTER_EXECUTE_SETTINGS = IntelliJUtils.scaleToBottomRight(AllIcons.General.GearPlain, DYNATRACE_LOGO, 0.5f);
 }

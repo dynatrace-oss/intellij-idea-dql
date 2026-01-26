@@ -313,6 +313,9 @@
                 implementationClass="pl.thedeem.intellij.dql.editor.gutter.DQLFileQueryExecutionLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider
                 language="DQL"
+                implementationClass="pl.thedeem.intellij.dql.editor.gutter.DQLQueryConfigurationLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider
+                language="DQL"
                 implementationClass="pl.thedeem.intellij.dql.editor.gutter.DQLSubqueryExecutionLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider
                 language="DQL"
