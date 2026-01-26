@@ -41,15 +41,14 @@ public class DQLInjectedFragmentExecutionLineMarkerProvider extends DQLFileQuery
         if (isDqlFile(element)) {
             return null;
         }
-        return (mouseEvent, elt) -> {
-            ApplicationManager.getApplication().invokeLater(() -> ActionManager.getInstance().tryToExecute(
-                    mainAction,
-                    null,
-                    null,
-                    ActionPlaces.UNKNOWN,
-                    true
-            ));
-        };
+        return (mouseEvent, elt) -> ApplicationManager.getApplication()
+                .invokeLater(() -> ActionManager.getInstance().tryToExecute(
+                        mainAction,
+                        null,
+                        null,
+                        ActionPlaces.UNKNOWN,
+                        true
+                ));
     }
 
 }

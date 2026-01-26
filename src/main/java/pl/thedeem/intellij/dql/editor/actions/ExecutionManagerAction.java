@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 
 public class ExecutionManagerAction extends AnAction implements CustomComponentAction {
     private final DQLExecutionManagerToolbar myComponent;
-    protected Set<Consumer<AnActionEvent>> listenerList = new HashSet<>();
+    protected Set<Consumer<AnActionEvent>> listeners = new HashSet<>();
 
     protected ExecutionManagerAction(boolean showExecuteAction) {
         super(DQLBundle.message("action.DQLExecutionManagerToolbar.text"), null, AllIcons.Actions.Execute);
@@ -63,17 +63,17 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
     }
 
     public void settingChanged(@Nullable AnActionEvent e) {
-        for (Consumer<AnActionEvent> consumer : listenerList) {
+        for (Consumer<AnActionEvent> consumer : listeners) {
             consumer.accept(e);
         }
     }
 
     public void addActionListener(@NotNull Consumer<AnActionEvent> l) {
-        listenerList.add(l);
+        listeners.add(l);
     }
 
     public void removeActionListener(@NotNull Consumer<AnActionEvent> l) {
-        listenerList.remove(l);
+        listeners.remove(l);
     }
 
     @Override

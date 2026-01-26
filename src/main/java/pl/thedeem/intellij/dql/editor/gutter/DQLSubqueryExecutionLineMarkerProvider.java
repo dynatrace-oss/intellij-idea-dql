@@ -16,7 +16,7 @@ import pl.thedeem.intellij.dql.psi.DQLQuery;
 public class DQLSubqueryExecutionLineMarkerProvider extends DQLFileQueryExecutionLineMarkerProvider {
     @Override
     public String getName() {
-        return DQLBundle.message("gutter.executeDQL.injectedFragment.name");
+        return DQLBundle.message("gutter.executeDQL.subquery.name");
     }
 
     @Override
@@ -33,15 +33,14 @@ public class DQLSubqueryExecutionLineMarkerProvider extends DQLFileQueryExecutio
         if (isDqlFile(element)) {
             return null;
         }
-        return (mouseEvent, elt) -> {
-            ApplicationManager.getApplication().invokeLater(() -> ActionManager.getInstance().tryToExecute(
-                    mainAction,
-                    null,
-                    null,
-                    ActionPlaces.UNKNOWN,
-                    true
-            ));
-        };
+        return (mouseEvent, elt) -> ApplicationManager.getApplication()
+                .invokeLater(() -> ActionManager.getInstance().tryToExecute(
+                        mainAction,
+                        null,
+                        null,
+                        ActionPlaces.UNKNOWN,
+                        true
+                ));
     }
 
     @Override
