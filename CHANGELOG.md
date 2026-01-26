@@ -29,6 +29,7 @@
 ### Bug fixes
 
 - [#87] Avoiding outdated document modifications during injected fragments reformat action
+- DPL configuration expression will now be properly indented on the left side of the expression
 
 ## [1.3.0] - 2026-01-11
 

@@ -68,11 +68,20 @@ public class DPLBlock extends AbstractBlock {
         if (parent instanceof DPLExpressionsSequence) {
             return Indent.getNoneIndent();
         }
-        if (parent instanceof DPLGroupExpression || parent instanceof DPLConfigurationExpression) {
+        if (parent instanceof DPLGroupExpression) {
             if (childType == DPLTypes.L_PAREN || childType == DPLTypes.R_PAREN) {
                 return Indent.getNoneIndent();
             }
             return Indent.getNormalIndent();
+        }
+        if (parent instanceof DPLConfigurationExpression) {
+            if (childType == DPLTypes.L_PAREN || childType == DPLTypes.R_PAREN) {
+                return Indent.getNoneIndent();
+            }
+            if (child.getPsi() instanceof DPLConfigurationContent) {
+                return Indent.getNormalIndent();
+            }
+            return Indent.getNoneIndent();
         }
         if (parent instanceof DPLCharacterGroupExpression) {
             if (childType == DPLTypes.L_BRACKET || childType == DPLTypes.R_BRACKET) {
