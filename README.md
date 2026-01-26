@@ -161,7 +161,7 @@ in the plugin's settings.
 The plugin introduces similar functionality for
 the [Dynatrace Pattern Language](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail/dynatrace-pattern-language),
 delivering syntax highlighting, code style formatting, autocompletion, on-hover documentation, and a wide range of
-inspections and intentions. These features are available for both `.dpl` files and within the DQL command and functions
+inspections and intentions. These features are available for both `.dpl` files and within the DQL commands and functions
 using DPL patterns.
 
 <!-- Plugin description end -->
