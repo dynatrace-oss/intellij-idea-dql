@@ -58,7 +58,8 @@ Request forbidden by administrative rules.
 
 is usually thrown if the path to the Dynatrace Platform REST API is incorrect. This can be verified by manually opening
 the URL in your browser: `https://YOUR_TENANT_URL/platform`. If the same error is shown, then you need to change
-the address to contain the `.apps.` subdomain.
+the address to use the Dynatrace Platform URL format with the `.apps.` subdomain, for example:
+`https://YOUR_TENANT_NAME.apps.dynatrace.com/platform`.
 
 ## The plugin reports a lot of errors in Monaco templates
 
