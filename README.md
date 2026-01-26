@@ -64,8 +64,6 @@ options. It works with:
   return value for the current context.
 - **DQL subqueries**, for commands offering to join functionality.
 
-![An example code completion](https://plugins.jetbrains.com/files/28135/screenshot_03be2e47-d3d2-4685-b383-d5c3c134bcd6)
-
 #### DQL functions support
 
 The plugin contains the list of **all supported DQL functions**.
@@ -87,8 +85,6 @@ issues and — where possible — offering a quick fix to resolve them. It can d
 - Other smaller issues like static values being used in expressions or not-constant values provided where they are
   required
 
-![An example error detection](https://plugins.jetbrains.com/files/28135/screenshot_74491594-f2e7-4c1f-aa3d-f13f5ee2d147)
-
 #### Documentation tooltips
 
 You can hover over query parts to see more information about the element. The information is taken from the Dynatrace
@@ -98,8 +94,6 @@ documentation page.
 - DQL functions documentation: description, syntax, list of available parameters, return values
 - Parameters documentation (for statements and functions): description, possible values
 - Context information for other elements, like DQL fields, variables, boolean types, etc.
-
-![An example documentation tooltips](https://plugins.jetbrains.com/files/28135/screenshot_8826dab6-8014-4bb2-9ce4-2a2e836f1ac3)
 
 The plugin also implements structure with navbar for IntelliJ, so it's straightforward to track the context of the
 query.
@@ -146,8 +140,6 @@ tenant.
 The results of the query execution will be presented as a table, allowing you to quickly verify if the written query
 returns the correct data.
 
-![An example DQL execution](https://plugins.jetbrains.com/files/28135/screenshot_34653d24-43cd-4c28-a917-6a1cd1dac0b5)
-
 #### Live validations
 
 If enabled, the plugin can execute external validations using Dynatrace REST API, showing you any kind of errors
@@ -169,7 +161,8 @@ in the plugin's settings.
 The plugin introduces similar functionality for
 the [Dynatrace Pattern Language](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail/dynatrace-pattern-language),
 delivering syntax highlighting, code style formatting, autocompletion, on-hover documentation, and a wide range of
-inspections and intentions. These features are available for both `.dpl` files and within the DQL `parse` command.
+inspections and intentions. These features are available for both `.dpl` files and within the DQL commands and functions
+using DPL patterns.
 
 <!-- Plugin description end -->
 
