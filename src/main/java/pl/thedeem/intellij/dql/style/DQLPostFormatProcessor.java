@@ -18,6 +18,7 @@ import com.intellij.psi.impl.source.codeStyle.PostFormatProcessor;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dpl.style.DPLCodeStyleSettings;
+import pl.thedeem.intellij.dql.DQLFileType;
 import pl.thedeem.intellij.dql.psi.DQLElementFactory;
 import pl.thedeem.intellij.dql.psi.DQLMultilineString;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
@@ -41,9 +42,14 @@ public class DQLPostFormatProcessor implements PostFormatProcessor {
     public @NotNull TextRange processText(@NotNull PsiFile hostFile, @NotNull TextRange range, @NotNull CodeStyleSettings settings) {
         Project project = hostFile.getProject();
         DQLCodeStyleSettings dqlSettings = settings.getCustomSettings(DQLCodeStyleSettings.class);
-        final PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
-        processInjectedHosts(hostFile, range, settings, documentManager, project, dqlSettings);
+
+        // Process only for DQL files or injected fragments
+        if (!hostFile.getFileType().equals(DQLFileType.INSTANCE)) {
+            return range;
+        }
         processComments(hostFile, range, dqlSettings);
+        processInjectedHosts(hostFile, range, settings, project, dqlSettings);
+
         return range;
     }
 
@@ -87,12 +93,12 @@ public class DQLPostFormatProcessor implements PostFormatProcessor {
             @NotNull PsiFile hostFile,
             @NotNull TextRange range,
             @NotNull CodeStyleSettings settings,
-            @NotNull PsiDocumentManager documentManager,
             @NotNull Project project,
             @NotNull DQLCodeStyleSettings dqlSettings
     ) {
-        InjectedLanguageManager injector = InjectedLanguageManager.getInstance(project);
-        CodeStyleManager styleManager = CodeStyleManager.getInstance(project);
+        final PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
+        final InjectedLanguageManager injector = InjectedLanguageManager.getInstance(project);
+        final CodeStyleManager styleManager = CodeStyleManager.getInstance(project);
         Collection<PsiFile> injectedFiles = findInjectionHosts(hostFile, injector, range, settings);
         if (injectedFiles.isEmpty()) {
             return;
