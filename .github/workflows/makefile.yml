@@ -3,6 +3,9 @@ name: Linting
 
 on:
   pull_request:
+    paths:
+      - '**/*.md'
+      - .markdownlint.yml
   workflow_dispatch:
 
 jobs:
