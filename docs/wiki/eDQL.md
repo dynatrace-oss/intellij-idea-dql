@@ -11,7 +11,7 @@ tenant is configured.
 
 ## Features
 
-The `.edql` files inherit features from the [Dynatrace Query Language (`.dql`)](DQL.md) files. Inspections related to
+The `.edql` files inherit features from the [Dynatrace Query Language (`.dql`)](./DQL.md) files. Inspections related to
 the expression context (like assignment support) are disabled for such files.
 
 ## Example `.edql` file
