@@ -22,10 +22,13 @@ public class DQLElementFactory {
         return Objects.requireNonNull(PsiTreeUtil.findChildOfType(newFile, DQLVariableExpression.class));
     }
 
-    public static PsiElement createUnknownElement(@NotNull Project project, @NotNull String text) {
+    public static @NotNull PsiElement createUnknownElement(@NotNull Project project, @NotNull String text) {
         PsiFile newFile = PsiFileFactory.getInstance(project).createFileFromText("temporary.dql", DynatraceQueryLanguage.INSTANCE, "fetch " + text);
         DQLCommandKeyword keyword = PsiTreeUtil.findChildOfType(newFile, DQLCommandKeyword.class);
-        return Objects.requireNonNull(keyword).getNextSibling().getNextSibling();
+        if (keyword == null || keyword.getNextSibling() == null) {
+            return createMultiLineComment(project, "an empty element");
+        }
+        return keyword.getNextSibling().getNextSibling();
     }
 
     public static @NotNull PsiComment createInlineComment(@NotNull Project project, @NotNull String text) {
