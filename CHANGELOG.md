@@ -13,11 +13,16 @@
   - All code style & highlighting settings will be inherited from the DQL language.
   - All suitable DQL inspections will be applied to the expression, allowing the user to validate them.
   - Code completion and hover documentation are also supported.
+- **Breaking**: Changing the approach to the default Dynatrace tenant used for connections - it will be the first tenant
+  specified in the list (previously the user needed to specifically select the default one).
+- Created Wiki pages with documentation for the plugin features
 
 ### Bug fixes
 
 - Creating an empty DQL variable using the `$type: dql` syntax will now create a multiline comment instead of causing an
   error
+- When modifying or deleting a Dynatrace tenant that was already used, files using it will ask the user to select a new
+  tenant.
 
 ## [1.4.0] - 2026-01-28
 

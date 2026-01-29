@@ -87,8 +87,7 @@ issues and — where possible — offering a quick fix to resolve them. It can d
 
 #### Documentation tooltips
 
-You can hover over query parts to see more information about the element. The information is taken from the Dynatrace
-documentation page.
+You can hover over query parts to see more information about the element.
 
 - DQL command documentation: description, list of available parameters
 - DQL functions documentation: description, syntax, list of available parameters, return values
@@ -115,7 +114,7 @@ Unfortunately, those variable expressions are not supported outside Dynatrace Da
 always fail with the `$` usage error. Because the Dynatrace REST API can only return a single error, this would mean
 that expressions defined after the variable would not be reported as errors, rendering the validation very limited.
 
-As a workaround for the problem, the plugin allows specifying variable placeholders in a special file,
+As a solution for the problem, the plugin allows specifying variable placeholders in a special file,
 `dql-variables.json`. If the placeholder for the variable was defined, it will be replaced with it before sending the
 DQL query to the tenant.
 
@@ -129,9 +128,9 @@ DQLs.
 You can connect to the Dynatrace tenant in IntelliJ settings (`Tools` -> `Dynatrace Query Language` -> `Tenants`).
 Currently, the only supported authentication method is providing a token. You can see more about that
 [in the official docs](https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/basics/dynatrace-api-authentication).
-By default, the token should include the `storage:buckets:read`, but you will also need to add permissions to the
-specific data types, like: `storage:logs:read`, `storage:spans:read`, `storage:events:read`, `storage:bizevents:read`
-`storage:entities:read` etc., depending on your needs.
+By default, the token should include the `storage:buckets:read` permission, but you will also need to add permissions to
+the specific data types, like: `storage:logs:read`, `storage:spans:read`, `storage:events:read`,
+`storage:bizevents:read`, `storage:entities:read` etc., depending on your needs.
 
 #### DQL execution on a specific tenant
 

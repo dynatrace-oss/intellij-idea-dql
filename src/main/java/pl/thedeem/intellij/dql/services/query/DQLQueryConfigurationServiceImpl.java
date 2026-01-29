@@ -26,6 +26,8 @@ import pl.thedeem.intellij.dql.psi.DQLQuery;
 import pl.thedeem.intellij.dql.psi.DQLSubqueryExpression;
 import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
+import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
+import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -42,6 +44,12 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
         }
         if (configuration == null) {
             configuration = createDefaultConfiguration(file);
+        }
+        if (configuration.tenant() != null) {
+            DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(configuration.tenant());
+            if (tenant == null) {
+                configuration.setTenant(null);
+            }
         }
         DQLVariablesService variablesService = DQLVariablesService.getInstance(file.getProject());
         configuration.setDefinedVariables(variablesService.getDefinedVariables(file));

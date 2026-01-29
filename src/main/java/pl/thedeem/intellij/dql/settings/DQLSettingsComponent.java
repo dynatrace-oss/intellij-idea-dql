@@ -4,11 +4,8 @@ import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.FormBuilder;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.components.DynatraceTenantSelector;
-import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class DQLSettingsComponent {
     private final JPanel myMainPanel;
@@ -17,20 +14,15 @@ public class DQLSettingsComponent {
     private final JBCheckBox performLiveValidations = new JBCheckBox(DQLBundle.message("settings.dql.features.performLiveValidations"));
     private final JBCheckBox useDynatraceAutocomplete = new JBCheckBox(DQLBundle.message("settings.dql.features.useDynatraceAutocomplete"));
     private final JBCheckBox showDqlExecutionToolbar = new JBCheckBox(DQLBundle.message("settings.dql.features.showDqlExecutionToolbar"));
-    private final DynatraceTenantSelector<?> defaultDynatraceTenant = new DynatraceTenantSelector<>(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
     public DQLSettingsComponent(DQLSettings settings) {
         calculateFieldsDataType.setToolTipText(DQLBundle.message("settings.dql.features.calculateFieldsDataTypeDescription"));
         allowExperimentalFeatures.setToolTipText(DQLBundle.message("settings.dql.features.allowExperimentalFeaturesDescription"));
-        JPanel tenantsSelectorPanel = FormBuilder.createFormBuilder()
-                .addLabeledComponent(DQLBundle.message("settings.dql.features.defaultDynatraceTenant"), defaultDynatraceTenant)
-                .getPanel();
 
         myMainPanel = FormBuilder.createFormBuilder()
                 .addComponent(showDqlExecutionToolbar, 1)
                 .addComponent(calculateFieldsDataType, 1)
                 .addComponent(allowExperimentalFeatures, 1)
-                .addComponent(tenantsSelectorPanel, 1)
                 .addComponent(performLiveValidations, 1)
                 .addComponent(useDynatraceAutocomplete, 1)
                 .addComponentFillVertically(new JBPanel<>(), 0)
@@ -42,7 +34,7 @@ public class DQLSettingsComponent {
         performLiveValidations.setSelected(settings.isPerformingLiveValidationEnabled());
         useDynatraceAutocomplete.setSelected(settings.isUseDynatraceAutocompleteEnabled());
         showDqlExecutionToolbar.setSelected(settings.isDQLExecutionToolbarVisible());
-        defaultDynatraceTenant.refreshTenantsComboBox();
+
     }
 
     public JPanel getPanel() {
@@ -79,15 +71,6 @@ public class DQLSettingsComponent {
 
     public void setUseDynatraceAutocompleteEnabled(boolean enabled) {
         useDynatraceAutocomplete.setSelected(enabled);
-    }
-
-    public void setDefaultDynatraceTenant(String tenant) {
-        defaultDynatraceTenant.selectTenant(tenant);
-    }
-
-    public String getDefaultDynatraceTenant() {
-        DynatraceTenant selectedTenant = defaultDynatraceTenant.getSelectedTenant();
-        return selectedTenant != null ? selectedTenant.getName() : null;
     }
 
     public boolean isDQLExecutionToolbarVisible() {
