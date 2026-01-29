@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Features
+
+- Small UI improvements:
+  - DQL fragment selected during the query execution will now have a green border instead of a selection background
+
+### Bug fixes
+
+- Creating an empty DQL variable using the `$type: dql` syntax will now create a multiline comment instead of causing an
+  error
+
 ## [1.4.0] - 2026-01-28
 
 ### Features
@@ -188,12 +198,21 @@
     `null` types.
 
 [Unreleased]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.4.0...HEAD
+
 [1.4.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.3.0...v1.4.0
+
 [1.3.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.2.0...v1.3.0
+
 [1.2.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.1.0...v1.2.0
+
 [1.1.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.4...v1.1.0
+
 [1.0.4]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.3...v1.0.4
+
 [1.0.3]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.2...v1.0.3
+
 [1.0.2]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.1...v1.0.2
+
 [1.0.1]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.0...v1.0.1
+
 [1.0.0]: https://github.com/dynatrace-oss/intellij-idea-dql/commits/v1.0.0
