@@ -21,22 +21,22 @@ It does not work with other IDEs like Visual Studio Code, as it heavily uses Jet
 ## Getting started
 
 You can find the information about installation and plugin configuration inside the
-dedicated [installation guide](./Installation-and-configuration.md).
+dedicated [installation guide](./Installation-and-configuration).
 
 ## Usage
 
 Because the supported features differ between supported languages, you can find the usage details in dedicated
 subpages:
 
-- [Dynatrace Query Language (DQL)](./DQL.md)
-- [Dynatrace Pattern Language (DPL)](./DPL.md)
-- [Expressions DQL (EDQL)](./eDQL.md) - smaller subset of DQL files, allowing to specify only expressions without the
+- [Dynatrace Query Language (DQL)](./DQL)
+- [Dynatrace Pattern Language (DPL)](./DPL)
+- [Expressions DQL (EDQL)](./eDQL) - smaller subset of DQL files, allowing to specify only expressions without the
   DQL
   command context
 
 ## Frequently Asked Questions (FAQ)
 
-You can find the list of most frequently asked questions in the dedicated [FAQ](./FAQ.md) page.
+You can find the list of most frequently asked questions in the dedicated [FAQ](./FAQ) page.
 
 ## Changelog
 
