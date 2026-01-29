@@ -5,11 +5,7 @@ import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.injected.editor.VirtualFileWindow;
 import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.colors.EditorColors;
-import com.intellij.openapi.editor.markup.HighlighterLayer;
-import com.intellij.openapi.editor.markup.HighlighterTargetArea;
-import com.intellij.openapi.editor.markup.MarkupModel;
-import com.intellij.openapi.editor.markup.TextAttributes;
+import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.JBPopupListener;
 import com.intellij.openapi.ui.popup.LightweightWindowEvent;
@@ -18,6 +14,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.ColoredListCellRenderer;
+import com.intellij.ui.JBColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.IntelliJUtils;
@@ -135,7 +132,9 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
     private static void createSelectionPopup(@NotNull Editor editor, @NotNull List<SelectionContext> queries, @NotNull Consumer<TextRange> selectedCallback) {
         MarkupModel markupModel = editor.getMarkupModel();
         TextAttributes attributes = new TextAttributes();
-        attributes.setBackgroundColor(editor.getColorsScheme().getColor(EditorColors.SELECTION_BACKGROUND_COLOR));
+        attributes.setEffectType(EffectType.BOXED);
+        attributes.setEffectColor(JBColor.GREEN);
+
         JBPopupFactory.getInstance()
                 .createPopupChooserBuilder(queries)
                 .setTitle(DQLBundle.message("services.executeDQL.selectQuery.title"))
