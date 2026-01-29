@@ -14,10 +14,12 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLFileType;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
+import pl.thedeem.intellij.dql.psi.DQLQuery;
 import pl.thedeem.intellij.dql.services.ui.DQLManagedService;
 
 import java.util.List;
@@ -76,6 +78,9 @@ public abstract class ActionUtils {
         }
         if (DQLFileType.INSTANCE.equals(file.getFileType())) {
             return false;
+        }
+        if (PsiTreeUtil.getChildrenOfType(file, DQLQuery.class) == null) {
+            return true;
         }
         Language[] langs = e.getData(LangDataKeys.CONTEXT_LANGUAGES);
         return langs == null || !List.of(langs).contains(DynatraceQueryLanguage.INSTANCE);

@@ -42,7 +42,8 @@ public class SortingKeywordInspection extends LocalInspectionTool {
 
     private boolean isSortingInvalid(@NotNull List<PsiElement> elements, @NotNull DQLSortExpression sort) {
         if (elements.isEmpty()) {
-            return true;
+            // If we could not find a parameters owner, we cannot validate the sorting usage
+            return false;
         }
         if (!(elements.getFirst() instanceof DQLParametersOwner parametersOwner)) {
             return true;

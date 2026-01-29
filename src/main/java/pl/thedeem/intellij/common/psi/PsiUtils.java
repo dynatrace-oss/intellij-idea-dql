@@ -47,6 +47,9 @@ public class PsiUtils {
             }
             result = result.getParent();
         }
+        if (result == null) {
+            return List.of();
+        }
         return elements.reversed();
     }
 

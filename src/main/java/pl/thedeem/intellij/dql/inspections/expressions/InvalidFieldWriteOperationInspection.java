@@ -39,13 +39,15 @@ public class InvalidFieldWriteOperationInspection extends LocalInspectionTool {
 
     private boolean isWritingFieldValueInvalid(DQLAssignExpression expression) {
         List<PsiElement> parentsUntil = PsiUtils.getElementsUntilParent(expression, DQLParametersOwner.class);
-        if (!parentsUntil.isEmpty()) {
-            PsiElement topParent = parentsUntil.getFirst();
-            DQLExpression topParentChild = parentsUntil.get(1) instanceof DQLExpression expr ? expr : expression;
+        if (parentsUntil.isEmpty()) {
+            // no parameters owner in the hierarchy = something is wrong, let's not report it here
+            return false;
+        }
+        PsiElement topParent = parentsUntil.getFirst();
+        DQLExpression topParentChild = parentsUntil.get(1) instanceof DQLExpression expr ? expr : expression;
 
-            if (topParent instanceof DQLParametersOwner parametersOwner) {
-                return assignmentNotAllowed(parametersOwner.getParameter(topParentChild));
-            }
+        if (topParent instanceof DQLParametersOwner parametersOwner) {
+            return assignmentNotAllowed(parametersOwner.getParameter(topParentChild));
         }
         return true;
     }

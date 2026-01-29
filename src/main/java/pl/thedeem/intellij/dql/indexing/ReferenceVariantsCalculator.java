@@ -19,9 +19,12 @@ public record ReferenceVariantsCalculator(DQLFieldExpression field) {
         }
 
         List<DQLFieldExpression> fields = DQLUtil.findFieldsInFile(this.field.getContainingFile());
+        DQLQuery parentQuery = field.getParentQuery();
+        if (parentQuery == null) {
+            return null;
+        }
         DQLAssignExpression result = null;
         int maxOffset = calculateMaxOffset(field);
-        DQLQuery parentQuery = field.getParentQuery();
         for (DQLFieldExpression otherField : fields) {
             if (parentQuery == otherField.getParentQuery()
                     && Objects.equals(field.getName(), otherField.getName())
@@ -42,6 +45,9 @@ public record ReferenceVariantsCalculator(DQLFieldExpression field) {
         Map<String, VariantNode> variants = new HashMap<>();
         int maxOffset = calculateMaxOffset(field);
         DQLQuery parentQuery = field.getParentQuery();
+        if (parentQuery == null) {
+            return variants.values();
+        }
         for (DQLFieldExpression otherField : fields) {
             String fValue = null;
             if (parentQuery != otherField.getParentQuery()) {

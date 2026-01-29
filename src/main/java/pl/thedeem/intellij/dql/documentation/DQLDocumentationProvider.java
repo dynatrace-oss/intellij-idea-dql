@@ -54,8 +54,9 @@ public class DQLDocumentationProvider extends AbstractDocumentationProvider {
                     new BaseDocumentationProvider<>(bool, DQLBundle.message("documentation.boolean.type"), "AllIcons.Nodes.Static");
             case DQLNull nullElement ->
                     new BaseDocumentationProvider<>(nullElement, DQLBundle.message("documentation.null.type"), "AllIcons.Nodes.C_private");
-            case DQLString ignored ->
-                    new BaseDocumentationProvider<>(element, null, DQLBundle.message("documentation.string.type"), "AllIcons.Nodes.Word");
+            case DQLStringContentElement content when content.getParent() instanceof DQLString string ->
+                    new DQLStringDocumentationProvider(string);
+            case DQLString string -> new DQLStringDocumentationProvider(string);
             default -> {
                 if (originalElement != null && originalElement.getParent() instanceof DQLVariableExpression variable) {
                     yield new DQLVariableDocumentationProvider(variable);

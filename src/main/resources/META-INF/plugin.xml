@@ -542,6 +542,39 @@
         <projectService serviceImplementation="pl.thedeem.intellij.dpl.definition.DPLDefinitionServiceImpl"
                         serviceInterface="pl.thedeem.intellij.dpl.definition.DPLDefinitionService"/>
         <!-- endregion -->
+        <!-- region EDQL -->
+        <fileType
+                name="EDQL"
+                implementationClass="pl.thedeem.intellij.edql.EDQLFileType"
+                fieldName="INSTANCE"
+                language="EDQL"
+                extensions="edql"/>
+        <lang.parserDefinition
+                language="EDQL"
+                implementationClass="pl.thedeem.intellij.edql.EDQLParserDefinition"/>
+        <lang.formatter
+                language="EDQL"
+                implementationClass="pl.thedeem.intellij.dql.style.DQLFormattingModelBuilder"/>
+        <lang.commenter
+                language="EDQL"
+                implementationClass="pl.thedeem.intellij.dql.code.DQLCommenter"/>
+        <lang.braceMatcher language="EDQL"
+                           implementationClass="pl.thedeem.intellij.dql.code.DQLPairedBraceMatcher"/>
+        <quoteHandler className="pl.thedeem.intellij.dql.code.DQLQuoteHandler" fileType="EDQL"/>
+        <codeInsight.parameterNameHints language="EDQL"
+                                        implementationClass="pl.thedeem.intellij.dql.highlighting.DQLInlayParameterHintsProvider"/>
+        <spellchecker.support language="EDQL"
+                              implementationClass="pl.thedeem.intellij.dql.code.DQLSpellcheckingStrategy"/>
+        <lang.syntaxHighlighterFactory
+                language="EDQL"
+                implementationClass="pl.thedeem.intellij.dql.highlighting.DQLSyntaxHighlighterFactory"/>
+        <lang.formatter
+                language="EDQL"
+                implementationClass="pl.thedeem.intellij.dql.style.DQLFormattingModelBuilder"/>
+        <completion.contributor
+                language="DQL"
+                implementationClass="pl.thedeem.intellij.edql.completion.EDQLCompletionContributor"/>
+        <!-- endregion EDQL -->
     </extensions>
 
     <actions resource-bundle="messages.DQLBundle">
