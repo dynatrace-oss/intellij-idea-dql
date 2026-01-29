@@ -1,4 +1,4 @@
-# ![Dynatrace logo](../../src/main/resources/icons/dynatrace.png) Dynatrace DSL for JetBrains IDE
+# ![Dynatrace logo](images/dynatrace.png) Dynatrace DSL for JetBrains IDE
 
 This plugin adds support for Dynatrace domain-specific languages:
 [Dynatrace Query Language (DQL)](https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-query-language)
@@ -21,16 +21,16 @@ It does not work with other IDEs like Visual Studio Code, as it heavily uses Jet
 ## Getting started
 
 You can find the information about installation and plugin configuration inside the
-dedicated [installation guide](installation.md).
+dedicated [installation guide](Installation-and-configuration.md).
 
 ## Usage
 
 Because the supported features differ between supported languages, you can find the usage details in dedicated
 subpages:
 
-- [Dynatrace Query Language (DQL)](dql.md)
-- [Dynatrace Pattern Language (DPL)](dpl.md)
-- [Expressions DQL (EDQL)](edql.md) - smaller subset of DQL files, allowing to specify only expressions without the DQL
+- [Dynatrace Query Language (DQL)](DQL.md)
+- [Dynatrace Pattern Language (DPL)](DPL.md)
+- [Expressions DQL (EDQL)](eDQL.md) - smaller subset of DQL files, allowing to specify only expressions without the DQL
   command context
 
 ## Frequently Asked Questions (FAQ)
