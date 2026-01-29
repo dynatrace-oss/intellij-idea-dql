@@ -9,6 +9,7 @@ import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.dql.definition.model.Function;
 import pl.thedeem.intellij.dql.psi.DQLFieldName;
 import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.edql.EDQLFileType;
 
 public class EDQLCompletionContributor extends CompletionContributor {
     public EDQLCompletionContributor() {
@@ -16,6 +17,9 @@ public class EDQLCompletionContributor extends CompletionContributor {
                 new CompletionProvider<>() {
                     public void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet resultSet) {
                         PsiElement position = parameters.getPosition();
+                        if (!EDQLFileType.INSTANCE.equals(position.getContainingFile().getFileType())) {
+                            return;
+                        }
                         DQLDefinitionService service = DQLDefinitionService.getInstance(position.getProject());
                         for (Function function : service.getFunctions()) {
                             AutocompleteUtils.autocomplete(function, resultSet);
