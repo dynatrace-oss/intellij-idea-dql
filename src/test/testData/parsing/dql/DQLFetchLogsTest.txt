@@ -1,5 +1,5 @@
 DQL File(0,764)
-  PsiComment(DQLTokenType.ML_COMMENT)('/*\n  This is an example DQL file created to test parsing tokens.\n*/')(0,67)
+  PsiComment(DQLTokenType.)('/*\n  This is an example DQL file created to test parsing tokens.\n*/')(0,67)
   PsiWhiteSpace('\n')(67,68)
   DQLQueryImpl(QUERY)(68,764)
     DQLCommandImpl(COMMAND)(68,129)
