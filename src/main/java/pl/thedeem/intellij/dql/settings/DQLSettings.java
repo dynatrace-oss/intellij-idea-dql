@@ -4,7 +4,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
@@ -63,15 +62,8 @@ public class DQLSettings implements PersistentStateComponent<DQLSettingsState> {
     }
 
     public String getDefaultDynatraceTenant() {
-        if (!StringUtil.isEmpty(myState.defaultTenantUrl)) {
-            return myState.defaultTenantUrl;
-        }
         List<DynatraceTenant> tenants = DynatraceTenantsService.getInstance().getTenants();
         return !tenants.isEmpty() ? tenants.getFirst().getName() : null;
-    }
-
-    public void setDefaultDynatraceTenant(String tenant) {
-        myState.defaultTenantUrl = tenant;
     }
 
     public boolean isDQLExecutionToolbarVisible() {

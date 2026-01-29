@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 
 import javax.swing.*;
-import java.util.Objects;
 
 public class DQLSettingsConfigurable implements Configurable {
     private DQLSettingsComponent mySettingsComponent;
@@ -32,8 +31,7 @@ public class DQLSettingsConfigurable implements Configurable {
                 || mySettingsComponent.isAllowingExperimentalFeatures() != mySettings.isAllowingExperimentalFeatures()
                 || mySettingsComponent.isPerformingLiveValidationEnabled() != mySettings.isPerformingLiveValidationEnabled()
                 || mySettingsComponent.isUseDynatraceAutocompleteEnabled() != mySettings.isUseDynatraceAutocompleteEnabled()
-                || mySettingsComponent.isDQLExecutionToolbarVisible() != mySettings.isDQLExecutionToolbarVisible()
-                || !Objects.equals(mySettingsComponent.getDefaultDynatraceTenant(), mySettings.getDefaultDynatraceTenant());
+                || mySettingsComponent.isDQLExecutionToolbarVisible() != mySettings.isDQLExecutionToolbarVisible();
     }
 
     @Override
@@ -43,7 +41,6 @@ public class DQLSettingsConfigurable implements Configurable {
         mySettings.setPerformingLiveValidationEnabled(mySettingsComponent.isPerformingLiveValidationEnabled());
         mySettings.setUseDynatraceAutocompleteEnabled(mySettingsComponent.isUseDynatraceAutocompleteEnabled());
         mySettings.setDQLExecutionToolbarVisible(mySettingsComponent.isDQLExecutionToolbarVisible());
-        mySettings.setDefaultDynatraceTenant(mySettingsComponent.getDefaultDynatraceTenant());
     }
 
     @Override
@@ -53,7 +50,6 @@ public class DQLSettingsConfigurable implements Configurable {
         mySettingsComponent.setPerformingLiveValidationEnabled(mySettings.isPerformingLiveValidationEnabled());
         mySettingsComponent.setUseDynatraceAutocompleteEnabled(mySettings.isUseDynatraceAutocompleteEnabled());
         mySettingsComponent.setDQLExecutionToolbarVisible(mySettings.isDQLExecutionToolbarVisible());
-        mySettingsComponent.setDefaultDynatraceTenant(mySettings.getDefaultDynatraceTenant());
     }
 
     @Override
