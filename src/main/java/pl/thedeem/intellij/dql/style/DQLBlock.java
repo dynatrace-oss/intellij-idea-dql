@@ -4,6 +4,7 @@ import com.intellij.formatting.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
@@ -141,7 +142,7 @@ public class DQLBlock extends AbstractBlock {
             }
         }
         // any kind of expression should be indented normally
-        if (element instanceof DQLExpression) {
+        if (element instanceof DQLExpression && !(parent instanceof PsiFile)) {
             return Indent.getNormalIndent();
         }
         // indent subqueries

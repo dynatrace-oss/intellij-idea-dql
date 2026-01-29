@@ -100,7 +100,7 @@ public abstract class FieldNameElementImpl extends ASTWrapperPsiElement implemen
     }
 
     @Override
-    public @NotNull DQLQuery getParentQuery() {
+    public @Nullable DQLQuery getParentQuery() {
         if (parentQuery == null) {
             parentQuery = CachedValuesManager.getManager(getProject()).createCachedValue(
                     () -> new CachedValueProvider.Result<>(recalculateParentQuery(), this),

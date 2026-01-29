@@ -31,6 +31,7 @@
         // Operators
         ML_COMMENT_START = '/*'
         ML_COMMENT_FINISH = '*/'
+        ML_COMMENT = ''
         PIPE = '|'
         EQUALS = '=='
         NOT_EQUALS = '!='
@@ -63,7 +64,7 @@
       ]
 }
 
-root ::= comment | query?
+root ::= query?
 query ::= command (command)* { pin=1 }
 
 command ::= PIPE? command_keyword command_parameters? {
@@ -79,11 +80,6 @@ command_keyword ::= IDENTIFIER {
 }
 
 private command_parameters ::= expression (COMMA expression)*
-
-// Comment types
-comment ::= end_of_line_comment | multiline_comment
-end_of_line_comment ::= EOL_COMMENT { pin=1 extends=comment }
-multiline_comment ::= ML_COMMENT { pin=1 extends=comment }
 
 // Supported expression types
 expression ::=

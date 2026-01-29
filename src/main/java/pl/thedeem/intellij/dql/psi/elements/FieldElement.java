@@ -1,6 +1,5 @@
 package pl.thedeem.intellij.dql.psi.elements;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.psi.DQLAssignExpression;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
@@ -8,5 +7,5 @@ import pl.thedeem.intellij.dql.psi.DQLQuery;
 public interface FieldElement extends BaseNameOwnerElement {
     @Nullable DQLAssignExpression getAssignExpression();
 
-    @NotNull DQLQuery getParentQuery();
+    @Nullable DQLQuery getParentQuery();
 }

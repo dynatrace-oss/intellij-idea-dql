@@ -6,6 +6,13 @@
 
 - Small UI improvements:
   - DQL fragment selected during the query execution will now have a green border instead of a selection background
+- Adding support for "Expression DQL" file (with `.edql` extensions), which allows to define a DQL expression without
+  the command context.
+  Such expression are commonly used in as-a-code DQL queries or in OpenPipeline configurations.
+  - An example file `file.edql`: `matchesValue(field, "value") and not matchesValue(field, "otherValue")`.
+  - All code style & highlighting settings will be inherited from the DQL language.
+  - All suitable DQL inspections will be applied to the expression, allowing the user to validate them.
+  - Code completion and hover documentation are also supported.
 
 ### Bug fixes
 
