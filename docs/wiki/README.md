@@ -33,6 +33,10 @@ subpages:
 - [Expressions DQL (EDQL)](edql.md) - smaller subset of DQL files, allowing to specify only expressions without the DQL
   command context
 
+## Frequently Asked Questions (FAQ)
+
+You can find the list of most frequently asked questions in the dedicated [FAQ](FAQ.md) page.
+
 ## Changelog
 
 You can see the list of changes in the
