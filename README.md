@@ -163,6 +163,11 @@ delivering syntax highlighting, code style formatting, autocompletion, on-hover 
 inspections and intentions. These features are available for both `.dpl` files and within the DQL commands and functions
 using DPL patterns.
 
+## More information
+
+You can find detailed documentation for all features inside the
+plugin's [Wiki pages](https://github.com/dynatrace-oss/intellij-idea-dql/wiki).
+
 <!-- Plugin description end -->
 
 ## Building
