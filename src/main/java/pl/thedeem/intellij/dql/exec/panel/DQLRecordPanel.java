@@ -5,9 +5,9 @@ import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.common.components.CommonTable;
-import pl.thedeem.intellij.common.components.MultiLineCellRenderer;
 import pl.thedeem.intellij.common.components.TransparentScrollPane;
+import pl.thedeem.intellij.common.components.table.CommonTable;
+import pl.thedeem.intellij.common.components.table.rendering.MultiLineCellRenderer;
 import pl.thedeem.intellij.dql.DQLBundle;
 
 import javax.swing.*;

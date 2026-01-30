@@ -158,6 +158,8 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
             actions.setInjectedContext(true);
             actions.addAction(new ExecutionManagerAction(this));
             actions.addSeparator();
+            actions.addAction(resultPanel.getToolbarActions());
+            actions.addSeparator();
             actions.addAction(ActionManager.getInstance().getAction("DQL.ExecutionServiceActions"));
         }
         return actions;
@@ -187,16 +189,8 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
         return result != null ? result : null;
     }
 
-    public @NotNull ResultsDisplayMode getDisplayMode() {
-        return resultPanel.getDisplayMode();
-    }
-
     public @NotNull QueryConfiguration getConfiguration() {
         return configuration;
-    }
-
-    public void setDisplayMode(@NotNull ResultsDisplayMode displayMode) {
-        resultPanel.setDisplayMode(displayMode);
     }
 
     private ScheduledFuture<?> startPollingRequest(@NotNull String requestToken, @NotNull DynatraceRestClient client, @Nullable String apiToken) {
@@ -275,12 +269,5 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
         result.setMaxResultRecords(configuration.maxResultRecords());
         result.setTimezone(ZoneId.systemDefault().getId());
         return result;
-    }
-
-    public enum ResultsDisplayMode {
-        JSON,
-        TABLE,
-        USED_QUERY,
-        METADATA
     }
 }

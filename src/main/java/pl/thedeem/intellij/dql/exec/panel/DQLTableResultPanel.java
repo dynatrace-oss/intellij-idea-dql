@@ -4,8 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.JBUI;
@@ -13,7 +16,13 @@ import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.common.components.*;
+import pl.thedeem.intellij.common.components.ComponentsUtils;
+import pl.thedeem.intellij.common.components.InformationComponent;
+import pl.thedeem.intellij.common.components.TransparentScrollPane;
+import pl.thedeem.intellij.common.components.table.CommonTable;
+import pl.thedeem.intellij.common.components.table.RowCountTable;
+import pl.thedeem.intellij.common.components.table.rendering.CommonTableCellRenderer;
+import pl.thedeem.intellij.common.components.table.rendering.CommonTableHeaderRenderer;
 import pl.thedeem.intellij.common.sdk.model.DQLPollResponse;
 import pl.thedeem.intellij.common.sdk.model.DQLRecord;
 import pl.thedeem.intellij.common.sdk.model.DQLResult;
@@ -39,23 +48,40 @@ import java.util.stream.Collectors;
 public class DQLTableResultPanel extends BorderLayoutPanel {
     protected final static ObjectMapper mapper = JsonMapper.builder().build();
 
+    private final DQLResult result;
+    protected CommonTable table = null;
+
     public DQLTableResultPanel(@Nullable DQLPollResponse result, @NotNull Project project) {
         super();
         setOpaque(false);
         setBorder(JBUI.Borders.empty());
+        this.result = result != null ? result.getResult() : null;
         if (result == null || result.getResult() == null || result.getResult().getRecords() == null || result.getResult().getRecords().isEmpty()) {
             addToCenter(new TransparentScrollPane(new InformationComponent(
                     DQLBundle.message("runConfiguration.executeDQL.infos.emptyRecords"),
                     AllIcons.General.Information
             )));
         } else {
-            DQLResult dqlResult = result.getResult();
-            CommonTable table = createTableComponent(dqlResult, project);
-            addToCenter(createTableView(table, project));
+            this.table = createTableComponent(project);
+            addToCenter(createTableView(project));
         }
     }
 
-    private @NotNull CommonTable createTableComponent(@NotNull DQLResult result, @NotNull Project project) {
+    public void showColumnSettingsPopup(@NotNull AnActionEvent e) {
+        if (table == null || result == null) {
+            return;
+        }
+        JBPopup popup = table.createColumnsReorderPopup(result.getColumns());
+        Component c = e.getData(PlatformDataKeys.CONTEXT_COMPONENT);
+        if (e.getInputEvent() != null && e.getInputEvent().getComponent() != null) {
+            c = e.getInputEvent().getComponent();
+        }
+        if (c != null) {
+            popup.showUnderneathOf(c);
+        }
+    }
+
+    private @NotNull CommonTable createTableComponent(@NotNull Project project) {
         Set<String> columns = result.getColumns();
         Map<String, String> columnTypes = result.getColumnTypes();
         List<ColumnInfo<DQLRecord, Object>> columnInfos = calculateColumns(columns, columnTypes);
@@ -79,7 +105,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel {
         return table;
     }
 
-    private @NotNull TransparentScrollPane createTableView(@NotNull CommonTable table, @NotNull Project project) {
+    private @NotNull TransparentScrollPane createTableView(@NotNull Project project) {
         JTable recordNumberTable = new RowCountTable(table);
         TransparentScrollPane result = new TransparentScrollPane(table);
         result.setRowHeaderView(recordNumberTable);
@@ -211,8 +237,8 @@ public class DQLTableResultPanel extends BorderLayoutPanel {
         if (row != -1 && col != -1) {
             Object value = table.getValueAt(row, col);
             FileEditorManager.getInstance(project).openFile(new DQLRecordFieldVirtualFile(
-                    DQLBundle.message("components.tableResults.cellDetails.title", table.getColumnName(col))
-                    , value == null ? "" : value,
+                    DQLBundle.message("components.tableResults.cellDetails.title", table.getColumnName(col)),
+                    value == null ? "" : value,
                     columnTypes.get(table.getColumnName(col))
             ), true);
         }

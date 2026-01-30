@@ -141,7 +141,7 @@ Given the following `dql-variables.json` file:
 
 and the following DQL query:
 
-```dql
+```text
 data record(
   number = $number,
   string = $string,
@@ -170,6 +170,8 @@ data record(
 ### Query execution
 
 When a Dynatrace tenant connection is configured, you can execute DQL queries directly from the IDE.
+
+![An example result](images/dql-execution.png)
 
 #### DQL query selection
 
@@ -223,14 +225,13 @@ the query metadata (details like execution time, number of returned records, etc
 editor tab. Additionally, you can save the JSON result into a file.
 
 Inside the tabular view, double-clicking a cell will open its content in a new editor tab, allowing you to explore
-complex values like nested records or long strings easily.
+complex values like nested records or long strings easily. You can change the order and visibility of displayed columns
+by clicking on the option button in the toolbar.
 
 In case when the DQL query execution fails, the plugin will display the error message returned by the Dynatrace tenant.
 
 If Dynatrace returns notifications about the executed query (like a warning about limited records number), they will be
 displayed at the bottom part of the result view.
-
-![An example result](images/dql-execution.png)
 
 ### Partial DQL
 

@@ -1,6 +1,8 @@
 package pl.thedeem.intellij.dql.exec.panel;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.json.JsonLanguage;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
@@ -10,10 +12,11 @@ import pl.thedeem.intellij.common.components.FormattedLanguageText;
 import pl.thedeem.intellij.common.components.TransparentScrollPane;
 import pl.thedeem.intellij.common.sdk.model.DQLExecuteResponse;
 import pl.thedeem.intellij.common.sdk.model.DQLPollResponse;
+import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
-import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 
+import javax.swing.*;
 import java.awt.*;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -21,10 +24,12 @@ import java.util.Objects;
 public class DQLExecutionResult extends BorderLayoutPanel {
     private final DQLExecuteInProgressPanel progressPanel;
     private final Project project;
+    private final DefaultActionGroup customActions;
+    private final DefaultActionGroup panelToolbar;
 
     private DQLPollResponse response;
     private Exception exception;
-    private DQLExecutionService.ResultsDisplayMode displayMode;
+    private ResultsDisplayMode displayMode;
     private QueryConfiguration params;
     private ZonedDateTime executionTime;
 
@@ -33,14 +38,84 @@ public class DQLExecutionResult extends BorderLayoutPanel {
         this.setBorder(JBUI.Borders.empty());
         this.project = project;
         this.progressPanel = new DQLExecuteInProgressPanel();
+        this.customActions = new DefaultActionGroup();
+        this.panelToolbar = createPanelToolbar();
         show(progressPanel);
     }
 
-    public void show(@NotNull Component comp) {
+    private DefaultActionGroup createPanelToolbar() {
+        DefaultActionGroup group = new DefaultActionGroup();
+        group.addAction(createModeToggleAction(
+                ResultsDisplayMode.TABLE,
+                DQLBundle.message("action.DQL.ResultsAsTableAction.text"),
+                AllIcons.Nodes.DataTables
+        ));
+        group.addAction(createModeToggleAction(
+                ResultsDisplayMode.JSON,
+                DQLBundle.message("action.DQL.ResultsAsJsonAction.text"),
+                AllIcons.FileTypes.Json
+        ));
+        group.addAction(createModeToggleAction(
+                ResultsDisplayMode.METADATA,
+                DQLBundle.message("action.DQL.ShowQueryMetadata.text"),
+                AllIcons.Actions.Annotate
+        ));
+        group.addAction(createModeToggleAction(
+                ResultsDisplayMode.USED_QUERY,
+                DQLBundle.message("action.DQL.ShowUsedDQLQuery.text"),
+                AllIcons.Actions.Preview
+        ));
+        group.addAction(new AnAction(
+                DQLBundle.message("action.DQL.SaveDQLResultsAsFileAction.text"),
+                null,
+                AllIcons.Actions.Install
+        ) {
+            private final static String DEFAULT_FILE_NAME = "dql-result.json";
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.EDT;
+            }
+
+            @Override
+            public void update(@NotNull AnActionEvent e) {
+                e.getPresentation().setEnabledAndVisible(response != null && response.isFinished() && response.getResult() != null);
+            }
+
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+                IntelliJUtils.openSaveFileDialog(
+                        DQLBundle.message("components.actions.saveAsFile.title"),
+                        DQLBundle.message("components.actions.saveAsFile.description"),
+                        getFileName(),
+                        () -> IntelliJUtils.prettyPrintJson(response.getResult().getRecords()),
+                        project
+                );
+            }
+
+            private @NotNull String getFileName() {
+                if (response == null || response.getResult() == null
+                        || response.getResult().getGrailMetadata() == null
+                        || response.getResult().getGrailMetadata().queryId == null) {
+                    return DEFAULT_FILE_NAME;
+                }
+                return response.getResult().getGrailMetadata().queryId + ".json";
+            }
+        });
+        group.addSeparator();
+        group.add(this.customActions);
+        return group;
+    }
+
+    public void show(@NotNull Component comp, @NotNull AnAction... actions) {
         this.removeAll();
         this.addToCenter(comp);
         this.revalidate();
         this.repaint();
+        this.customActions.removeAll();
+        for (AnAction action : actions) {
+            this.customActions.add(action);
+        }
     }
 
     public void setQueryConfiguration(@NotNull QueryConfiguration params) {
@@ -70,17 +145,19 @@ public class DQLExecutionResult extends BorderLayoutPanel {
         refreshView();
     }
 
-    public void setDisplayMode(@NotNull DQLExecutionService.ResultsDisplayMode displayMode) {
+    public void setDisplayMode(@NotNull ResultsDisplayMode displayMode) {
         this.displayMode = displayMode;
         refreshView();
     }
 
     private void refreshView() {
-        DQLExecutionService.ResultsDisplayMode displayMode = getDisplayMode();
-        if (displayMode == DQLExecutionService.ResultsDisplayMode.USED_QUERY) {
+        ResultsDisplayMode displayMode = getDisplayMode();
+        if (displayMode == ResultsDisplayMode.USED_QUERY) {
             FormattedLanguageText panel = new FormattedLanguageText(DynatraceQueryLanguage.INSTANCE, project, true);
             show(panel);
-            if (params != null) {
+            if (response != null && response.getResult() != null && response.getResult().getGrailMetadata() != null) {
+                panel.showResult(() -> response.getResult().getGrailMetadata().getQuery());
+            } else if (params != null) {
                 panel.showResult(() -> params.query());
             }
             return;
@@ -101,12 +178,52 @@ public class DQLExecutionResult extends BorderLayoutPanel {
                 );
             }
             case METADATA -> show(new DQLMetadataPanel(response.getResult().getGrailMetadata(), executionTime));
-            default -> show(new DQLTableResultPanel(response, project));
+            default -> {
+                DQLTableResultPanel panel = new DQLTableResultPanel(response, project);
+                show(panel, new AnAction(DQLBundle.message("runConfiguration.executeDQL.changeColumnsList"), null, AllIcons.Actions.PreviewDetails) {
+                    @Override
+                    public void actionPerformed(@NotNull AnActionEvent e) {
+                        panel.showColumnSettingsPopup(e);
+                    }
+                });
+            }
         }
         addToBottom(new TransparentScrollPane(new DQLExecutionSummary(response.getResult(), executionTime)));
     }
 
-    public @NotNull DQLExecutionService.ResultsDisplayMode getDisplayMode() {
-        return Objects.requireNonNullElse(this.displayMode, DQLExecutionService.ResultsDisplayMode.TABLE);
+    public @NotNull ResultsDisplayMode getDisplayMode() {
+        return Objects.requireNonNullElse(this.displayMode, ResultsDisplayMode.TABLE);
+    }
+
+    public @NotNull ActionGroup getToolbarActions() {
+        return panelToolbar;
+    }
+
+    private @NotNull AnAction createModeToggleAction(@NotNull ResultsDisplayMode mode, @NotNull String text, @NotNull Icon icon) {
+        return new ToggleAction(text, null, icon) {
+            @Override
+            public boolean isSelected(@NotNull AnActionEvent e) {
+                return getDisplayMode() == mode;
+            }
+
+            @Override
+            public void setSelected(@NotNull AnActionEvent e, boolean b) {
+                if (getDisplayMode() != mode) {
+                    setDisplayMode(mode);
+                }
+            }
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.EDT;
+            }
+        };
+    }
+
+    public enum ResultsDisplayMode {
+        JSON,
+        TABLE,
+        USED_QUERY,
+        METADATA
     }
 }

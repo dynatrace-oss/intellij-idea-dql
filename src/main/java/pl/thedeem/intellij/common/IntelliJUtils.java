@@ -10,30 +10,39 @@ import com.intellij.execution.impl.EditConfigurationsDialog;
 import com.intellij.ide.DataManager;
 import com.intellij.lang.Language;
 import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.fileChooser.FileChooserFactory;
+import com.intellij.openapi.fileChooser.FileSaverDescriptor;
+import com.intellij.openapi.fileChooser.FileSaverDialog;
 import com.intellij.openapi.fileTypes.PlainTextLanguage;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileWrapper;
 import com.intellij.ui.*;
 import com.intellij.util.IconUtil;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLRunConfiguration;
 
 import javax.swing.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 public class IntelliJUtils {
-    private static final Logger logger = Logger.getInstance(IntelliJUtils.class);
     private static final ObjectMapper mapper = new ObjectMapper();
 
     public static @NotNull EditorTextField createEditorPanel(@NotNull Project project, @Nullable Language language, boolean isViewer, @NotNull List<EditorCustomization> customizations) {
@@ -102,20 +111,16 @@ public class IntelliJUtils {
         }
     }
 
-    public static @Nullable String prettyPrintJson(@Nullable Object json) {
+    public static @Nullable String prettyPrintJson(@Nullable Object json) throws JsonProcessingException {
         if (json == null) {
             return "";
         }
-        try {
-            DefaultIndenter indenter = new DefaultIndenter("  ", DefaultIndenter.SYS_LF);
-            DefaultPrettyPrinter printer = new DefaultPrettyPrinter();
-            printer.indentObjectsWith(indenter);
-            printer.indentArraysWith(indenter);
-            return mapper.writer(printer).writeValueAsString(json);
-        } catch (JsonProcessingException e) {
-            logger.warn("Failed to pretty print JSON", e);
-            return null;
-        }
+
+        DefaultIndenter indenter = new DefaultIndenter("  ", DefaultIndenter.SYS_LF);
+        DefaultPrettyPrinter printer = new DefaultPrettyPrinter();
+        printer.indentObjectsWith(indenter);
+        printer.indentArraysWith(indenter);
+        return mapper.writer(printer).writeValueAsString(json);
     }
 
     public static Icon scaleToBottomRight(@NotNull Icon base, @NotNull Icon original, float scale) {
@@ -130,5 +135,60 @@ public class IntelliJUtils {
                     base.getIconHeight() - scaled.getIconHeight()
             );
         }};
+    }
+
+    public static void openSaveFileDialog(
+            @NotNull String title,
+            @NotNull String description,
+            @NotNull String fileName,
+            @NotNull Callable<String> contentCallback,
+            @NotNull Project project
+    ) {
+        FileSaverDescriptor descriptor = getFileSaver(title, description);
+        if (descriptor == null) {
+            Messages.showErrorDialog(
+                    DQLBundle.message("components.actions.saveAsFile.error.incompatibleVersion"),
+                    DQLBundle.message("components.actions.saveAsFile.error.title")
+            );
+            return;
+        }
+        FileSaverDialog dialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, project);
+        VirtualFileWrapper fileWrapper = dialog.save(fileName);
+        try {
+            String content = contentCallback.call();
+            if (fileWrapper != null && StringUtil.isNotEmpty(content)) {
+                File file = fileWrapper.getFile();
+                try (FileWriter writer = new FileWriter(file)) {
+                    writer.write(content);
+                }
+            }
+        } catch (Exception ex) {
+            Messages.showErrorDialog(
+                    DQLBundle.message("components.actions.saveAsFile.error.description", ex.getMessage()),
+                    DQLBundle.message("components.actions.saveAsFile.error.title")
+            );
+        }
+    }
+
+    public static @Nullable FileSaverDescriptor getFileSaver(@NotNull String title, @NotNull String description) {
+        try {
+            Constructor<FileSaverDescriptor> ctor = FileSaverDescriptor.class.getConstructor(String.class, String.class, String.class);
+            return ctor.newInstance(
+                    title,
+                    description,
+                    "json"
+            );
+        } catch (Exception ignored) {
+            try {
+                Constructor<FileSaverDescriptor> ctor = FileSaverDescriptor.class.getConstructor(String.class, String.class, String[].class);
+                return ctor.newInstance(
+                        title,
+                        description,
+                        new String[]{"json"}
+                );
+            } catch (Exception ignored2) {
+                return null;
+            }
+        }
     }
 }

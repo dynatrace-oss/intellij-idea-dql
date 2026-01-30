@@ -1,6 +1,7 @@
-package pl.thedeem.intellij.common.components;
+package pl.thedeem.intellij.common.components.table.rendering;
 
 import com.intellij.util.ui.JBUI;
+import pl.thedeem.intellij.common.components.ComponentsUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
