@@ -608,23 +608,6 @@
             <reference ref="DQL.ToggleDQLExecutionToolbar"/>
         </group>
         <group id="DQL.ExecutionServiceActions">
-            <action id="DQL.ResultsAsTableAction"
-                    class="pl.thedeem.intellij.dql.exec.actions.DQLResultsAsTableAction"
-                    icon="AllIcons.Nodes.DataTables"
-            />
-            <action id="DQL.ResultsAsJsonAction"
-                    class="pl.thedeem.intellij.dql.exec.actions.DQLResultsAsJsonAction"
-                    icon="AllIcons.FileTypes.Json"
-            />
-            <action id="DQL.ShowUsedDQLQuery"
-                    class="pl.thedeem.intellij.dql.exec.actions.DQLShowUsedQueryAction"
-                    icon="AllIcons.Actions.Preview"
-            />
-            <action id="DQL.ShowQueryMetadata"
-                    class="pl.thedeem.intellij.dql.exec.actions.DQLResultsMetadataAction"
-                    icon="AllIcons.Actions.Annotate"
-            />
-            <separator/>
             <action id="DQL.SaveDQLResultsAsFileAction"
                     class="pl.thedeem.intellij.dql.exec.actions.SaveDQLResultsAsFileAction"
                     icon="AllIcons.Actions.Install"

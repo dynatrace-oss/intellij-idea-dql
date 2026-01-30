@@ -1,6 +1,7 @@
-package pl.thedeem.intellij.common.components;
+package pl.thedeem.intellij.common.components.table;
 
 import com.intellij.ui.table.JBTable;
+import pl.thedeem.intellij.common.components.ComponentsUtils;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
