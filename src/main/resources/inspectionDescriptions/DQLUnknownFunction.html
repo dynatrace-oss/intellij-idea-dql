@@ -17,5 +17,9 @@ Verifies the usage of supported DQL functions.
 data json: "..."
 | filter thisIsAnUnknownFunction(someParameter: true) // reports an error about unknown function
 </code></pre>
+
+<p>
+    After applying the quick fix, the unknown DQL function will be dropped.
+</p>
 </body>
 </html>

@@ -1,0 +1,40 @@
+package pl.thedeem.intellij.dql.inspections.fixes;
+
+import com.intellij.codeInspection.LocalQuickFix;
+import com.intellij.codeInspection.ProblemDescriptor;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.refactoring.rename.RenameDialog;
+import org.jetbrains.annotations.NotNull;
+import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.DQLFileType;
+
+public class RenameFileQuickFix implements LocalQuickFix {
+    private final String proposedName;
+
+    public RenameFileQuickFix(@NotNull String proposedName) {
+        this.proposedName = proposedName;
+    }
+
+    @Override
+    public @NotNull String getFamilyName() {
+        return DQLBundle.message("inspection.command.context.fixes.renameFile", proposedName);
+    }
+
+    @Override
+    public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+        PsiElement element = descriptor.getPsiElement();
+        if (element == null) {
+            return;
+        }
+
+        PsiFile file = element.getContainingFile();
+        if (file == null || !DQLFileType.INSTANCE.equals(file.getFileType())) {
+            return;
+        }
+
+        RenameDialog dialog = new RenameDialog(project, file, element, null);
+        dialog.performRename(proposedName);
+    }
+}

@@ -6,6 +6,7 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.inspections.fixes.DropFunctionQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 
@@ -20,7 +21,8 @@ public class UnknownFunctionInspection extends LocalInspectionTool {
                     holder.registerProblem(
                             function.getFunctionName(),
                             DQLBundle.message("inspection.function.name.unknown"),
-                            ProblemHighlightType.LIKE_UNKNOWN_SYMBOL
+                            ProblemHighlightType.LIKE_UNKNOWN_SYMBOL,
+                            new DropFunctionQuickFix()
                     );
                 }
             }
