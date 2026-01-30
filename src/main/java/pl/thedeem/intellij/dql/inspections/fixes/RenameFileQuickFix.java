@@ -5,7 +5,7 @@ import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.refactoring.rename.RenameDialog;
+import com.intellij.refactoring.rename.RenameProcessor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFileType;
@@ -34,7 +34,6 @@ public class RenameFileQuickFix implements LocalQuickFix {
             return;
         }
 
-        RenameDialog dialog = new RenameDialog(project, file, element, null);
-        dialog.performRename(proposedName);
+        new RenameProcessor(project, file, proposedName, true, true).run();
     }
 }

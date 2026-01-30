@@ -35,9 +35,7 @@ public class InvalidCommandContextInspection extends LocalInspectionTool {
                 boolean canBeFixed = InjectedLanguageManager.getInstance(command.getProject()).getInjectionHost(command.getContainingFile()) == null;
                 List<LocalQuickFix> fixes = new ArrayList<>();
                 if (canBeFixed) {
-                    fixes.add(
-                            new RenameFileQuickFix(proposePartialName(command.getContainingFile().getName()))
-                    );
+                    fixes.add(new RenameFileQuickFix(proposePartialName(command.getContainingFile().getName())));
                 }
                 fixes.add(new DropCommandQuickFix());
                 boolean isStartingCommand = "data_source".equals(definition.category());
@@ -83,7 +81,7 @@ public class InvalidCommandContextInspection extends LocalInspectionTool {
         }
         int dot = name.lastIndexOf('.');
         if (dot <= 0) {
-            return name + ".partial.";
+            return name + ".partial.dql";
         }
         String base = name.substring(0, dot);
         String ext = name.substring(dot);
