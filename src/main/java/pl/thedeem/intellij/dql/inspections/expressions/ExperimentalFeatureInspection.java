@@ -7,6 +7,8 @@ import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.*;
+import pl.thedeem.intellij.dql.inspections.fixes.DropCommandQuickFix;
+import pl.thedeem.intellij.dql.inspections.fixes.DropFunctionQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
@@ -29,7 +31,8 @@ public class ExperimentalFeatureInspection extends LocalInspectionTool {
                     holder.registerProblem(
                             command,
                             DQLBundle.message("inspection.experimentalFeature.command", definition.name()),
-                            ProblemHighlightType.WEAK_WARNING
+                            ProblemHighlightType.WEAK_WARNING,
+                            new DropCommandQuickFix()
                     );
                 }
             }
@@ -47,7 +50,8 @@ public class ExperimentalFeatureInspection extends LocalInspectionTool {
                     holder.registerProblem(
                             function,
                             DQLBundle.message("inspection.experimentalFeature.function", definition.name()),
-                            ProblemHighlightType.WEAK_WARNING
+                            ProblemHighlightType.WEAK_WARNING,
+                            new DropFunctionQuickFix()
                     );
                 }
             }

@@ -21,6 +21,9 @@
   specified in the list (previously the user needed to specifically select the default one).
 - Created Wiki pages with documentation for the plugin features
 - DQL now supports complex sorting expressions (for example, `sort abs(field) > 10 desc`)
+- Added missing quick fixes for inspections:
+  - Dropping DQL commands and functions for unknown & experimental expressions
+  - Renaming the DQL file to `.partial.dql` when an invalid command context is detected (only for `.dql` files)
 
 ### Bug fixes
 
