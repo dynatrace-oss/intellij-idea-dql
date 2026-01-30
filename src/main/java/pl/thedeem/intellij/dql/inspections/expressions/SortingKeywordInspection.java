@@ -29,6 +29,13 @@ public class SortingKeywordInspection extends LocalInspectionTool {
                                 .stream().anyMatch(c -> c.isInstance(t)),
                         DQLParametersOwner.class);
 
+                if (sort.getExpression() instanceof DQLSortExpression) {
+                    holder.registerProblem(
+                            sort.getSortDirection(),
+                            DQLBundle.message("inspection.sortingKeyword.usage.nestedSortDirection"),
+                            new DropElementQuickFix()
+                    );
+                }
                 if (isSortingInvalid(parents, sort)) {
                     holder.registerProblem(
                             sort.getSortDirection(),

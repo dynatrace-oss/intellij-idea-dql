@@ -16,6 +16,7 @@
 - **Breaking**: Changing the approach to the default Dynatrace tenant used for connections - it will be the first tenant
   specified in the list (previously the user needed to specifically select the default one).
 - Created Wiki pages with documentation for the plugin features
+- DQL now supports complex sorting expressions (for example, `sort abs(field) > 10 desc`)
 
 ### Bug fixes
 
