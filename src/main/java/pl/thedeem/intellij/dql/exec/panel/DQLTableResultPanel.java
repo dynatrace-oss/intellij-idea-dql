@@ -72,7 +72,10 @@ public class DQLTableResultPanel extends BorderLayoutPanel {
             return;
         }
         JBPopup popup = table.createColumnsReorderPopup(result.getColumns());
-        Component c = e.getInputEvent() != null && e.getInputEvent().getComponent() != null ? e.getInputEvent().getComponent() : e.getData(PlatformDataKeys.CONTEXT_COMPONENT);
+        Component c = e.getData(PlatformDataKeys.CONTEXT_COMPONENT);
+        if (e.getInputEvent() != null && e.getInputEvent().getComponent() != null) {
+            c = e.getInputEvent().getComponent();
+        }
         if (c != null) {
             popup.showUnderneathOf(c);
         }

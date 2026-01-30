@@ -53,6 +53,7 @@ public class FormattedLanguageText extends BorderLayoutPanel implements Disposab
                     resultText = content.call();
                 } catch (Exception e) {
                     progressIndicator.cancel();
+                    resultText = null;
                 }
             }
 

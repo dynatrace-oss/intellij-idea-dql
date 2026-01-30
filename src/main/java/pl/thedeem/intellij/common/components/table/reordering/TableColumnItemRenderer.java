@@ -34,6 +34,4 @@ class TableColumnItemRenderer extends BorderLayoutPanel implements ListCellRende
         label.setForeground(fg);
         return this;
     }
-
-
 }

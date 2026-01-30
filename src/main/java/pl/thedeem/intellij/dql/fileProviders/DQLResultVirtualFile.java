@@ -1,6 +1,7 @@
 package pl.thedeem.intellij.dql.fileProviders;
 
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
@@ -21,7 +22,9 @@ public class DQLResultVirtualFile extends DQLVirtualFile<DQLPollResponse> {
         panel.setBorder(JBUI.Borders.empty());
         DQLExecutionResult result = new DQLExecutionResult(project);
         result.update(content);
-        panel.addToTop(ActionManager.getInstance().createActionToolbar("DQL.ResultToolbar", result.getToolbarActions(), true).getComponent());
+        ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("DQL.ResultToolbar", result.getToolbarActions(), true);
+        toolbar.setTargetComponent(panel);
+        panel.addToTop(toolbar.getComponent());
         panel.addToCenter(result);
         return panel;
     }

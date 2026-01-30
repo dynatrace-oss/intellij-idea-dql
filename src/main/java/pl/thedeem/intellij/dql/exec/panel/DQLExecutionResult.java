@@ -65,6 +65,43 @@ public class DQLExecutionResult extends BorderLayoutPanel {
                 DQLBundle.message("action.DQL.ShowUsedDQLQuery.text"),
                 AllIcons.Actions.Preview
         ));
+        group.addAction(new AnAction(
+                DQLBundle.message("action.DQL.SaveDQLResultsAsFileAction.text"),
+                null,
+                AllIcons.Actions.Install
+        ) {
+            private final static String DEFAULT_FILE_NAME = "dql-result.json";
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.EDT;
+            }
+
+            @Override
+            public void update(@NotNull AnActionEvent e) {
+                e.getPresentation().setEnabledAndVisible(response != null && response.isFinished() && response.getResult() != null);
+            }
+
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+                IntelliJUtils.openSaveFileDialog(
+                        DQLBundle.message("components.actions.saveAsFile.title"),
+                        DQLBundle.message("components.actions.saveAsFile.description"),
+                        getFileName(),
+                        () -> IntelliJUtils.prettyPrintJson(response.getResult().getRecords()),
+                        project
+                );
+            }
+
+            private @NotNull String getFileName() {
+                if (response == null || response.getResult() == null
+                        || response.getResult().getGrailMetadata() == null
+                        || response.getResult().getGrailMetadata().queryId == null) {
+                    return DEFAULT_FILE_NAME;
+                }
+                return response.getResult().getGrailMetadata().queryId + ".json";
+            }
+        });
         group.addSeparator();
         group.add(this.customActions);
         return group;
@@ -76,10 +113,8 @@ public class DQLExecutionResult extends BorderLayoutPanel {
         this.revalidate();
         this.repaint();
         this.customActions.removeAll();
-        if (actions != null) {
-            for (AnAction action : actions) {
-                this.customActions.add(action);
-            }
+        for (AnAction action : actions) {
+            this.customActions.add(action);
         }
     }
 
