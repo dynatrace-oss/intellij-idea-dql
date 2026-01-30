@@ -1,11 +1,13 @@
 package pl.thedeem.intellij.dql.exec;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.ide.ActivityTracker;
 import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.util.concurrency.AppExecutorUtil;
@@ -24,8 +26,10 @@ import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.editor.actions.ExecutionManagerAction;
 import pl.thedeem.intellij.dql.exec.panel.DQLExecutionErrorPanel;
 import pl.thedeem.intellij.dql.exec.panel.DQLExecutionResult;
+import pl.thedeem.intellij.dql.fileProviders.DQLResultVirtualFile;
 import pl.thedeem.intellij.dql.services.query.DQLQueryParserService;
 import pl.thedeem.intellij.dql.services.ui.DQLManagedService;
+import pl.thedeem.intellij.dql.services.ui.DQLServicesManager;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
@@ -160,7 +164,41 @@ public class DQLExecutionService implements DQLManagedService<QueryConfiguration
             actions.addSeparator();
             actions.addAction(resultPanel.getToolbarActions());
             actions.addSeparator();
-            actions.addAction(ActionManager.getInstance().getAction("DQL.ExecutionServiceActions"));
+            actions.addAction(new AnAction(DQLBundle.message("action.DQL.OpenDQLResultInNewTab.text"), null, AllIcons.Actions.MoveTo2) {
+                @Override
+                public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+                    DQLPollResponse result = getResult();
+                    if (result == null) {
+                        return;
+                    }
+                    FileEditorManager.getInstance(project)
+                            .openFile(new DQLResultVirtualFile(
+                                    DQLBundle.message("components.queryDetails.fileName", getName()),
+                                    result
+                            ), true);
+                }
+
+                @Override
+                public void update(@NotNull AnActionEvent e) {
+                    e.getPresentation().setEnabledAndVisible(getResult() != null);
+                }
+
+                @Override
+                public @NotNull ActionUpdateThread getActionUpdateThread() {
+                    return ActionUpdateThread.EDT;
+                }
+            });
+            actions.addAction(new AnAction(DQLBundle.message("action.DQL.CloseDQLResult.text"), null, AllIcons.General.Close) {
+                @Override
+                public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+                    DQLServicesManager.getInstance(project).stopExecution(DQLExecutionService.this);
+                }
+
+                @Override
+                public @NotNull ActionUpdateThread getActionUpdateThread() {
+                    return ActionUpdateThread.EDT;
+                }
+            });
         }
         return actions;
     }

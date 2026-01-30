@@ -607,18 +607,6 @@
         <group id="DQL.FloatingToolbarManager">
             <reference ref="DQL.ToggleDQLExecutionToolbar"/>
         </group>
-        <group id="DQL.ExecutionServiceActions">
-            <action id="DQL.OpenDQLResultInNewTab"
-                    class="pl.thedeem.intellij.dql.exec.actions.OpenDQLResultInNewTab"
-                    icon="AllIcons.Actions.MoveTo2"
-            />
-            <separator/>
-            <action id="DQL.CloseDQLResult"
-                    class="pl.thedeem.intellij.dql.exec.actions.CloseDQLResultAction"
-                    icon="AllIcons.General.Close"
-            />
-        </group>
-
     </actions>
     <resource-bundle>messages.DQLBundle</resource-bundle>
     <resource-bundle>messages.DPLBundle</resource-bundle>
