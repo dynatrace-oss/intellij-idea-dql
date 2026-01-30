@@ -160,10 +160,7 @@ public class TableColumnReorderUtil {
             String name = orderedVisible.get(target);
             int from = findViewIndexByHeader(table, name);
             if (from >= 0 && from != target) {
-                try {
-                    columnModel.moveColumn(from, target);
-                } catch (IllegalArgumentException ignored) {
-                }
+                columnModel.moveColumn(from, target);
             }
         }
         table.revalidate();
