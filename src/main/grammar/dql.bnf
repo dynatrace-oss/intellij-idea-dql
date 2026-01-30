@@ -84,6 +84,7 @@ private command_parameters ::= expression (COMMA expression)*
 // Supported expression types
 expression ::=
     assign_expression |
+    sort_expression |
     condition_expression |
     unary_expression |
     equality_expression |
@@ -100,7 +101,6 @@ private primary_expression ::=
     array_expression |
     time_alignment_now_expression |
     time_alignment_at_expression |
-    sort_expression |
     subquery_expression |
     in_expression |
     parameter_expression |
