@@ -134,4 +134,8 @@ public abstract class AbstractTextFieldAction<T> extends AnAction implements Cus
             parent.repaint();
         }
     }
+
+    public void updateValue(@Nullable String value) {
+        this.myField.setText(value);
+    }
 }

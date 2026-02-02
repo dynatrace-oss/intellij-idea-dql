@@ -130,7 +130,7 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
                 group.addSeparator();
                 group.add(actionManager.getAction("DQL.SaveQueryConfiguration"));
             }
-            ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("DQL.ExecutionManagerAction", group, true);
+            ActionToolbar toolbar = actionManager.createActionToolbar("DQL.ExecutionManagerAction", group, true);
             toolbar.setTargetComponent(this);
             JComponent toolbarComponent = toolbar.getComponent();
             toolbarComponent.setOpaque(false);
@@ -145,35 +145,35 @@ public class ExecutionManagerAction extends AnAction implements CustomComponentA
         }
 
         private void addQueryConfiguration(@NotNull DefaultActionGroup group) {
-            group.add(new AbstractTimeFieldAction(
-                    configuration.timeframeStart(),
-                    DQLBundle.message("action.DQL.QueryConfigurationAction.timeframeFrom.placeholder"),
-                    DQLBundle.message("action.DQLExecutionManagerToolbar.option.queryTimeframe"),
-                    AllIcons.General.History
-            ) {
+            group.addAction(new QueryTimeframeAction(configuration.timeframeStart(), configuration.timeframeEnd()) {
                 @Override
-                public void actionPerformed(@NotNull AnActionEvent e) {
+                public void timeframeStartChanged(@NotNull AnActionEvent e, @Nullable String value) {
                     QueryConfiguration configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
                     if (configuration == null) {
                         return;
                     }
-                    configuration.setTimeframeStart(getValue());
+                    configuration.setTimeframeStart(value);
                     manager.settingChanged(e);
                 }
-            });
-            group.add(new AbstractTimeFieldAction(
-                    configuration.timeframeEnd(),
-                    DQLBundle.message("action.DQL.QueryConfigurationAction.timeframeTo.placeholder"),
-                    DQLBundle.message("action.DQLExecutionManagerToolbar.option.queryTimeframe"),
-                    null
-            ) {
+
                 @Override
-                public void actionPerformed(@NotNull AnActionEvent e) {
+                public void timeframeEndChanged(@NotNull AnActionEvent e, @Nullable String value) {
                     QueryConfiguration configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
                     if (configuration == null) {
                         return;
                     }
-                    configuration.setTimeframeEnd(getValue());
+                    configuration.setTimeframeEnd(value);
+                    manager.settingChanged(e);
+                }
+
+                @Override
+                public void timeframeChanged(@NotNull AnActionEvent e, @Nullable String start, @Nullable String end) {
+                    QueryConfiguration configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
+                    if (configuration == null) {
+                        return;
+                    }
+                    configuration.setTimeframeStart(start);
+                    configuration.setTimeframeEnd(end);
                     manager.settingChanged(e);
                 }
             });
