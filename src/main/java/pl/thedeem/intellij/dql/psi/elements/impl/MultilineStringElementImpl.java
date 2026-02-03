@@ -12,9 +12,13 @@ public abstract class MultilineStringElementImpl extends DoubleQuotedStringEleme
     }
 
     @Override
+    public boolean isEscapingDisabled() {
+        return true;
+    }
+
+    @Override
     public TextRange getHostTextRange() {
-        int length = getTextLength();
-        return new TextRange(3, length > 6 ? getTextLength() - 3 : 3);
+        return new TextRange(3, Math.max(3, getTextLength() - 3));
     }
 
     @Override
