@@ -152,9 +152,8 @@ public class DQLTableResultPanel extends BorderLayoutPanel {
                 String columnValue = columnTypes.get(s);
                 try {
                     return switch (columnValue) {
-                        case "double", "number" -> Double.valueOf(stringValue);
+                        case "double", "number", "long" -> Double.valueOf(stringValue);
                         case "boolean" -> stringValue == null ? null : Boolean.valueOf(stringValue);
-                        case "long" -> Long.valueOf(stringValue);
                         case "array", "record", "timeframe" -> {
                             try {
                                 yield mapper.writeValueAsString(value);
