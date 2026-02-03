@@ -25,6 +25,7 @@
 - Added missing quick fixes for inspections:
   - Dropping DQL commands and functions for unknown & experimental expressions
   - Renaming the DQL file to `.partial.dql` when an invalid command context is detected (only for `.dql` files)
+- DQL now supports `/* language=X */` comments in strings
 
 ### Bug fixes
 

@@ -18,7 +18,7 @@ public class StringLiteralEscaper<T extends PsiLanguageInjectionHost> extends Li
         String fullText = myHost.getText();
         String injected = textRange.substring(fullText);
 
-        if (isTextBlock(fullText)) {
+        if (isEscapingDisabled()) {
             out.append(injected);
             return true;
         }
@@ -28,7 +28,7 @@ public class StringLiteralEscaper<T extends PsiLanguageInjectionHost> extends Li
 
     @Override
     public int getOffsetInHost(int offset, @NotNull TextRange textRange) {
-        if (isTextBlock(myHost.getText())) {
+        if (isEscapingDisabled()) {
             return textRange.getStartOffset() + offset;
         }
         if (offset >= this.outSourceOffsets.length) {
@@ -44,15 +44,16 @@ public class StringLiteralEscaper<T extends PsiLanguageInjectionHost> extends Li
 
     @Override
     public @NotNull TextRange getRelevantTextRange() {
-        String text = this.myHost.getText();
-        if (isTextBlock(myHost.getText())) {
-            return TextRange.from(3, Math.max(3, text.length() - 3));
+        if (myHost instanceof InjectedLanguageHolder holder) {
+            return holder.getHostTextRange();
         }
-        return TextRange.from(1, Math.max(1, text.length() - 1));
+        return TextRange.from(1, Math.max(1, myHost.getTextLength() - 1));
     }
 
-    private boolean isTextBlock(String text) {
-        return (text.startsWith("\"\"\"") && text.endsWith("\"\"\""))
-                || (text.startsWith("'''") && text.endsWith("'''"));
+    private boolean isEscapingDisabled() {
+        if (myHost instanceof InjectedLanguageHolder holder) {
+            return holder.isEscapingDisabled();
+        }
+        return false;
     }
 }
