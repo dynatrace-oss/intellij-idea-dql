@@ -9,6 +9,8 @@
   - Adding data toolbar for DQL execution results opened as a new editor tab
   - Adding an option to change the DQL execution results column order and visibility
   - Adding predefined timeframes to the DQL execution toolbar (user can still define a custom one)
+  - The DQL execution result will show an empty cell for a boolean column that had a `null` value (instead of the
+    unchecked checkbox). This change helps to differentiate between `false` and `null` values.
 - The "Show DQL query" option when executing DQL will now try to show the parsed query instead of the raw one, if
   possible.
 - Adding support for "Expression DQL" file (with `.edql` extensions), which allows to define a DQL expression without
