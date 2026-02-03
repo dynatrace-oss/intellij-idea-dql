@@ -10,6 +10,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.ListTableModel;
@@ -34,6 +35,7 @@ import pl.thedeem.intellij.dql.fileProviders.DQLRecordVirtualFile;
 
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
@@ -89,6 +91,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel {
         table.setAutoCreateRowSorter(true);
         table.addRightClickSelection();
         table.setDefaultRenderer(Object.class, new DQLCellRenderer());
+        table.setDefaultRenderer(Boolean.class, new NullableBooleanRenderer());
         table.getTableHeader().setDefaultRenderer(new DQLHeaderRenderer(columnTypes, table.getTableHeader()));
         updateColumnSizes(table, columnTypes);
 
@@ -149,9 +152,8 @@ public class DQLTableResultPanel extends BorderLayoutPanel {
                 String columnValue = columnTypes.get(s);
                 try {
                     return switch (columnValue) {
-                        case "double", "number" -> Double.valueOf(stringValue);
-                        case "boolean" -> Boolean.valueOf(stringValue);
-                        case "long" -> Long.valueOf(stringValue);
+                        case "double", "number", "long" -> Double.valueOf(stringValue);
+                        case "boolean" -> stringValue == null ? null : Boolean.valueOf(stringValue);
                         case "array", "record", "timeframe" -> {
                             try {
                                 yield mapper.writeValueAsString(value);
@@ -194,6 +196,26 @@ public class DQLTableResultPanel extends BorderLayoutPanel {
                 setText(zonedDateTime.format(DQLUtil.USER_FRIENDLY_DATE_FORMATTER));
             }
             return c;
+        }
+    }
+
+    private static final class NullableBooleanRenderer extends CommonTableCellRenderer {
+        private final TableCellRenderer delegate = new JBTable().getDefaultRenderer(Boolean.class);
+        private final JLabel empty = new JLabel();
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component original = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (value == null && original instanceof JComponent component) {
+                empty.setOpaque(component.isOpaque());
+                empty.setBackground(component.getBackground());
+                empty.setForeground(component.getForeground());
+                empty.setBorder(component.getBorder());
+                empty.setText("");
+                empty.setIcon(null);
+                return empty;
+            }
+            return original;
         }
     }
 
