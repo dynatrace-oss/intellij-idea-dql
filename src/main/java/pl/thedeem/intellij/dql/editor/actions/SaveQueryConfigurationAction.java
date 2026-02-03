@@ -10,6 +10,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.actions.ActionUtils;
@@ -19,6 +20,8 @@ import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLConfigurationFact
 import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLConfigurationType;
 import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLRunConfiguration;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
+
+import java.util.Objects;
 
 public class SaveQueryConfigurationAction extends AnAction {
     @Override
@@ -43,7 +46,7 @@ public class SaveQueryConfigurationAction extends AnAction {
             configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
         }
 
-        if (configuration == null || configName == null) {
+        if (configuration == null) {
             return;
         }
         RunnerAndConfigurationSettings config = configuration.getRunConfigName() != null ?
@@ -61,9 +64,9 @@ public class SaveQueryConfigurationAction extends AnAction {
         }
     }
 
-    private @NotNull RunnerAndConfigurationSettings createNewSettings(@NotNull String name, @NotNull RunManager runManager) {
+    private @NotNull RunnerAndConfigurationSettings createNewSettings(@Nullable String name, @NotNull RunManager runManager) {
         ExecuteDQLConfigurationFactory factory = ExecuteDQLConfigurationType.getInstance().getFactory();
-        return runManager.createConfiguration(name, factory);
+        return runManager.createConfiguration(Objects.requireNonNullElse(name, ""), factory);
     }
 
     @Override

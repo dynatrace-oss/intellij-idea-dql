@@ -10,6 +10,7 @@ import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
+import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +49,7 @@ public class DynatraceTenantsConfigurable implements Configurable {
                 .setEditAction(button -> editTenant())
                 .setRemoveAction(button -> removeTenant());
 
-        BorderLayoutPanel panel = new BorderLayoutPanel();
+        BorderLayoutPanel panel = JBUI.Panels.simplePanel();
         panel.addToCenter(decorator.createPanel());
         return panel;
     }

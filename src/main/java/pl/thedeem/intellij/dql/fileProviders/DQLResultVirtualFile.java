@@ -18,7 +18,7 @@ public class DQLResultVirtualFile extends DQLVirtualFile<DQLPollResponse> {
 
     @Override
     public @NotNull JComponent createComponent(@NotNull Project project) {
-        BorderLayoutPanel panel = new BorderLayoutPanel();
+        BorderLayoutPanel panel = JBUI.Panels.simplePanel();
         panel.setBorder(JBUI.Borders.empty());
         DQLExecutionResult result = new DQLExecutionResult(project);
         result.update(content);
