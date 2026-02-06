@@ -2,116 +2,157 @@ package pl.thedeem.intellij.dql.editor.actions;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ActivityTracker;
+import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.IntelliJUtils;
+import pl.thedeem.intellij.common.services.ManagedService;
+import pl.thedeem.intellij.common.services.ProjectServicesManager;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.actions.ActionUtils;
+import pl.thedeem.intellij.dql.DQLFileType;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 import pl.thedeem.intellij.dql.exec.DQLProcessHandler;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
-import pl.thedeem.intellij.dql.services.ui.DQLManagedService;
-import pl.thedeem.intellij.dql.services.ui.DQLServicesManager;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class StartStopDQLExecutionAction extends AnAction {
+    public StartStopDQLExecutionAction() {
+        super("", null, AllIcons.Actions.Execute);
+    }
+
     @Override
     public void update(@NotNull AnActionEvent e) {
-        Project project = e.getProject();
         Presentation presentation = e.getPresentation();
-        DQLExecutionService service = ActionUtils.getService(e, DQLExecutionService.class);
-        if (project == null || (service == null && ActionUtils.isNotRelatedToDQL(e))) {
+        DQLExecutionService service = e.getData(DQLExecutionService.EXECUTION_SERVICE);
+
+        if (service != null) {
+            update(e, service);
+            return;
+        }
+
+        Project project = e.getProject();
+        PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
+        if (project == null || file == null) {
             presentation.setEnabledAndVisible(false);
             return;
         }
 
-        PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
-        List<DQLManagedService<?>> services = runningServices(project, file, service);
+        List<ManagedService> services = getRunningServices(project, file);
         if (!services.isEmpty()) {
             presentation.setText(DQLBundle.message("action.DQL.StopQuery.text"));
             presentation.setIcon(AllIcons.Run.Stop);
         } else {
-            presentation.setText(DQLBundle.message("action.DQL.StartStopExecution.text"));
+            presentation.setText(DQLBundle.message("action.DQL.ExecuteDQLQuery.text"));
             presentation.setIcon(AllIcons.Actions.Execute);
         }
         DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance();
-        QueryConfiguration configuration = service != null ? service.getConfiguration() : file != null ? configurationService.getQueryConfiguration(file) : null;
-        if (configuration == null || StringUtil.isEmpty(configuration.tenant())) {
+        QueryConfiguration configuration = configurationService.getQueryConfiguration(file);
+        if (StringUtil.isEmpty(configuration.tenant())) {
             presentation.setEnabled(false);
+        }
+    }
+
+    protected void update(@NotNull AnActionEvent e, @NotNull DQLExecutionService service) {
+        Presentation presentation = e.getPresentation();
+        QueryConfiguration configuration = service.getConfiguration();
+        if (StringUtil.isEmpty(configuration.tenant())) {
+            presentation.setEnabled(false);
+            return;
+        }
+        if (service.isRunning()) {
+            presentation.setText(DQLBundle.message("action.DQL.StopQuery.text"));
+            presentation.setIcon(AllIcons.Run.Stop);
+        } else {
+            presentation.setText(DQLBundle.message("action.DQL.ExecuteDQLQuery.text"));
+            presentation.setIcon(AllIcons.Actions.Execute);
         }
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();
-        DQLExecutionService service = ActionUtils.getService(e, DQLExecutionService.class);
         if (project == null) {
             return;
         }
-        Editor editor = ActionUtils.getEditor(e);
-        PsiFile file = ActionUtils.getRelatedPsiFile(e);
 
+        DQLExecutionService service = e.getData(DQLExecutionService.EXECUTION_SERVICE);
         if (service != null) {
-            List<DQLManagedService<?>> services = runningServices(project, file, service);
-            if (!services.isEmpty()) {
-                for (DQLManagedService<?> related : services) {
-                    related.stopExecution();
-                }
-                ActivityTracker.getInstance().inc();
-                return;
+            if (service.isRunning()) {
+                stopService(service);
+            } else {
+                startService(project, new DQLExecutionService(
+                        service.getServiceId(),
+                        Objects.requireNonNullElse(e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION), service.getConfiguration()),
+                        project,
+                        new DQLProcessHandler()
+                ));
             }
-            DQLServicesManager.getInstance(project).startExecution(new DQLExecutionService(service.getName(), project, new DQLProcessHandler()), service.getConfiguration());
             return;
         }
 
+        PsiFile file = getRelatedPsiFile(e);
         if (file == null) {
             return;
         }
 
-        withQueryConfiguration(project, editor, file, e, (QueryConfiguration configuration) -> {
+        List<ManagedService> runningServices = getRunningServices(project, file);
+        if (!runningServices.isEmpty()) {
+            stopService(runningServices);
+        } else {
+            startService(project, e, file);
+        }
+    }
+
+    private void stopService(@NotNull List<ManagedService> runningServices) {
+        for (ManagedService runningService : runningServices) {
+            if (runningService instanceof DQLExecutionService executionService) {
+                stopService(executionService);
+            }
+        }
+    }
+
+    private void startService(@NotNull Project project, @NotNull AnActionEvent e, @NotNull PsiFile file) {
+        Editor editor = getEditor(e);
+        DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance();
+        QueryConfiguration config = Objects.requireNonNullElse(
+                e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION),
+                configurationService.getQueryConfiguration(file)
+        );
+        configurationService.getQueryFromEditorContext(file, editor, (query) -> {
+            QueryConfiguration configuration = config.copy();
+            configuration.setQuery(query);
             e.getPresentation().setEnabled(false);
-            String serviceName = ActionUtils.generateServiceName(file);
-            DQLServicesManager.getInstance(project).startExecution(new DQLExecutionService(serviceName, project, new DQLProcessHandler()), configuration);
-            ActivityTracker.getInstance().inc();
+            DQLExecutionService newService = new DQLExecutionService(
+                    DQLBundle.message("services.executeDQL.serviceName", file.getName()),
+                    configuration,
+                    project,
+                    new DQLProcessHandler()
+            );
+            startService(project, newService);
         });
     }
 
-    protected void withQueryConfiguration(
-            @NotNull Project project,
-            @Nullable Editor editor,
-            @NotNull PsiFile file,
-            @NotNull AnActionEvent e,
-            @NotNull Consumer<QueryConfiguration> consumer
-    ) {
-        DQLExecutionService service = ActionUtils.getService(e, DQLExecutionService.class);
-        if (service != null) {
-            e.getPresentation().setEnabled(false);
-            DQLServicesManager.getInstance(project).startExecution(
-                    new DQLExecutionService(service.getName(), project, new DQLProcessHandler()),
-                    service.getConfiguration()
-            );
-            return;
-        }
+    private void stopService(@NotNull DQLExecutionService service) {
+        service.stopExecution();
+    }
 
-        DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance();
-        QueryConfiguration config = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
-        if (config == null) {
-            config = configurationService.getQueryConfiguration(file);
-        }
-
-        QueryConfiguration finalConfig = config;
-        configurationService.getQueryFromEditorContext(file, editor, (query) -> {
-            finalConfig.setQuery(query);
-            consumer.accept(finalConfig);
-        });
+    private void startService(@NotNull Project project, @NotNull DQLExecutionService service) {
+        ProjectServicesManager.getInstance(project).registerService(service);
+        ActivityTracker.getInstance().inc();
+        service.startExecution();
     }
 
     @Override
@@ -119,8 +160,60 @@ public class StartStopDQLExecutionAction extends AnAction {
         return ActionUpdateThread.BGT;
     }
 
-    private List<DQLManagedService<?>> runningServices(@NotNull Project project, @Nullable PsiFile file, @Nullable DQLExecutionService service) {
-        String serviceName = service != null ? service.getName() : file != null ? ActionUtils.generateServiceName(file) : null;
-        return DQLServicesManager.getInstance(project).findServices(ex -> ex instanceof DQLExecutionService && ex.isRunning() && Objects.equals(ex.getName(), serviceName));
+    private @NotNull List<ManagedService> getRunningServices(@NotNull Project project, @NotNull PsiFile file) {
+        return ProjectServicesManager.getInstance(project).find((s) -> {
+            if (s instanceof DQLExecutionService executionService) {
+                QueryConfiguration configuration = executionService.getConfiguration();
+                if (configuration.originalFile() != null) {
+                    VirtualFile relatedFile = IntelliJUtils.getProjectRelativeFile(configuration.originalFile(), project);
+                    if (relatedFile != null && relatedFile.getPath().equals(file.getVirtualFile().getPath())) {
+                        return executionService.isRunning();
+                    }
+                }
+            }
+            return false;
+        });
+    }
+
+    private @Nullable PsiFile getRelatedPsiFile(@NotNull AnActionEvent e) {
+        Project project = e.getProject();
+        if (project == null) {
+            return null;
+        }
+        PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
+        if (psiFile == null) {
+            VirtualFile virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
+            if (virtualFile != null) {
+                psiFile = PsiManager.getInstance(project).findFile(virtualFile);
+            }
+
+        }
+        if (psiFile == null) {
+            return null;
+        }
+        if (!DQLFileType.INSTANCE.equals(psiFile.getFileType())) {
+            InjectedLanguageManager manager = InjectedLanguageManager.getInstance(psiFile.getProject());
+            Editor editor = getEditor(e);
+            if (editor == null) {
+                return null;
+            }
+            PsiElement psiElement = e.getData(CommonDataKeys.PSI_ELEMENT);
+            PsiElement injectedElement = manager.findInjectedElementAt(psiFile, editor.getCaretModel().getOffset());
+            if (injectedElement != null && DQLFileType.INSTANCE.equals(injectedElement.getContainingFile().getFileType())) {
+                return injectedElement.getContainingFile();
+            } else if (psiElement != null) {
+                return DQLFileType.INSTANCE.equals(psiElement.getContainingFile().getFileType()) ? psiElement.getContainingFile() : null;
+            }
+        }
+        return psiFile;
+    }
+
+    public @Nullable Editor getEditor(@NotNull AnActionEvent e) {
+        Editor editor = e.getData(CommonDataKeys.EDITOR);
+        if (editor == null) {
+            FileEditor fileEditor = e.getData(PlatformCoreDataKeys.FILE_EDITOR);
+            editor = fileEditor instanceof TextEditor textEditor ? textEditor.getEditor() : null;
+        }
+        return editor;
     }
 }

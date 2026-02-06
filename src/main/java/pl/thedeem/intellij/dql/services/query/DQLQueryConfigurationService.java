@@ -24,4 +24,6 @@ public interface DQLQueryConfigurationService {
     @NotNull QueryConfiguration createDefaultConfiguration(@NotNull PsiFile file);
 
     void getQueryFromEditorContext(@NotNull PsiFile file, @Nullable Editor editor, @NotNull Consumer<@NotNull String> consumer);
+
+    void updateConfiguration(@NotNull PsiFile file, @NotNull QueryConfiguration configuration);
 }

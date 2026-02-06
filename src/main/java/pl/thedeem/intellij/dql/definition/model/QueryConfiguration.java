@@ -103,4 +103,19 @@ public class QueryConfiguration {
     public void setDefinedVariables(List<DQLVariablesService.VariableDefinition> definedVariables) {
         this.definedVariables = definedVariables;
     }
+
+    public QueryConfiguration copy() {
+        QueryConfiguration copy = new QueryConfiguration();
+        copy.setTenant(this.tenant);
+        copy.setQuery(this.query);
+        copy.setDefaultScanLimit(this.defaultScanLimit);
+        copy.setMaxResultBytes(this.maxResultBytes);
+        copy.setMaxResultRecords(this.maxResultRecords);
+        copy.setTimeframeStart(this.timeframeStart);
+        copy.setTimeframeEnd(this.timeframeEnd);
+        copy.setRunConfigName(this.runConfigName);
+        copy.setOriginalFile(this.originalFile);
+        copy.setDefinedVariables(this.definedVariables);
+        return copy;
+    }
 }

@@ -7,6 +7,8 @@
     <depends>com.intellij.modules.json</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <serviceViewContributor implementation="pl.thedeem.intellij.common.services.ManagedServiceViewContributor"/>
+
         <!-- region DQL -->
         <fileType
                 name="DQL"
@@ -302,7 +304,6 @@
         <configurationType
                 implementation="pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLConfigurationType"/>
         <programRunner implementation="pl.thedeem.intellij.dql.exec.DQLProgramRunner"/>
-        <serviceViewContributor implementation="pl.thedeem.intellij.dql.services.ui.DQLServiceViewContributor"/>
 
         <fileEditorProvider implementation="pl.thedeem.intellij.dql.fileProviders.DQLFileEditorProvider"/>
         <editorNotificationProvider
@@ -585,24 +586,17 @@
                 icon="AllIcons.Actions.Close">
             <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="RunnerActions"/>
         </action>
-        <action id="DQL.StartStopExecution"
-                class="pl.thedeem.intellij.dql.editor.actions.StartStopDQLExecutionAction"
+        <action id="DQL.ExecuteDQLQuery"
+                class="pl.thedeem.intellij.dql.actions.ExecuteDQLQueryAction"
                 icon="AllIcons.Actions.Execute"
         >
             <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="RunnerActions"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="NewGroup"/>
             <keyboard-shortcut keymap="$default" first-keystroke="control alt E"/>
         </action>
-        <action id="DQL.SelectTenant"
-                class="pl.thedeem.intellij.dql.editor.actions.TenantSelectorAction"
-        />
         <action id="DQL.ManageTenants"
                 icon="AllIcons.General.GearPlain"
                 class="pl.thedeem.intellij.dql.actions.ManageTenantsAction"
-        />
-        <action id="DQL.SaveQueryConfiguration"
-                class="pl.thedeem.intellij.dql.editor.actions.SaveQueryConfigurationAction"
-                icon="AllIcons.Actions.AddToDictionary"
         />
         <group id="DQL.FloatingToolbarManager">
             <reference ref="DQL.ToggleDQLExecutionToolbar"/>

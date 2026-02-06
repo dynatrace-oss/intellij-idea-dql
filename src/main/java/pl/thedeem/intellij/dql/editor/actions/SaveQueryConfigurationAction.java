@@ -3,6 +3,7 @@ package pl.thedeem.intellij.dql.editor.actions;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.impl.RunDialog;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -13,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.actions.ActionUtils;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLConfigurationFactory;
@@ -24,6 +24,10 @@ import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import java.util.Objects;
 
 public class SaveQueryConfigurationAction extends AnAction {
+    public SaveQueryConfigurationAction() {
+        super(DQLBundle.message("action.DQL.SaveQueryConfiguration.text"), null, AllIcons.Actions.AddToDictionary);
+    }
+
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();
@@ -34,14 +38,14 @@ public class SaveQueryConfigurationAction extends AnAction {
         RunManager runManager = RunManager.getInstance(project);
         String configName = null;
         QueryConfiguration configuration = null;
-        DQLExecutionService service = ActionUtils.getService(e, DQLExecutionService.class);
+        DQLExecutionService service = e.getData(DQLExecutionService.EXECUTION_SERVICE);
         if (service != null) {
             configName = service.getConfiguration().runConfigName();
             configuration = service.getConfiguration();
         } else if (file != null) {
             configName = DQLBundle.message(
                     "action.DQL.ExecuteScript.runConfigurationName",
-                    ActionUtils.generateServiceName(file)
+                    file.getName()
             );
             configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
         }

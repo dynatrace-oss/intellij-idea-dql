@@ -136,6 +136,7 @@ public class DQLExecutionResult extends BorderLayoutPanel {
         if (response.isFinished()) {
             refreshView();
         } else {
+            show(progressPanel);
             progressPanel.update(response);
         }
     }

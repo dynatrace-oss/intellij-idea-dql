@@ -18,6 +18,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class TenantSelectorAction extends ComboBoxAction {
+    public TenantSelectorAction() {
+        super();
+    }
+
     @Override
     public void update(@NotNull AnActionEvent e) {
         Project project = e.getProject();
@@ -56,7 +60,7 @@ public class TenantSelectorAction extends ComboBoxAction {
 
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
-                    updateSelectedTenant(tenant.getName(), dataContext);
+                    updateSelectedTenant(tenant.getName(), e);
                 }
 
                 @Override
@@ -74,8 +78,8 @@ public class TenantSelectorAction extends ComboBoxAction {
         return config != null ? config.tenant() : null;
     }
 
-    protected void updateSelectedTenant(@NotNull String selectedTenant, @NotNull DataContext dataContext) {
-        QueryConfiguration config = dataContext.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
+    protected void updateSelectedTenant(@NotNull String selectedTenant, @NotNull AnActionEvent e) {
+        QueryConfiguration config = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
         if (config != null) {
             config.setTenant(selectedTenant);
         }
