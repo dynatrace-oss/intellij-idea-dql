@@ -115,7 +115,7 @@ public class QueryConfiguration {
         copy.setTimeframeEnd(this.timeframeEnd);
         copy.setRunConfigName(this.runConfigName);
         copy.setOriginalFile(this.originalFile);
-        copy.setDefinedVariables(List.copyOf(this.definedVariables));
+        copy.setDefinedVariables(this.definedVariables != null ? List.copyOf(this.definedVariables) : null);
         return copy;
     }
 }
