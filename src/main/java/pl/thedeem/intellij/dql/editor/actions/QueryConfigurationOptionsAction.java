@@ -71,7 +71,7 @@ public class QueryConfigurationOptionsAction extends AnAction implements CustomC
             }
             if (!myQueryConfigurationComponent.maxBytes().isFocusOwner()
                     && !Objects.equals(parseLong(myQueryConfigurationComponent.maxBytes().getText()), config.maxResultBytes())) {
-                myQueryConfigurationComponent.maxBytes().setText(String.valueOf(config.maxResultRecords()));
+                myQueryConfigurationComponent.maxBytes().setText(String.valueOf(config.maxResultBytes()));
             }
             if (!myQueryConfigurationComponent.maxRecords().isFocusOwner()
                     && !Objects.equals(parseLong(myQueryConfigurationComponent.maxRecords().getText()), config.maxResultRecords())) {
