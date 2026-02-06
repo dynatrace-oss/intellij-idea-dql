@@ -2,7 +2,7 @@ package pl.thedeem.intellij.edql;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.dql.DQLIcon;
+import pl.thedeem.intellij.common.Icons;
 
 import javax.swing.*;
 
@@ -33,6 +33,6 @@ public class EDQLFileType extends LanguageFileType {
 
     @Override
     public Icon getIcon() {
-        return DQLIcon.DYNATRACE_LOGO;
+        return Icons.DYNATRACE_LOGO;
     }
 }

@@ -17,8 +17,8 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFile;
 import pl.thedeem.intellij.dql.DQLIcon;
+import pl.thedeem.intellij.dql.actions.ExecuteDQLQueryAction;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
-import pl.thedeem.intellij.dql.editor.actions.ExecuteDQLQueryAction;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 
@@ -49,11 +49,7 @@ public class DQLFileQueryExecutionLineMarkerProvider extends AbstractDQLQueryLin
         ) {
             @Override
             public GutterIconRenderer createGutterRenderer() {
-                LineMarkerGutterIconRenderer<PsiElement> custom = createActionGutterRenderer(
-                        this,
-                        action,
-                        element
-                );
+                LineMarkerGutterIconRenderer<PsiElement> custom = createActionGutterRenderer(this, action, element);
                 return custom == null ? super.createGutterRenderer() : custom;
             }
         };
@@ -95,13 +91,18 @@ public class DQLFileQueryExecutionLineMarkerProvider extends AbstractDQLQueryLin
         SmartPsiElementPointer<PsiElement> pointer = SmartPointerManager.createPointer(element);
         return new ExecuteDQLQueryAction() {
             @Override
+            protected boolean isNotRelatedToDQL(@NotNull AnActionEvent e) {
+                return false;
+            }
+
+            @Override
             protected @NotNull AnActionEvent updateEvent(@NotNull AnActionEvent original) {
                 PsiElement marked = pointer.getElement();
                 if (marked == null) {
                     return original;
                 }
 
-                QueryConfiguration configuration = service.getQueryConfiguration(marked.getContainingFile());
+                QueryConfiguration configuration = service.getQueryConfiguration(marked.getContainingFile()).copy();
                 configuration.setQuery(query.getText());
                 DataContext customContext = SimpleDataContext.builder()
                         .setParent(original.getDataContext())

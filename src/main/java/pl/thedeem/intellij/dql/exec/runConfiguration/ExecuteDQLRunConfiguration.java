@@ -17,12 +17,12 @@ import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.IntelliJUtils;
+import pl.thedeem.intellij.common.services.ProjectServicesManager;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFileType;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 import pl.thedeem.intellij.dql.exec.DQLProcessHandler;
-import pl.thedeem.intellij.dql.services.ui.DQLServicesManager;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
@@ -67,10 +67,11 @@ public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLR
                 IntelliJUtils.openRunConfiguration(getProject());
                 return null;
             }
-            DQLExecutionService service = new DQLExecutionService(getName(), getProject(), processHandler);
+            DQLExecutionService service = new DQLExecutionService(getName(), payload, getProject(), processHandler);
             ProcessTerminatedListener.attach(processHandler);
             processHandler.startNotify();
-            DQLServicesManager.getInstance(getProject()).startExecution(service, payload);
+            ProjectServicesManager.getInstance(getProject()).registerService(service);
+            service.startExecution();
             return new DefaultExecutionResult(null, processHandler, service.getToolbarActions());
         };
     }

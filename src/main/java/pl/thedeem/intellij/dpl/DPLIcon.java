@@ -1,12 +1,11 @@
 package pl.thedeem.intellij.dpl;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.openapi.util.IconLoader;
+import pl.thedeem.intellij.common.Icons;
 
 import javax.swing.*;
 
-public interface DPLIcon {
-    Icon DYNATRACE_LOGO = IconLoader.getIcon("/icons/dynatrace.png", DPLIcon.class);
+public interface DPLIcon extends Icons {
     Icon CONFIGURATION = AllIcons.Actions.Edit;
     Icon QUANTIFIER = AllIcons.General.Note;
     Icon CONFIGURATION_PARAMETER = AllIcons.Nodes.Parameter;

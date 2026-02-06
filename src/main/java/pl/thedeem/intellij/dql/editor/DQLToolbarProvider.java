@@ -1,9 +1,6 @@
 package pl.thedeem.intellij.dql.editor;
 
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -14,9 +11,11 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.components.SimpleDataProviderPanel;
 import pl.thedeem.intellij.common.components.TransparentScrollPane;
 import pl.thedeem.intellij.dql.DQLFileType;
-import pl.thedeem.intellij.dql.editor.actions.ExecutionManagerAction;
+import pl.thedeem.intellij.dql.editor.actions.QueryConfigurationAction;
+import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 
 import javax.swing.*;
@@ -37,8 +36,13 @@ public class DQLToolbarProvider implements EditorNotificationProvider {
         }
         ActionManager actionManager = ActionManager.getInstance();
         return fileEditor -> {
-            BorderLayoutPanel container = JBUI.Panels.simplePanel();
-            ActionToolbar toolbar = createToolbarPanel(actionManager, file);
+            BorderLayoutPanel container = new SimpleDataProviderPanel() {
+                @Override
+                public void uiDataSnapshot(@NotNull DataSink dataSink) {
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, () -> DQLQueryConfigurationService.getInstance().getQueryConfiguration(file));
+                }
+            };
+            ActionToolbar toolbar = createToolbarPanel(actionManager);
             toolbar.setTargetComponent(container);
             container.addToLeft(toolbar.getComponent());
             ActionToolbar closeToolbar = createManagerToolbar(actionManager);
@@ -53,16 +57,15 @@ public class DQLToolbarProvider implements EditorNotificationProvider {
         };
     }
 
-    private static @NotNull ActionToolbar createToolbarPanel(@NotNull ActionManager actionManager, @NotNull PsiFile file) {
+    private static @NotNull ActionToolbar createToolbarPanel(@NotNull ActionManager actionManager) {
         DefaultActionGroup group = new DefaultActionGroup();
         group.setInjectedContext(true);
-        group.addAction(new ExecutionManagerAction(file, true));
+        group.addAction(new QueryConfigurationAction());
         ActionToolbar toolbar = actionManager.createActionToolbar("DQL.FloatingToolbar", group, true);
         toolbar.getComponent().setOpaque(false);
         toolbar.getComponent().setBorder(JBUI.Borders.empty());
         return toolbar;
     }
-
 
     private static @NotNull ActionToolbar createManagerToolbar(@NotNull ActionManager actionManager) {
         ActionToolbar toolbar = actionManager.createActionToolbar("DQL.FloatingToolbarManagerActions", (ActionGroup) actionManager.getAction("DQL.FloatingToolbarManager"), true);

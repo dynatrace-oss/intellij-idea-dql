@@ -1,13 +1,12 @@
 package pl.thedeem.intellij.dql;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.openapi.util.IconLoader;
+import pl.thedeem.intellij.common.Icons;
 import pl.thedeem.intellij.common.IntelliJUtils;
 
 import javax.swing.*;
 
-public interface DQLIcon {
-    Icon DYNATRACE_LOGO = IconLoader.getIcon("/icons/dynatrace.png", DQLIcon.class);
+public interface DQLIcon extends Icons {
     Icon DQL_FIELD = AllIcons.Nodes.Field;
     Icon DQL_OPERATOR = AllIcons.Nodes.Lambda;
     Icon DQL_FUNCTION = AllIcons.Nodes.Function;

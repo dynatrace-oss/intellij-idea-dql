@@ -97,6 +97,11 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
         }
     }
 
+    @Override
+    public void updateConfiguration(@NotNull PsiFile file, @NotNull QueryConfiguration configuration) {
+        file.putUserData(QUERY_CONFIGURATION, configuration);
+    }
+
     private static void getQueryFromSubqueries(@NotNull PsiFile file, @NotNull Editor editor, @NotNull Consumer<@NotNull String> consumer) {
         List<SelectionContext> queries = new ArrayList<>();
         PsiElement element = file.findElementAt(editor.getSelectionModel().getSelectionStart());
