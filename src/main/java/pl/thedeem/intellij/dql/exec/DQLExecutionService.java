@@ -192,7 +192,11 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
             actions.addSeparator();
             actions.addAction(resultPanel.getToolbarActions());
             actions.addSeparator();
-            actions.addAction(new AnAction(DQLBundle.message("action.DQL.OpenDQLResultInNewTab.text"), null, AllIcons.Actions.MoveTo2) {
+            actions.addAction(new AnAction(
+                    DQLBundle.message("services.executeDQL.actions.openInNewTab.title"),
+                    null,
+                    AllIcons.Actions.MoveTo2
+            ) {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
                     DQLPollResponse result = getResult();
@@ -201,7 +205,10 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
                     }
                     FileEditorManager.getInstance(project)
                             .openFile(new DQLResultVirtualFile(
-                                    DQLBundle.message("components.queryDetails.fileName", getPresentation().getPresentableText()),
+                                    DQLBundle.message(
+                                            "services.executeDQL.actions.openInNewTab.tabTitle",
+                                            getPresentation().getPresentableText()
+                                    ),
                                     result
                             ), true);
                 }
@@ -216,7 +223,11 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
                     return ActionUpdateThread.EDT;
                 }
             });
-            actions.addAction(new AnAction(DQLBundle.message("action.DQL.CloseDQLResult.text"), null, AllIcons.General.Close) {
+            actions.addAction(new AnAction(
+                    DQLBundle.message("services.executeDQL.actions.close.title"),
+                    null,
+                    AllIcons.General.Close
+            ) {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
                     stopExecution();

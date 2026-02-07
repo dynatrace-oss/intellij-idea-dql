@@ -60,7 +60,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel {
         this.result = result != null ? result.getResult() : null;
         if (result == null || result.getResult() == null || result.getResult().getRecords() == null || result.getResult().getRecords().isEmpty()) {
             addToCenter(new TransparentScrollPane(new InformationComponent(
-                    DQLBundle.message("runConfiguration.executeDQL.infos.emptyRecords"),
+                    DQLBundle.message("components.results.table.information.noRecords"),
                     AllIcons.General.Information
             )));
         } else {
@@ -259,7 +259,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel {
         if (row != -1 && col != -1) {
             Object value = table.getValueAt(row, col);
             FileEditorManager.getInstance(project).openFile(new DQLRecordFieldVirtualFile(
-                    DQLBundle.message("components.tableResults.cellDetails.title", table.getColumnName(col)),
+                    DQLBundle.message("components.results.table.actions.openField.tabTitle", table.getColumnName(col)),
                     value == null ? "" : value,
                     columnTypes.get(table.getColumnName(col))
             ), true);
@@ -274,7 +274,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel {
             rowValues.put(table.getColumnName(col), ComponentsUtils.prepareColumnValue(table.getValueAt(row, col)));
         }
         FileEditorManager.getInstance(project).openFile(new DQLRecordVirtualFile(
-                DQLBundle.message("components.dqlRecordDetails.fileName"),
+                DQLBundle.message("components.results.table.actions.openRecord.tabTitle"),
                 rowValues
         ), true);
     }

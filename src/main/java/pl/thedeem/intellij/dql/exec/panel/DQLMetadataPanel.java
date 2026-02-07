@@ -23,18 +23,18 @@ public class DQLMetadataPanel extends BorderLayoutPanel {
         setOpaque(false);
         setBorder(JBUI.Borders.empty());
         List<MetadataRow> records = List.of(
-                new MetadataRow(DQLBundle.message("components.queryDetails.values.executedOn"), executionTime != null ? executionTime.format(DQLUtil.USER_FRIENDLY_DATE_FORMATTER) : "-"),
-                new MetadataRow(DQLBundle.message("components.queryDetails.values.queryID"), metadata.getQueryId()),
-                new MetadataRow(DQLBundle.message("components.queryDetails.values.scannedRecords"), String.valueOf(metadata.getScannedRecords())),
-                new MetadataRow(DQLBundle.message("components.queryDetails.values.scannedDataPoints"), String.valueOf(metadata.getScannedDataPoints())),
-                new MetadataRow(DQLBundle.message("components.queryDetails.values.scannedBytes"), String.valueOf(metadata.getScannedBytes())),
-                new MetadataRow(DQLBundle.message("components.queryDetails.values.executionTime"), String.valueOf(metadata.getExecutionTimeMilliseconds())),
-                new MetadataRow(DQLBundle.message("components.queryDetails.values.timezone"), String.valueOf(metadata.getTimezone())),
-                new MetadataRow(DQLBundle.message("components.queryDetails.values.analysisTimeframeStart"), metadata.getAnalysisTimeframeStart()),
-                new MetadataRow(DQLBundle.message("components.queryDetails.values.analysisTimeframeEnd"), metadata.getAnalysisTimeframeEnd()),
-                new MetadataRow(DQLBundle.message("components.queryDetails.values.sampled"), String.valueOf(metadata.isSampled())),
-                new MetadataRow(DQLBundle.message("components.queryDetails.values.locale"), String.valueOf(metadata.getLocale())),
-                new MetadataRow(DQLBundle.message("components.queryDetails.values.dqlVersion"), String.valueOf(metadata.getDqlVersion()))
+                new MetadataRow(DQLBundle.message("components.executionMetadata.data.executedOn"), executionTime != null ? executionTime.format(DQLUtil.USER_FRIENDLY_DATE_FORMATTER) : "-"),
+                new MetadataRow(DQLBundle.message("components.executionMetadata.data.queryID"), metadata.getQueryId()),
+                new MetadataRow(DQLBundle.message("components.executionMetadata.data.scannedRecords"), String.valueOf(metadata.getScannedRecords())),
+                new MetadataRow(DQLBundle.message("components.executionMetadata.data.scannedDataPoints"), String.valueOf(metadata.getScannedDataPoints())),
+                new MetadataRow(DQLBundle.message("components.executionMetadata.data.scannedBytes"), String.valueOf(metadata.getScannedBytes())),
+                new MetadataRow(DQLBundle.message("components.executionMetadata.data.executionTime"), String.valueOf(metadata.getExecutionTimeMilliseconds())),
+                new MetadataRow(DQLBundle.message("components.executionMetadata.data.timezone"), String.valueOf(metadata.getTimezone())),
+                new MetadataRow(DQLBundle.message("components.executionMetadata.data.analysisTimeframeStart"), metadata.getAnalysisTimeframeStart()),
+                new MetadataRow(DQLBundle.message("components.executionMetadata.data.analysisTimeframeEnd"), metadata.getAnalysisTimeframeEnd()),
+                new MetadataRow(DQLBundle.message("components.executionMetadata.data.sampled"), String.valueOf(metadata.isSampled())),
+                new MetadataRow(DQLBundle.message("components.executionMetadata.data.locale"), String.valueOf(metadata.getLocale())),
+                new MetadataRow(DQLBundle.message("components.executionMetadata.data.dqlVersion"), String.valueOf(metadata.getDqlVersion()))
         );
         List<ColumnInfo<MetadataRow, Object>> columnInfos = calculateColumns();
         CommonTable table = new CommonTable(new ListTableModel<>(columnInfos.toArray(new ColumnInfo[]{}), records, 0));
@@ -45,13 +45,13 @@ public class DQLMetadataPanel extends BorderLayoutPanel {
 
     private @NotNull List<ColumnInfo<MetadataRow, Object>> calculateColumns() {
         List<ColumnInfo<MetadataRow, Object>> result = new ArrayList<>(2);
-        result.add(new ColumnInfo<>(DQLBundle.message("components.queryDetails.columns.property")) {
+        result.add(new ColumnInfo<>(DQLBundle.message("components.executionMetadata.columns.property")) {
             @Override
             public @Nullable Object valueOf(MetadataRow s) {
                 return s.property();
             }
         });
-        result.add(new ColumnInfo<>(DQLBundle.message("components.queryDetails.columns.value")) {
+        result.add(new ColumnInfo<>(DQLBundle.message("components.executionMetadata.columns.value")) {
             @Override
             public @Nullable Object valueOf(MetadataRow s) {
                 return s.value();

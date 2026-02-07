@@ -17,7 +17,7 @@ public class DQLExecuteInProgressPanel extends JPanel {
         setOpaque(false);
         setBorder(JBUI.Borders.empty());
 
-        progressBar.setString(DQLBundle.message("runConfiguration.executeDQL.panel.progress.start"));
+        progressBar.setString(DQLBundle.message("components.executionInProgress.started"));
         progressBar.setStringPainted(true);
         progressBar.setIndeterminate(true);
         add(progressBar);
@@ -32,6 +32,6 @@ public class DQLExecuteInProgressPanel extends JPanel {
     public void update(@NotNull DQLPollResponse response) {
         progressBar.setIndeterminate(false);
         progressBar.setValue(response.getProgress() != null ? response.getProgress().intValue() : 0);
-        progressBar.setString(response.getState());
+        progressBar.setString(DQLBundle.message("components.executionInProgress.running"));
     }
 }
