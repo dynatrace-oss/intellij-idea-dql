@@ -21,16 +21,16 @@ public class QueryConfigurationComponent extends JPanel {
         setBorder(JBUI.Borders.empty());
 
         scanLimit = ResizableTextField.createNumericField(
-                DQLBundle.message("action.DQL.QueryConfigurationAction.scanLimit.placeholder"),
-                DQLBundle.message("action.DQLExecutionManagerToolbar.option.scanLimit")
+                DQLBundle.message("components.queryConfiguration.options.scanLimit.placeholder"),
+                DQLBundle.message("components.queryConfiguration.options.scanLimit.tooltip")
         );
         maxBytes = ResizableTextField.createNumericField(
-                DQLBundle.message("action.DQL.QueryConfigurationAction.maxBytes.placeholder"),
-                DQLBundle.message("action.DQLExecutionManagerToolbar.option.maxBytes")
+                DQLBundle.message("components.queryConfiguration.options.maxBytes.placeholder"),
+                DQLBundle.message("components.queryConfiguration.options.maxBytes.tooltip")
         );
         maxRecords = ResizableTextField.createNumericField(
-                DQLBundle.message("action.DQL.QueryConfigurationAction.maxRecords.placeholder"),
-                DQLBundle.message("action.DQLExecutionManagerToolbar.option.maxRecords")
+                DQLBundle.message("components.queryConfiguration.options.maxRecords.placeholder"),
+                DQLBundle.message("components.queryConfiguration.options.maxRecords.tooltip")
         );
         add(configureField(scanLimit, AllIcons.Actions.GroupByModule));
         add(configureField(maxBytes, AllIcons.Actions.GroupByModuleGroup));

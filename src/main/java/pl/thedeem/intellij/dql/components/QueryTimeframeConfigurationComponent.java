@@ -23,12 +23,12 @@ public class QueryTimeframeConfigurationComponent extends JPanel {
         setBorder(JBUI.Borders.empty());
 
         queryStartField = ResizableTextField.createTimeField(
-                DQLBundle.message("action.DQL.QueryConfigurationAction.timeframeFrom.placeholder"),
-                DQLBundle.message("action.DQLExecutionManagerToolbar.option.queryTimeframe")
+                DQLBundle.message("components.queryTimeframe.options.timeframeFrom.placeholder"),
+                DQLBundle.message("components.queryTimeframe.options.timeframeFrom.tooltip")
         );
         queryEndField = ResizableTextField.createTimeField(
-                DQLBundle.message("action.DQL.QueryConfigurationAction.timeframeTo.placeholder"),
-                DQLBundle.message("action.DQLExecutionManagerToolbar.option.queryTimeframe")
+                DQLBundle.message("components.queryTimeframe.options.timeframeTo.placeholder"),
+                DQLBundle.message("components.queryTimeframe.options.timeframeTo.tooltip")
         );
 
         add(createPredefinedQueryTimeframeOptions());
@@ -47,37 +47,40 @@ public class QueryTimeframeConfigurationComponent extends JPanel {
     private @NotNull JComponent createPredefinedQueryTimeframeOptions() {
         List<PredefinedTimeframe> options = List.of(
                 new PredefinedTimeframe(
-                        DQLBundle.message("action.DQLExecutionManagerToolbar.option.queryTimeframe.predefined.last30min"),
+                        DQLBundle.message("components.queryTimeframe.options.predefinedTimeframes.option.last30min"),
                         "-30m",
                         "0m"
                 ),
                 new PredefinedTimeframe(
-                        DQLBundle.message("action.DQLExecutionManagerToolbar.option.queryTimeframe.predefined.lastHour"),
+                        DQLBundle.message("components.queryTimeframe.options.predefinedTimeframes.option.lastHour"),
                         "-1h",
                         "0m"
                 ),
                 new PredefinedTimeframe(
-                        DQLBundle.message("action.DQLExecutionManagerToolbar.option.queryTimeframe.predefined.last24Hours"),
+                        DQLBundle.message("components.queryTimeframe.options.predefinedTimeframes.option.last24Hours"),
                         "-24h",
                         "0m"
                 ),
                 new PredefinedTimeframe(
-                        DQLBundle.message("action.DQLExecutionManagerToolbar.option.queryTimeframe.predefined.last7Days"),
+                        DQLBundle.message("components.queryTimeframe.options.predefinedTimeframes.option.last7Days"),
                         "-7d",
                         "0m"
                 ),
                 new PredefinedTimeframe(
-                        DQLBundle.message("action.DQLExecutionManagerToolbar.option.queryTimeframe.predefined.last30Days"),
+                        DQLBundle.message("components.queryTimeframe.options.predefinedTimeframes.option.last30Days"),
                         "-30d",
                         "0m"
                 ),
                 new PredefinedTimeframe(
-                        DQLBundle.message("action.DQLExecutionManagerToolbar.option.queryTimeframe.predefined.lastYear"),
+                        DQLBundle.message("components.queryTimeframe.options.predefinedTimeframes.option.lastYear"),
                         "-1y",
                         "0m"
                 )
         );
-        DefaultActionGroup timeframePopup = new DefaultActionGroup(DQLBundle.message("action.DQLExecutionManagerToolbar.option.queryTimeframe"), true);
+        DefaultActionGroup timeframePopup = new DefaultActionGroup(
+                DQLBundle.message("components.queryTimeframe.options.predefinedTimeframes.tooltip"),
+                true
+        );
         timeframePopup.getTemplatePresentation().setIcon(AllIcons.General.History);
         timeframePopup.getTemplatePresentation().setPopupGroup(true);
         for (PredefinedTimeframe option : options) {

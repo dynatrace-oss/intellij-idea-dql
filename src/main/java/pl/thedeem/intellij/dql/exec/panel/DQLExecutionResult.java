@@ -47,26 +47,26 @@ public class DQLExecutionResult extends BorderLayoutPanel {
         DefaultActionGroup group = new DefaultActionGroup();
         group.addAction(createModeToggleAction(
                 ResultsDisplayMode.TABLE,
-                DQLBundle.message("action.DQL.ResultsAsTableAction.text"),
+                DQLBundle.message("components.executionResult.actions.tableView.title"),
                 AllIcons.Nodes.DataTables
         ));
         group.addAction(createModeToggleAction(
                 ResultsDisplayMode.JSON,
-                DQLBundle.message("action.DQL.ResultsAsJsonAction.text"),
+                DQLBundle.message("components.executionResult.actions.jsonView.title"),
                 AllIcons.FileTypes.Json
         ));
         group.addAction(createModeToggleAction(
                 ResultsDisplayMode.METADATA,
-                DQLBundle.message("action.DQL.ShowQueryMetadata.text"),
+                DQLBundle.message("components.executionResult.actions.metadataView.title"),
                 AllIcons.Actions.Annotate
         ));
         group.addAction(createModeToggleAction(
                 ResultsDisplayMode.USED_QUERY,
-                DQLBundle.message("action.DQL.ShowUsedDQLQuery.text"),
+                DQLBundle.message("components.executionResult.actions.dqlQueryView.title"),
                 AllIcons.Actions.Preview
         ));
         group.addAction(new AnAction(
-                DQLBundle.message("action.DQL.SaveDQLResultsAsFileAction.text"),
+                DQLBundle.message("components.executionResult.actions.saveToFile.title"),
                 null,
                 AllIcons.Actions.Install
         ) {
@@ -85,8 +85,8 @@ public class DQLExecutionResult extends BorderLayoutPanel {
             @Override
             public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
                 IntelliJUtils.openSaveFileDialog(
-                        DQLBundle.message("components.actions.saveAsFile.title"),
-                        DQLBundle.message("components.actions.saveAsFile.description"),
+                        DQLBundle.message("components.executionResult.actions.saveToFile.dialogTitle"),
+                        DQLBundle.message("components.executionResult.actions.saveToFile.dialogDescription"),
                         getFileName(),
                         () -> IntelliJUtils.prettyPrintJson(response.getResult().getRecords()),
                         project
@@ -181,7 +181,7 @@ public class DQLExecutionResult extends BorderLayoutPanel {
             case METADATA -> show(new DQLMetadataPanel(response.getResult().getGrailMetadata(), executionTime));
             default -> {
                 DQLTableResultPanel panel = new DQLTableResultPanel(response, project);
-                show(panel, new AnAction(DQLBundle.message("runConfiguration.executeDQL.changeColumnsList"), null, AllIcons.Actions.PreviewDetails) {
+                show(panel, new AnAction(DQLBundle.message("components.executionResult.actions.changeColumnsList.title"), null, AllIcons.Actions.PreviewDetails) {
                     @Override
                     public void actionPerformed(@NotNull AnActionEvent e) {
                         panel.showColumnSettingsPopup(e);

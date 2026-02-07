@@ -91,7 +91,7 @@ public class QueryConfigurationOptionsAction extends AnAction implements CustomC
             DefaultActionGroup group = new DefaultActionGroup();
 
             group.addAction(new ToggleAction(
-                    DQLBundle.message("action.DQLExecutionManagerToolbar.moreOptions"),
+                    DQLBundle.message("editor.action.queryConfigurationOptions.toggle"),
                     null,
                     AllIcons.Actions.ToggleVisibility
             ) {

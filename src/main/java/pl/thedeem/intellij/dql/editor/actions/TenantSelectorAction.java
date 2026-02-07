@@ -31,7 +31,7 @@ public class TenantSelectorAction extends ComboBoxAction {
             return;
         }
         presentation.setIcon(DQLIcon.DYNATRACE_LOGO);
-        presentation.setText(DQLBundle.message("action.DQL.SelectTenant.text"));
+        presentation.setText(DQLBundle.message("editor.action.selectTenant.title"));
         presentation.setText(getSelectedTenant(e.getDataContext()));
         presentation.putClientProperty(ActionUtil.SHOW_TEXT_IN_TOOLBAR, true);
     }

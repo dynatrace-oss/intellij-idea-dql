@@ -21,7 +21,7 @@ public class DQLExecutionSummary extends JPanel {
         super(new FlowLayout(FlowLayout.LEFT));
         setBorder(JBUI.Borders.empty());
         JBLabel summary = new JBLabel(DQLBundle.message(
-                "components.dqlResults.summary.description",
+                "components.executionSummary.simpleSummary.title",
                 result.getRecords().size(),
                 result.getGrailMetadata().executionTimeMilliseconds
         ), AllIcons.General.Information, JLabel.LEFT);
@@ -59,7 +59,7 @@ public class DQLExecutionSummary extends JPanel {
     private static @NotNull String formatRelativeTime(@NotNull ZonedDateTime executionTime) {
         ZonedDateTime now = ZonedDateTime.now(executionTime.getZone());
         Duration duration = Duration.between(executionTime, now);
-        return DQLBundle.message("components.dqlResults.summary.tooltip", formatDuration(duration));
+        return DQLBundle.message("components.executionSummary.simpleSummary.tooltip", formatDuration(duration));
     }
 
     private static @NotNull String formatDuration(@NotNull Duration duration) {

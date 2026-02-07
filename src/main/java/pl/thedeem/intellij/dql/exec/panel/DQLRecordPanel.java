@@ -32,13 +32,13 @@ public class DQLRecordPanel extends BorderLayoutPanel {
 
     private List<ColumnInfo<Map.Entry<String, Object>, Object>> getColumnInfos() {
         List<ColumnInfo<Map.Entry<String, Object>, Object>> columnInfos = new ArrayList<>(2);
-        columnInfos.add(new ColumnInfo<>(DQLBundle.message("components.dqlRecordDetails.columns.field")) {
+        columnInfos.add(new ColumnInfo<>(DQLBundle.message("components.results.singleRecord.columns.field")) {
             @Override
             public @Nullable Object valueOf(Map.Entry<String, Object> s) {
                 return s.getKey();
             }
         });
-        columnInfos.add(new ColumnInfo<>(DQLBundle.message("components.dqlRecordDetails.columns.fieldValue")) {
+        columnInfos.add(new ColumnInfo<>(DQLBundle.message("components.results.singleRecord.columns.fieldValue")) {
             @Override
             public @Nullable Object valueOf(Map.Entry<String, Object> s) {
                 return s.getValue();

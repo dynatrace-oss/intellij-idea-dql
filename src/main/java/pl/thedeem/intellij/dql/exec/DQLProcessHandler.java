@@ -6,6 +6,7 @@ import com.intellij.execution.process.ProcessListener;
 import com.intellij.execution.process.ProcessOutputTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.dql.DQLBundle;
 
 import java.io.OutputStream;
 
@@ -15,19 +16,19 @@ public class DQLProcessHandler extends ProcessHandler {
         addProcessListener(new ProcessListener() {
             @Override
             public void startNotified(@NotNull ProcessEvent event) {
-                notifyTextAvailable("DQL execution started via API...\n", ProcessOutputTypes.STDOUT);
+                notifyTextAvailable(DQLBundle.message("processHandler.execution.started"), ProcessOutputTypes.STDOUT);
             }
         });
     }
 
     @Override
     protected void destroyProcessImpl() {
-        notifyTextAvailable("Stopping DQL execution...\n", ProcessOutputTypes.STDOUT);
+        notifyTextAvailable(DQLBundle.message("processHandler.execution.stopping"), ProcessOutputTypes.STDOUT);
     }
 
     @Override
     protected void detachProcessImpl() {
-        notifyTextAvailable("Detaching DQL execution...\n", ProcessOutputTypes.STDOUT);
+        notifyTextAvailable(DQLBundle.message("processHandler.execution.detaching"), ProcessOutputTypes.STDOUT);
     }
 
     @Override
@@ -42,15 +43,18 @@ public class DQLProcessHandler extends ProcessHandler {
     }
 
     public void notifyExecutionFinished() {
-        notifyTextAvailable("DQL execution finished successfully.\n", ProcessOutputTypes.STDOUT);
+        notifyTextAvailable(DQLBundle.message("processHandler.execution.finished"), ProcessOutputTypes.STDOUT);
         notifyProcessTerminated(0);
     }
 
     public void notifyExecutionError(@Nullable String errorMessage) {
         if (errorMessage != null) {
-            notifyTextAvailable("DQL execution failed: " + errorMessage + "\n", ProcessOutputTypes.STDERR);
+            notifyTextAvailable(
+                    DQLBundle.message("processHandler.execution.failedWithDetails", errorMessage),
+                    ProcessOutputTypes.STDERR
+            );
         } else {
-            notifyTextAvailable("DQL execution failed.\n", ProcessOutputTypes.STDERR);
+            notifyTextAvailable(DQLBundle.message("processHandler.execution.failed"), ProcessOutputTypes.STDERR);
         }
         notifyProcessTerminated(1);
     }

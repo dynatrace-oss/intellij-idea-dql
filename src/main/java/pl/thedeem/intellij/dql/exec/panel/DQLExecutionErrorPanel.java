@@ -62,16 +62,16 @@ public class DQLExecutionErrorPanel extends BorderLayoutPanel {
     private static String getErrorMessage(@NotNull Exception exception) {
         return switch (exception) {
             case DQLErrorResponseException error ->
-                    DQLBundle.message("runConfiguration.executeDQL.errors.execution", error.getApiMessage());
+                    DQLBundle.message("components.executionError.errors.executionFailed", error.getApiMessage());
             case DQLNotAuthorizedException error ->
-                    DQLBundle.message("runConfiguration.executeDQL.errors.unauthorized", error.getApiMessage());
+                    DQLBundle.message("components.executionError.errors.unauthorized", error.getApiMessage());
             case DQLResponseParsingException error ->
-                    DQLBundle.message("runConfiguration.executeDQL.errors.parsing", error.getApiMessage());
+                    DQLBundle.message("components.executionError.errors.unparseableResponse", error.getApiMessage());
             case DQLResponseRedirectedException error ->
-                    DQLBundle.message("runConfiguration.executeDQL.errors.redirected", error.getApiMessage());
+                    DQLBundle.message("components.executionError.errors.requestRedirected", error.getApiMessage());
             case InterruptedException ignored ->
-                    DQLBundle.message("runConfiguration.executeDQL.indicator.cancelled", exception.getMessage());
-            default -> DQLBundle.message("runConfiguration.executeDQL.errors.unknown", exception.getMessage());
+                    DQLBundle.message("components.executionError.errors.executionCancelled", exception.getMessage());
+            default -> DQLBundle.message("components.executionError.errors.unexpectedError", exception.getMessage());
         };
     }
 

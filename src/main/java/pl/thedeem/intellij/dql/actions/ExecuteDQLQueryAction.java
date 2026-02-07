@@ -14,6 +14,7 @@ import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 import pl.thedeem.intellij.dql.exec.DQLProcessHandler;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
+import pl.thedeem.intellij.dql.services.notifications.DQLNotificationsService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 
 import java.util.List;
@@ -46,6 +47,14 @@ public class ExecuteDQLQueryAction extends AnAction {
                 file != null ? DQLQueryConfigurationService.getInstance().getQueryConfiguration(file) : new QueryConfiguration()
         );
         if (file == null || configuration.tenant() == null) {
+            if (e.getProject() != null) {
+                DQLNotificationsService.getInstance(e.getProject()).showErrorNotification(
+                        DQLBundle.message("action.DQL.ExecuteDQLQuery.notifications.missingTenant.title"),
+                        DQLBundle.message("action.DQL.ExecuteDQLQuery.notifications.missingTenant.description"),
+                        e.getProject(),
+                        List.of()
+                );
+            }
             return;
         }
         Project project = file.getProject();

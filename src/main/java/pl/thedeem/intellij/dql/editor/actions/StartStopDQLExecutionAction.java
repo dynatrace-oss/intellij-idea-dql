@@ -52,10 +52,10 @@ public class StartStopDQLExecutionAction extends AnAction {
 
         List<ManagedService> services = getRunningServices(project, file);
         if (!services.isEmpty()) {
-            presentation.setText(DQLBundle.message("action.DQL.StopQuery.text"));
+            presentation.setText(DQLBundle.message("editor.action.stopExecution.title"));
             presentation.setIcon(AllIcons.Run.Stop);
         } else {
-            presentation.setText(DQLBundle.message("action.DQL.ExecuteDQLQuery.text"));
+            presentation.setText(DQLBundle.message("editor.action.execute.title"));
             presentation.setIcon(AllIcons.Actions.Execute);
         }
         DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance();
@@ -73,11 +73,11 @@ public class StartStopDQLExecutionAction extends AnAction {
             return;
         }
         if (service.isRunning()) {
-            presentation.setText(DQLBundle.message("action.DQL.StopQuery.text"));
+            presentation.setText(DQLBundle.message("editor.action.stopExecution.title"));
             presentation.setIcon(AllIcons.Run.Stop);
         } else {
-            presentation.setText(DQLBundle.message("action.DQL.ExecuteDQLQuery.text"));
-            presentation.setIcon(AllIcons.Actions.Execute);
+            presentation.setText(DQLBundle.message("editor.action.rerun.title"));
+            presentation.setIcon(AllIcons.Actions.Rerun);
         }
     }
 
