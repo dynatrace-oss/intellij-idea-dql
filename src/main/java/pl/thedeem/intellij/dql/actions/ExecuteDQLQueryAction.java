@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class ExecuteDQLQueryAction extends AnAction {
+    public static DataKey<String> PREFERRED_EXECUTION_NAME = DataKey.create("DQL_PREFERRED_EXECUTION_NAME");
+
     @Override
     public void update(@NotNull AnActionEvent original) {
         AnActionEvent e = updateEvent(original);
@@ -59,7 +61,10 @@ public class ExecuteDQLQueryAction extends AnAction {
         }
         Project project = file.getProject();
         DQLExecutionService service = new DQLExecutionService(
-                DQLBundle.message("services.executeDQL.serviceName", file.getName()),
+                DQLBundle.message(
+                        "services.executeDQL.serviceName",
+                        Objects.requireNonNullElse(e.getData(PREFERRED_EXECUTION_NAME), file.getName())
+                ),
                 configuration,
                 project,
                 new DQLProcessHandler()

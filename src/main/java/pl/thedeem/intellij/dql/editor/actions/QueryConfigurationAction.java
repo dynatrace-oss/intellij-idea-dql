@@ -24,6 +24,7 @@ public class QueryConfigurationAction extends AnAction implements CustomComponen
     public void update(@NotNull AnActionEvent e) {
         if (e.isFromContextMenu()) {
             e.getPresentation().setEnabledAndVisible(false);
+            return;
         }
         QueryConfiguration configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
         if (configuration == null) {

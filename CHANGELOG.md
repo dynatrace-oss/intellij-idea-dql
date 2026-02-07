@@ -29,6 +29,9 @@
   - Dropping DQL commands and functions for unknown & experimental expressions
   - Renaming the DQL file to `.partial.dql` when an invalid command context is detected (only for `.dql` files)
 - DQL now supports `/* language=X */` comments in strings
+- Adding a Dynatrace Query Console view that allows the user to execute DQL queries without opening a DQL file.
+  You can open the console via the `Tools` -> `Services` -> `Dynatrace Query Console` menu or by clicking the `+` button
+  in the `Services` tab.
 
 ### Bug fixes
 

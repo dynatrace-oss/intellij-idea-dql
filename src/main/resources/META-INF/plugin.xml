@@ -581,6 +581,14 @@
     <actions resource-bundle="messages.DQLBundle">
         <action id="DQL.NewDQLFile" class="pl.thedeem.intellij.dql.actions.CreateNewDQLFileAction"
                 icon="/icons/dynatrace.png"/>
+
+        <action id="DQL.OpenDQLQueryConsole.ServiceViewAction"
+                class="pl.thedeem.intellij.dql.actions.OpenDQLQueryConsoleAction"
+                icon="/icons/dynatrace.png">
+            <add-to-group group-id="ToolsMenu.Services"/>
+            <add-to-group group-id="ServiceView.AddService"/>
+        </action>
+
         <action id="DQL.ToggleDQLExecutionToolbar"
                 class="pl.thedeem.intellij.dql.actions.ToggleDQLExecutionToolbarAction"
                 icon="AllIcons.Actions.Close">
