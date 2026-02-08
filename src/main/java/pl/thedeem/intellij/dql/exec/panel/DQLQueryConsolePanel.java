@@ -47,7 +47,8 @@ public class DQLQueryConsolePanel extends BorderLayoutPanel implements UiDataPro
         group.setInjectedContext(true);
         group.add(new QueryConfigurationAction() {
             @Override
-            public void actionPerformed(@NotNull AnActionEvent e) {
+            protected void saveCurrentQueryConfiguration(@NotNull AnActionEvent e) {
+                // do nothing - console is in-memory only, no save needed
             }
         });
 
