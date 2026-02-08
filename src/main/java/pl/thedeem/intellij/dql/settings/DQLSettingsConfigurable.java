@@ -1,7 +1,10 @@
 package pl.thedeem.intellij.dql.settings;
 
 import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.options.ShowSettingsUtil;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 
@@ -55,5 +58,9 @@ public class DQLSettingsConfigurable implements Configurable {
     @Override
     public void disposeUIResources() {
         mySettingsComponent = null;
+    }
+
+    public static void showSettings(@NotNull Project project) {
+        ShowSettingsUtil.getInstance().showSettingsDialog(project, DQLSettingsConfigurable.class);
     }
 }

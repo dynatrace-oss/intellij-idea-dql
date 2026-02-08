@@ -11,7 +11,12 @@
   - Adding predefined timeframes to the DQL execution toolbar (user can still define a custom one)
   - The DQL execution result will show an empty cell for a boolean column that had a `null` value (instead of the
     unchecked checkbox). This change helps to differentiate between `false` and `null` values.
-  - Executed DQL queries will now be grouped by the tenant they were executed on in the Services tab
+  - All executed DQL queries will be grouped in the `Services` tab. The root group allows the user to easily access the
+    most common settings related to DQL execution. All queries will be additionally grouped by the tenant they were
+    executed with, allowing the user to easily find the query they are looking for in case of using multiple connected
+    tenants.
+  - Double-clicking the executed DQL query in the `Services` tab will now either open the related file (if possible),
+    or open a new DQL query console with the execution context.
 - The "Show DQL query" option when executing DQL will now try to show the parsed query instead of the raw one, if
   possible.
 - Adding support for "Expression DQL" file (with `.dqlexpr` extension), which allows to define a DQL expression without
@@ -30,23 +35,24 @@
   - Support for `.partial.dql` files will be removed in the future, so it's recommended to migrate to the new extension
     as soon as possible.
 - **Breaking**: Changing the approach to the default Dynatrace tenant used for connections - it will be the first tenant
-  specified in the list (previously the user needed to specifically select the default one).
+  specified in the list (previously the user needed to specifically select the default one). Please update the tenants
+  order if you wish to change the default tenant.
 - Created Wiki pages with documentation for the plugin features
 - DQL now supports complex sorting expressions (for example, `sort abs(field) > 10 desc`)
+- DQL now supports `/* language=X */` comments in strings
 - Added missing quick fixes for inspections:
   - Dropping DQL commands and functions for unknown & experimental expressions
   - Renaming the DQL file to `.dqlpart` when an invalid command context is detected (only for `.dql` files)
-- DQL now supports `/* language=X */` comments in strings
 - Adding a Dynatrace Query Console view that allows the user to execute DQL queries without opening a DQL file.
-  You can open the console via the `Tools` -> `Services` -> `Dynatrace Query Console` menu or by clicking the `+` button
-  in the `Services` tab.
+  You can open the console via the `Tools` -> `Services` -> `Dynatrace Query Console` menu or by clicking the dedicated
+  button in the `Services` tab.
 
 ### Bug fixes
 
 - Creating an empty DQL variable using the `$type: dql` syntax will now create a multiline comment instead of causing an
   error
-- When modifying or deleting a Dynatrace tenant that was already used, files using it will ask the user to select a new
-  tenant.
+- When modifying or deleting a Dynatrace tenant that was already used, files using it will require the user to select
+  a new tenant.
 
 ## [1.4.0] - 2026-01-28
 

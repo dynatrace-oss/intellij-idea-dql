@@ -28,4 +28,5 @@ public interface DQLIcon extends Icons {
     Icon GUTTER_EXECUTE_DQL = IntelliJUtils.scaleToBottomRight(AllIcons.Actions.Execute, DYNATRACE_LOGO, 0.5f);
     Icon GUTTER_EXECUTE_SETTINGS = IntelliJUtils.scaleToBottomRight(AllIcons.General.GearPlain, DYNATRACE_LOGO, 0.5f);
     Icon QUERY_CONSOLE = IntelliJUtils.scaleToBottomRight(AllIcons.General.ProjectTab, DYNATRACE_LOGO, 0.5f);
+    Icon MANAGE_TENANTS = IntelliJUtils.scaleToBottomRight(AllIcons.Actions.Annotate, DYNATRACE_LOGO, 0.5f);
 }

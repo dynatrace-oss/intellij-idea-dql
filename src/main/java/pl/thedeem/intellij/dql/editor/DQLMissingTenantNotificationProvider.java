@@ -1,7 +1,6 @@
 package pl.thedeem.intellij.dql.editor;
 
 import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.EditorNotificationPanel;
@@ -32,7 +31,7 @@ public class DQLMissingTenantNotificationProvider implements EditorNotificationP
             panel.setText(DQLBundle.message("notifications.noDynatraceTenants.info"));
 
             panel.createActionLabel(DQLBundle.message("notifications.noDynatraceTenants.actions.add"), () -> {
-                ShowSettingsUtil.getInstance().showSettingsDialog(project, DQLSettingsConfigurable.class);
+                DQLSettingsConfigurable.showSettings(project);
                 panel.setVisible(shouldShowToolbar(tenantsService));
                 EditorNotifications.getInstance(project).updateNotifications(virtualFile);
             });
