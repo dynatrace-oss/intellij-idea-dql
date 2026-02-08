@@ -1,22 +1,22 @@
-package pl.thedeem.intellij.edql;
+package pl.thedeem.intellij.dqlexpr;
 
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
 import org.jetbrains.annotations.NotNull;
 
-public class EDQLFile extends PsiFileBase {
-    public EDQLFile(@NotNull FileViewProvider viewProvider) {
-        super(viewProvider, EDQLLanguage.INSTANCE);
+public class DQLExprFile extends PsiFileBase {
+    public DQLExprFile(@NotNull FileViewProvider viewProvider) {
+        super(viewProvider, DQLExprLanguage.INSTANCE);
     }
 
     @Override
     public @NotNull FileType getFileType() {
-        return EDQLFileType.INSTANCE;
+        return DQLExprFileType.INSTANCE;
     }
 
     @Override
     public String toString() {
-        return "EDQL File";
+        return "DQL Expression File";
     }
 }

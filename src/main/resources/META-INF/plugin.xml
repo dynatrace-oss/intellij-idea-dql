@@ -543,39 +543,39 @@
         <projectService serviceImplementation="pl.thedeem.intellij.dpl.definition.DPLDefinitionServiceImpl"
                         serviceInterface="pl.thedeem.intellij.dpl.definition.DPLDefinitionService"/>
         <!-- endregion -->
-        <!-- region EDQL -->
+        <!-- region DQLExpr -->
         <fileType
-                name="EDQL"
-                implementationClass="pl.thedeem.intellij.edql.EDQLFileType"
+                name="DQLExpr"
+                implementationClass="pl.thedeem.intellij.dqlexpr.DQLExprFileType"
                 fieldName="INSTANCE"
-                language="EDQL"
-                extensions="edql"/>
+                language="DQLExpr"
+                extensions="dqlexpr"/>
         <lang.parserDefinition
-                language="EDQL"
-                implementationClass="pl.thedeem.intellij.edql.EDQLParserDefinition"/>
+                language="DQLExpr"
+                implementationClass="pl.thedeem.intellij.dqlexpr.DQLExprParserDefinition"/>
         <lang.formatter
-                language="EDQL"
+                language="DQLExpr"
                 implementationClass="pl.thedeem.intellij.dql.style.DQLFormattingModelBuilder"/>
         <lang.commenter
-                language="EDQL"
+                language="DQLExpr"
                 implementationClass="pl.thedeem.intellij.dql.code.DQLCommenter"/>
-        <lang.braceMatcher language="EDQL"
+        <lang.braceMatcher language="DQLExpr"
                            implementationClass="pl.thedeem.intellij.dql.code.DQLPairedBraceMatcher"/>
-        <quoteHandler className="pl.thedeem.intellij.dql.code.DQLQuoteHandler" fileType="EDQL"/>
-        <codeInsight.parameterNameHints language="EDQL"
+        <quoteHandler className="pl.thedeem.intellij.dql.code.DQLQuoteHandler" fileType="DQLExpr"/>
+        <codeInsight.parameterNameHints language="DQLExpr"
                                         implementationClass="pl.thedeem.intellij.dql.highlighting.DQLInlayParameterHintsProvider"/>
-        <spellchecker.support language="EDQL"
+        <spellchecker.support language="DQLExpr"
                               implementationClass="pl.thedeem.intellij.dql.code.DQLSpellcheckingStrategy"/>
         <lang.syntaxHighlighterFactory
-                language="EDQL"
+                language="DQLExpr"
                 implementationClass="pl.thedeem.intellij.dql.highlighting.DQLSyntaxHighlighterFactory"/>
         <lang.formatter
-                language="EDQL"
+                language="DQLExpr"
                 implementationClass="pl.thedeem.intellij.dql.style.DQLFormattingModelBuilder"/>
         <completion.contributor
                 language="DQL"
-                implementationClass="pl.thedeem.intellij.edql.completion.EDQLCompletionContributor"/>
-        <!-- endregion EDQL -->
+                implementationClass="pl.thedeem.intellij.dqlexpr.completion.DQLExprCompletionContributor"/>
+        <!-- endregion DQLExpr -->
     </extensions>
 
     <actions resource-bundle="messages.DQLBundle">
