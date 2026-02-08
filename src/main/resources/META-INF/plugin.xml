@@ -569,9 +569,6 @@
         <lang.syntaxHighlighterFactory
                 language="DQLExpr"
                 implementationClass="pl.thedeem.intellij.dql.highlighting.DQLSyntaxHighlighterFactory"/>
-        <lang.formatter
-                language="DQLExpr"
-                implementationClass="pl.thedeem.intellij.dql.style.DQLFormattingModelBuilder"/>
         <completion.contributor
                 language="DQL"
                 implementationClass="pl.thedeem.intellij.dqlexpr.completion.DQLExprCompletionContributor"/>
