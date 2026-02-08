@@ -247,6 +247,7 @@ the most common parts of statements and include them into other DQL files.
 This most probably will mean that one of those files will not be a valid DQL by itself, as it will not start with
 a data source command like `fetch`.
 
-Renaming your file to `NAME.partial.dql` will silence the errors about the invalid command context and will disable the
-requirement of prepending every command with a pipe (`|`) sign. Additionally, the partial file will not execute the
-background DQL verification on your tenant, as it would always fail.
+You can store smaller parts of DQL queries in dedicated sublanguages:
+
+- [Expressions DQL](./DQL-Expression.md) - specify only expressions without the DQL command context
+- [DQL Part](./DQL-Part.md) - specify DQL command usages without the need to follow the full DQL syntax rules
