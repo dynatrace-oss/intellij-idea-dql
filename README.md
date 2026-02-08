@@ -102,10 +102,8 @@ query.
 If you store your DQLs in smaller chunks (and dynamically stitch them together), the query can report many errors due
 to the syntax not being properly validated.
 
-For such cases, you can rename your file to `*.partial.dql` to use a much more relaxed syntax parsing, where you can:
-
-1. Start a query with a `|`
-2. Start a query with a command that would not normally be correct, like `summarize`.
+For such cases, you can rename your file to `*.dqlpart` (for DQL queries split into smaller command sets)
+or `*.dqlexpr` for files containing only DQL expressions (like functions or parameter definitions).
 
 #### DQL variables support
 
@@ -134,10 +132,10 @@ the specific data types, like: `storage:logs:read`, `storage:spans:read`, `stora
 
 #### DQL execution on a specific tenant
 
-The plugin adds support for Run Configurations allowing the user to execute the DQL file on a specified Dynatrace
-tenant.
+The plugin adds support for executing DQL queries on a specific tenants from either DQL files, Run Configurations or
+a query console.
 The results of the query execution will be presented as a table, allowing you to quickly verify if the written query
-returns the correct data.
+returns the correct data, or a JSON response returned by the tenant.
 
 #### Live validations
 
