@@ -156,13 +156,18 @@ public class QueryConfigurationOptionsAction extends AnAction implements CustomC
         component.getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
             protected void textChanged(@NotNull DocumentEvent documentEvent) {
-                ApplicationManager.getApplication().invokeLater(() -> ActionManager.getInstance().tryToExecute(
-                        QueryConfigurationOptionsAction.this,
-                        null,
-                        component,
-                        ActionPlaces.UNKNOWN,
-                        true
-                ));
+                ApplicationManager.getApplication().invokeLater(() -> {
+                    if (!component.isShowing()) {
+                        return;
+                    }
+                    ActionManager.getInstance().tryToExecute(
+                            QueryConfigurationOptionsAction.this,
+                            null,
+                            component,
+                            ActionPlaces.UNKNOWN,
+                            true
+                    );
+                });
             }
         });
     }

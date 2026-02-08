@@ -91,7 +91,11 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
 
     @Override
     public @NotNull List<ManagedServiceGroup> getParentGroups() {
-        return List.of(new TenantServiceGroup(configuration.tenant()));
+        String tenant = configuration.tenant();
+        if (tenant == null) {
+            return List.of();
+        }
+        return List.of(new TenantServiceGroup(tenant));
     }
 
     public void startExecution() {
