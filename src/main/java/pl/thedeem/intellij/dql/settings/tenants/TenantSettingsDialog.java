@@ -49,7 +49,7 @@ public class TenantSettingsDialog extends DialogWrapper {
             name.setText(tenant.getName());
             urlField.setText(tenant.getUrl());
 
-            LoadingPanel loading = new LoadingPanel("Loading");
+            LoadingPanel loading = new LoadingPanel(DQLBundle.message("settings.dql.tenants.form.passwordLoading"));
             passwordContainer.addToLeft(loading);
 
             String credentialId = tenant.getCredentialId();
@@ -89,10 +89,8 @@ public class TenantSettingsDialog extends DialogWrapper {
 
     @Override
     protected void doOKAction() {
-        String apiToken = apiTokenField != null ? new String(apiTokenField.getPassword()) : "";
-        if (urlField.getText().isEmpty() || apiToken.isEmpty()) {
-            setErrorText(DQLBundle.message("settings.dql.tenants.form.error.missingFields"));
-            return;
+        if (name.getText().isEmpty()) {
+            name.setText(urlField.getText());
         }
 
         try {
@@ -101,11 +99,16 @@ public class TenantSettingsDialog extends DialogWrapper {
             setErrorText(DQLBundle.message("settings.dql.tenants.form.error.invalidTenantUrl", e.getMessage()));
             return;
         }
-
-        if (name.getText().isEmpty()) {
-            name.setText(urlField.getText());
+        if (urlField.getText().isEmpty()) {
+            setErrorText(DQLBundle.message("settings.dql.tenants.form.error.missingUrl"));
+            return;
         }
 
+        char[] apiToken = apiTokenField != null ? apiTokenField.getPassword() : new char[0];
+        if (apiToken.length == 0) {
+            setErrorText(DQLBundle.message("settings.dql.tenants.form.error.missingToken"));
+            return;
+        }
         String credentialId = tenant != null && StringUtil.isNotEmpty(tenant.getCredentialId()) ?
                 tenant.getCredentialId() : UUID.randomUUID().toString();
         Credentials credentials = new Credentials(name.getText(), apiToken);

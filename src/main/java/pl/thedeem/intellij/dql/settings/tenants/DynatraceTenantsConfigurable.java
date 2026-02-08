@@ -116,14 +116,14 @@ public class DynatraceTenantsConfigurable implements Configurable {
         );
     }
 
-    public static void showSettings(@NotNull String tenant) {
+    public static void showSettings(@NotNull String tenantId) {
         DynatraceTenantsConfigurable settings = new DynatraceTenantsConfigurable();
         ShowSettingsUtil.getInstance().editConfigurable(
                 ProjectManager.getInstance().getDefaultProject(),
                 settings,
                 () -> {
                     for (int i = 0; i < settings.listModel.getSize(); i++) {
-                        if (settings.listModel.getElementAt(i).getName().equals(tenant)) {
+                        if (settings.listModel.getElementAt(i).getName().equals(tenantId)) {
                             settings.tenantList.setSelectedIndex(i);
                             settings.editTenant();
                             break;
