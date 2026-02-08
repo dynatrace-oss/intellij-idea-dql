@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class ExecuteDQLQueryAction extends AnAction {
-    public static DataKey<String> PREFERRED_EXECUTION_NAME = DataKey.create("DQL_PREFERRED_EXECUTION_NAME");
+    public static final DataKey<String> PREFERRED_EXECUTION_NAME = DataKey.create("DQL_PREFERRED_EXECUTION_NAME");
 
     @Override
     public void update(@NotNull AnActionEvent original) {
