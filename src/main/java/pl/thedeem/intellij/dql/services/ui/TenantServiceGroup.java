@@ -61,7 +61,7 @@ public class TenantServiceGroup implements ManagedServiceGroup {
             actions.add(new AnAction(
                     DQLBundle.message("services.tenantGroup.actions.openConsole.title"),
                     null,
-                    AllIcons.Debugger.ExecuteCurrentStatement
+                    DQLIcon.QUERY_CONSOLE
             ) {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
