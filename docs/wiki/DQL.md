@@ -236,8 +236,8 @@ displayed at the bottom part of the result view.
 #### Query console
 
 The plugin also adds support for executing DQL queries without the need of creating a `.dql` file.
-The console can be opened via the `Tools` -> `Services` -> `Dynatrace Query Console` menu or by clicking the `+` button
-in the `Services` tab.
+The console can be opened via the `Tools` -> `Services` -> `Dynatrace Query Console` menu or by clicking the dedicated
+button in the `Services` tab.
 
 ### Partial DQL
 

@@ -9,12 +9,16 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.pom.Navigatable;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.internal.StringUtil;
+import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.common.components.InformationComponent;
 import pl.thedeem.intellij.common.sdk.DynatraceRestClient;
@@ -31,9 +35,11 @@ import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.editor.actions.QueryConfigurationAction;
 import pl.thedeem.intellij.dql.exec.panel.DQLExecutionErrorPanel;
 import pl.thedeem.intellij.dql.exec.panel.DQLExecutionResult;
+import pl.thedeem.intellij.dql.fileProviders.DQLQueryConsoleVirtualFile;
 import pl.thedeem.intellij.dql.fileProviders.DQLResultVirtualFile;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryParserService;
+import pl.thedeem.intellij.dql.services.ui.ConnectedTenantsServiceGroup;
 import pl.thedeem.intellij.dql.services.ui.TenantServiceGroup;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
@@ -93,9 +99,9 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
     public @NotNull List<ManagedServiceGroup> getParentGroups() {
         String tenant = configuration.tenant();
         if (tenant == null) {
-            return List.of();
+            return List.of(ConnectedTenantsServiceGroup.getInstance());
         }
-        return List.of(new TenantServiceGroup(tenant));
+        return List.of(ConnectedTenantsServiceGroup.getInstance(), new TenantServiceGroup(tenant));
     }
 
     public void startExecution() {
@@ -361,5 +367,18 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
                 configuration.tenant(),
                 getServiceId()
         );
+    }
+
+    @Override
+    public @Nullable Navigatable getNavigatable() {
+        String originalFile = configuration.originalFile();
+        VirtualFile virtualFile = null;
+        if (originalFile != null) {
+            virtualFile = IntelliJUtils.getProjectRelativeFile(originalFile, project);
+        }
+        if (virtualFile == null) {
+            virtualFile = new DQLQueryConsoleVirtualFile(this.name, this.configuration.query());
+        }
+        return new OpenFileDescriptor(project, virtualFile);
     }
 }

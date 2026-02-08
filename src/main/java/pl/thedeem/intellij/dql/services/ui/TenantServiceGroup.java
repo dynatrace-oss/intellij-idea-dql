@@ -2,11 +2,7 @@ package pl.thedeem.intellij.dql.services.ui;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.navigation.ItemPresentation;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,9 +12,9 @@ import pl.thedeem.intellij.common.services.ManagedServiceGroup;
 import pl.thedeem.intellij.common.services.ProjectServicesManager;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.actions.OpenDQLQueryConsoleAction;
 import pl.thedeem.intellij.dql.fileProviders.DQLQueryConsoleVirtualFile;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
+import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsConfigurable;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
 import java.util.List;
@@ -69,14 +65,22 @@ public class TenantServiceGroup implements ManagedServiceGroup {
                     if (project == null) {
                         return;
                     }
-                    DQLQueryConsoleVirtualFile vf = new DQLQueryConsoleVirtualFile(
-                            DQLBundle.message(
-                                    "action.DQL.OpenDQLQueryConsole.ServiceViewAction.consoleName",
-                                    OpenDQLQueryConsoleAction.COUNTER.incrementAndGet()
-                            ),
-                            tenantId
-                    );
-                    FileEditorManager.getInstance(project).openFile(vf, true);
+                    DQLQueryConsoleVirtualFile.openForTenant(project, tenantId);
+                }
+            });
+            actions.addAction(new AnAction(
+                    DQLBundle.message("services.tenantGroup.actions.configure.title"),
+                    null,
+                    AllIcons.General.GearPlain
+            ) {
+                @Override
+                public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+                    DynatraceTenantsConfigurable.showSettings(tenantId);
+                }
+
+                @Override
+                public @NotNull ActionUpdateThread getActionUpdateThread() {
+                    return ActionUpdateThread.BGT;
                 }
             });
             actions.addAction(new AnAction(
@@ -99,5 +103,16 @@ public class TenantServiceGroup implements ManagedServiceGroup {
             });
         }
         return actions;
+    }
+
+
+    @Override
+    public @NotNull String getServiceId() {
+        return "TenantServiceGroup:" + tenantId;
+    }
+
+    @Override
+    public @NotNull List<ManagedServiceGroup> getParentGroups() {
+        return List.of(ConnectedTenantsServiceGroup.getInstance());
     }
 }

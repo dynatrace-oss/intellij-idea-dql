@@ -1,29 +1,20 @@
 package pl.thedeem.intellij.dql.settings.tenants;
 
-import com.intellij.credentialStore.Credentials;
-import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
-import com.intellij.ui.components.JBTextField;
-import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.DQLUtil;
 
 import javax.swing.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class DynatraceTenantsConfigurable implements Configurable {
 
@@ -55,7 +46,7 @@ public class DynatraceTenantsConfigurable implements Configurable {
     }
 
     private void addTenant() {
-        TenantDialog dialog = new TenantDialog(null);
+        TenantSettingsDialog dialog = new TenantSettingsDialog(null);
         if (dialog.showAndGet()) {
             DynatraceTenant newTenant = dialog.getTenant();
             if (newTenant != null) {
@@ -67,7 +58,7 @@ public class DynatraceTenantsConfigurable implements Configurable {
     private void editTenant() {
         DynatraceTenant selectedTenant = tenantList.getSelectedValue();
         if (selectedTenant != null) {
-            TenantDialog dialog = new TenantDialog(selectedTenant);
+            TenantSettingsDialog dialog = new TenantSettingsDialog(selectedTenant);
             if (dialog.showAndGet()) {
                 DynatraceTenant updatedTenant = dialog.getTenant();
                 if (updatedTenant != null) {
@@ -125,81 +116,20 @@ public class DynatraceTenantsConfigurable implements Configurable {
         );
     }
 
-    private static class TenantDialog extends DialogWrapper {
-        private JBTextField name;
-        private JBTextField urlField;
-        private JPasswordField apiTokenField;
-        private DynatraceTenant tenant;
-
-        protected TenantDialog(@Nullable DynatraceTenant existingTenant) {
-            super(true);
-            this.tenant = existingTenant;
-            setTitle(DQLBundle.message(existingTenant == null ? "settings.dql.tenants.add" : "settings.dql.tenants.edit"));
-            init();
-        }
-
-        public DynatraceTenant getTenant() {
-            return tenant;
-        }
-
-        @Override
-        protected @Nullable JComponent createCenterPanel() {
-            name = new JBTextField(30);
-            urlField = new JBTextField(100);
-            apiTokenField = new JPasswordField(40);
-
-            if (tenant != null) {
-                name.setText(tenant.getName());
-                urlField.setText(tenant.getUrl());
-                String storedToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
-                apiTokenField.setText(storedToken);
-            }
-
-            return FormBuilder.createFormBuilder()
-                    .addLabeledComponent(DQLBundle.message("settings.dql.tenants.form.name"), name)
-                    .addLabeledComponent(DQLBundle.message("settings.dql.tenants.form.url"), urlField)
-                    .addLabeledComponent(DQLBundle.message("settings.dql.tenants.form.token"), apiTokenField)
-                    .getPanel();
-        }
-
-        @Override
-        public void doCancelAction() {
-            char[] apiTokenChars = apiTokenField.getPassword();
-            if (apiTokenChars != null) {
-                java.util.Arrays.fill(apiTokenChars, ' ');
-            }
-            super.doCancelAction();
-        }
-
-        @Override
-        protected void doOKAction() {
-            String apiToken = apiTokenField != null ? new String(apiTokenField.getPassword()) : "";
-            if (urlField.getText().isEmpty() || apiToken.isEmpty()) {
-                setErrorText(DQLBundle.message("settings.dql.tenants.form.error.missingFields"));
-                return;
-            }
-
-            try {
-                URL ignored = URI.create(urlField.getText()).toURL();
-            } catch (MalformedURLException | IllegalArgumentException e) {
-                setErrorText(DQLBundle.message("settings.dql.tenants.form.error.invalidTenantUrl", e.getMessage()));
-                return;
-            }
-
-            if (name.getText().isEmpty()) {
-                name.setText(urlField.getText());
-            }
-
-            String credentialId;
-            if (tenant != null && tenant.getCredentialId() != null) {
-                credentialId = tenant.getCredentialId();
-            } else {
-                credentialId = UUID.randomUUID().toString();
-            }
-            Credentials credentials = new Credentials(name.getText(), apiToken);
-            PasswordSafe.getInstance().set(DQLUtil.createCredentialAttributes(credentialId), credentials);
-            tenant = new DynatraceTenant(name.getText(), urlField.getText(), credentialId);
-            super.doOKAction();
-        }
+    public static void showSettings(@NotNull String tenantId) {
+        DynatraceTenantsConfigurable settings = new DynatraceTenantsConfigurable();
+        ShowSettingsUtil.getInstance().editConfigurable(
+                ProjectManager.getInstance().getDefaultProject(),
+                settings,
+                () -> {
+                    for (int i = 0; i < settings.listModel.getSize(); i++) {
+                        if (settings.listModel.getElementAt(i).getName().equals(tenantId)) {
+                            settings.tenantList.setSelectedIndex(i);
+                            settings.editTenant();
+                            break;
+                        }
+                    }
+                }
+        );
     }
 }

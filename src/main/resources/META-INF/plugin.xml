@@ -8,8 +8,9 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <serviceViewContributor implementation="pl.thedeem.intellij.common.services.ManagedServiceViewContributor"/>
-
         <!-- region DQL -->
+        <postStartupActivity
+                implementation="pl.thedeem.intellij.dql.services.ui.ServicesAutoRegistrationStartupActivity"/>
         <fileType
                 name="DQL"
                 implementationClass="pl.thedeem.intellij.dql.DQLFileType"
@@ -615,7 +616,6 @@
                 class="pl.thedeem.intellij.dql.actions.OpenDQLQueryConsoleAction"
                 icon="/icons/dynatrace.png">
             <add-to-group group-id="ToolsMenu.Services"/>
-            <add-to-group group-id="ServiceView.AddService"/>
         </action>
 
         <action id="DQL.ToggleDQLExecutionToolbar"
