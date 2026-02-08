@@ -24,6 +24,7 @@ public class QueryConfigurationAction extends AnAction implements CustomComponen
     public void update(@NotNull AnActionEvent e) {
         if (e.isFromContextMenu()) {
             e.getPresentation().setEnabledAndVisible(false);
+            return;
         }
         QueryConfiguration configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
         if (configuration == null) {
@@ -35,6 +36,10 @@ public class QueryConfigurationAction extends AnAction implements CustomComponen
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+        saveCurrentQueryConfiguration(e);
+    }
+
+    protected void saveCurrentQueryConfiguration(@NotNull AnActionEvent e) {
         PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
         QueryConfiguration configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
         if (configuration != null && file != null) {
@@ -53,7 +58,7 @@ public class QueryConfigurationAction extends AnAction implements CustomComponen
                 @Override
                 protected void updateSelectedTenant(@NotNull String selectedTenant, @NotNull AnActionEvent e) {
                     super.updateSelectedTenant(selectedTenant, e);
-                    QueryConfigurationAction.this.actionPerformed(e);
+                    saveCurrentQueryConfiguration(e);
                 }
 
                 @Override
@@ -79,7 +84,7 @@ public class QueryConfigurationAction extends AnAction implements CustomComponen
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
                     super.actionPerformed(e);
-                    QueryConfigurationAction.this.actionPerformed(e);
+                    saveCurrentQueryConfiguration(e);
                 }
             });
             group.addAction(new QueryConfigurationOptionsAction() {
@@ -92,7 +97,7 @@ public class QueryConfigurationAction extends AnAction implements CustomComponen
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
                     super.actionPerformed(e);
-                    QueryConfigurationAction.this.actionPerformed(e);
+                    saveCurrentQueryConfiguration(e);
                 }
             });
             group.add(new SaveQueryConfigurationAction() {

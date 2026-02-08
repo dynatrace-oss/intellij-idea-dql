@@ -20,6 +20,7 @@ import pl.thedeem.intellij.common.services.ManagedService;
 import pl.thedeem.intellij.common.services.ProjectServicesManager;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFileType;
+import pl.thedeem.intellij.dql.actions.ExecuteDQLQueryAction;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 import pl.thedeem.intellij.dql.exec.DQLProcessHandler;
@@ -136,7 +137,10 @@ public class StartStopDQLExecutionAction extends AnAction {
             configuration.setQuery(query);
             e.getPresentation().setEnabled(false);
             DQLExecutionService newService = new DQLExecutionService(
-                    DQLBundle.message("services.executeDQL.serviceName", file.getName()),
+                    DQLBundle.message(
+                            "services.executeDQL.serviceName",
+                            Objects.requireNonNullElse(e.getData(ExecuteDQLQueryAction.PREFERRED_EXECUTION_NAME), file.getName())
+                    ),
                     configuration,
                     project,
                     new DQLProcessHandler()
