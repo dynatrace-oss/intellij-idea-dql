@@ -32,7 +32,7 @@ subpages:
 - [Dynatrace Pattern Language (DPL)](./DPL)
 - [Expressions DQL](./DQL-Expression.md) - smaller subset of DQL files, allowing to specify only expressions
   without the DQL command context
-- [DQL Part](./DQL-Part.md) - smaller parts of the DQL queries, useful for a dynamic DQL generators
+- [DQL Part](./DQL-Part.md) - smaller parts of the DQL queries, useful for dynamic DQL generators
 
 ## Frequently Asked Questions (FAQ)
 
