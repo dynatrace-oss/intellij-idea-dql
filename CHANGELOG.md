@@ -14,10 +14,10 @@
   - Executed DQL queries will now be grouped by the tenant they were executed on in the Services tab
 - The "Show DQL query" option when executing DQL will now try to show the parsed query instead of the raw one, if
   possible.
-- Adding support for "Expression DQL" file (with `.edql` extensions), which allows to define a DQL expression without
+- Adding support for "Expression DQL" file (with `.dqlexpr` extension), which allows to define a DQL expression without
   the command context.
   Such expression are commonly used in as-a-code DQL queries or in OpenPipeline configurations.
-  - An example file `file.edql`: `matchesValue(field, "value") and not matchesValue(field, "otherValue")`.
+  - An example file `file.dqlexpr`: `matchesValue(field, "value") and not matchesValue(field, "otherValue")`.
   - All code style & highlighting settings will be inherited from the DQL language.
   - All suitable DQL inspections will be applied to the expression, allowing the user to validate them.
   - Code completion and hover documentation are also supported.

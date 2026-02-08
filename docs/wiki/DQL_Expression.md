@@ -3,19 +3,19 @@
 In some cases you might want to write only the expression part of the Dynatrace Query Language (DQL) statements,
 without the full command context - for example providing matchers for Dynatrace Monaco or OpenPipeline.
 
-As a solution for this problem, the plugin adds support for `.edql` files which allow writing only the DQL expressions
-without any commands.
+As a solution for this problem, the plugin adds support for `.dqlexpr` files which allow writing only the DQL
+expressions without any commands.
 
 Such files naturally cannot be executed and do not fire any additional verification when a connection to the Dynatrace
 tenant is configured.
 
 ## Features
 
-The `.edql` files inherit features from the [Dynatrace Query Language (`.dql`)](./DQL) files. Inspections related to
+The `.dqlexpr` files inherit features from the [Dynatrace Query Language (`.dql`)](./DQL) files. Inspections related to
 the expression context (like assignment support) are disabled for such files.
 
-## Example `.edql` file
+## Example `.dqlexpr` file
 
-```edql
+```dqlexpr
 matchesPhrase(event.provider, \"my-provider-*\") OR matchesPhrase(event.provider, \"*.my.host\")
 ```

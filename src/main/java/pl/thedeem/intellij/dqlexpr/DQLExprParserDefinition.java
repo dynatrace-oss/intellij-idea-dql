@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.edql;
+package pl.thedeem.intellij.dqlexpr;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
@@ -16,8 +16,8 @@ import pl.thedeem.intellij.dql.ExpressionDQLParser;
 import pl.thedeem.intellij.dql.psi.DQLTokenSets;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 
-public class EDQLParserDefinition implements ParserDefinition {
-    public static final IFileElementType FILE = new IFileElementType(EDQLLanguage.INSTANCE);
+public class DQLExprParserDefinition implements ParserDefinition {
+    public static final IFileElementType FILE = new IFileElementType(DQLExprLanguage.INSTANCE);
 
     @Override
     public @NotNull Lexer createLexer(Project project) {
@@ -46,7 +46,7 @@ public class EDQLParserDefinition implements ParserDefinition {
 
     @Override
     public @NotNull PsiFile createFile(@NotNull FileViewProvider viewProvider) {
-        return new EDQLFile(viewProvider);
+        return new DQLExprFile(viewProvider);
     }
 
     @Override

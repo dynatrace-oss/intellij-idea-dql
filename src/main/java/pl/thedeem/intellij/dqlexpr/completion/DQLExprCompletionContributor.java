@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.edql.completion;
+package pl.thedeem.intellij.dqlexpr.completion;
 
 import com.intellij.codeInsight.completion.*;
 import com.intellij.patterns.PlatformPatterns;
@@ -9,15 +9,15 @@ import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.dql.definition.model.Function;
 import pl.thedeem.intellij.dql.psi.DQLFieldName;
 import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
-import pl.thedeem.intellij.edql.EDQLFileType;
+import pl.thedeem.intellij.dqlexpr.DQLExprFileType;
 
-public class EDQLCompletionContributor extends CompletionContributor {
-    public EDQLCompletionContributor() {
+public class DQLExprCompletionContributor extends CompletionContributor {
+    public DQLExprCompletionContributor() {
         extend(CompletionType.BASIC, PlatformPatterns.psiElement().withParent(DQLFieldName.class),
                 new CompletionProvider<>() {
                     public void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet resultSet) {
                         PsiElement position = parameters.getPosition();
-                        if (!EDQLFileType.INSTANCE.equals(position.getContainingFile().getFileType())) {
+                        if (!DQLExprFileType.INSTANCE.equals(position.getContainingFile().getFileType())) {
                             return;
                         }
                         DQLDefinitionService service = DQLDefinitionService.getInstance(position.getProject());
