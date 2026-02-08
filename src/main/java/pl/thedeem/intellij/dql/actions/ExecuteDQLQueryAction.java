@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.services.ProjectServicesManager;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFileType;
+import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.DQLExecutionService;
@@ -91,6 +92,9 @@ public class ExecuteDQLQueryAction extends AnAction {
             return false;
         }
         if (PsiTreeUtil.getChildrenOfType(file, DQLQuery.class) == null) {
+            return true;
+        }
+        if (DQLUtil.isPartialFile(file)) {
             return true;
         }
         Language[] langs = e.getData(LangDataKeys.CONTEXT_LANGUAGES);

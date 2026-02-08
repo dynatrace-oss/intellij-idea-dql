@@ -33,7 +33,7 @@ public class MetricSeriesMigrationInspection extends LocalInspectionTool {
                         if ("metric.series".equalsIgnoreCase(paramValue)) {
                             holder.registerProblem(
                                     command.getCommandKeyword(),
-                                    DQLBundle.message("inspection.variable.metricSeriesMigration.issueDetected"),
+                                    DQLBundle.message("inspection.metricSeriesMigration.issueDetected"),
                                     new ReplaceFetchWithMetricsQuickFix()
                             );
                         }

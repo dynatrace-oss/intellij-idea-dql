@@ -7,11 +7,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.quickFixes.AbstractReplaceElementQuickFix;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.Command;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
+import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 
 import java.util.List;
 import java.util.Set;
@@ -43,7 +43,7 @@ public class ReplaceFetchWithMetricsQuickFix extends AbstractReplaceElementQuick
     @NotNull
     @Override
     public String getName() {
-        return DQLBundle.message("inspection.variable.metricSeriesMigration.issueDetected.fix");
+        return DQLBundle.message("inspection.metricSeriesMigration.issueDetected.fix");
     }
 
     @Override

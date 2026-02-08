@@ -1,0 +1,16 @@
+<html lang="en">
+<body>
+Verifies the usage of the "partial.dql" file names.
+
+<p>
+    Including "partial." within the file name to define a partial DQL file was replaced with the ".dqlpart" extension.
+    This would help to define injected code blocks containing parts of the DQL language (for example, creating the DQL
+    query dynamically).
+    This inspection will report an issue if the file name contains "partial." and suggest renaming the file to use
+    the ".dqlpart" extension instead.
+</p>
+<p>
+    After applying the quick fix, the file name will be updated automatically.
+</p>
+</body>
+</html>

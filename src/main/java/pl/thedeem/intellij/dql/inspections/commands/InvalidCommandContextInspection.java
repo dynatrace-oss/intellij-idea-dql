@@ -76,15 +76,12 @@ public class InvalidCommandContextInspection extends LocalInspectionTool {
     }
 
     private static @NotNull String proposePartialName(@NotNull String name) {
-        if (name.contains(".partial.")) {
+        if (name.endsWith(".dqlpart")) {
             return name;
         }
-        int dot = name.lastIndexOf('.');
-        if (dot <= 0) {
-            return name + ".partial.dql";
+        if (name.endsWith(".dql")) {
+            return name + "part";
         }
-        String base = name.substring(0, dot);
-        String ext = name.substring(dot);
-        return base + ".partial." + ext.substring(1);
+        return name + ".dqlpart";
     }
 }
