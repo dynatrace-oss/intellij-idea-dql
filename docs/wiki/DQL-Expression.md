@@ -11,11 +11,13 @@ tenant is configured.
 
 ## Features
 
-The `.dqlexpr` files inherit features from the [Dynatrace Query Language (`.dql`)](./DQL) files. Inspections related to
-the expression context (like assignment support) are disabled for such files.
+The `.dqlexpr` files inherit features from the [Dynatrace Query Language (`.dql`)](./DQL) files.
+Inspections related to the expression context (like validating assignment support) are disabled for such files.
 
-## Example `.dqlexpr` file
+## Usage
 
-```dqlexpr
+### Example `.dqlexpr` file
+
+```DQLExpr
 matchesPhrase(event.provider, \"my-provider-*\") OR matchesPhrase(event.provider, \"*.my.host\")
 ```

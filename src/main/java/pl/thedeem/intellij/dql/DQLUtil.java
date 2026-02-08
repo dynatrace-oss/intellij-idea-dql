@@ -20,6 +20,7 @@ import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
 import pl.thedeem.intellij.dql.psi.DQLParenthesisedExpression;
 import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
+import pl.thedeem.intellij.dqlpart.DQLPartFileType;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -59,9 +60,8 @@ public class DQLUtil {
     private final static String PARTIAL_DQL_NAME = ".partial.";
     private final static String CREDENTIALS_PREFIX = "pl.thedeem.intellij.dql/";
 
-    public static boolean isPartialFile(final PsiFile file) {
-        String name = file.getName();
-        return name.contains(PARTIAL_DQL_NAME);
+    public static boolean isPartialFile(@NotNull PsiFile file) {
+        return DQLPartFileType.INSTANCE.equals(file.getFileType()) || file.getName().contains(PARTIAL_DQL_NAME);
     }
 
     public static List<DQLFieldExpression> findFieldsInFile(PsiFile file, String key) {

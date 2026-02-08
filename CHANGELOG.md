@@ -21,13 +21,21 @@
   - All code style & highlighting settings will be inherited from the DQL language.
   - All suitable DQL inspections will be applied to the expression, allowing the user to validate them.
   - Code completion and hover documentation are also supported.
+- Adding support for the "Partial DQL" file type (with `.dqlpart` extension). This language works similar to
+  the previous `.partial.dql` files, but allows for an easier separation from the normal DQL file.
+  - Added a quick fix to migrate from the old `.partial.dql` suffix to the new `.dqlpart` extension.
+  - Works exactly like a normal DQL file, but allows to use non-starting commands like `filter` or `sort` as the first
+    statement in the query, without causing an error.
+  - An example `file.dqlpart` file: `filter field > 10 | sort field desc`
+  - Support for `.partial.dql` files will be removed in the future, so it's recommended to migrate to the new extension
+    as soon as possible.
 - **Breaking**: Changing the approach to the default Dynatrace tenant used for connections - it will be the first tenant
   specified in the list (previously the user needed to specifically select the default one).
 - Created Wiki pages with documentation for the plugin features
 - DQL now supports complex sorting expressions (for example, `sort abs(field) > 10 desc`)
 - Added missing quick fixes for inspections:
   - Dropping DQL commands and functions for unknown & experimental expressions
-  - Renaming the DQL file to `.partial.dql` when an invalid command context is detected (only for `.dql` files)
+  - Renaming the DQL file to `.dqlpart` when an invalid command context is detected (only for `.dql` files)
 - DQL now supports `/* language=X */` comments in strings
 - Adding a Dynatrace Query Console view that allows the user to execute DQL queries without opening a DQL file.
   You can open the console via the `Tools` -> `Services` -> `Dynatrace Query Console` menu or by clicking the `+` button

@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.inspections.fixes;
 
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.project.Project;
@@ -15,6 +16,11 @@ public class RenameFileQuickFix implements LocalQuickFix {
 
     public RenameFileQuickFix(@NotNull String proposedName) {
         this.proposedName = proposedName;
+    }
+    
+    @Override
+    public @NotNull IntentionPreviewInfo generatePreview(@NotNull Project project, @NotNull ProblemDescriptor previewDescriptor) {
+        return IntentionPreviewInfo.EMPTY;
     }
 
     @Override

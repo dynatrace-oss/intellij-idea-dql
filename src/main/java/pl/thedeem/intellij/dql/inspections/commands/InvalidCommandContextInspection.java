@@ -4,6 +4,7 @@ import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.lang.injection.InjectedLanguageManager;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
@@ -76,15 +77,12 @@ public class InvalidCommandContextInspection extends LocalInspectionTool {
     }
 
     private static @NotNull String proposePartialName(@NotNull String name) {
-        if (name.contains(".partial.")) {
+        if (StringUtil.endsWithIgnoreCase(name, ".dqlpart")) {
             return name;
         }
-        int dot = name.lastIndexOf('.');
-        if (dot <= 0) {
-            return name + ".partial.dql";
+        if (StringUtil.endsWithIgnoreCase(name, ".dql")) {
+            return name + "part";
         }
-        String base = name.substring(0, dot);
-        String ext = name.substring(dot);
-        return base + ".partial." + ext.substring(1);
+        return name + ".dqlpart";
     }
 }

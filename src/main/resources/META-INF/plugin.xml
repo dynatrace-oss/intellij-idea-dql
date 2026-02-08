@@ -239,8 +239,13 @@
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLMetricSeriesMigration"
                          enabledByDefault="true"
                          level="WARNING"
-                         groupKey="inspection.groups.dql" key="inspection.variable.metricSeriesMigration.display.name"
+                         groupKey="inspection.groups.dql" key="inspection.metricSeriesMigration.display.name"
                          implementationClass="pl.thedeem.intellij.dql.inspections.migrations.MetricSeriesMigrationInspection"/>
+        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLPartialFileMigration"
+                         enabledByDefault="true"
+                         level="INFO"
+                         groupKey="inspection.groups.dql" key="inspection.deprecatedPartialFile.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.migrations.PartialFileMigrationInspection"/>
         <!-- Dynatrace inspections -->
         <externalAnnotator language="DQL"
                            implementationClass="pl.thedeem.intellij.dql.inspections.external.DQLVerificationAnnotator"/>
@@ -573,6 +578,33 @@
                 language="DQL"
                 implementationClass="pl.thedeem.intellij.dqlexpr.completion.DQLExprCompletionContributor"/>
         <!-- endregion DQLExpr -->
+        <!-- region DQLPart -->
+        <fileType
+                name="DQLPart"
+                implementationClass="pl.thedeem.intellij.dqlpart.DQLPartFileType"
+                fieldName="INSTANCE"
+                language="DQLPart"
+                extensions="dqlpart"/>
+        <lang.parserDefinition
+                language="DQLPart"
+                implementationClass="pl.thedeem.intellij.dqlpart.DQLPartParserDefinition"/>
+        <lang.formatter
+                language="DQLPart"
+                implementationClass="pl.thedeem.intellij.dql.style.DQLFormattingModelBuilder"/>
+        <lang.commenter
+                language="DQLPart"
+                implementationClass="pl.thedeem.intellij.dql.code.DQLCommenter"/>
+        <lang.braceMatcher language="DQLPart"
+                           implementationClass="pl.thedeem.intellij.dql.code.DQLPairedBraceMatcher"/>
+        <quoteHandler className="pl.thedeem.intellij.dql.code.DQLQuoteHandler" fileType="DQLPart"/>
+        <codeInsight.parameterNameHints language="DQLPart"
+                                        implementationClass="pl.thedeem.intellij.dql.highlighting.DQLInlayParameterHintsProvider"/>
+        <spellchecker.support language="DQLPart"
+                              implementationClass="pl.thedeem.intellij.dql.code.DQLSpellcheckingStrategy"/>
+        <lang.syntaxHighlighterFactory
+                language="DQLPart"
+                implementationClass="pl.thedeem.intellij.dql.highlighting.DQLSyntaxHighlighterFactory"/>
+        <!-- endregion DQLPart -->
     </extensions>
 
     <actions resource-bundle="messages.DQLBundle">
