@@ -21,6 +21,7 @@ import pl.thedeem.intellij.dql.fileProviders.DQLQueryConsoleVirtualFile;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
+import java.util.List;
 import java.util.Objects;
 
 public class TenantServiceGroup implements ManagedServiceGroup {
@@ -90,7 +91,8 @@ public class TenantServiceGroup implements ManagedServiceGroup {
                         return;
                     }
                     ProjectServicesManager manager = ProjectServicesManager.getInstance(project);
-                    for (ManagedService service : manager.find(s -> s.getParentGroups().contains(TenantServiceGroup.this))) {
+                    List<ManagedService> relatedServices = manager.find(s -> s.getParentGroups().contains(TenantServiceGroup.this));
+                    for (ManagedService service : relatedServices) {
                         manager.unregisterService(service);
                     }
                 }
