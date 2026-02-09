@@ -11,6 +11,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.JBPopupListener;
 import com.intellij.openapi.ui.popup.LightweightWindowEvent;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -40,7 +41,8 @@ import java.util.function.Consumer;
 public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationService {
     @Override
     public @NotNull QueryConfiguration getQueryConfiguration(@NotNull PsiFile file) {
-        QueryConfiguration configuration = file.getVirtualFile().getUserData(QUERY_CONFIGURATION);
+        UserDataHolder dataHolder = Objects.requireNonNullElse(file.getVirtualFile(), file);
+        QueryConfiguration configuration = dataHolder.getUserData(QUERY_CONFIGURATION);
         if (configuration == null) {
             configuration = createConfigurationFromRunManager(file);
         }
@@ -66,9 +68,11 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
     }
 
     @Override
-    public @NotNull QueryConfiguration createDefaultConfiguration(@NotNull Project project, @NotNull VirtualFile virtualFile) {
+    public @NotNull QueryConfiguration createDefaultConfiguration(@NotNull Project project, @Nullable VirtualFile virtualFile) {
         QueryConfiguration result = createDefaultConfiguration();
-        result.setOriginalFile(IntelliJUtils.getRelativeProjectPath(virtualFile, project));
+        if (virtualFile != null) {
+            result.setOriginalFile(IntelliJUtils.getRelativeProjectPath(virtualFile, project));
+        }
         return result;
     }
 
@@ -84,7 +88,11 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
             return null;
         }
         RunManager runManager = RunManager.getInstance(file.getProject());
-        String filePath = IntelliJUtils.getRelativeProjectPath(file.getVirtualFile(), file.getProject());
+        VirtualFile vf = file.getVirtualFile();
+        if (vf == null) {
+            return null;
+        }
+        String filePath = IntelliJUtils.getRelativeProjectPath(vf, file.getProject());
         for (RunnerAndConfigurationSettings settings : runManager.getAllSettings()) {
             if (settings.getConfiguration() instanceof ExecuteDQLRunConfiguration dqlRunConfiguration && Objects.equals(filePath, dqlRunConfiguration.getDQLFile())) {
                 return dqlRunConfiguration.getConfiguration();
@@ -113,7 +121,8 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
 
     @Override
     public void updateConfiguration(@NotNull PsiFile file, @NotNull QueryConfiguration configuration) {
-        updateConfiguration(file.getVirtualFile(), configuration);
+        UserDataHolder dataHolder = Objects.requireNonNullElse(file.getVirtualFile(), file);
+        dataHolder.putUserData(QUERY_CONFIGURATION, configuration);
     }
 
     @Override

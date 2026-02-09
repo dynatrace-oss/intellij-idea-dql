@@ -40,7 +40,7 @@ public class DQLQueryConsolePanel extends BorderLayoutPanel implements UiDataPro
         this.virtualFile = virtualFile;
         setBorder(JBUI.Borders.empty());
 
-        virtualFile.putUserData(DQLToolbarProvider.TOOLBAR_SHOWN, false);
+        virtualFile.putUserData(DQLToolbarProvider.TOOLBAR_HIDDEN, true);
         this.project = project;
         editorField = IntelliJUtils.createEditorPanel(project, DynatraceQueryLanguage.INSTANCE, false, List.of(
                 new IntelliJUtils.StandardEditorCustomization(),

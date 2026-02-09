@@ -23,7 +23,7 @@ import javax.swing.*;
 import java.util.function.Function;
 
 public class DQLToolbarProvider implements EditorNotificationProvider {
-    public static final Key<Boolean> TOOLBAR_SHOWN = Key.create("DQL.TOOLBAR_SHOWN");
+    public static final Key<Boolean> TOOLBAR_HIDDEN = Key.create("DQL.TOOLBAR_SHOWN");
 
     @Override
     public @Nullable Function<? super @NotNull FileEditor, ? extends @Nullable JComponent> collectNotificationData(
@@ -32,7 +32,7 @@ public class DQLToolbarProvider implements EditorNotificationProvider {
     ) {
         if (!DQLFileType.INSTANCE.equals(virtualFile.getFileType())
                 || !DQLSettings.getInstance().isDQLExecutionToolbarVisible()
-                || Boolean.FALSE.equals(virtualFile.getUserData(TOOLBAR_SHOWN))) {
+                || Boolean.TRUE.equals(virtualFile.getUserData(TOOLBAR_HIDDEN))) {
             return null;
         }
 
