@@ -3,6 +3,7 @@ package pl.thedeem.intellij.dql.editor;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
@@ -22,11 +23,16 @@ import javax.swing.*;
 import java.util.function.Function;
 
 public class DQLToolbarProvider implements EditorNotificationProvider {
+    public static final Key<Boolean> TOOLBAR_SHOWN = Key.create("DQL.TOOLBAR_SHOWN");
+
     @Override
     public @Nullable Function<? super @NotNull FileEditor, ? extends @Nullable JComponent> collectNotificationData(
-            @NotNull Project project, @NotNull VirtualFile virtualFile
+            @NotNull Project project,
+            @NotNull VirtualFile virtualFile
     ) {
-        if (!DQLFileType.INSTANCE.equals(virtualFile.getFileType()) || !DQLSettings.getInstance().isDQLExecutionToolbarVisible()) {
+        if (!DQLFileType.INSTANCE.equals(virtualFile.getFileType())
+                || !DQLSettings.getInstance().isDQLExecutionToolbarVisible()
+                || Boolean.FALSE.equals(virtualFile.getUserData(TOOLBAR_SHOWN))) {
             return null;
         }
 

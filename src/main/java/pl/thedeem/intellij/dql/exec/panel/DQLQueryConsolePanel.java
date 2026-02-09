@@ -16,10 +16,12 @@ import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import pl.thedeem.intellij.dql.actions.ExecuteDQLQueryAction;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
+import pl.thedeem.intellij.dql.editor.DQLToolbarProvider;
 import pl.thedeem.intellij.dql.editor.actions.QueryConfigurationAction;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 
 import java.util.List;
+import java.util.Objects;
 
 public class DQLQueryConsolePanel extends BorderLayoutPanel implements UiDataProvider {
     public static final Key<DQLQueryConsolePanel> CONSOLE_PANEL = Key.create("DQL_QUERY_CONSOLE_PANEL");
@@ -28,17 +30,26 @@ public class DQLQueryConsolePanel extends BorderLayoutPanel implements UiDataPro
     private final Project project;
     private final VirtualFile virtualFile;
 
-    public DQLQueryConsolePanel(@NotNull Project project, @NotNull String content, @NotNull VirtualFile virtualFile, @Nullable String initialTenant) {
+    public DQLQueryConsolePanel(
+            @NotNull Project project,
+            @NotNull String content,
+            @NotNull VirtualFile virtualFile,
+            @Nullable QueryConfiguration initialConfiguration
+    ) {
         super();
         this.virtualFile = virtualFile;
         setBorder(JBUI.Borders.empty());
 
+        virtualFile.putUserData(DQLToolbarProvider.TOOLBAR_SHOWN, false);
         this.project = project;
         editorField = IntelliJUtils.createEditorPanel(project, DynatraceQueryLanguage.INSTANCE, false, List.of(
                 new IntelliJUtils.StandardEditorCustomization(),
                 new IntelliJUtils.EmptyBorderEditorCustomization(),
                 SoftWrapsEditorCustomization.ENABLED,
-                editorEx -> editorEx.getSettings().setLineMarkerAreaShown(true)
+                editorEx -> {
+                    editorEx.getSettings().setLineMarkerAreaShown(true);
+                    editorEx.getSettings().setShowIntentionBulb(true);
+                }
         ));
         editorField.setText(content);
         editorField.putClientProperty(CONSOLE_PANEL, this);
@@ -59,11 +70,8 @@ public class DQLQueryConsolePanel extends BorderLayoutPanel implements UiDataPro
         addToTop(toolbar.getComponent());
         addToCenter(editorField);
 
-        PsiFile psiFile = psiFileFromEditorField(project, editorField);
-        this.configuration = psiFile != null ? DQLQueryConfigurationService.getInstance().createDefaultConfiguration(psiFile) : new QueryConfiguration();
-        if (initialTenant != null) {
-            this.configuration.setTenant(initialTenant);
-        }
+        this.configuration = Objects.requireNonNullElse(initialConfiguration, getQueryConfiguration(project, content, virtualFile));
+        DQLQueryConfigurationService.getInstance().updateConfiguration(virtualFile, this.configuration);
     }
 
     @Override
@@ -77,5 +85,11 @@ public class DQLQueryConsolePanel extends BorderLayoutPanel implements UiDataPro
     protected @Nullable PsiFile psiFileFromEditorField(@NotNull Project project, @NotNull EditorTextField editorField) {
         PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
         return psiDocumentManager.getPsiFile(editorField.getDocument());
+    }
+
+    protected @NotNull QueryConfiguration getQueryConfiguration(@NotNull Project project, @NotNull String content, @NotNull VirtualFile virtualFile) {
+        QueryConfiguration result = DQLQueryConfigurationService.getInstance().createDefaultConfiguration(project, virtualFile);
+        result.setQuery(content);
+        return result;
     }
 }

@@ -12,7 +12,9 @@ import pl.thedeem.intellij.common.services.ManagedServiceGroup;
 import pl.thedeem.intellij.common.services.ProjectServicesManager;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
+import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.fileProviders.DQLQueryConsoleVirtualFile;
+import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsConfigurable;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
@@ -65,7 +67,9 @@ public class TenantServiceGroup implements ManagedServiceGroup {
                     if (project == null) {
                         return;
                     }
-                    DQLQueryConsoleVirtualFile.openForTenant(project, tenantId);
+                    QueryConfiguration defaultConfiguration = DQLQueryConfigurationService.getInstance().createDefaultConfiguration();
+                    defaultConfiguration.setTenant(tenantId);
+                    DQLQueryConsoleVirtualFile.openForTenant(project, defaultConfiguration);
                 }
             });
             actions.addAction(new AnAction(

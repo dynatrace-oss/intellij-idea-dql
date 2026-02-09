@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFileType;
+import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.panel.DQLQueryConsolePanel;
 
 import javax.swing.*;
@@ -15,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class DQLQueryConsoleVirtualFile extends DQLVirtualFile<String> {
     public static final AtomicInteger COUNTER = new AtomicInteger(0);
-    private String initialTenant;
+    private QueryConfiguration initialConfiguration;
 
     public DQLQueryConsoleVirtualFile(@NotNull String name) {
         super(name, "");
@@ -37,11 +38,11 @@ public class DQLQueryConsoleVirtualFile extends DQLVirtualFile<String> {
 
     @Override
     public @NotNull JComponent createComponent(@NotNull Project project) {
-        return new DQLQueryConsolePanel(project, content, this, initialTenant);
+        return new DQLQueryConsolePanel(project, content, this, initialConfiguration);
     }
 
-    public @NotNull DQLQueryConsoleVirtualFile setInitialTenant(@Nullable String initialTenant) {
-        this.initialTenant = initialTenant;
+    public @NotNull DQLQueryConsoleVirtualFile setInitialConfiguration(@Nullable QueryConfiguration initialConfiguration) {
+        this.initialConfiguration = initialConfiguration;
         return this;
     }
 
@@ -49,13 +50,13 @@ public class DQLQueryConsoleVirtualFile extends DQLVirtualFile<String> {
         open(project, DQLBundle.message("editor.queryConsole.consoleName", COUNTER.incrementAndGet()), null);
     }
 
-    public static void openForTenant(@NotNull Project project, @Nullable String tenant) {
-        open(project, DQLBundle.message("editor.queryConsole.consoleName", COUNTER.incrementAndGet()), tenant);
+    public static void openForTenant(@NotNull Project project, @Nullable QueryConfiguration configuration) {
+        open(project, DQLBundle.message("editor.queryConsole.consoleName", COUNTER.incrementAndGet()), configuration);
     }
 
-    public static void open(@NotNull Project project, @NotNull String name, @Nullable String initialTenant) {
+    public static void open(@NotNull Project project, @NotNull String name, @Nullable QueryConfiguration configuration) {
         DQLQueryConsoleVirtualFile vf = new DQLQueryConsoleVirtualFile(name)
-                .setInitialTenant(initialTenant);
+                .setInitialConfiguration(configuration);
         FileEditorManager.getInstance(project).openFile(vf, true);
     }
 

@@ -377,7 +377,8 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
             virtualFile = IntelliJUtils.getProjectRelativeFile(originalFile, project);
         }
         if (virtualFile == null) {
-            virtualFile = new DQLQueryConsoleVirtualFile(this.name, this.configuration.query());
+            virtualFile = new DQLQueryConsoleVirtualFile(this.name, this.configuration.query())
+                    .setInitialConfiguration(this.configuration);
         }
         return new OpenFileDescriptor(project, virtualFile);
     }
