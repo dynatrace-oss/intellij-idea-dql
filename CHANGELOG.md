@@ -17,6 +17,8 @@
     tenants.
   - Double-clicking the executed DQL query in the `Services` tab will now either open the related file (if possible),
     or open a new DQL query console with the execution context.
+  - Switched to a new Inlay provider. The user can now change inlay settings in `Settings` > `Editor` > `Inlay hints` >
+    `Other` > `DQL`.
 - The "Show DQL query" option when executing DQL will now try to show the parsed query instead of the raw one, if
   possible.
 - Adding support for "Expression DQL" file (with `.dqlexpr` extension), which allows to define a DQL expression without

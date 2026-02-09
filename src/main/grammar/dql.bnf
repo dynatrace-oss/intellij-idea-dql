@@ -65,7 +65,11 @@
 }
 
 root ::= query?
-query ::= command (command)* { pin=1 }
+query ::= command (command)* {
+    pin=1
+    mixin="pl.thedeem.intellij.dql.psi.elements.impl.QueryElementImpl"
+    implements="pl.thedeem.intellij.dql.psi.elements.QueryElement"
+}
 
 command ::= PIPE? command_keyword command_parameters? {
     pin=2
