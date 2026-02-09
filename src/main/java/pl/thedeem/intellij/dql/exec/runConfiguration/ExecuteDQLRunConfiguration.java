@@ -106,6 +106,7 @@ public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLR
         configuration.setMaxResultRecords(options.getMaxResultRecords());
         configuration.setTimeframeStart(options.getTimeframeStart());
         configuration.setTimeframeEnd(options.getTimeframeEnd());
+        configuration.setOriginalFile(options.getDqlPath());
         return configuration;
     }
 

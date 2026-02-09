@@ -32,23 +32,22 @@ public class ExecuteDQLQueryAction extends AnAction {
             return;
         }
         PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
-        QueryConfiguration configuration = Objects.requireNonNullElse(
-                e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION),
-                file != null ? DQLQueryConfigurationService.getInstance().getQueryConfiguration(file) : new QueryConfiguration()
-        );
+        QueryConfiguration configuration = getConfiguration(e, file);
         if (configuration.tenant() == null) {
             e.getPresentation().setEnabledAndVisible(false);
         }
     }
 
     @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
+    }
+
+    @Override
     public void actionPerformed(@NotNull AnActionEvent original) {
         AnActionEvent e = updateEvent(original);
         PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
-        QueryConfiguration configuration = Objects.requireNonNullElse(
-                e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION),
-                file != null ? DQLQueryConfigurationService.getInstance().getQueryConfiguration(file) : new QueryConfiguration()
-        );
+        QueryConfiguration configuration = getConfiguration(e, file);
         if (file == null || configuration.tenant() == null) {
             if (e.getProject() != null) {
                 DQLNotificationsService.getInstance(e.getProject()).showErrorNotification(
@@ -78,9 +77,13 @@ public class ExecuteDQLQueryAction extends AnAction {
         return e;
     }
 
-    @Override
-    public @NotNull ActionUpdateThread getActionUpdateThread() {
-        return ActionUpdateThread.BGT;
+    protected @NotNull QueryConfiguration getConfiguration(AnActionEvent e, PsiFile file) {
+        return Objects.requireNonNullElse(
+                e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION),
+                file != null
+                        ? DQLQueryConfigurationService.getInstance().getQueryConfiguration(file)
+                        : DQLQueryConfigurationService.getInstance().createDefaultConfiguration()
+        );
     }
 
     protected boolean isNotRelatedToDQL(@NotNull AnActionEvent e) {
