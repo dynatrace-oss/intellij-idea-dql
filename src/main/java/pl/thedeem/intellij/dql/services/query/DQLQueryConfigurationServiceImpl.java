@@ -44,10 +44,10 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
         UserDataHolder dataHolder = Objects.requireNonNullElse(file.getVirtualFile(), file);
         QueryConfiguration configuration = dataHolder.getUserData(QUERY_CONFIGURATION);
         if (configuration == null) {
-            configuration = createConfigurationFromRunManager(file);
-        }
-        if (configuration == null) {
-            configuration = createDefaultConfiguration(file);
+            configuration = Objects.requireNonNullElse(
+                    createConfigurationFromRunManager(file.getProject(), file.getVirtualFile()),
+                    createDefaultConfiguration(file)
+            );
         }
         if (configuration.tenant() != null) {
             DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(configuration.tenant());
@@ -57,6 +57,24 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
         }
         DQLVariablesService variablesService = DQLVariablesService.getInstance(file.getProject());
         configuration.setDefinedVariables(variablesService.getDefinedVariables(file));
+        return configuration;
+    }
+
+    @Override
+    public @NotNull QueryConfiguration getQueryConfiguration(@NotNull Project project, @NotNull VirtualFile file) {
+        QueryConfiguration configuration = file.getUserData(QUERY_CONFIGURATION);
+        if (configuration == null) {
+            configuration = Objects.requireNonNullElse(
+                    createConfigurationFromRunManager(project, file),
+                    createDefaultConfiguration(project, file)
+            );
+        }
+        if (configuration.tenant() != null) {
+            DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(configuration.tenant());
+            if (tenant == null) {
+                configuration.setTenant(null);
+            }
+        }
         return configuration;
     }
 
@@ -83,16 +101,12 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
         return result;
     }
 
-    private @Nullable QueryConfiguration createConfigurationFromRunManager(@NotNull PsiFile file) {
+    private @Nullable QueryConfiguration createConfigurationFromRunManager(@NotNull Project project, @NotNull VirtualFile file) {
         if (file instanceof VirtualFileWindow) {
             return null;
         }
-        RunManager runManager = RunManager.getInstance(file.getProject());
-        VirtualFile vf = file.getVirtualFile();
-        if (vf == null) {
-            return null;
-        }
-        String filePath = IntelliJUtils.getRelativeProjectPath(vf, file.getProject());
+        RunManager runManager = RunManager.getInstance(project);
+        String filePath = IntelliJUtils.getRelativeProjectPath(file, project);
         for (RunnerAndConfigurationSettings settings : runManager.getAllSettings()) {
             if (settings.getConfiguration() instanceof ExecuteDQLRunConfiguration dqlRunConfiguration && Objects.equals(filePath, dqlRunConfiguration.getDQLFile())) {
                 return dqlRunConfiguration.getConfiguration();

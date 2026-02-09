@@ -25,7 +25,6 @@ import java.util.Objects;
 
 public class DQLQueryConsolePanel extends BorderLayoutPanel implements UiDataProvider {
     public static final Key<DQLQueryConsolePanel> CONSOLE_PANEL = Key.create("DQL_QUERY_CONSOLE_PANEL");
-    private final QueryConfiguration configuration;
     private final EditorTextField editorField;
     private final Project project;
     private final VirtualFile virtualFile;
@@ -70,15 +69,22 @@ public class DQLQueryConsolePanel extends BorderLayoutPanel implements UiDataPro
         addToTop(toolbar.getComponent());
         addToCenter(editorField);
 
-        this.configuration = Objects.requireNonNullElse(initialConfiguration, getQueryConfiguration(project, content, virtualFile));
-        DQLQueryConfigurationService.getInstance().updateConfiguration(virtualFile, this.configuration);
+        QueryConfiguration configuration = Objects.requireNonNullElse(initialConfiguration, getQueryConfiguration(project, content, virtualFile));
+        DQLQueryConfigurationService.getInstance().updateConfiguration(virtualFile, configuration);
     }
 
     @Override
     public void uiDataSnapshot(@NotNull DataSink dataSink) {
         dataSink.lazy(CommonDataKeys.EDITOR, editorField::getEditor);
         dataSink.lazy(CommonDataKeys.PSI_FILE, () -> psiFileFromEditorField(project, editorField));
-        dataSink.set(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, configuration);
+        dataSink.lazy(
+                DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION,
+                () -> {
+                    QueryConfiguration configuration = DQLQueryConfigurationService.getInstance().getQueryConfiguration(project, virtualFile);
+                    configuration.setQuery(editorField.getText());
+                    return configuration;
+                }
+        );
         dataSink.set(ExecuteDQLQueryAction.PREFERRED_EXECUTION_NAME, virtualFile.getName());
     }
 

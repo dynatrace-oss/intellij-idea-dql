@@ -23,6 +23,8 @@ public interface DQLQueryConfigurationService {
 
     @NotNull QueryConfiguration getQueryConfiguration(@NotNull PsiFile file);
 
+    @NotNull QueryConfiguration getQueryConfiguration(@NotNull Project project, @NotNull VirtualFile file);
+
     @NotNull QueryConfiguration createDefaultConfiguration(@NotNull PsiFile file);
 
     @NotNull QueryConfiguration createDefaultConfiguration(@NotNull Project project, @Nullable VirtualFile virtualFile);
