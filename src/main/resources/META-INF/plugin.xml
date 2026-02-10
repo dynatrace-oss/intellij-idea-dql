@@ -39,8 +39,8 @@
         <lang.braceMatcher language="DQL"
                            implementationClass="pl.thedeem.intellij.dql.code.DQLPairedBraceMatcher"/>
         <quoteHandler className="pl.thedeem.intellij.dql.code.DQLQuoteHandler" fileType="DQL"/>
-        <codeInsight.parameterNameHints language="DQL"
-                                        implementationClass="pl.thedeem.intellij.dql.highlighting.DQLInlayParameterHintsProvider"/>
+        <codeInsight.inlayProvider language="DQL"
+                                   implementationClass="pl.thedeem.intellij.dql.highlighting.hints.DQLParameterNameHintsProvider"/>
         <multiHostInjector
                 implementation="pl.thedeem.intellij.dql.code.DQLLanguagesInjector"/>
         <spellchecker.support language="DQL"
@@ -327,7 +327,6 @@
         <codeInsight.lineMarkerProvider
                 language="DQL"
                 implementationClass="pl.thedeem.intellij.dql.editor.gutter.DQLInjectedFragmentExecutionLineMarkerProvider"/>
-
         <notificationGroup id="DQL.Errors"
                            displayType="BALLOON" bundle="messages.DQLBundle" key="notification.group.dql.errors"/>
 
@@ -568,8 +567,6 @@
         <lang.braceMatcher language="DQLExpr"
                            implementationClass="pl.thedeem.intellij.dql.code.DQLPairedBraceMatcher"/>
         <quoteHandler className="pl.thedeem.intellij.dql.code.DQLQuoteHandler" fileType="DQLExpr"/>
-        <codeInsight.parameterNameHints language="DQLExpr"
-                                        implementationClass="pl.thedeem.intellij.dql.highlighting.DQLInlayParameterHintsProvider"/>
         <spellchecker.support language="DQLExpr"
                               implementationClass="pl.thedeem.intellij.dql.code.DQLSpellcheckingStrategy"/>
         <lang.syntaxHighlighterFactory
@@ -589,22 +586,7 @@
         <lang.parserDefinition
                 language="DQLPart"
                 implementationClass="pl.thedeem.intellij.dqlpart.DQLPartParserDefinition"/>
-        <lang.formatter
-                language="DQLPart"
-                implementationClass="pl.thedeem.intellij.dql.style.DQLFormattingModelBuilder"/>
-        <lang.commenter
-                language="DQLPart"
-                implementationClass="pl.thedeem.intellij.dql.code.DQLCommenter"/>
-        <lang.braceMatcher language="DQLPart"
-                           implementationClass="pl.thedeem.intellij.dql.code.DQLPairedBraceMatcher"/>
         <quoteHandler className="pl.thedeem.intellij.dql.code.DQLQuoteHandler" fileType="DQLPart"/>
-        <codeInsight.parameterNameHints language="DQLPart"
-                                        implementationClass="pl.thedeem.intellij.dql.highlighting.DQLInlayParameterHintsProvider"/>
-        <spellchecker.support language="DQLPart"
-                              implementationClass="pl.thedeem.intellij.dql.code.DQLSpellcheckingStrategy"/>
-        <lang.syntaxHighlighterFactory
-                language="DQLPart"
-                implementationClass="pl.thedeem.intellij.dql.highlighting.DQLSyntaxHighlighterFactory"/>
         <!-- endregion DQLPart -->
     </extensions>
 

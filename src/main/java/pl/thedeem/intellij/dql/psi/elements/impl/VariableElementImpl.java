@@ -124,11 +124,11 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
     @Override
     public @Nullable String getValue() {
         PsiElement definition = getDefinition();
+        DQLVariablesService service = DQLVariablesService.getInstance(getProject());
         if (definition instanceof JsonProperty property) {
-            DQLVariablesService service = DQLVariablesService.getInstance(getProject());
             return service.getVariableValue(property.getValue());
         }
-        return null;
+        return service.getVariableValue(null);
     }
 
     private PsiElement recalculateReference() {

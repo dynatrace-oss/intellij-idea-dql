@@ -13,12 +13,11 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
+import pl.thedeem.intellij.dql.psi.DQLQuery;
+import pl.thedeem.intellij.dql.psi.elements.VariableElement;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public final class DQLVariablesServiceImpl implements DQLVariablesService {
     private final static String DQL_VARIABLES_FILE = "dql-variables.json";
@@ -29,7 +28,7 @@ public final class DQLVariablesServiceImpl implements DQLVariablesService {
     }
 
     @Override
-    public @Nullable Path getDefaultVariablesFile(PsiElement element) {
+    public @Nullable Path getDefaultVariablesFile(@NotNull PsiElement element) {
         VirtualFile virtualFile = element.getContainingFile().getVirtualFile();
         if (virtualFile == null) {
             return null;
@@ -145,15 +144,19 @@ public final class DQLVariablesServiceImpl implements DQLVariablesService {
     @Override
     public @NotNull List<VariableDefinition> getDefinedVariables(@NotNull PsiFile file) {
         return ReadAction.compute(() -> {
+            DQLQuery query = PsiTreeUtil.getChildOfType(file, DQLQuery.class);
+            if (query == null) {
+                return List.of();
+            }
             List<VariableDefinition> result = new ArrayList<>();
-            List<DQLVariableExpression> vars = new ArrayList<>(PsiTreeUtil.findChildrenOfType(file, DQLVariableExpression.class));
-            for (DQLVariableExpression var : vars) {
-                PsiElement definition = var.getDefinition();
-                if (definition != null) {
-                    result.add(new VariableDefinition(var.getName(), var.getValue(), var.getDataType()));
+            for (Map.Entry<String, List<VariableElement>> variable : query.getDefinedVariables().entrySet()) {
+                String name = variable.getKey();
+                if (!variable.getValue().isEmpty()) {
+                    VariableElement element = variable.getValue().getFirst();
+                    result.add(new VariableDefinition(name, element.getValue(), element.getDataType()));
                 }
             }
-            return result;
+            return Collections.unmodifiableList(result);
         });
     }
 }
