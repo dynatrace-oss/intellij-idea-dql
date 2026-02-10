@@ -55,6 +55,6 @@ public abstract class QueryElementImpl extends ASTWrapperPsiElement implements Q
             String name = var.getName();
             result.computeIfAbsent(name, k -> new ArrayList<>()).add(var);
         }
-        return result;
+        return Collections.unmodifiableMap(result);
     }
 }

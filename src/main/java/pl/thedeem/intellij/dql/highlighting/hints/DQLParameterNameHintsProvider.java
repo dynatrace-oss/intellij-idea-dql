@@ -77,6 +77,14 @@ public class DQLParameterNameHintsProvider implements InlayHintsProvider<DQLPara
                         listener.settingsChanged();
                     }
             ));
+            panel.add(createOptionComponent(
+                    DQLBundle.message("settings.inlayHints.parameters.showHintsForSingularParameter.description"),
+                    settings.showHintsForSingularParameter,
+                    (selected) -> {
+                        settings.showHintsForSingularParameter = selected;
+                        listener.settingsChanged();
+                    }
+            ));
             return panel;
         };
     }
@@ -118,17 +126,21 @@ public class DQLParameterNameHintsProvider implements InlayHintsProvider<DQLPara
         };
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     protected void addHints(@NotNull PresentationFactory factory,
                             @NotNull InlayHintsSink sink,
                             @NotNull List<Hint> hints) {
         for (Hint hint : hints) {
-            var p = factory.inset(factory.smallTextWithoutBackground(hint.text + ": "), 0, 0, 5, 0);
+            var p = factory.roundWithBackgroundAndSmallInset(factory.smallTextWithoutBackground(hint.text + ":"));
             sink.addInlineElement(hint.offset, false, p, false);
         }
     }
 
     private static @NotNull List<Hint> getHints(@NotNull PsiElement element, @NotNull List<MappedParameter> parameters, @NotNull DQLParameterNameHintsSettings settings) {
         List<Hint> result = new ArrayList<>();
+        if (parameters.size() == 1 && !settings.showHintsForSingularParameter) {
+            return result;
+        }
         for (int i = 0; i < parameters.size(); i++) {
             if (i == 0 && element instanceof DQLCommand && settings.hideHintsForFirstCommandParameter) {
                 continue;
@@ -155,9 +167,7 @@ public class DQLParameterNameHintsProvider implements InlayHintsProvider<DQLPara
 
     protected @NotNull JComponent createOptionComponent(@NotNull String name, boolean isSelected, @NotNull Consumer<Boolean> onChange) {
         JCheckBox check = new JBCheckBox(name, isSelected);
-        check.addActionListener(e -> {
-            onChange.accept(check.isSelected());
-        });
+        check.addActionListener(e -> onChange.accept(check.isSelected()));
         return check;
     }
 
@@ -173,5 +183,8 @@ public class DQLParameterNameHintsProvider implements InlayHintsProvider<DQLPara
 
         @Attribute("hideHintsForFirstCommandParameter")
         public boolean hideHintsForFirstCommandParameter = true;
+
+        @Attribute("showHintsForSingularParameter")
+        public boolean showHintsForSingularParameter = false;
     }
 }
