@@ -33,7 +33,9 @@ public class QueryConfigurationOptionsAction extends AnAction implements CustomC
     private JComponent component;
 
     public QueryConfigurationOptionsAction() {
-        myQueryConfigurationComponent = new QueryConfigurationComponent();
+        myQueryConfigurationComponent = new QueryConfigurationComponent()
+                .configureFields((field) -> field.setPreferredSize(new Dimension(field.getPreferredSize().width, JBUI.scale(25))));
+        myQueryConfigurationComponent.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
         installActionEvent(myQueryConfigurationComponent.scanLimit());
         installActionEvent(myQueryConfigurationComponent.maxBytes());
         installActionEvent(myQueryConfigurationComponent.maxRecords());

@@ -22,7 +22,9 @@ public class QueryConfigurationTimeframeAction extends AnAction implements Custo
     private JComponent component;
 
     public QueryConfigurationTimeframeAction() {
-        myQueryTimeframeComponent = new QueryTimeframeConfigurationComponent();
+        myQueryTimeframeComponent = new QueryTimeframeConfigurationComponent()
+                .configureFields((field) -> field.setPreferredSize(new Dimension(field.getPreferredSize().width, JBUI.scale(25))));
+        myQueryTimeframeComponent.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
         installActionEvent(myQueryTimeframeComponent.queryStartField());
         installActionEvent(myQueryTimeframeComponent.queryEndField());
     }
