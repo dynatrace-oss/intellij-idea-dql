@@ -55,7 +55,6 @@ public class ResizableTextField extends JBTextField {
         ResizableTextField result = new ResizableTextField();
         result.setToolTipText(tooltip);
         result.getEmptyText().setText(placeholder);
-        result.setPreferredSize(new Dimension(result.getPreferredSize().width, JBUI.scale(25)));
         result.resizeToFit();
         return result;
     }

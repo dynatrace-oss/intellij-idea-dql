@@ -2,7 +2,9 @@ package pl.thedeem.intellij.dql.components;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
+import com.intellij.util.Consumer;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,7 +12,6 @@ import pl.thedeem.intellij.common.components.ResizableTextField;
 import pl.thedeem.intellij.dql.DQLBundle;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.List;
 
 public class QueryTimeframeConfigurationComponent extends JPanel {
@@ -18,7 +19,10 @@ public class QueryTimeframeConfigurationComponent extends JPanel {
     protected final JBTextField queryEndField;
 
     public QueryTimeframeConfigurationComponent() {
-        setLayout(new FlowLayout(FlowLayout.LEFT, 0, 2));
+        this(false);
+    }
+
+    public QueryTimeframeConfigurationComponent(boolean withLabel) {
         setOpaque(false);
         setBorder(JBUI.Borders.empty());
 
@@ -32,8 +36,17 @@ public class QueryTimeframeConfigurationComponent extends JPanel {
         );
 
         add(createPredefinedQueryTimeframeOptions());
+        if (withLabel) {
+            add(new JBLabel(DQLBundle.message("components.queryTimeframe.label")));
+        }
         add(queryStartField);
         add(queryEndField);
+    }
+
+    public QueryTimeframeConfigurationComponent configureFields(@NotNull Consumer<JBTextField> configurator) {
+        configurator.consume(queryStartField);
+        configurator.consume(queryEndField);
+        return this;
     }
 
     public @NotNull JBTextField queryStartField() {

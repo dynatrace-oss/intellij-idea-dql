@@ -17,10 +17,13 @@ import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import pl.thedeem.intellij.dql.components.DynatraceTenantSelector;
+import pl.thedeem.intellij.dql.components.QueryConfigurationComponent;
+import pl.thedeem.intellij.dql.components.QueryTimeframeConfigurationComponent;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfiguration> {
     private final static int CODE_EDITOR_HEIGHT = 250;
@@ -29,7 +32,8 @@ public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfig
     private final DynatraceTenantSelector<?> tenantSelector;
     private final JPanel myPanel;
     private final QuerySelectionPanel queryPanel;
-    private final DQLQueryExecutionComponent queryParameters;
+    private final QueryConfigurationComponent queryConfiguration;
+    private final QueryTimeframeConfigurationComponent queryTimeframe;
 
     public ExecuteDQLSettingsEditor(@NotNull Project project) {
         dqlFilePath = new TextFieldWithBrowseButton();
@@ -42,13 +46,18 @@ public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfig
                         .withRoots(ProjectRootManager.getInstance(project).getContentRoots())
         ));
         tenantSelector = new DynatraceTenantSelector<>(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        queryParameters = new DQLQueryExecutionComponent();
+        queryConfiguration = new QueryConfigurationComponent(true);
+        queryTimeframe = new QueryTimeframeConfigurationComponent(true);
+        queryTimeframe.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        queryConfiguration.setLayout(new BoxLayout(queryConfiguration, BoxLayout.Y_AXIS));
+        queryConfiguration.setBorder(JBUI.Borders.compound(JBUI.Borders.emptyLeft(JBUI.scale(4)), queryConfiguration.getBorder()));
         queryPanel = new QuerySelectionPanel(dqlFilePath, dqlQuery);
         myPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(DQLBundle.message("runConfiguration.executeDQL.settings.dqlFilePath"), queryPanel)
                 .addLabeledComponent(DQLBundle.message("runConfiguration.executeDQL.settings.selectedTenant"), tenantSelector)
                 .addSeparator()
-                .addComponent(queryParameters.getPanel())
+                .addComponent(queryTimeframe)
+                .addComponent(queryConfiguration)
                 .getPanel();
 
         dqlQuery.setPreferredSize(new Dimension(dqlQuery.getPreferredSize().width, JBUI.scale(CODE_EDITOR_HEIGHT)));
@@ -60,11 +69,11 @@ public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfig
         String selectedTenantName = runConfig.getOptions().getSelectedTenant();
         tenantSelector.selectTenant(selectedTenantName);
 
-        queryParameters.setDefaultScanLimit(runConfig.getOptions().getDefaultScanLimit());
-        queryParameters.setMaxResultBytes(runConfig.getOptions().getMaxResultBytes());
-        queryParameters.setMaxResultRecords(runConfig.getOptions().getMaxResultRecords());
-        queryParameters.setTimeframeStart(runConfig.getOptions().getTimeframeStart());
-        queryParameters.setTimeframeEnd(runConfig.getOptions().getTimeframeEnd());
+        queryConfiguration.scanLimit().setText(Objects.requireNonNullElse(runConfig.getOptions().getDefaultScanLimit(), "").toString());
+        queryConfiguration.maxRecords().setText(Objects.requireNonNullElse(runConfig.getOptions().getMaxResultRecords(), "").toString());
+        queryConfiguration.maxBytes().setText(Objects.requireNonNullElse(runConfig.getOptions().getMaxResultBytes(), "").toString());
+        queryTimeframe.queryStartField().setText(runConfig.getOptions().getTimeframeStart());
+        queryTimeframe.queryEndField().setText(runConfig.getOptions().getTimeframeEnd());
 
         dqlFilePath.setText(runConfig.getDQLFile());
         dqlQuery.setText(runConfig.getOptions().getDqlQuery());
@@ -91,11 +100,11 @@ public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfig
             options.setSelectedTenant(null);
         }
 
-        options.setDefaultScanLimit(queryParameters.getDefaultScanLimit());
-        options.setMaxResultBytes(queryParameters.getMaxResultBytes());
-        options.setMaxResultRecords(queryParameters.getMaxResultRecords());
-        options.setTimeframeStart(queryParameters.getTimeframeStart());
-        options.setTimeframeEnd(queryParameters.getTimeframeEnd());
+        options.setDefaultScanLimit(queryConfiguration.scanLimitValue());
+        options.setMaxResultBytes(queryConfiguration.maxBytesValue());
+        options.setMaxResultRecords(queryConfiguration.maxRecordsValue());
+        options.setTimeframeStart(queryTimeframe.queryStartField().getText());
+        options.setTimeframeEnd(queryTimeframe.queryEndField().getText());
     }
 
     @NotNull

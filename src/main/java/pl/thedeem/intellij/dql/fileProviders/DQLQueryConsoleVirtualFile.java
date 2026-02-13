@@ -46,18 +46,23 @@ public class DQLQueryConsoleVirtualFile extends DQLVirtualFile<String> {
         return this;
     }
 
-    public static void open(@NotNull Project project) {
-        open(project, DQLBundle.message("editor.queryConsole.consoleName", COUNTER.incrementAndGet()), null);
+    public static DQLQueryConsoleVirtualFile open(@NotNull Project project) {
+        return open(project, getDefaultName(), null);
     }
 
     public static void openForTenant(@NotNull Project project, @Nullable QueryConfiguration configuration) {
-        open(project, DQLBundle.message("editor.queryConsole.consoleName", COUNTER.incrementAndGet()), configuration);
+        open(project, getDefaultName(), configuration);
     }
 
-    public static void open(@NotNull Project project, @NotNull String name, @Nullable QueryConfiguration configuration) {
+    public static DQLQueryConsoleVirtualFile open(@NotNull Project project, @NotNull String name, @Nullable QueryConfiguration configuration) {
         DQLQueryConsoleVirtualFile vf = new DQLQueryConsoleVirtualFile(name)
                 .setInitialConfiguration(configuration);
         FileEditorManager.getInstance(project).openFile(vf, true);
+        return vf;
+    }
+
+    public static @NotNull String getDefaultName() {
+        return DQLBundle.message("editor.queryConsole.consoleName", COUNTER.incrementAndGet());
     }
 
     @Override

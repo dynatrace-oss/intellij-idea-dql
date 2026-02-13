@@ -5,7 +5,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiFile;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.SoftWrapsEditorCustomization;
 import com.intellij.util.ui.JBUI;
@@ -76,7 +75,7 @@ public class DQLQueryConsolePanel extends BorderLayoutPanel implements UiDataPro
     @Override
     public void uiDataSnapshot(@NotNull DataSink dataSink) {
         dataSink.lazy(CommonDataKeys.EDITOR, editorField::getEditor);
-        dataSink.lazy(CommonDataKeys.PSI_FILE, () -> psiFileFromEditorField(project, editorField));
+        dataSink.lazy(CommonDataKeys.PSI_FILE, () -> PsiDocumentManager.getInstance(project).getPsiFile(editorField.getDocument()));
         dataSink.lazy(
                 DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION,
                 () -> {
@@ -86,11 +85,6 @@ public class DQLQueryConsolePanel extends BorderLayoutPanel implements UiDataPro
                 }
         );
         dataSink.set(ExecuteDQLQueryAction.PREFERRED_EXECUTION_NAME, virtualFile.getName());
-    }
-
-    protected @Nullable PsiFile psiFileFromEditorField(@NotNull Project project, @NotNull EditorTextField editorField) {
-        PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
-        return psiDocumentManager.getPsiFile(editorField.getDocument());
     }
 
     protected @NotNull QueryConfiguration getQueryConfiguration(@NotNull Project project, @NotNull String content, @NotNull VirtualFile virtualFile) {
