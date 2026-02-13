@@ -23,6 +23,7 @@ import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfiguration> {
     private final static int CODE_EDITOR_HEIGHT = 250;
@@ -68,9 +69,9 @@ public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfig
         String selectedTenantName = runConfig.getOptions().getSelectedTenant();
         tenantSelector.selectTenant(selectedTenantName);
 
-        queryConfiguration.scanLimit().setText(String.valueOf(runConfig.getOptions().getDefaultScanLimit()));
-        queryConfiguration.maxRecords().setText(String.valueOf(runConfig.getOptions().getMaxResultRecords()));
-        queryConfiguration.maxBytes().setText(String.valueOf(runConfig.getOptions().getMaxResultBytes()));
+        queryConfiguration.scanLimit().setText(Objects.requireNonNullElse(runConfig.getOptions().getDefaultScanLimit(), "").toString());
+        queryConfiguration.maxRecords().setText(Objects.requireNonNullElse(runConfig.getOptions().getMaxResultRecords(), "").toString());
+        queryConfiguration.maxBytes().setText(Objects.requireNonNullElse(runConfig.getOptions().getMaxResultBytes(), "").toString());
         queryTimeframe.queryStartField().setText(runConfig.getOptions().getTimeframeStart());
         queryTimeframe.queryEndField().setText(runConfig.getOptions().getTimeframeEnd());
 

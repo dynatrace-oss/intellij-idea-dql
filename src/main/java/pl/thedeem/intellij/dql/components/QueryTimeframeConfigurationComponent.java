@@ -43,9 +43,9 @@ public class QueryTimeframeConfigurationComponent extends JPanel {
         add(queryEndField);
     }
 
-    public QueryTimeframeConfigurationComponent configureFields(@NotNull Consumer<ResizableTextField> configurator) {
-        configurator.consume((ResizableTextField) queryStartField);
-        configurator.consume((ResizableTextField) queryEndField);
+    public QueryTimeframeConfigurationComponent configureFields(@NotNull Consumer<JBTextField> configurator) {
+        configurator.consume(queryStartField);
+        configurator.consume(queryEndField);
         return this;
     }
 

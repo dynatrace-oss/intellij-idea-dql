@@ -2,6 +2,7 @@ package pl.thedeem.intellij.dql.components;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBTextField;
 import com.intellij.util.Consumer;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +43,7 @@ public class QueryConfigurationComponent extends JPanel {
         add(configureField(maxRecords, AllIcons.Json.Array, withLabels));
     }
 
-    public QueryConfigurationComponent configureFields(@NotNull Consumer<ResizableTextField> configurator) {
+    public QueryConfigurationComponent configureFields(@NotNull Consumer<JBTextField> configurator) {
         configurator.consume(scanLimit);
         configurator.consume(maxBytes);
         configurator.consume(maxRecords);
@@ -80,8 +81,6 @@ public class QueryConfigurationComponent extends JPanel {
         iconLabel.setToolTipText(labelText);
         iconLabel.setBorder(JBUI.Borders.empty(JBUI.scale(4)));
         iconLabel.setOpaque(false);
-        JButton button = new JButton(icon);
-        button.setEnabled(false);
         JComponent wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         wrapper.setOpaque(false);
         wrapper.setBorder(JBUI.Borders.empty());
