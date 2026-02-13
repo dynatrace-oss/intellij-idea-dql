@@ -52,9 +52,10 @@
 ### Bug fixes
 
 - Creating an empty DQL variable using the `$type: dql` syntax will now create a multiline comment instead of causing an
-  error
+  error.
 - When modifying or deleting a Dynatrace tenant that was already used, files using it will require the user to select
   a new tenant.
+- Using periods (`-1y` for years, `-1q` for quarters, or `-1w` for weeks) in relative timeframes will now work properly.
 
 ## [1.4.0] - 2026-01-28
 
