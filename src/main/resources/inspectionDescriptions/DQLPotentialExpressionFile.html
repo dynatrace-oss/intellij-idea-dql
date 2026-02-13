@@ -1,0 +1,28 @@
+l
+<html lang="en">
+<body>
+Detects when a DQL file contains expressions that don't parse as valid DQL queries.
+
+<p>
+    This inspection identifies files where the content fails to parse as a valid DQL query,
+    but would be valid as a DQL expression. Such cases can be properly parsed as a separate language, which this
+    plugin does support for files with the <code>.dqlexpr</code> extension.
+</p>
+
+<p>
+    The inspection validates that the file content would parse correctly as a DQL expression before suggesting
+    the conversion. This ensures that converting the file will resolve the parsing errors.
+</p>
+<pre><code>
+not matchesValue(field, "something") and matchesPhrase(field2, "somethingelse")
+</code></pre>
+
+<p>
+    The inspection will suggest converting the file to use the <code>.dqlexpr</code> extension
+    to properly support expression-only syntax.
+</p>
+</body>
+</html>
+
+
+

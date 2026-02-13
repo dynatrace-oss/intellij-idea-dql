@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.engines.DQLDynatraceAutocomplete;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
+import pl.thedeem.intellij.dqlexpr.DQLExprFileType;
 
 public class DQLExternalCompletionContributor extends CompletionContributor {
 
@@ -15,7 +16,9 @@ public class DQLExternalCompletionContributor extends CompletionContributor {
                 new CompletionProvider<>() {
                     public void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet resultSet) {
                         PsiFile file = parameters.getOriginalFile();
-                        if (DQLUtil.isPartialFile(file) || !DQLSettings.getInstance().isUseDynatraceAutocompleteEnabled()) {
+                        if (!DQLSettings.getInstance().isUseDynatraceAutocompleteEnabled()
+                                || DQLUtil.isPartialFile(file)
+                                || DQLExprFileType.INSTANCE.equals(file.getFileType())) {
                             return;
                         }
                         new DQLDynatraceAutocomplete().autocomplete(parameters, resultSet);
