@@ -4,7 +4,8 @@ import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.Period;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,10 +54,18 @@ public enum DQLDurationType {
             case MINUTE -> base.plus(Duration.ofMinutes(duration));
             case HOUR -> base.plus(Duration.ofHours(duration));
             case DAY -> base.plus(Duration.ofDays(duration));
-            case WEEK -> base.plus(Period.ofWeeks(duration));
-            case MONTH -> base.plus(Period.ofMonths(duration));
-            case QUARTER -> base.plus(Period.ofMonths(duration * 4));
-            case YEAR -> base.plus(Period.ofYears(duration));
+            case WEEK -> ZonedDateTime.ofInstant(base, ZoneOffset.systemDefault())
+                    .plusWeeks(duration)
+                    .toInstant();
+            case MONTH -> ZonedDateTime.ofInstant(base, ZoneOffset.systemDefault())
+                    .plusMonths(duration)
+                    .toInstant();
+            case QUARTER -> ZonedDateTime.ofInstant(base, ZoneOffset.systemDefault())
+                    .plusMonths(duration * 3L)
+                    .toInstant();
+            case YEAR -> ZonedDateTime.ofInstant(base, ZoneOffset.systemDefault())
+                    .plusYears(duration)
+                    .toInstant();
         };
     }
 }
