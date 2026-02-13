@@ -54,16 +54,16 @@ public enum DQLDurationType {
             case MINUTE -> base.plus(Duration.ofMinutes(duration));
             case HOUR -> base.plus(Duration.ofHours(duration));
             case DAY -> base.plus(Duration.ofDays(duration));
-            case WEEK -> ZonedDateTime.ofInstant(base, ZoneOffset.UTC)
+            case WEEK -> ZonedDateTime.ofInstant(base, ZoneOffset.systemDefault())
                     .plusWeeks(duration)
                     .toInstant();
-            case MONTH -> ZonedDateTime.ofInstant(base, ZoneOffset.UTC)
+            case MONTH -> ZonedDateTime.ofInstant(base, ZoneOffset.systemDefault())
                     .plusMonths(duration)
                     .toInstant();
-            case QUARTER -> ZonedDateTime.ofInstant(base, ZoneOffset.UTC)
+            case QUARTER -> ZonedDateTime.ofInstant(base, ZoneOffset.systemDefault())
                     .plusMonths(duration * 3L)
                     .toInstant();
-            case YEAR -> ZonedDateTime.ofInstant(base, ZoneOffset.UTC)
+            case YEAR -> ZonedDateTime.ofInstant(base, ZoneOffset.systemDefault())
                     .plusYears(duration)
                     .toInstant();
         };
