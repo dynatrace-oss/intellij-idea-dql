@@ -17,7 +17,7 @@ public class RenameFileQuickFix implements LocalQuickFix {
     public RenameFileQuickFix(@NotNull String proposedName) {
         this.proposedName = proposedName;
     }
-    
+
     @Override
     public @NotNull IntentionPreviewInfo generatePreview(@NotNull Project project, @NotNull ProblemDescriptor previewDescriptor) {
         return IntentionPreviewInfo.EMPTY;
@@ -26,6 +26,11 @@ public class RenameFileQuickFix implements LocalQuickFix {
     @Override
     public @NotNull String getFamilyName() {
         return DQLBundle.message("inspection.command.context.fixes.renameFile", proposedName);
+    }
+
+    @Override
+    public boolean startInWriteAction() {
+        return false;
     }
 
     @Override

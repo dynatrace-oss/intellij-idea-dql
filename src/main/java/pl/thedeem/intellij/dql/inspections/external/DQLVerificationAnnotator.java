@@ -30,6 +30,7 @@ import pl.thedeem.intellij.dql.services.query.DQLQueryParserService;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
+import pl.thedeem.intellij.dqlexpr.DQLExprFileType;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -129,6 +130,7 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
     private boolean canPerformExternalValidation(Input input) {
         // We cannot do any annotations on partial files, as they will not be valid either way
         return !DQLUtil.isPartialFile(input.file)
+                && !DQLExprFileType.INSTANCE.equals(input.file.getFileType())
                 && DQLSettings.getInstance().isPerformingLiveValidationEnabled();
     }
 

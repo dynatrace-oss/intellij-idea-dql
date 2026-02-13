@@ -163,6 +163,11 @@
                          groupKey="inspection.groups.dql" key="inspection.function.duplicatedParameters.display.name"
                          implementationClass="pl.thedeem.intellij.dql.inspections.functions.DuplicatedFunctionParameterInspection"/>
         <!-- Command validations -->
+        <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLPotentialExpressionFile"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         groupKey="inspection.groups.dql" key="inspection.potentialExpressionFile.display.name"
+                         implementationClass="pl.thedeem.intellij.dql.inspections.commands.PotentialExpressionFileInspection"/>
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLUnknownCommand"
                          enabledByDefault="true"
                          level="ERROR"

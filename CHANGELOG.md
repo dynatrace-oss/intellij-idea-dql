@@ -45,6 +45,7 @@
 - Added missing quick fixes for inspections:
   - Dropping DQL commands and functions for unknown & experimental expressions
   - Renaming the DQL file to `.dqlpart` when an invalid command context is detected (only for `.dql` files)
+  - Renaming the DQL file to `.dqlexpr` when the DQL file contains an expression without the command context
 - Adding a Dynatrace Query Console view that allows the user to execute DQL queries without opening a DQL file.
   You can open the console via the `Tools` -> `Services` -> `Dynatrace Query Console` menu or by clicking the dedicated
   button in the `Services` tab.
