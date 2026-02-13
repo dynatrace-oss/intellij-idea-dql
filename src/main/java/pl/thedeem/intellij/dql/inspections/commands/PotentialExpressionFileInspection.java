@@ -57,14 +57,10 @@ public class PotentialExpressionFileInspection extends LocalInspectionTool {
     }
 
     private boolean isValidExpressionFile(@NotNull PsiFile file) {
-        try {
-            PsiFile dqlExprFile = PsiFileFactory.getInstance(file.getProject())
-                    .createFileFromText("temp.dqlexpr", DQLExprLanguage.INSTANCE, file.getText());
-            PsiErrorElement[] errors = PsiTreeUtil.getChildrenOfType(dqlExprFile, PsiErrorElement.class);
-            return errors == null || errors.length == 0;
-        } catch (Exception e) {
-            return false;
-        }
+        PsiFile dqlExprFile = PsiFileFactory.getInstance(file.getProject())
+                .createFileFromText("temp.dqlexpr", DQLExprLanguage.INSTANCE, file.getText());
+        PsiErrorElement[] errors = PsiTreeUtil.getChildrenOfType(dqlExprFile, PsiErrorElement.class);
+        return errors == null || errors.length == 0;
     }
 }
 
