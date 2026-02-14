@@ -52,6 +52,7 @@
 - Adding a Dynatrace Query Console view that allows the user to execute DQL queries without opening a DQL file.
   You can open the console via the `Tools` -> `Services` -> `Dynatrace Query Console` menu or by clicking the dedicated
   button in the `Services` tab.
+- Updated DQL functions & commands database
 
 ### Bug fixes
 
