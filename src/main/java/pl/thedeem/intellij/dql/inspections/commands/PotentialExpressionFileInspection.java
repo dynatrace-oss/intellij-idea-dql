@@ -3,6 +3,7 @@ package pl.thedeem.intellij.dql.inspections.commands;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +28,7 @@ public class PotentialExpressionFileInspection extends LocalInspectionTool {
                 }
 
                 PsiElement content = findPotentialDQLExpressionContent(file);
-                if (content != null && isValidExpressionFile(file)) {
+                if (content != null && isValidExpressionFile(file) && StringUtil.endsWithIgnoreCase(file.getName(), ".dql")) {
                     holder.registerProblem(
                             content,
                             DQLBundle.message("inspection.potentialExpressionFile.detected"),
