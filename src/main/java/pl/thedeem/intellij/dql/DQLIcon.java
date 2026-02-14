@@ -2,7 +2,6 @@ package pl.thedeem.intellij.dql;
 
 import com.intellij.icons.AllIcons;
 import pl.thedeem.intellij.common.Icons;
-import pl.thedeem.intellij.common.IntelliJUtils;
 
 import javax.swing.*;
 
@@ -25,8 +24,9 @@ public interface DQLIcon extends Icons {
     Icon DQL_ARRAY = AllIcons.Debugger.Db_array;
     Icon DQL_RECORD = AllIcons.FileTypes.Json;
     Icon INTENTION = AllIcons.Actions.Edit;
-    Icon GUTTER_EXECUTE_DQL = IntelliJUtils.scaleToBottomRight(AllIcons.Actions.Execute, DYNATRACE_LOGO, 0.5f);
-    Icon GUTTER_EXECUTE_SETTINGS = IntelliJUtils.scaleToBottomRight(AllIcons.General.GearPlain, DYNATRACE_LOGO, 0.5f);
-    Icon QUERY_CONSOLE = IntelliJUtils.scaleToBottomRight(AllIcons.General.ProjectTab, DYNATRACE_LOGO, 0.5f);
-    Icon MANAGE_TENANTS = IntelliJUtils.scaleToBottomRight(AllIcons.Actions.Annotate, DYNATRACE_LOGO, 0.5f);
+    Icon GUTTER_EXECUTE_DQL = Icons.scaleToBottomRight(AllIcons.Actions.Execute, DYNATRACE_LOGO, 0.5f);
+    Icon GUTTER_EXECUTE_SETTINGS = Icons.scaleToBottomRight(AllIcons.General.GearPlain, DYNATRACE_LOGO, 0.5f);
+    Icon QUERY_CONSOLE = Icons.scaleToBottomRight(AllIcons.General.ProjectTab, DYNATRACE_LOGO, 0.5f);
+    Icon MANAGE_TENANTS = Icons.scaleToBottomRight(AllIcons.Actions.Annotate, DYNATRACE_LOGO, 0.5f);
+    Icon EXTERNAL_VALIDATION_ENABLED = Icons.scaleToBottomRight(AllIcons.General.InspectionsOK, AllIcons.Actions.Lightning, 0.5f);
 }
