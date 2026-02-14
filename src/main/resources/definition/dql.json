@@ -540,7 +540,7 @@
     "dql.command.fetch": {
       "name": "fetch",
       "description": "Loads data from the resource.",
-      "synopsis": "fetch dataObject [, bucket: bucket, …] [, from] [, to] [, timeframe] [, samplingRatio] [, scanLimitGBytes]",
+      "synopsis": "fetch dataObject [, bucket: name, …] [, from] [, to] [, timeframe] [, samplingRatio] [, scanLimitGBytes]",
       "parameters": [
         {
           "name": "dataObject",
@@ -556,7 +556,7 @@
           ]
         },
         {
-          "name": "bucket",
+          "name": "name",
           "description": "A bucket (name or pattern) to retrieve data from.",
           "required": true,
           "requiresName": false,
@@ -1569,10 +1569,10 @@
     "dql.command.metrics": {
       "name": "metrics",
       "description": "Loads metric data.",
-      "synopsis": "metrics [[bucket: bucket, …] [, from] [, to] [, timeframe]]",
+      "synopsis": "metrics [[bucket: name, …] [, from] [, to] [, timeframe]]",
       "parameters": [
         {
-          "name": "bucket",
+          "name": "name",
           "description": "A bucket (name or pattern) to retrieve data from.",
           "required": true,
           "requiresName": false,
@@ -2050,10 +2050,10 @@
     "dql.command.timeseries": {
       "name": "timeseries",
       "description": "Reads metrics in the time series format from the data source.",
-      "synopsis": "timeseries [bucket: bucket, …] [, from] [, to] [, timeframe] [, by: { [expression, …] }] [, filter] [, interval] [, bins] [, shift] [, nonempty] [, union ,] metric, …",
+      "synopsis": "timeseries [bucket: name, …] [, from] [, to] [, timeframe] [, by: { [expression, …] }] [, filter] [, interval] [, bins] [, shift] [, nonempty] [, union ,] metric, …",
       "parameters": [
         {
-          "name": "bucket",
+          "name": "name",
           "description": "A bucket (name or pattern) to retrieve data from.",
           "required": true,
           "requiresName": false,
@@ -2682,7 +2682,6 @@
     "dql.function.arrayDiff": {
       "name": "arrayDiff",
       "description": "Returns array of same length where result[i] == input[i] - input[i-1].",
-      "experimental": true,
       "category": "dql.functionCategory.array",
       "synopsis": "arrayDiff(array)",
       "signatures": [
@@ -2732,6 +2731,60 @@
           ],
           "outputs": [
             "dql.dataType.array"
+          ]
+        }
+      ]
+    },
+    "dql.function.arrayElement": {
+      "name": "arrayElement",
+      "description": "Extracts a single element from an array.",
+      "category": "dql.functionCategory.get",
+      "synopsis": "arrayElement(expression, index)",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "expression",
+              "description": "The array from which to extract an element.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.array"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "index",
+              "description": "The index of the element to extract.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
           ]
         }
       ]
@@ -3369,7 +3422,6 @@
     "dql.function.arraySlice": {
       "name": "arraySlice",
       "description": "Returns a slice of an array.",
-      "experimental": true,
       "category": "dql.functionCategory.array",
       "synopsis": "arraySlice(array [, from] [, to])",
       "signatures": [
@@ -3497,7 +3549,6 @@
     "dql.function.arrayToString": {
       "name": "arrayToString",
       "description": "Converts an array to a string.",
-      "experimental": true,
       "category": "dql.functionCategory.array",
       "synopsis": "arrayToString(array [, delimiter])",
       "signatures": [
@@ -4724,14 +4775,13 @@
       "name": "concat",
       "description": "Concatenates the expressions into a single string.",
       "category": "dql.functionCategory.string",
-      "synopsis": "concat(expression, …)",
+      "synopsis": "concat([delimiter ,] expression, …)",
       "signatures": [
         {
           "parameters": [
             {
               "name": "delimiter",
               "description": "A constant string expression that is added between the concatenated expressions.",
-              "experimental": true,
               "required": false,
               "requiresName": true,
               "assignmentSupport": "none",
@@ -5951,6 +6001,190 @@
         }
       ]
     },
+    "dql.function.expressionTimeseriesCountDistinctApprox": {
+      "name": "countDistinctApprox",
+      "description": "Counts the approximate number of distinct records in each bucket.",
+      "category": "dql.functionCategory.expression timeseries",
+      "synopsis": "countDistinctApprox(expression [, precision] [, default] [, rate] [, scalar])",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "expression",
+              "description": "The expression the aggregation function shall be applied to.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.array",
+                "dql.dataType.binary",
+                "dql.dataType.boolean",
+                "dql.dataType.double",
+                "dql.dataType.duration",
+                "dql.dataType.geopoint",
+                "dql.dataType.ip",
+                "dql.dataType.long",
+                "dql.dataType.record",
+                "dql.dataType.smartscapeid",
+                "dql.dataType.string",
+                "dql.dataType.timeframe",
+                "dql.dataType.timestamp",
+                "dql.dataType.uid"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "precision",
+              "description": "The precision in the interval [3, 16].",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "14",
+              "minValue": "3",
+              "maxValue": "16",
+              "valueTypes": [
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "default",
+              "description": "The default value to fill gaps.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "NULL",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "rate",
+              "description": "The rate the series values shall be scaled to.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.duration"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "scalar",
+              "description": "Flag to indicate that a single scalar value spanning the whole timeframe shall be calculated.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "FALSE",
+              "valueTypes": [
+                "dql.dataType.boolean"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.primitiveValue"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.array",
+            "dql.dataType.double"
+          ]
+        }
+      ]
+    },
+    "dql.function.expressionTimeseriesCountDistinctExact": {
+      "name": "countDistinctExact",
+      "description": "Counts the precise number of distinct records in each bucket.",
+      "category": "dql.functionCategory.expression timeseries",
+      "synopsis": "countDistinctExact(expression [, default] [, rate] [, scalar])",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "expression",
+              "description": "The expression the aggregation function shall be applied to.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.array",
+                "dql.dataType.binary",
+                "dql.dataType.boolean",
+                "dql.dataType.double",
+                "dql.dataType.duration",
+                "dql.dataType.geopoint",
+                "dql.dataType.ip",
+                "dql.dataType.long",
+                "dql.dataType.record",
+                "dql.dataType.smartscapeid",
+                "dql.dataType.string",
+                "dql.dataType.timeframe",
+                "dql.dataType.timestamp",
+                "dql.dataType.uid"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "default",
+              "description": "The default value to fill gaps.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "NULL",
+              "valueTypes": [
+                "dql.dataType.double",
+                "dql.dataType.long"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "rate",
+              "description": "The rate the series values shall be scaled to.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.duration"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "scalar",
+              "description": "Flag to indicate that a single scalar value spanning the whole timeframe shall be calculated.",
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "FALSE",
+              "valueTypes": [
+                "dql.dataType.boolean"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.primitiveValue"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.array",
+            "dql.dataType.double"
+          ]
+        }
+      ]
+    },
     "dql.function.expressionTimeseriesCountIf": {
       "name": "countIf",
       "description": "Counts the number of records matching the provided condition in each bucket.",
@@ -6307,7 +6541,7 @@
                 "dql.dataType.long"
               ],
               "parameterValueTypes": [
-                "dql.parameterValueType.primitiveValue"
+                "dql.parameterValueType.expressionWithConstantValue"
               ]
             },
             {
@@ -6600,190 +6834,6 @@
                 "dql.dataType.double",
                 "dql.dataType.duration",
                 "dql.dataType.long"
-              ],
-              "parameterValueTypes": [
-                "dql.parameterValueType.expressionWithFieldAccess"
-              ]
-            },
-            {
-              "name": "default",
-              "description": "The default value to fill gaps.",
-              "required": false,
-              "requiresName": true,
-              "assignmentSupport": "none",
-              "defaultValue": "NULL",
-              "valueTypes": [
-                "dql.dataType.double",
-                "dql.dataType.long"
-              ],
-              "parameterValueTypes": [
-                "dql.parameterValueType.expressionWithConstantValue"
-              ]
-            },
-            {
-              "name": "rate",
-              "description": "The rate the series values shall be scaled to.",
-              "required": false,
-              "requiresName": true,
-              "assignmentSupport": "none",
-              "valueTypes": [
-                "dql.dataType.duration"
-              ],
-              "parameterValueTypes": [
-                "dql.parameterValueType.expressionWithConstantValue"
-              ]
-            },
-            {
-              "name": "scalar",
-              "description": "Flag to indicate that a single scalar value spanning the whole timeframe shall be calculated.",
-              "required": false,
-              "requiresName": true,
-              "assignmentSupport": "none",
-              "defaultValue": "FALSE",
-              "valueTypes": [
-                "dql.dataType.boolean"
-              ],
-              "parameterValueTypes": [
-                "dql.parameterValueType.primitiveValue"
-              ]
-            }
-          ],
-          "outputs": [
-            "dql.dataType.array",
-            "dql.dataType.double"
-          ]
-        }
-      ]
-    },
-    "dql.function.expressionTimeseriesСountDistinctApprox": {
-      "name": "countDistinctApprox",
-      "description": "Counts the approximate number of distinct records in each bucket.",
-      "category": "dql.functionCategory.expression timeseries",
-      "synopsis": "countDistinctApprox(expression [, precision] [, default] [, rate] [, scalar])",
-      "signatures": [
-        {
-          "parameters": [
-            {
-              "name": "expression",
-              "description": "The expression the aggregation function shall be applied to.",
-              "required": true,
-              "requiresName": false,
-              "assignmentSupport": "none",
-              "valueTypes": [
-                "dql.dataType.array",
-                "dql.dataType.binary",
-                "dql.dataType.boolean",
-                "dql.dataType.double",
-                "dql.dataType.duration",
-                "dql.dataType.geopoint",
-                "dql.dataType.ip",
-                "dql.dataType.long",
-                "dql.dataType.record",
-                "dql.dataType.smartscapeid",
-                "dql.dataType.string",
-                "dql.dataType.timeframe",
-                "dql.dataType.timestamp",
-                "dql.dataType.uid"
-              ],
-              "parameterValueTypes": [
-                "dql.parameterValueType.expressionWithFieldAccess"
-              ]
-            },
-            {
-              "name": "precision",
-              "description": "The precision in the interval [3, 16].",
-              "required": false,
-              "requiresName": true,
-              "assignmentSupport": "none",
-              "defaultValue": "14",
-              "minValue": "3",
-              "maxValue": "16",
-              "valueTypes": [
-                "dql.dataType.long"
-              ],
-              "parameterValueTypes": [
-                "dql.parameterValueType.expressionWithConstantValue"
-              ]
-            },
-            {
-              "name": "default",
-              "description": "The default value to fill gaps.",
-              "required": false,
-              "requiresName": true,
-              "assignmentSupport": "none",
-              "defaultValue": "NULL",
-              "valueTypes": [
-                "dql.dataType.double",
-                "dql.dataType.long"
-              ],
-              "parameterValueTypes": [
-                "dql.parameterValueType.expressionWithConstantValue"
-              ]
-            },
-            {
-              "name": "rate",
-              "description": "The rate the series values shall be scaled to.",
-              "required": false,
-              "requiresName": true,
-              "assignmentSupport": "none",
-              "valueTypes": [
-                "dql.dataType.duration"
-              ],
-              "parameterValueTypes": [
-                "dql.parameterValueType.expressionWithConstantValue"
-              ]
-            },
-            {
-              "name": "scalar",
-              "description": "Flag to indicate that a single scalar value spanning the whole timeframe shall be calculated.",
-              "required": false,
-              "requiresName": true,
-              "assignmentSupport": "none",
-              "defaultValue": "FALSE",
-              "valueTypes": [
-                "dql.dataType.boolean"
-              ],
-              "parameterValueTypes": [
-                "dql.parameterValueType.primitiveValue"
-              ]
-            }
-          ],
-          "outputs": [
-            "dql.dataType.array",
-            "dql.dataType.double"
-          ]
-        }
-      ]
-    },
-    "dql.function.expressionTimeseriesСountDistinctExact": {
-      "name": "countDistinctExact",
-      "description": "Counts the precise number of distinct records in each bucket.",
-      "category": "dql.functionCategory.expression timeseries",
-      "synopsis": "countDistinctExact(expression [, default] [, rate] [, scalar])",
-      "signatures": [
-        {
-          "parameters": [
-            {
-              "name": "expression",
-              "description": "The expression the aggregation function shall be applied to.",
-              "required": true,
-              "requiresName": false,
-              "assignmentSupport": "none",
-              "valueTypes": [
-                "dql.dataType.array",
-                "dql.dataType.binary",
-                "dql.dataType.boolean",
-                "dql.dataType.double",
-                "dql.dataType.duration",
-                "dql.dataType.geopoint",
-                "dql.dataType.ip",
-                "dql.dataType.long",
-                "dql.dataType.record",
-                "dql.dataType.smartscapeid",
-                "dql.dataType.string",
-                "dql.dataType.timeframe",
-                "dql.dataType.timestamp",
-                "dql.dataType.uid"
               ],
               "parameterValueTypes": [
                 "dql.parameterValueType.expressionWithFieldAccess"
@@ -7398,6 +7448,75 @@
           ],
           "outputs": [
             "dql.dataType.string"
+          ]
+        }
+      ]
+    },
+    "dql.function.getRecordField": {
+      "name": "getRecordField",
+      "description": "Extracts a sub field from a record.",
+      "experimental": true,
+      "category": "dql.functionCategory.get",
+      "synopsis": "getRecordField(expression, fieldName)",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "expression",
+              "description": "The record from which to extract a sub field.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.record",
+                "dql.dataType.timeframe"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "fieldName",
+              "description": "The name of the inner field.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.array",
+                "dql.dataType.binary",
+                "dql.dataType.boolean",
+                "dql.dataType.double",
+                "dql.dataType.duration",
+                "dql.dataType.geopoint",
+                "dql.dataType.ip",
+                "dql.dataType.long",
+                "dql.dataType.record",
+                "dql.dataType.smartscapeid",
+                "dql.dataType.string",
+                "dql.dataType.timeframe",
+                "dql.dataType.timestamp",
+                "dql.dataType.uid"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.identifierForFieldOnRootLevel"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
           ]
         }
       ]
@@ -9495,6 +9614,21 @@
               "parameterValueTypes": [
                 "dql.parameterValueType.expressionWithConstantValue"
               ]
+            },
+            {
+              "name": "wildcard",
+              "description": "A single character that will be used as wildcard (default: \"*\").",
+              "experimental": true,
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "\"*\"",
+              "valueTypes": [
+                "dql.dataType.string"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.primitiveValue"
+              ]
             }
           ],
           "outputs": [
@@ -9565,6 +9699,21 @@
               ],
               "parameterValueTypes": [
                 "dql.parameterValueType.expressionWithConstantValue"
+              ]
+            },
+            {
+              "name": "wildcard",
+              "description": "A single character that will be used as wildcard (default: \"*\").",
+              "experimental": true,
+              "required": false,
+              "requiresName": true,
+              "assignmentSupport": "none",
+              "defaultValue": "\"*\"",
+              "valueTypes": [
+                "dql.dataType.string"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.primitiveValue"
               ]
             },
             {
@@ -10262,10 +10411,11 @@
               "assignmentSupport": "none",
               "valueTypes": [
                 "dql.dataType.double",
+                "dql.dataType.duration",
                 "dql.dataType.long"
               ],
               "parameterValueTypes": [
-                "dql.parameterValueType.primitiveValue"
+                "dql.parameterValueType.expressionWithConstantValue"
               ]
             },
             {
