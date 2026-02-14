@@ -8,7 +8,7 @@ public abstract class DQLInvalidResponseException extends DQLApiException {
     }
 
     public String getApiMessage() {
-        return Objects.requireNonNullElse(getResponseMessage(), getMessage());
+        return Objects.requireNonNullElseGet(getResponseMessage(), this::getMessage);
     }
 
     protected abstract String getResponseMessage();

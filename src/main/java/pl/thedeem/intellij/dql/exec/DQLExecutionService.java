@@ -265,6 +265,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         dataSink.set(QueryConfigurationAction.SHOW_TIMEFRAME, false);
         dataSink.set(QueryConfigurationAction.SHOW_TENANT_SELECTION, false);
         dataSink.set(QueryConfigurationAction.SHOW_CONFIGURATION, false);
+        dataSink.set(QueryConfigurationAction.SHOW_QUERY_VALIDATION_OPTION, false);
     }
 
     public @Nullable DQLPollResponse getResult() {

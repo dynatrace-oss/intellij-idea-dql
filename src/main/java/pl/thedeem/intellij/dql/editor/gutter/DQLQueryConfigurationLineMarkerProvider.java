@@ -85,6 +85,7 @@ public class DQLQueryConfigurationLineMarkerProvider extends AbstractDQLQueryLin
                     dataSink.lazy(CommonDataKeys.PSI_FILE, element::getContainingFile);
                     dataSink.lazy(CommonDataKeys.PSI_ELEMENT, () -> element);
                     dataSink.set(QueryConfigurationAction.SHOW_QUERY_EXECUTE_BUTTON, false);
+                    dataSink.set(QueryConfigurationAction.SHOW_QUERY_VALIDATION_OPTION, false);
                     dataSink.lazy(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, () -> service.getQueryConfiguration(element.getContainingFile()));
                 }
             };

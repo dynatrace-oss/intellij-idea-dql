@@ -18,7 +18,9 @@ public abstract class DQLDetailedErrorException extends DQLInvalidResponseExcept
     }
 
     public Map<String, Object> getErrorDetails() {
-        return response != null && response.error != null ? Objects.requireNonNullElse(response.error.details(), Map.of()) : Map.of();
+        return response != null && response.error != null ?
+                Objects.requireNonNullElse(response.error.details(), Map.of())
+                : Map.of();
     }
 
     protected String getResponseMessage() {

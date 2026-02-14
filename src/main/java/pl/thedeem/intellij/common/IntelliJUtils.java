@@ -25,15 +25,16 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileWrapper;
-import com.intellij.ui.*;
-import com.intellij.util.IconUtil;
+import com.intellij.ui.EditorCustomization;
+import com.intellij.ui.EditorTextField;
+import com.intellij.ui.EditorTextFieldProvider;
+import com.intellij.ui.SoftWrapsEditorCustomization;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLRunConfiguration;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.lang.reflect.Constructor;
@@ -130,20 +131,6 @@ public class IntelliJUtils {
         printer.indentObjectsWith(indenter);
         printer.indentArraysWith(indenter);
         return mapper.writer(printer).writeValueAsString(json);
-    }
-
-    public static Icon scaleToBottomRight(@NotNull Icon base, @NotNull Icon original, float scale) {
-        Icon scaled = IconUtil.scale(original, null, scale);
-
-        return new LayeredIcon(2) {{
-            setIcon(base, 0);
-            setIcon(
-                    scaled,
-                    1,
-                    base.getIconWidth() - scaled.getIconWidth(),
-                    base.getIconHeight() - scaled.getIconHeight()
-            );
-        }};
     }
 
     public static void openSaveFileDialog(

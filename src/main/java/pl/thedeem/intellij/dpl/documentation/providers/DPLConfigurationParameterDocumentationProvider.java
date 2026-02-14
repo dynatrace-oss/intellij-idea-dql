@@ -35,7 +35,10 @@ public class DPLConfigurationParameterDocumentationProvider extends GenericDocum
 
         List<HtmlChunk> sections = new ArrayList<>();
         sections.add(HtmlChunk.p().child(tagElement().addText(parameterDefinition.type())));
-        sections.add(buildDescription(Objects.requireNonNullElse(parameterDefinition.description(), DPLBundle.message("documentation.configuration.unknownParameter"))));
+        sections.add(buildDescription(Objects.requireNonNullElseGet(
+                parameterDefinition.description(),
+                () -> DPLBundle.message("documentation.configuration.unknownParameter"))
+        ));
 
         Set<String> names = parameterDefinition.names();
         if (names.size() > 1) {

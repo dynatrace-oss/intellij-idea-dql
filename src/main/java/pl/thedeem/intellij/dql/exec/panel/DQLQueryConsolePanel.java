@@ -68,7 +68,10 @@ public class DQLQueryConsolePanel extends BorderLayoutPanel implements UiDataPro
         addToTop(toolbar.getComponent());
         addToCenter(editorField);
 
-        QueryConfiguration configuration = Objects.requireNonNullElse(initialConfiguration, getQueryConfiguration(project, content, virtualFile));
+        QueryConfiguration configuration = Objects.requireNonNullElseGet(
+                initialConfiguration,
+                () -> getQueryConfiguration(project, content, virtualFile)
+        );
         DQLQueryConfigurationService.getInstance().updateConfiguration(virtualFile, configuration);
     }
 

@@ -28,7 +28,9 @@ public class ConfigurationNotSupportedInspection extends LocalInspectionTool {
                     return;
                 }
                 ExpressionDescription description = expression.getDefinition();
-                Map<String, Configuration> configurationDefinition = description != null ? Objects.requireNonNullElse(description.configuration(), Map.of()) : Map.of();
+                Map<String, Configuration> configurationDefinition = description != null ?
+                        Objects.requireNonNullElse(description.configuration(), Map.of())
+                        : Map.of();
                 if (configurationDefinition.isEmpty()) {
                     holder.registerProblem(
                             configuration.getConfigurationContent(),
