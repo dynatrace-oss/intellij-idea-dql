@@ -15,7 +15,7 @@ import java.util.List;
 @State(name = "DQLSettings", storages = @Storage("dql-settings.xml"))
 public class DQLSettings implements PersistentStateComponent<DQLSettingsState> {
     private DQLSettingsState myState = new DQLSettingsState();
-    public static Key<Boolean> EXTERNAL_VALIDATION_ENABLED = new Key<>("DQL_EXTERNAL_VALIDATION_ENABLED");
+    public static final Key<Boolean> EXTERNAL_VALIDATION_ENABLED = new Key<>("DQL_EXTERNAL_VALIDATION_ENABLED");
 
     public static DQLSettings getInstance() {
         return ApplicationManager.getApplication().getService(DQLSettings.class);

@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.editor.actions;
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -40,6 +41,7 @@ public class ToggleExternalValidationAction extends ToggleAction {
         }
 
         file.putUserData(DQLSettings.EXTERNAL_VALIDATION_ENABLED, state);
+        DaemonCodeAnalyzer.getInstance(file.getProject()).restart(file, "Validation settings have changed");
     }
 
     @Override
