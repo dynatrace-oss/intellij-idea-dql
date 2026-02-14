@@ -33,6 +33,11 @@ public class DQLBundle extends AbstractBundleManager {
     }
 
     @NotNull
+    public static @Nls String shorten(String text, int maxSize) {
+        return INSTANCE.shortenString(text, maxSize);
+    }
+
+    @NotNull
     public static @Nls String types(@Nullable Collection<String> dataTypes, @NotNull Project project) {
         if (dataTypes == null) {
             return DQLBundle.message("generic.noTypes");

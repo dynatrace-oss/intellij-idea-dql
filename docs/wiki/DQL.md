@@ -233,6 +233,28 @@ In case when the DQL query execution fails, the plugin will display the error me
 If Dynatrace returns notifications about the executed query (like a warning about limited records number), they will be
 displayed at the bottom part of the result view.
 
+##### Visualizations
+
+The DQL result can be displayed as a visualization. After switching to the visualization view, you can select the
+columns used as X and Y axes, and the type of the chart (line, bar, pie, etc.).
+The plugin will automatically suggest columns with appropriate data types for each axis. Additionally, you can also
+group the data by a specific column.
+
+![An example visualization](images/dql-visualization.png)
+
+Supported types of graphs: XY (line, timeseries), category (bar) and pie charts.
+
+The plugin implements additional controls to manage the chart view:
+
+- holding the middle mouse button allows you to pan the chart (if the chart type supports it)
+- scrolling the mouse wheel allows you to zoom in and out of the chart (if the chart type supports it)
+  - if the control key is held while scrolling, the chart will pan horizontally instead of zooming
+  - if the shift key is held while scrolling, the chart will pan vertically instead of zooming
+- holding the left mouse button allows the user to create the selection area that zooms the chart in
+- right-clicking the chart shows the context menu with helpful context options
+- hovering over the chart legend allows you to highlight the corresponding data series in the chart. Clicking on the
+  legend item toggles the visibility of the corresponding data series.
+
 #### Query console
 
 The plugin also adds support for executing DQL queries without the need of creating a `.dql` file.

@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.exec.panel;
 
+import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.ListTableModel;
@@ -22,6 +23,11 @@ public class DQLMetadataPanel extends BorderLayoutPanel {
         super();
         setOpaque(false);
         setBorder(JBUI.Borders.empty());
+
+        addToCenter(new TransparentScrollPane(prepareView(metadata, executionTime)));
+    }
+
+    private @NotNull JBTable prepareView(@NotNull DQLResult.DQLGrailMetadata metadata, @Nullable ZonedDateTime executionTime) {
         List<MetadataRow> records = List.of(
                 new MetadataRow(DQLBundle.message("components.executionMetadata.data.executedOn"), executionTime != null ? executionTime.format(DQLUtil.USER_FRIENDLY_DATE_FORMATTER) : "-"),
                 new MetadataRow(DQLBundle.message("components.executionMetadata.data.queryID"), metadata.getQueryId()),
@@ -40,7 +46,7 @@ public class DQLMetadataPanel extends BorderLayoutPanel {
         CommonTable table = new CommonTable(new ListTableModel<>(columnInfos.toArray(new ColumnInfo[]{}), records, 0));
         table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         table.setColumnPreferredWidthInCharacters(0, 30);
-        addToCenter(new TransparentScrollPane(table));
+        return table;
     }
 
     private @NotNull List<ColumnInfo<MetadataRow, Object>> calculateColumns() {

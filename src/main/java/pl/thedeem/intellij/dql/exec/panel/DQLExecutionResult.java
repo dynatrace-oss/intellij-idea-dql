@@ -7,11 +7,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.Icons;
 import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.common.components.FormattedLanguageText;
 import pl.thedeem.intellij.common.components.TransparentScrollPane;
-import pl.thedeem.intellij.common.sdk.model.DQLExecuteResponse;
-import pl.thedeem.intellij.common.sdk.model.DQLPollResponse;
+import pl.thedeem.intellij.common.sdk.model.DQLResult;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
@@ -22,25 +23,38 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public class DQLExecutionResult extends BorderLayoutPanel {
-    private final DQLExecuteInProgressPanel progressPanel;
     private final Project project;
     private final DefaultActionGroup customActions;
     private final DefaultActionGroup panelToolbar;
+    private final DQLResult result;
+    private final ZonedDateTime executionTime;
+    private final QueryConfiguration params;
 
-    private DQLPollResponse response;
-    private Exception exception;
+    private final FormattedLanguageText queryPanel;
+    private final FormattedLanguageText jsonPanel;
+    private final DQLVisualizationPanel visualizationPanel;
+    private final DQLMetadataPanel metadataPanel;
+    private final DQLTableResultPanel tablePanel;
+
     private ResultsDisplayMode displayMode;
-    private QueryConfiguration params;
-    private ZonedDateTime executionTime;
 
-    public DQLExecutionResult(@NotNull Project project) {
-        this.setOpaque(false);
-        this.setBorder(JBUI.Borders.empty());
+    public DQLExecutionResult(@NotNull Project project, @NotNull DQLResult result, @Nullable ZonedDateTime executionTime, @Nullable QueryConfiguration params) {
+        this.result = result;
         this.project = project;
-        this.progressPanel = new DQLExecuteInProgressPanel();
+        this.executionTime = executionTime;
+        this.params = params;
+
         this.customActions = new DefaultActionGroup();
         this.panelToolbar = createPanelToolbar();
-        show(progressPanel);
+        this.queryPanel = new FormattedLanguageText(DynatraceQueryLanguage.INSTANCE, project, true);
+        this.jsonPanel = new FormattedLanguageText(JsonLanguage.INSTANCE, project, true);
+        this.visualizationPanel = new DQLVisualizationPanel(result);
+        this.metadataPanel = new DQLMetadataPanel(result.getGrailMetadata(), executionTime);
+        this.tablePanel = new DQLTableResultPanel(result, project);
+
+        this.setOpaque(false);
+        this.setBorder(JBUI.Borders.empty());
+        refreshView();
     }
 
     private DefaultActionGroup createPanelToolbar() {
@@ -54,6 +68,11 @@ public class DQLExecutionResult extends BorderLayoutPanel {
                 ResultsDisplayMode.JSON,
                 DQLBundle.message("components.executionResult.actions.jsonView.title"),
                 AllIcons.FileTypes.Json
+        ));
+        group.addAction(createModeToggleAction(
+                ResultsDisplayMode.VISUALIZATION,
+                DQLBundle.message("components.executionResult.actions.visualizationView.title"),
+                Icons.PIE_CHART
         ));
         group.addAction(createModeToggleAction(
                 ResultsDisplayMode.METADATA,
@@ -78,28 +97,21 @@ public class DQLExecutionResult extends BorderLayoutPanel {
             }
 
             @Override
-            public void update(@NotNull AnActionEvent e) {
-                e.getPresentation().setEnabledAndVisible(response != null && response.isFinished() && response.getResult() != null);
-            }
-
-            @Override
             public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
                 IntelliJUtils.openSaveFileDialog(
                         DQLBundle.message("components.executionResult.actions.saveToFile.dialogTitle"),
                         DQLBundle.message("components.executionResult.actions.saveToFile.dialogDescription"),
                         getFileName(),
-                        () -> IntelliJUtils.prettyPrintJson(response.getResult().getRecords()),
+                        () -> IntelliJUtils.prettyPrintJson(result.getRecords()),
                         project
                 );
             }
 
             private @NotNull String getFileName() {
-                if (response == null || response.getResult() == null
-                        || response.getResult().getGrailMetadata() == null
-                        || response.getResult().getGrailMetadata().queryId == null) {
+                if (result.getGrailMetadata() == null || result.getGrailMetadata().queryId == null) {
                     return DEFAULT_FILE_NAME;
                 }
-                return response.getResult().getGrailMetadata().queryId + ".json";
+                return result.getGrailMetadata().queryId + ".json";
             }
         });
         group.addSeparator();
@@ -118,33 +130,6 @@ public class DQLExecutionResult extends BorderLayoutPanel {
         }
     }
 
-    public void setQueryConfiguration(@NotNull QueryConfiguration params) {
-        this.params = params;
-    }
-
-    public void setExecutionTime(@NotNull ZonedDateTime executionTime) {
-        this.executionTime = executionTime;
-    }
-
-    public void update(@NotNull DQLExecuteResponse response) {
-        progressPanel.update(response);
-    }
-
-    public void update(@NotNull DQLPollResponse response) {
-        this.response = response;
-        this.exception = null;
-        if (response.isFinished()) {
-            refreshView();
-        } else {
-            show(progressPanel);
-            progressPanel.update(response);
-        }
-    }
-
-    public void update(@NotNull Exception exception) {
-        this.exception = exception;
-        refreshView();
-    }
 
     public void setDisplayMode(@NotNull ResultsDisplayMode displayMode) {
         this.displayMode = displayMode;
@@ -153,43 +138,24 @@ public class DQLExecutionResult extends BorderLayoutPanel {
 
     private void refreshView() {
         ResultsDisplayMode displayMode = getDisplayMode();
-        if (displayMode == ResultsDisplayMode.USED_QUERY) {
-            FormattedLanguageText panel = new FormattedLanguageText(DynatraceQueryLanguage.INSTANCE, project, true);
-            show(panel);
-            if (response != null && response.getResult() != null && response.getResult().getGrailMetadata() != null) {
-                panel.showResult(() -> response.getResult().getGrailMetadata().getQuery());
-            } else if (params != null) {
-                panel.showResult(() -> params.query());
-            }
-            return;
-        }
-        if (this.exception != null) {
-            show(new DQLExecutionErrorPanel(this.exception));
-            return;
-        }
-        if (this.response == null) {
-            return;
-        }
         switch (displayMode) {
+            case USED_QUERY -> {
+                show(queryPanel);
+                if (result.getGrailMetadata() != null) {
+                    queryPanel.showResult(() -> result.getGrailMetadata().getQuery());
+                } else if (params != null) {
+                    queryPanel.showResult(() -> params.query());
+                }
+            }
             case JSON -> {
-                FormattedLanguageText panel = new FormattedLanguageText(JsonLanguage.INSTANCE, project, true);
-                show(panel);
-                panel.showResult(
-                        () -> IntelliJUtils.prettyPrintJson(response.getResult().getRecords())
-                );
+                show(jsonPanel);
+                jsonPanel.showResult(() -> IntelliJUtils.prettyPrintJson(result.getRecords()));
             }
-            case METADATA -> show(new DQLMetadataPanel(response.getResult().getGrailMetadata(), executionTime));
-            default -> {
-                DQLTableResultPanel panel = new DQLTableResultPanel(response, project);
-                show(panel, new AnAction(DQLBundle.message("components.executionResult.actions.changeColumnsList.title"), null, AllIcons.Actions.PreviewDetails) {
-                    @Override
-                    public void actionPerformed(@NotNull AnActionEvent e) {
-                        panel.showColumnSettingsPopup(e);
-                    }
-                });
-            }
+            case VISUALIZATION -> show(visualizationPanel, visualizationPanel.getToolbarActions());
+            case METADATA -> show(metadataPanel);
+            default -> show(tablePanel, tablePanel.getToolbarActions());
         }
-        addToBottom(new TransparentScrollPane(new DQLExecutionSummary(response.getResult(), executionTime)));
+        addToBottom(new TransparentScrollPane(new DQLExecutionSummary(result, executionTime)));
     }
 
     public @NotNull ResultsDisplayMode getDisplayMode() {
@@ -224,6 +190,7 @@ public class DQLExecutionResult extends BorderLayoutPanel {
     public enum ResultsDisplayMode {
         JSON,
         TABLE,
+        VISUALIZATION,
         USED_QUERY,
         METADATA
     }
