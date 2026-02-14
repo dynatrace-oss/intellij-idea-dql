@@ -66,7 +66,10 @@ public class DPLDefinitionServiceImpl implements DPLDefinitionService {
     }
 
     private @NotNull DPLDefinition loadDefinition() {
-        return Objects.requireNonNullElse(DefinitionUtils.loadDefinitionFromFile(DEFINITION_FILE, DPLDefinition.class), DPLDefinition.empty());
+        return Objects.requireNonNullElse(
+                DefinitionUtils.loadDefinitionFromFile(DEFINITION_FILE, DPLDefinition.class),
+                DPLDefinition.empty()
+        );
     }
 
     private @NotNull Map<String, ExpressionDescription> loadCommands() {

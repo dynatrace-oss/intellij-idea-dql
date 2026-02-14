@@ -44,9 +44,9 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
         UserDataHolder dataHolder = Objects.requireNonNullElse(file.getVirtualFile(), file);
         QueryConfiguration configuration = dataHolder.getUserData(QUERY_CONFIGURATION);
         if (configuration == null) {
-            configuration = Objects.requireNonNullElse(
+            configuration = Objects.requireNonNullElseGet(
                     createConfigurationFromRunManager(file.getProject(), file.getVirtualFile()),
-                    createDefaultConfiguration(file)
+                    () -> createDefaultConfiguration(file)
             );
         }
         if (configuration.tenant() != null) {
@@ -64,9 +64,9 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
     public @NotNull QueryConfiguration getQueryConfiguration(@NotNull Project project, @NotNull VirtualFile file) {
         QueryConfiguration configuration = file.getUserData(QUERY_CONFIGURATION);
         if (configuration == null) {
-            configuration = Objects.requireNonNullElse(
+            configuration = Objects.requireNonNullElseGet(
                     createConfigurationFromRunManager(project, file),
-                    createDefaultConfiguration(project, file)
+                    () -> createDefaultConfiguration(project, file)
             );
         }
         if (configuration.tenant() != null) {

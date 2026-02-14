@@ -32,7 +32,7 @@ public class BaseDocumentationProvider<T extends PsiElement> extends GenericDocu
     }
 
     public @Nullable String generateDocumentation() {
-        return Objects.requireNonNullElse(super.generateDocumentation(), DQLBundle.message("documentation.missingDocs"));
+        return Objects.requireNonNullElseGet(super.generateDocumentation(), () -> DQLBundle.message("documentation.missingDocs"));
     }
 
     protected @NotNull HtmlChunk buildSyntaxSection(@NotNull String syntax) {
@@ -66,7 +66,9 @@ public class BaseDocumentationProvider<T extends PsiElement> extends GenericDocu
             return HtmlChunk.span().addText(DQLBundle.message("documentation.parameter.unknown"));
         }
         List<HtmlChunk> sections = new ArrayList<>();
-        sections.add(HtmlChunk.span().addText(Objects.requireNonNullElse(parameter.description(), DQLBundle.message("documentation.parameter.noDescription"))));
+        sections.add(HtmlChunk.span().addText(Objects.requireNonNullElseGet(
+                parameter.description(), () -> DQLBundle.message("documentation.parameter.noDescription")
+        )));
         HtmlChunk values = prepareValuesDescription(parameter.valueTypes(), project);
         if (!values.isEmpty()) {
             sections.add(main ?

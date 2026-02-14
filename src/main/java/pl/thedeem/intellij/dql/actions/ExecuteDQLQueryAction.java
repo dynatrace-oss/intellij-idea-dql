@@ -63,7 +63,7 @@ public class ExecuteDQLQueryAction extends AnAction {
         DQLExecutionService service = new DQLExecutionService(
                 DQLBundle.message(
                         "services.executeDQL.serviceName",
-                        Objects.requireNonNullElse(e.getData(PREFERRED_EXECUTION_NAME), file.getName())
+                        Objects.requireNonNullElseGet(e.getData(PREFERRED_EXECUTION_NAME), file::getName)
                 ),
                 configuration,
                 project,

@@ -96,7 +96,10 @@ public class StartStopDQLExecutionAction extends AnAction {
             } else {
                 startService(project, new DQLExecutionService(
                         service.getServiceId(),
-                        Objects.requireNonNullElse(e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION), service.getConfiguration()),
+                        Objects.requireNonNullElseGet(
+                                e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION),
+                                service::getConfiguration
+                        ),
                         project,
                         new DQLProcessHandler()
                 ));
@@ -128,9 +131,9 @@ public class StartStopDQLExecutionAction extends AnAction {
     private void startService(@NotNull Project project, @NotNull AnActionEvent e, @NotNull PsiFile file) {
         Editor editor = getEditor(e);
         DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance();
-        QueryConfiguration config = Objects.requireNonNullElse(
+        QueryConfiguration config = Objects.requireNonNullElseGet(
                 e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION),
-                configurationService.getQueryConfiguration(file)
+                () -> configurationService.getQueryConfiguration(file)
         );
         configurationService.getQueryFromEditorContext(file, editor, (query) -> {
             QueryConfiguration configuration = config.copy();
@@ -139,7 +142,10 @@ public class StartStopDQLExecutionAction extends AnAction {
             DQLExecutionService newService = new DQLExecutionService(
                     DQLBundle.message(
                             "services.executeDQL.serviceName",
-                            Objects.requireNonNullElse(e.getData(ExecuteDQLQueryAction.PREFERRED_EXECUTION_NAME), file.getName())
+                            Objects.requireNonNullElseGet(
+                                    e.getData(ExecuteDQLQueryAction.PREFERRED_EXECUTION_NAME),
+                                    file::getName
+                            )
                     ),
                     configuration,
                     project,

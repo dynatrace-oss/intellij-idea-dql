@@ -19,6 +19,9 @@
     or open a new DQL query console with the execution context.
   - Switched to a new Inlay provider. The user can now change inlay settings in `Settings` > `Editor` > `Inlay hints` >
     `Other` > `DQL`.
+  - Added an option to toggle validating the DQL query on Dynatrace tenant after each change to the file. Previously
+    only available globally in the plugin's settings, not the option will appear on the DQL Execution Toolbar and allows
+    the user to easily toggle the validation for each file separately.
 - The "Show DQL query" option when executing DQL will now try to show the parsed query instead of the raw one, if
   possible.
 - Adding support for "Expression DQL" file (with `.dqlexpr` extension), which allows to define a DQL expression without

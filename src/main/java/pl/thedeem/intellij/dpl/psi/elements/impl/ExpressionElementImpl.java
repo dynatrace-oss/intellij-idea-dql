@@ -37,11 +37,16 @@ public abstract class ExpressionElementImpl extends ASTWrapperPsiElement impleme
             parameters = group.getParameters();
         } else {
             DPLConfigurationExpression configuration = getConfiguration();
-            parameters = List.of(Objects.requireNonNullElse(PsiTreeUtil.getChildrenOfType(configuration, DPLParameterExpression.class), new DPLParameterExpression[0]));
+            parameters = List.of(Objects.requireNonNullElse(
+                    PsiTreeUtil.getChildrenOfType(configuration, DPLParameterExpression.class),
+                    new DPLParameterExpression[0]
+            ));
         }
 
         ExpressionDescription description = getDefinition();
-        Map<String, Configuration> configurationDefinition = description != null ? Objects.requireNonNullElse(description.configuration(), Map.of()) : Map.of();
+        Map<String, Configuration> configurationDefinition = description != null ?
+                Objects.requireNonNullElse(description.configuration(), Map.of())
+                : Map.of();
 
         Set<String> result = new HashSet<>();
         for (DPLParameterExpression parameter : parameters) {
@@ -63,7 +68,9 @@ public abstract class ExpressionElementImpl extends ASTWrapperPsiElement impleme
     public @NotNull Set<Configuration> getAvailableConfiguration(@NotNull DPLGroupExpression group) {
         Set<String> definedParameters = getDefinedParameters(group);
         ExpressionDescription description = getDefinition();
-        Map<String, Configuration> allParameters = description != null ? Objects.requireNonNullElse(description.configuration(), Map.of()) : Map.of();
+        Map<String, Configuration> allParameters = description != null ?
+                Objects.requireNonNullElse(description.configuration(), Map.of())
+                : Map.of();
 
         Set<Configuration> result = new HashSet<>();
         for (Configuration parameter : allParameters.values()) {

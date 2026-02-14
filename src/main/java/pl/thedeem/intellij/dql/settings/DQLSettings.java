@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.util.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
@@ -14,6 +15,7 @@ import java.util.List;
 @State(name = "DQLSettings", storages = @Storage("dql-settings.xml"))
 public class DQLSettings implements PersistentStateComponent<DQLSettingsState> {
     private DQLSettingsState myState = new DQLSettingsState();
+    public static Key<Boolean> EXTERNAL_VALIDATION_ENABLED = new Key<>("DQL_EXTERNAL_VALIDATION_ENABLED");
 
     public static DQLSettings getInstance() {
         return ApplicationManager.getApplication().getService(DQLSettings.class);

@@ -35,6 +35,7 @@ import pl.thedeem.intellij.dqlexpr.DQLExprFileType;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.List;
+import java.util.Objects;
 
 public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationAnnotator.Input, DQLVerificationAnnotator.Result> {
     public record Input(PsiFile file) {
@@ -107,7 +108,7 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
     }
 
     @Override
-    public void apply(@NotNull PsiFile file, Result result, @NotNull AnnotationHolder holder) {
+    public void apply(@NotNull PsiFile file, @NotNull Result result, @NotNull AnnotationHolder holder) {
         for (DQLVerifyResponse.DQLVerifyNotification notification : result.response().getNotifications()) {
             holder.newAnnotation(HighlightSeverity.GENERIC_SERVER_ERROR_OR_WARNING, notification.getMessage())
                     .range(getTextRange(notification, result.parsedQuery()))
@@ -116,7 +117,7 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
         }
     }
 
-    private TextRange getTextRange(DQLVerifyResponse.DQLVerifyNotification notification, @Nullable DQLQueryParserService.ParseResult parsedQuery) {
+    private TextRange getTextRange(@NotNull DQLVerifyResponse.DQLVerifyNotification notification, @Nullable DQLQueryParserService.ParseResult parsedQuery) {
         DQLSyntaxErrorPositionDetails syntaxPosition = notification.getSyntaxPosition();
         int start = syntaxPosition.getStartIndex();
         int end = syntaxPosition.getEndIndex();
@@ -127,14 +128,19 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
         return new TextRange(start, end);
     }
 
-    private boolean canPerformExternalValidation(Input input) {
+    private boolean canPerformExternalValidation(@NotNull Input input) {
+        Boolean userData = Objects.requireNonNullElseGet(
+                input.file().getUserData(DQLSettings.EXTERNAL_VALIDATION_ENABLED),
+                () -> DQLSettings.getInstance().isPerformingLiveValidationEnabled()
+        );
+        if (!userData) {
+            return false;
+        }
         // We cannot do any annotations on partial files, as they will not be valid either way
-        return !DQLUtil.isPartialFile(input.file)
-                && !DQLExprFileType.INSTANCE.equals(input.file.getFileType())
-                && DQLSettings.getInstance().isPerformingLiveValidationEnabled();
+        return !DQLUtil.isPartialFile(input.file) && !DQLExprFileType.INSTANCE.equals(input.file.getFileType());
     }
 
-    private ProblemHighlightType getSeverity(DQLVerifyResponse.DQLVerifyNotification notification) {
+    private ProblemHighlightType getSeverity(@NotNull DQLVerifyResponse.DQLVerifyNotification notification) {
         return switch (notification.getSeverity()) {
             case "INFO" -> ProblemHighlightType.INFORMATION;
             case "WARN", "WARNING" -> ProblemHighlightType.WARNING;

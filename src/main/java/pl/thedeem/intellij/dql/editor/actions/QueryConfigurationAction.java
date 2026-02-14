@@ -17,6 +17,7 @@ public class QueryConfigurationAction extends AnAction implements CustomComponen
     public static final DataKey<Boolean> SHOW_QUERY_EXECUTE_BUTTON = DataKey.create("DQL_SHOW_QUERY_EXECUTE_BUTTON");
     public static final DataKey<Boolean> SHOW_TENANT_SELECTION = DataKey.create("DQL_SHOW_TENANT_SELECTION");
     public static final DataKey<Boolean> SHOW_RUN_CONFIG_CREATOR = DataKey.create("DQL_SHOW_RUN_CONFIG_CREATOR");
+    public static final DataKey<Boolean> SHOW_QUERY_VALIDATION_OPTION = DataKey.create("DQL_SHOW_QUERY_VALIDATION_OPTION");
 
     private JComponent component;
 
@@ -72,6 +73,13 @@ public class QueryConfigurationAction extends AnAction implements CustomComponen
                 public void update(@NotNull AnActionEvent e) {
                     super.update(e);
                     e.getPresentation().setEnabledAndVisible(!Boolean.FALSE.equals(e.getData(SHOW_QUERY_EXECUTE_BUTTON)));
+                }
+            });
+            group.add(new ToggleExternalValidationAction() {
+                @Override
+                public void update(@NotNull AnActionEvent e) {
+                    super.update(e);
+                    e.getPresentation().setEnabledAndVisible(!Boolean.FALSE.equals(e.getData(SHOW_QUERY_VALIDATION_OPTION)));
                 }
             });
             group.addAction(new QueryConfigurationTimeframeAction() {
