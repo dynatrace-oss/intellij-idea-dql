@@ -98,6 +98,7 @@ public class TablePagingActions extends DefaultActionGroup {
                         "components.results.table.paging.pageSizeAction.text",
                         sorter.getPageSize()
                 ));
+                e.getPresentation().setDescription(DQLBundle.message("components.results.table.paging.pageSizeAction.description"));
             }
 
             @Override
