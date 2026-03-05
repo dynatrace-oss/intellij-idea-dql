@@ -24,6 +24,8 @@ import pl.thedeem.intellij.common.components.PanelWithToolbarActions;
 import pl.thedeem.intellij.common.components.TransparentScrollPane;
 import pl.thedeem.intellij.common.components.table.CommonTable;
 import pl.thedeem.intellij.common.components.table.RowCountTable;
+import pl.thedeem.intellij.common.components.table.paging.PagingRowSorter;
+import pl.thedeem.intellij.common.components.table.paging.TablePagingActions;
 import pl.thedeem.intellij.common.components.table.rendering.CommonTableCellRenderer;
 import pl.thedeem.intellij.common.components.table.rendering.CommonTableHeaderRenderer;
 import pl.thedeem.intellij.common.sdk.model.DQLRecord;
@@ -53,6 +55,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
 
     private final DQLResult result;
     protected CommonTable table = null;
+    protected PagingRowSorter sorter = null;
 
     public DQLTableResultPanel(@Nullable DQLResult result, @NotNull Project project) {
         super();
@@ -66,6 +69,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
             )));
         } else {
             this.table = createTableComponent(project);
+            this.sorter = PagingRowSorter.install(table, 1000);
             addToCenter(createTableView(project));
         }
     }
@@ -89,7 +93,6 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
         Map<String, String> columnTypes = result.getColumnTypes();
         List<ColumnInfo<DQLRecord, Object>> columnInfos = calculateColumns(columns, columnTypes);
         CommonTable table = new CommonTable(new ListTableModel<>(columnInfos.toArray(new ColumnInfo[]{}), new ArrayList<>(result.getRecords()), 0));
-        table.setAutoCreateRowSorter(true);
         table.addRightClickSelection();
         table.setDefaultRenderer(Object.class, new DQLCellRenderer());
         table.setDefaultRenderer(Boolean.class, new NullableBooleanRenderer());
@@ -109,11 +112,11 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
         return table;
     }
 
-    private @NotNull TransparentScrollPane createTableView(@NotNull Project project) {
+    private @NotNull JComponent createTableView(@NotNull Project project) {
         JTable recordNumberTable = new RowCountTable(table);
-        TransparentScrollPane result = new TransparentScrollPane(table);
-        result.setRowHeaderView(recordNumberTable);
-        result.getRowHeader().setPreferredSize(recordNumberTable.getPreferredScrollableViewportSize());
+        TransparentScrollPane scrollPane = new TransparentScrollPane(table);
+        scrollPane.setRowHeaderView(recordNumberTable);
+        scrollPane.getRowHeader().setPreferredSize(recordNumberTable.getPreferredScrollableViewportSize());
 
         recordNumberTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -123,7 +126,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
                 }
             }
         });
-        return result;
+        return scrollPane;
     }
 
     private void updateColumnSizes(@NotNull CommonTable table, @NotNull Map<String, String> columnTypes) {
@@ -191,14 +194,17 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
 
     @Override
     public @NotNull AnAction[] getToolbarActions() {
-        return new AnAction[]{
-                new AnAction(DQLBundle.message("components.executionResult.actions.changeColumnsList.title"), null, AllIcons.Actions.PreviewDetails) {
-                    @Override
-                    public void actionPerformed(@NotNull AnActionEvent e) {
-                        showColumnSettingsPopup(e);
-                    }
-                }
-        };
+        List<AnAction> actions = new ArrayList<>();
+        actions.add(new AnAction(DQLBundle.message("components.executionResult.actions.changeColumnsList.title"), null, AllIcons.Actions.PreviewDetails) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                showColumnSettingsPopup(e);
+            }
+        });
+        if (sorter != null) {
+            actions.add(new TablePagingActions(sorter));
+        }
+        return actions.toArray(new AnAction[]{});
     }
 
     private static final class DQLCellRenderer extends CommonTableCellRenderer {

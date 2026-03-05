@@ -306,20 +306,23 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
                             pollingFutureRef.get().cancel(false);
                             processHandler.notifyExecutionFinished();
                             this.loading.set(false);
-                            this.contentPanel.removeAll();
-                            if (result.getResult() != null) {
-                                DQLExecutionResult resultPanel = new DQLExecutionResult(project, result.getResult(), executionTime, configuration);
-                                this.contentPanel.add(resultPanel);
-                                this.additionalActions.addAction(resultPanel.getToolbarActions());
-                            } else {
-                                this.contentPanel.add(
-                                        new InformationComponent(
-                                                DQLBundle.message("services.executeDQL.information.missingResults"),
-                                                AllIcons.General.Information
-                                        )
-                                );
-                            }
-
+                            ApplicationManager.getApplication().invokeLater(() -> {
+                                this.contentPanel.removeAll();
+                                if (result.getResult() != null) {
+                                    DQLExecutionResult resultPanel = new DQLExecutionResult(project, result.getResult(), executionTime, configuration);
+                                    this.contentPanel.add(resultPanel);
+                                    this.additionalActions.addAction(resultPanel.getToolbarActions());
+                                } else {
+                                    this.contentPanel.add(
+                                            new InformationComponent(
+                                                    DQLBundle.message("services.executeDQL.information.missingResults"),
+                                                    AllIcons.General.Information
+                                            )
+                                    );
+                                }
+                                this.contentPanel.revalidate();
+                                this.contentPanel.repaint();
+                            });
                         } else {
                             progressPanel.update(result);
                         }
@@ -342,8 +345,12 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
             if (pollingFutureRef.get() != null) {
                 pollingFutureRef.get().cancel(true);
             }
-            contentPanel.removeAll();
-            contentPanel.add(new DQLExecutionErrorPanel(e));
+            ApplicationManager.getApplication().invokeLater(() -> {
+                contentPanel.removeAll();
+                contentPanel.add(new DQLExecutionErrorPanel(e));
+                contentPanel.revalidate();
+                contentPanel.repaint();
+            });
         } finally {
             loading.set(false);
             stopping.set(false);
