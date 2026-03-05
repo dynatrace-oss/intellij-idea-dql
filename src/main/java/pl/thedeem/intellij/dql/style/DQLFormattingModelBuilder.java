@@ -105,7 +105,9 @@ public class DQLFormattingModelBuilder implements FormattingModelBuilder {
                 .after(DQLTypes.COMMAND)
                 .spaceIf(dqlSettings.SPACE_BEFORE_PIPE)
                 .after(DQLTypes.PIPE)
-                .spaceIf(dqlSettings.SPACE_AFTER_PIPE);
+                .spaceIf(dqlSettings.SPACE_AFTER_PIPE)
+                .after(DQLTypes.COMMAND_KEYWORD)
+                .spaces(1);
     }
 
     private static SpacingBuilder handleFunctionsSettings(SpacingBuilder builder, DQLCodeStyleSettings dqlSettings) {
