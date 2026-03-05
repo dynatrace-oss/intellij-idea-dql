@@ -3,9 +3,9 @@ package pl.thedeem.intellij.dql.definition.validators;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.*;
+import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +18,9 @@ public class FieldIdentifierValidator extends AbstractDefinitionValidator {
         toProcess.add(parameter);
         while (!toProcess.isEmpty()) {
             PsiElement element = toProcess.removeFirst();
+            if (element == null) {
+                continue;
+            }
             if (element instanceof DQLBracketExpression bracket) {
                 toProcess.addAll(bracket.getExpressionList());
             } else if (element instanceof DQLParameterExpression param) {
