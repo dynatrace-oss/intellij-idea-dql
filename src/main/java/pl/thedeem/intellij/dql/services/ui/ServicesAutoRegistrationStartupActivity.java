@@ -10,7 +10,7 @@ import pl.thedeem.intellij.common.services.ProjectServicesManager;
 public final class ServicesAutoRegistrationStartupActivity implements ProjectActivity {
     @Override
     public @NotNull Object execute(@NotNull Project project, @NotNull Continuation<? super Unit> continuation) {
-        ProjectServicesManager.getInstance(project).registerService(ConnectedTenantsServiceGroup.getInstance());
+        ProjectServicesManager.getInstance(project).registerService(ConnectedTenantsServiceGroup.getInstance(), false);
         return Unit.INSTANCE;
     }
 }
