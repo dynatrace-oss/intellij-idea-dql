@@ -40,6 +40,8 @@ repositories {
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
 dependencies {
+    implementation(libs.jFreeChart)
+
     testImplementation(libs.junit)
     testImplementation(libs.opentest4j)
     testImplementation(libs.mockito)

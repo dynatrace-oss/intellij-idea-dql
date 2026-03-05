@@ -4,6 +4,7 @@ import com.intellij.DynamicBundle;
 import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,11 +17,15 @@ public abstract class AbstractBundleManager extends DynamicBundle {
         super(bundleClass, pathToBundle);
     }
 
-    protected @NotNull @Nls String shortenString(String text) {
-        return StringUtil.shortenPathWithEllipsis(text, MAX_STRING_LENGTH, true);
+    protected @NotNull @Nls String shortenString(@NotNull String text) {
+        return shortenString(text, MAX_STRING_LENGTH);
     }
 
-    protected @NotNull @Nls String printCollection(Collection<?> collection, @NotNull String defaultValue) {
+    protected @NotNull @Nls String shortenString(@NotNull String text, int maxLength) {
+        return StringUtil.shortenPathWithEllipsis(text, maxLength, true);
+    }
+
+    protected @NotNull @Nls String printCollection(@Nullable Collection<?> collection, @NotNull String defaultValue) {
         if (collection == null || collection.isEmpty()) {
             return defaultValue;
         }

@@ -15,12 +15,14 @@ import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.pom.Navigatable;
 import com.intellij.util.concurrency.AppExecutorUtil;
+import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.internal.StringUtil;
 import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.common.components.InformationComponent;
+import pl.thedeem.intellij.common.components.LoadingPanel;
 import pl.thedeem.intellij.common.sdk.DynatraceRestClient;
 import pl.thedeem.intellij.common.sdk.model.DQLExecutePayload;
 import pl.thedeem.intellij.common.sdk.model.DQLExecuteResponse;
@@ -33,6 +35,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.editor.actions.QueryConfigurationAction;
+import pl.thedeem.intellij.dql.exec.panel.DQLExecuteInProgressPanel;
 import pl.thedeem.intellij.dql.exec.panel.DQLExecutionErrorPanel;
 import pl.thedeem.intellij.dql.exec.panel.DQLExecutionResult;
 import pl.thedeem.intellij.dql.fileProviders.DQLQueryConsoleVirtualFile;
@@ -47,6 +50,7 @@ import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 import javax.swing.*;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -63,10 +67,11 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
     private final DQLProcessHandler processHandler;
     private final Project project;
     private final String name;
+    private final DefaultActionGroup additionalActions = new DefaultActionGroup();
     private final AtomicReference<ScheduledFuture<?>> pollingFutureRef = new AtomicReference<>(null);
     private final AtomicReference<Boolean> stopping = new AtomicReference<>(false);
     private final AtomicReference<Boolean> loading = new AtomicReference<>(false);
-    private final DQLExecutionResult resultPanel;
+    private final BorderLayoutPanel contentPanel;
     private final QueryConfiguration configuration;
     private final QueryConfiguration configurationCopy;
 
@@ -74,6 +79,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
     private DQLPollResponse result;
     private String executionId;
     private DefaultActionGroup actions;
+    private ZonedDateTime executionTime;
 
     public DQLExecutionService(@NotNull String name, @NotNull QueryConfiguration params, @NotNull Project project, @NotNull DQLProcessHandler processHandler) {
         this.project = project;
@@ -81,8 +87,8 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         this.processHandler = processHandler;
         this.configuration = params;
         this.configurationCopy = params.copy();
-        this.resultPanel = new DQLExecutionResult(project);
-        this.resultPanel.setQueryConfiguration(params);
+        this.contentPanel = new BorderLayoutPanel();
+        this.contentPanel.addToCenter(new LoadingPanel(DQLBundle.message("services.executeDQL.information.startedExecuting")));
     }
 
     @Override
@@ -105,16 +111,20 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
     }
 
     public void startExecution() {
-        this.resultPanel.setExecutionTime(Instant.now().atZone(ZoneId.systemDefault()));
+        executionTime = Instant.now().atZone(ZoneId.systemDefault());
+        contentPanel.removeAll();
+        additionalActions.removeAll();
         if (configuration.query() == null) {
-            resultPanel.show(new DQLExecutionErrorPanel(DQLBundle.message("services.executeDQL.errors.invalidPayload")));
+            contentPanel.addToCenter(new DQLExecutionErrorPanel(DQLBundle.message("services.executeDQL.errors.invalidPayload")));
             return;
         }
         DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(configuration.tenant());
         if (tenant == null) {
-            resultPanel.show(new DQLExecutionErrorPanel(DQLBundle.message("services.executeDQL.errors.missingTenant", configuration.tenant())));
+            contentPanel.addToCenter(new DQLExecutionErrorPanel(DQLBundle.message("services.executeDQL.errors.missingTenant", configuration.tenant())));
             return;
         }
+        DQLExecuteInProgressPanel progressPanel = new DQLExecuteInProgressPanel();
+        contentPanel.addToCenter(progressPanel);
         String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
         DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
         DQLExecutePayload payload = this.preparePayload(configuration, project);
@@ -132,12 +142,12 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
                         executedResponse.getState()
                 ));
                 String token = executedResponse.getRequestToken();
-                resultPanel.update(executedResponse);
+                progressPanel.update(executedResponse);
                 return token;
             });
 
             if (requestToken != null) {
-                pollingFutureRef.set(startPollingRequest(requestToken, client, apiToken));
+                pollingFutureRef.set(startPollingRequest(requestToken, client, apiToken, progressPanel));
             }
         });
     }
@@ -148,7 +158,8 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
             return;
         }
         stopping.set(true);
-        resultPanel.show(new InformationComponent(
+        contentPanel.removeAll();
+        contentPanel.addToCenter(new InformationComponent(
                 DQLBundle.message("services.executeDQL.cancelRequested", this.requestToken),
                 AllIcons.General.Information)
         );
@@ -190,7 +201,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
 
     @Override
     public @Nullable JComponent getContentComponent() {
-        return this.resultPanel;
+        return this.contentPanel;
     }
 
     @Override
@@ -200,7 +211,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
             actions.setInjectedContext(true);
             actions.addAction(new QueryConfigurationAction());
             actions.addSeparator();
-            actions.addAction(resultPanel.getToolbarActions());
+            actions.addAction(additionalActions);
             actions.addSeparator();
             actions.addAction(new AnAction(
                     DQLBundle.message("services.executeDQL.actions.openInNewTab.title"),
@@ -276,7 +287,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         return configuration;
     }
 
-    private ScheduledFuture<?> startPollingRequest(@NotNull String requestToken, @NotNull DynatraceRestClient client, @Nullable String apiToken) {
+    private ScheduledFuture<?> startPollingRequest(@NotNull String requestToken, @NotNull DynatraceRestClient client, @Nullable String apiToken, DQLExecuteInProgressPanel progressPanel) {
         return AppExecutorUtil.getAppScheduledExecutorService().scheduleWithFixedDelay(
                 () -> {
                     logger.info(String.format("Verifying if the DQL query %s with the request token %s has finished...", executionId, requestToken));
@@ -295,8 +306,23 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
                             pollingFutureRef.get().cancel(false);
                             processHandler.notifyExecutionFinished();
                             this.loading.set(false);
+                            this.contentPanel.removeAll();
+                            if (result.getResult() != null) {
+                                DQLExecutionResult resultPanel = new DQLExecutionResult(project, result.getResult(), executionTime, configuration);
+                                this.contentPanel.add(resultPanel);
+                                this.additionalActions.addAction(resultPanel.getToolbarActions());
+                            } else {
+                                this.contentPanel.add(
+                                        new InformationComponent(
+                                                DQLBundle.message("services.executeDQL.information.missingResults"),
+                                                AllIcons.General.Information
+                                        )
+                                );
+                            }
+
+                        } else {
+                            progressPanel.update(result);
                         }
-                        resultPanel.update(result);
                         return result;
                     });
                 },
@@ -316,7 +342,8 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
             if (pollingFutureRef.get() != null) {
                 pollingFutureRef.get().cancel(true);
             }
-            resultPanel.update(e);
+            contentPanel.removeAll();
+            contentPanel.add(new DQLExecutionErrorPanel(e));
         } finally {
             loading.set(false);
             stopping.set(false);

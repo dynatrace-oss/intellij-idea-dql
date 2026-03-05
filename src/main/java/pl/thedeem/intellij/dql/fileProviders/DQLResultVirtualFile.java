@@ -20,8 +20,7 @@ public class DQLResultVirtualFile extends DQLVirtualFile<DQLPollResponse> {
     public @NotNull JComponent createComponent(@NotNull Project project) {
         BorderLayoutPanel panel = JBUI.Panels.simplePanel();
         panel.setBorder(JBUI.Borders.empty());
-        DQLExecutionResult result = new DQLExecutionResult(project);
-        result.update(content);
+        DQLExecutionResult result = new DQLExecutionResult(project, content.getResult(), null, null);
         ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("DQL.ResultToolbar", result.getToolbarActions(), true);
         toolbar.setTargetComponent(panel);
         panel.addToTop(toolbar.getComponent());

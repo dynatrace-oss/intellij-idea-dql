@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -19,12 +20,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.components.ComponentsUtils;
 import pl.thedeem.intellij.common.components.InformationComponent;
+import pl.thedeem.intellij.common.components.PanelWithToolbarActions;
 import pl.thedeem.intellij.common.components.TransparentScrollPane;
 import pl.thedeem.intellij.common.components.table.CommonTable;
 import pl.thedeem.intellij.common.components.table.RowCountTable;
 import pl.thedeem.intellij.common.components.table.rendering.CommonTableCellRenderer;
 import pl.thedeem.intellij.common.components.table.rendering.CommonTableHeaderRenderer;
-import pl.thedeem.intellij.common.sdk.model.DQLPollResponse;
 import pl.thedeem.intellij.common.sdk.model.DQLRecord;
 import pl.thedeem.intellij.common.sdk.model.DQLResult;
 import pl.thedeem.intellij.dql.DQLBundle;
@@ -47,18 +48,18 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DQLTableResultPanel extends BorderLayoutPanel {
+public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithToolbarActions {
     protected final static ObjectMapper mapper = JsonMapper.builder().build();
 
     private final DQLResult result;
     protected CommonTable table = null;
 
-    public DQLTableResultPanel(@Nullable DQLPollResponse result, @NotNull Project project) {
+    public DQLTableResultPanel(@Nullable DQLResult result, @NotNull Project project) {
         super();
         setOpaque(false);
         setBorder(JBUI.Borders.empty());
-        this.result = result != null ? result.getResult() : null;
-        if (result == null || result.getResult() == null || result.getResult().getRecords() == null || result.getResult().getRecords().isEmpty()) {
+        this.result = result;
+        if (result == null || result.getRecords() == null || result.getRecords().isEmpty()) {
             addToCenter(new TransparentScrollPane(new InformationComponent(
                     DQLBundle.message("components.results.table.information.noRecords"),
                     AllIcons.General.Information
@@ -186,6 +187,18 @@ public class DQLTableResultPanel extends BorderLayoutPanel {
                 };
             }
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public @NotNull AnAction[] getToolbarActions() {
+        return new AnAction[]{
+                new AnAction(DQLBundle.message("components.executionResult.actions.changeColumnsList.title"), null, AllIcons.Actions.PreviewDetails) {
+                    @Override
+                    public void actionPerformed(@NotNull AnActionEvent e) {
+                        showColumnSettingsPopup(e);
+                    }
+                }
+        };
     }
 
     private static final class DQLCellRenderer extends CommonTableCellRenderer {

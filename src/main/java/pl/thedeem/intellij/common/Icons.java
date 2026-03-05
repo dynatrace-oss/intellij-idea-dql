@@ -8,7 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public interface Icons {
-    Icon DYNATRACE_LOGO = IconLoader.getIcon("/icons/dynatrace.png", Icons.class);
+    Icon DYNATRACE_LOGO = IconLoader.getIcon("/icons/dynatrace.svg", Icons.class);
+
+    Icon LINE_CHART = IconLoader.getIcon("/icons/lineChart.svg", Icons.class);
+    Icon BAR_CHART = IconLoader.getIcon("/icons/barChart.svg", Icons.class);
+    Icon PIE_CHART = IconLoader.getIcon("/icons/pieChart.svg", Icons.class);
+    Icon AREA_CHART = IconLoader.getIcon("/icons/areaChart.svg", Icons.class);
 
     static Icon scaleToBottomRight(@NotNull Icon base, @NotNull Icon original, float scale) {
         Icon scaled = IconUtil.scale(original, null, scale);
