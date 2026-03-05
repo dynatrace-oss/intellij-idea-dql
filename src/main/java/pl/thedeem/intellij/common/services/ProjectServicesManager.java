@@ -40,13 +40,19 @@ public final class ProjectServicesManager implements Disposable {
     }
 
     public <T extends ManagedService> void registerService(@NotNull T service) {
+        registerService(service, true);
+    }
+
+    public <T extends ManagedService> void registerService(@NotNull T service, boolean selectInView) {
         unregisterService(service);
         children.add(service);
         project.getMessageBus().syncPublisher(ServiceEventListener.TOPIC).handle(
                 ServiceEventListener.ServiceEvent.createServiceAddedEvent(service, ManagedServiceViewContributor.class, null)
         );
-        ServiceViewManager instance = ServiceViewManager.getInstance(project);
-        instance.select(service, ManagedServiceViewContributor.class, true, true);
+        if (selectInView) {
+            ServiceViewManager instance = ServiceViewManager.getInstance(project);
+            instance.select(service, ManagedServiceViewContributor.class, true, true);
+        }
     }
 
     public <T extends ManagedService> void unregisterService(@NotNull T service) {

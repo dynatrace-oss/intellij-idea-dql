@@ -8,6 +8,11 @@
   graph), categories (bar graph), and pies. Visualizations can be opened as another type of view for the DQL execution
   results panel.
 
+### Bug fixes
+
+- #145: Restarting the IDE will no longer automatically open the `Services` view with the Dynatrace service being
+  selected.
+
 ## [1.5.0] - 2026-02-14
 
 ### Features
