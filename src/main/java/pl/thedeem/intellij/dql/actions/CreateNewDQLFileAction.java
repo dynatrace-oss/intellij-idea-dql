@@ -1,14 +1,12 @@
 package pl.thedeem.intellij.dql.actions;
 
-import com.intellij.ide.fileTemplates.FileTemplate;
-import com.intellij.ide.fileTemplates.FileTemplateManager;
-import com.intellij.ide.fileTemplates.FileTemplateUtil;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.ide.actions.CreateElementActionBase;
+import com.intellij.ide.actions.CreateFileAction;
+import com.intellij.lang.LangBundle;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
@@ -19,51 +17,35 @@ import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.services.notifications.DQLNotificationsService;
 
 import javax.swing.*;
 import java.awt.*;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
-import java.util.Set;
+import java.util.Objects;
+import java.util.function.Consumer;
 
-public class CreateNewDQLFileAction extends AnAction {
+public class CreateNewDQLFileAction extends CreateFileAction {
     @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-        Project project = e.getProject();
-        PsiElement entryPoint = e.getData(CommonDataKeys.PSI_ELEMENT);
+    protected void invokeDialog(@NotNull Project project, @NotNull PsiDirectory directory, @NotNull Consumer<? super PsiElement[]> elementsConsumer) {
+        CreateElementActionBase.MyInputValidator validator = new MyValidator(project, directory);
+        CreateDQLFileDialog dialog = new CreateDQLFileDialog(project, directory, validator);
 
-        if (project == null || !(entryPoint instanceof PsiDirectory directory)) return;
-
-        CreateDQLFileDialog dialog = new CreateDQLFileDialog(project, directory);
         if (dialog.showAndGet()) {
-            String fullName = dialog.getFileName();
-            createFile(project, directory, fullName);
+            elementsConsumer.accept(validator.getCreatedElements());
         }
     }
 
-    private void createFile(Project project, PsiDirectory directory, String fileName) {
-        FileTemplate template = FileTemplateManager.getInstance(project).getInternalTemplate("DQL File");
-        try {
-            FileTemplateUtil.createFromTemplate(template, fileName, null, directory);
-        } catch (Exception e) {
-            DQLNotificationsService.getInstance(project).showErrorNotification(
-                    DQLBundle.message("action.DQL.NewDQLFile.errors.couldNotCreate.title"),
-                    DQLBundle.message("action.DQL.NewDQLFile.errors.couldNotCreate.message", fileName, e.getMessage()),
-                    project,
-                    Set.of()
-            );
-        }
-    }
-
-    public static class CreateDQLFileDialog extends DialogWrapper {
+    private static class CreateDQLFileDialog extends DialogWrapper {
         private final JBTextField fileNameField = new JBTextField();
         private final ComboBox<String> extensionCombo = new ComboBox<>(new String[]{".dql", ".dpl", ".dqlexpr", ".dqlpart"});
         private final PsiDirectory directory;
+        private final CreateElementActionBase.MyInputValidator validator;
 
-        public CreateDQLFileDialog(@Nullable Project project, @NotNull PsiDirectory directory) {
+        CreateDQLFileDialog(@Nullable Project project, @NotNull PsiDirectory directory, @NotNull CreateElementActionBase.MyInputValidator validator) {
             super(project);
             this.directory = directory;
+            this.validator = validator;
 
             fileNameField.setPreferredSize(new Dimension(JBUI.scale(250), fileNameField.getPreferredSize().height));
             setTitle(DQLBundle.message("action.DQL.NewDQLFile.title"));
@@ -100,6 +82,16 @@ public class CreateNewDQLFileAction extends AnAction {
             String fullName = getFileName();
             if (directory.findFile(fullName) != null) {
                 return new ValidationInfo(DQLBundle.message("action.DQL.NewDQLFile.form.validation.alreadyExists"), fileNameField);
+            }
+            if (!validator.checkInput(fullName) || !validator.canClose(fullName)) {
+                String errorMessage = validator instanceof InputValidatorEx ? ((InputValidatorEx) validator).getErrorText(name) : LangBundle.message("incorrect.name");
+                return new ValidationInfo(
+                        Objects.requireNonNullElseGet(
+                                errorMessage,
+                                () -> DQLBundle.message("action.DQL.NewDQLFile.form.validation.unknownError")
+                        ),
+                        fileNameField
+                );
             }
             return null;
         }
