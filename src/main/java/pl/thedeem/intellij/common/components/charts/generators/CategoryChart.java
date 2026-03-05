@@ -150,10 +150,15 @@ public class CategoryChart extends AbstractChartGenerator {
         Set<String> yCols = settings.get(ChartSettings.SELECTED_VALUES, Set.of());
         String groupCol = settings.get(ChartSettings.GROUP_BY_COLUMN);
 
-        if (xCol == null || yCols.isEmpty()) return dataset;
+        if (xCol == null || yCols.isEmpty()) {
+            return dataset;
+        }
 
         for (ChartDataRecord record : data) {
             List<String> categories = record.labelsOf(xCol);
+            if (categories.isEmpty()) {
+                continue;
+            }
             for (String yCol : yCols) {
                 List<Number> values = record.numericValueOf(yCol);
                 for (int i = 0; i < values.size(); i++) {

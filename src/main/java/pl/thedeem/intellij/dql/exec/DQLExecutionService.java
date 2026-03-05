@@ -88,7 +88,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         this.configuration = params;
         this.configurationCopy = params.copy();
         this.contentPanel = new BorderLayoutPanel();
-        this.contentPanel.addToCenter(new LoadingPanel("Executing DQL query..."));
+        this.contentPanel.addToCenter(new LoadingPanel(DQLBundle.message("services.executeDQL.information.startedExecuting")));
     }
 
     @Override
@@ -307,9 +307,19 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
                             processHandler.notifyExecutionFinished();
                             this.loading.set(false);
                             this.contentPanel.removeAll();
-                            DQLExecutionResult resultPanel = new DQLExecutionResult(project, result.getResult(), executionTime, configuration);
-                            this.contentPanel.add(resultPanel);
-                            this.additionalActions.addAction(resultPanel.getToolbarActions());
+                            if (result.getResult() != null) {
+                                DQLExecutionResult resultPanel = new DQLExecutionResult(project, result.getResult(), executionTime, configuration);
+                                this.contentPanel.add(resultPanel);
+                                this.additionalActions.addAction(resultPanel.getToolbarActions());
+                            } else {
+                                this.contentPanel.add(
+                                        new InformationComponent(
+                                                DQLBundle.message("services.executeDQL.information.missingResults"),
+                                                AllIcons.General.Information
+                                        )
+                                );
+                            }
+
                         } else {
                             progressPanel.update(result);
                         }

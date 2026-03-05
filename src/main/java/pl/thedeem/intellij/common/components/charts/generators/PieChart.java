@@ -107,11 +107,16 @@ public class PieChart extends AbstractChartGenerator {
         String xCol = settings.get(ChartSettings.SELECTED_SERIES);
         String yCol = settings.get(ChartSettings.SELECTED_VALUES, Set.of()).stream().findFirst().orElse(null);
 
-        if (xCol == null || yCol == null) return dataset;
+        if (xCol == null || yCol == null) {
+            return dataset;
+        }
 
         Map<String, Double> sums = new LinkedHashMap<>();
         for (ChartDataRecord record : data) {
             List<String> categories = record.labelsOf(xCol);
+            if (categories.isEmpty()) {
+                continue;
+            }
             List<Number> values = record.numericValueOf(yCol);
             for (int i = 0; i < values.size(); i++) {
                 Number value = values.get(i);
