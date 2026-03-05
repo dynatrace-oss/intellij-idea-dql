@@ -11,7 +11,7 @@ public class DQLLocalCompletionContributor extends CompletionContributor {
         extend(CompletionType.BASIC, DQLPsiPatterns.INSIDE_STATEMENT_PARAMETERS_LIST,
                 new CompletionProvider<>() {
                     public void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet resultSet) {
-                        new DQLStatementParamsCompletion().autocomplete(parameters, resultSet);
+                        new DQLCommandParamsCompletion().autocomplete(parameters, resultSet);
                     }
                 }
         );

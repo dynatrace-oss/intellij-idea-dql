@@ -17,6 +17,8 @@
 - DQL Query Console now acts as a fully fledged DQL editor handled natively by IDE. This fixes all issues related to
   missing features like ctrl + Z or grammar checks in the console.
 - DQL style fix: the plugin will now enforce exactly one space after DQL command keyword (like `fetch`, `filter`, etc.).
+- The autocompletion of the DQL `data` `record` parameter will now automatically insert function and will properly
+  insert the comma if needed.
 
 ## [1.5.0] - 2026-02-14
 

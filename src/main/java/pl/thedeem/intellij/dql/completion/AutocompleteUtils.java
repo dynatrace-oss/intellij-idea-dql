@@ -93,7 +93,7 @@ public class AutocompleteUtils {
                         " " + String.join(", ", command.requiredParameters().stream()
                                 .map(p -> p.name() + ": ...")
                                 .collect(Collectors.toSet())),
-                        new DQLStatementInsertionHandler(command)
+                        new DQLCommandInsertionHandler(command)
                 ).withItemTextItalic(command.experimental())
         );
     }
