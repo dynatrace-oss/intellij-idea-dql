@@ -201,7 +201,7 @@ public class DQLVisualizationPanel extends AbstractChartComponent implements Pan
                     List<String> result = new ArrayList<>();
                     if (value instanceof List<?> list) {
                         for (Object o : list) {
-                            result.add(String.join(String.valueOf(o)));
+                            result.add(String.join(", ", String.valueOf(o)));
                         }
                     }
                     yield result;

@@ -118,7 +118,7 @@ public class XYChart extends AbstractChartGenerator {
                     if (xValues.get(i) != null && yValues.size() > i && yValues.get(i) != null) {
                         String key = yCol;
                         if (groupCol != null) {
-                            key = group + " - " + key;
+                            key = group + (yCols.size() > 1 ? " - " + key : "");
                         }
                         seriesMap.computeIfAbsent(key, TimeSeries::new)
                                 .addOrUpdate(new Millisecond(Date.from(Instant.ofEpochMilli(xValues.get(i).longValue()))), yValues.get(i));
@@ -148,7 +148,7 @@ public class XYChart extends AbstractChartGenerator {
                     if (xValues.get(i) != null && yValues.size() > i && yValues.get(i) != null) {
                         String key = yCol;
                         if (groupCol != null) {
-                            key = group + " - " + key;
+                            key = group + (yCols.size() > 1 ? " - " + key : "");
                         }
                         seriesMap.computeIfAbsent(key, XYSeries::new).add(xValues.get(i), yValues.get(i));
                     }
