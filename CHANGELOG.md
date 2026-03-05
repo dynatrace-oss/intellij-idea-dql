@@ -7,6 +7,8 @@
 - DQL query execution results can now be displayed as visualization. Supported types of graphs: timeseries, lines (XY
   graph), categories (bar graph), and pies. Visualizations can be opened as another type of view for the DQL execution
   results panel.
+- The new DQL file creator now automatically lists all supported extensions and adds the selected option
+  automatically to the file name. It also validates whether the provided file name is correct.
 
 ### Bug fixes
 
