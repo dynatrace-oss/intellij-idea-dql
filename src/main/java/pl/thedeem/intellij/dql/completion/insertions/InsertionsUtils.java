@@ -87,6 +87,13 @@ public class InsertionsUtils {
             return true;
         }
 
+        if (parameterValueTypes.contains("dql.parameterValueType.recordDefinition")) {
+            template.addTextSegment("record(");
+            template.addVariable("recordDefinition:" + name, new EmptyNode(), new EmptyNode(), true);
+            template.addTextSegment(")");
+            return true;
+        }
+
         return false;
     }
 

@@ -9,18 +9,18 @@ import com.intellij.codeInsight.template.TemplateManager;
 import com.intellij.openapi.editor.Editor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.LangUtils;
-import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.Command;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DQLStatementInsertionHandler implements InsertHandler<LookupElement> {
+public class DQLCommandInsertionHandler implements InsertHandler<LookupElement> {
     private final Command definition;
 
-    public DQLStatementInsertionHandler(@NotNull Command definition) {
+    public DQLCommandInsertionHandler(@NotNull Command definition) {
         this.definition = definition;
     }
 
