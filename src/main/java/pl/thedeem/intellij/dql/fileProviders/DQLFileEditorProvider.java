@@ -14,6 +14,9 @@ public class DQLFileEditorProvider implements FileEditorProvider, DumbAware {
 
     @Override
     public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
+        if (virtualFile instanceof DQLQueryConsoleVirtualFile) {
+            return false;
+        }
         return virtualFile instanceof DQLVirtualFile;
     }
 
