@@ -19,11 +19,14 @@ public class DQLFileEditor extends UserDataHolderBase implements FileEditor {
 
     public DQLFileEditor(@NotNull Project project, @NotNull VirtualFile virtualFile) {
         this.virtualFile = virtualFile;
+        JComponent component = null;
         if (virtualFile instanceof DQLVirtualFile<?> file) {
-            this.component = file.createComponent(project);
-        } else {
-            this.component = JBUI.Panels.simplePanel();
+            component = file.createComponent(project);
         }
+        if (component == null) {
+            component = JBUI.Panels.simplePanel();
+        }
+        this.component = component;
     }
 
     @Override

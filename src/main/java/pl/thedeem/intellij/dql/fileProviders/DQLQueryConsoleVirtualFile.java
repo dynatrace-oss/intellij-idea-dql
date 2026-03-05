@@ -8,15 +8,13 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFileType;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
-import pl.thedeem.intellij.dql.exec.panel.DQLQueryConsolePanel;
+import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 
-import javax.swing.*;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DQLQueryConsoleVirtualFile extends DQLVirtualFile<String> {
     public static final AtomicInteger COUNTER = new AtomicInteger(0);
-    private QueryConfiguration initialConfiguration;
 
     public DQLQueryConsoleVirtualFile(@NotNull String name) {
         super(name, "");
@@ -36,13 +34,10 @@ public class DQLQueryConsoleVirtualFile extends DQLVirtualFile<String> {
         return DQLFileType.INSTANCE;
     }
 
-    @Override
-    public @NotNull JComponent createComponent(@NotNull Project project) {
-        return new DQLQueryConsolePanel(project, content, this, initialConfiguration);
-    }
-
-    public @NotNull DQLQueryConsoleVirtualFile setInitialConfiguration(@Nullable QueryConfiguration initialConfiguration) {
-        this.initialConfiguration = initialConfiguration;
+    public @NotNull DQLQueryConsoleVirtualFile setInitialConfiguration(@Nullable QueryConfiguration configuration) {
+        if (configuration != null) {
+            DQLQueryConfigurationService.getInstance().updateConfiguration(this, configuration);
+        }
         return this;
     }
 

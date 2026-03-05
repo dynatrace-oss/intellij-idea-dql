@@ -21,11 +21,7 @@ public abstract class DQLVirtualFile<T> extends LightVirtualFile {
         super(name, DQLFileType.INSTANCE, content.toString());
         this.content = content;
     }
-
-    public @NotNull T getPanelContent() {
-        return content;
-    }
-
+    
     @Override
     public boolean isWritable() {
         return false;
