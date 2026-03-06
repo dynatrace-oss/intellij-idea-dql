@@ -89,7 +89,7 @@ public class PagingRowSorter extends RowSorter<TableModel> {
     @Override
     public int convertRowIndexToView(int index) {
         int viewIndex = delegate.convertRowIndexToView(index);
-        if (viewIndex < 0) {
+        if (viewIndex < 0 || pageSize <= 0) {
             return -1;
         }
         int page = viewIndex / pageSize;
@@ -127,6 +127,7 @@ public class PagingRowSorter extends RowSorter<TableModel> {
         delegate.modelStructureChanged();
         totalRowCount = delegate.getViewRowCount();
         currentPage = 0;
+        fireRowSorterChanged(null);
     }
 
     @Override
@@ -134,18 +135,21 @@ public class PagingRowSorter extends RowSorter<TableModel> {
         delegate.allRowsChanged();
         totalRowCount = delegate.getViewRowCount();
         currentPage = 0;
+        fireRowSorterChanged(null);
     }
 
     @Override
     public void rowsInserted(int firstRow, int endRow) {
         delegate.rowsInserted(firstRow, endRow);
         totalRowCount = delegate.getViewRowCount();
+        fireRowSorterChanged(null);
     }
 
     @Override
     public void rowsDeleted(int firstRow, int endRow) {
         delegate.rowsDeleted(firstRow, endRow);
         totalRowCount = delegate.getViewRowCount();
+        fireRowSorterChanged(null);
     }
 
     @Override

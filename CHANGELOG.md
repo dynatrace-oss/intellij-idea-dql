@@ -10,7 +10,7 @@
 - The new DQL file creator now automatically lists all supported extensions and adds the selected option
   automatically to the file name. It also validates whether the provided file name is correct.
 - DQL results shown in the table will now be paged to avoid performance issues in IDE. By default, the table will be
-  showing 1000 records, the user can change that do show up to 5000 records. If the number of records is higher than
+  showing 1000 records, the user can change that to show up to 5000 records. If the number of records is higher than
   the selected page size, buttons to change the current page will be displayed.
 
 ### Bug fixes
