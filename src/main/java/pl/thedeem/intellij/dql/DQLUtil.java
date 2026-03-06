@@ -41,7 +41,7 @@ public class DQLUtil {
             .appendPattern("yyyy-MM-dd['T'HH:mm:ss]")
             .appendFraction(ChronoField.MILLI_OF_SECOND, 0, 9, true)
             .optionalStart()
-            .appendPattern("X")
+            .appendOffsetId()
             .optionalEnd()
             .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
             .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)

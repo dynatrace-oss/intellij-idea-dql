@@ -212,7 +212,7 @@ public class DQLVisualizationPanel extends AbstractChartComponent implements Pan
 
         private @Nullable Number convertTimestamp(@NotNull String value) {
             try {
-                return Instant.from(DQLUtil.DQL_DATE_FORMATTER.parse(value)).toEpochMilli();
+                return Instant.from(DQLUtil.DQL_FLEXIBLE_DATE_FORMATTER.parse(value)).toEpochMilli();
             } catch (DateTimeParseException ignored) {
                 return null;
             }
