@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.ChartTheme;
 import org.jfree.chart.JFreeChart;
 import pl.thedeem.intellij.common.components.charts.ChartSettings;
-import pl.thedeem.intellij.common.components.charts.IntelliJChartTheme;
+import pl.thedeem.intellij.common.components.charts.style.IntelliJChartTheme;
 import pl.thedeem.intellij.dql.DQLBundle;
 
 import java.time.Instant;

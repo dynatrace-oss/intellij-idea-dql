@@ -59,7 +59,7 @@ public class XYChart extends AbstractChartGenerator {
                     onChange.consume(true);
                 }),
                 DQLBundle.message("components.visualization.settings.xAxis"),
-                BorderLayout.WEST
+                BorderLayout.NORTH
         ));
 
         panel.add(LabeledComponent.create(
@@ -79,7 +79,8 @@ public class XYChart extends AbstractChartGenerator {
                     onChange.consume(true);
                 }),
                 DQLBundle.message("components.visualization.settings.groupBy"),
-                BorderLayout.WEST));
+                BorderLayout.NORTH
+        ));
 
         return panel;
     }

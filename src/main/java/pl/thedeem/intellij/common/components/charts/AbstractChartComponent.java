@@ -14,6 +14,7 @@ import org.jfree.chart.JFreeChart;
 import pl.thedeem.intellij.common.components.InformationComponent;
 import pl.thedeem.intellij.common.components.TransparentScrollPane;
 import pl.thedeem.intellij.common.components.charts.generators.ChartGenerator;
+import pl.thedeem.intellij.common.components.charts.style.DynatraceAlikeChartPanel;
 import pl.thedeem.intellij.common.components.simple.SearchableComboBox;
 import pl.thedeem.intellij.dql.DQLBundle;
 
@@ -128,7 +129,7 @@ public abstract class AbstractChartComponent extends BorderLayoutPanel {
             if (chart.getLegend() != null) {
                 chart.removeLegend();
             }
-            ChartPanel chartPanel = new IJChartPanel(chart);
+            ChartPanel chartPanel = new DynatraceAlikeChartPanel(chart);
             chartContainer.addToCenter(chartPanel);
             chartContainer.revalidate();
             chartContainer.repaint();
@@ -190,7 +191,7 @@ public abstract class AbstractChartComponent extends BorderLayoutPanel {
                     }));
                 }},
                 DQLBundle.message("components.visualization.settings.legend.position"),
-                BorderLayout.WEST
+                BorderLayout.NORTH
         ));
         JComponent customSettings = chartGenerator.createSettingsComponent(chartSettings, (refresh) -> {
             if (refresh) {

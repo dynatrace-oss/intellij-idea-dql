@@ -76,7 +76,7 @@ public class CategoryChart extends AbstractChartGenerator {
                             }
                         }),
                 DQLBundle.message("components.visualization.settings.xAxis"),
-                BorderLayout.WEST
+                BorderLayout.NORTH
         ));
 
         settingsPanel.add(LabeledComponent.create(
@@ -111,7 +111,7 @@ public class CategoryChart extends AbstractChartGenerator {
                             }
                         }),
                 DQLBundle.message("components.visualization.settings.groupBy"),
-                BorderLayout.WEST
+                BorderLayout.NORTH
         ));
         settingsPanel.add(LabeledComponent.create(
                 new SearchableComboBox<>(
@@ -132,7 +132,7 @@ public class CategoryChart extends AbstractChartGenerator {
                     }));
                 }},
                 DQLBundle.message("components.visualization.settings.orientation"),
-                BorderLayout.WEST
+                BorderLayout.NORTH
         ));
         settingsPanel.add(Box.createVerticalGlue());
         return settingsPanel;
