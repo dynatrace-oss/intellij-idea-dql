@@ -40,7 +40,7 @@ public abstract class AbstractChartComponent extends BorderLayoutPanel {
         this.legendPanel.setBorder(JBUI.Borders.empty(JBUI.scale(5)));
         this.contentPanel.setOpaque(false);
         this.contentPanel.setBorder(JBUI.Borders.empty());
-
+        this.settingsPanel.setBorder(JBUI.Borders.empty(JBUI.scale(5)));
         setOpaque(false);
         setBorder(JBUI.Borders.empty());
 
@@ -201,5 +201,7 @@ public abstract class AbstractChartComponent extends BorderLayoutPanel {
             settingsPanel.add(customSettings);
         }
         settingsPanel.add(Box.createVerticalGlue());
+        settingsPanel.revalidate();
+        settingsPanel.repaint();
     }
 }
