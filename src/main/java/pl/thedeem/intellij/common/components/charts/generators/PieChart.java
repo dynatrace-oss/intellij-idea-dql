@@ -49,7 +49,7 @@ public class PieChart extends AbstractChartGenerator {
                             }
                         }),
                 DQLBundle.message("components.visualization.settings.pieChart.category"),
-                BorderLayout.WEST
+                BorderLayout.NORTH
         ));
 
         settingsPanel.add(LabeledComponent.create(
@@ -66,7 +66,7 @@ public class PieChart extends AbstractChartGenerator {
                             }
                         }),
                 DQLBundle.message("components.visualization.settings.pieChart.value"),
-                BorderLayout.WEST
+                BorderLayout.NORTH
         ));
 
         JBCheckBox displayLabelsCheckbox = new JBCheckBox(
@@ -81,7 +81,7 @@ public class PieChart extends AbstractChartGenerator {
         settingsPanel.add(LabeledComponent.create(
                 displayLabelsCheckbox,
                 DQLBundle.message("components.visualization.settings.pieChart.displayLabels"),
-                BorderLayout.WEST
+                BorderLayout.NORTH
         ));
 
         settingsPanel.add(Box.createVerticalGlue());

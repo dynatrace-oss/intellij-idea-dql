@@ -1,4 +1,4 @@
-package pl.thedeem.intellij.common.components.charts;
+package pl.thedeem.intellij.common.components.charts.style;
 
 import com.intellij.ui.ColorUtil;
 import com.intellij.ui.JBColor;
