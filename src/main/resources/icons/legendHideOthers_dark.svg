@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+    <!-- faded rows -->
+    <rect x="2" y="2.5" width="12" height="2.5" rx="1" fill="#CDD0D6" opacity="0.3"/>
+    <rect x="2" y="11" width="12" height="2.5" rx="1" fill="#CDD0D6" opacity="0.3"/>
+    <!-- highlighted row -->
+    <rect x="2" y="6.75" width="12" height="2.5" rx="1" fill="#548AF7"/>
+</svg>
+

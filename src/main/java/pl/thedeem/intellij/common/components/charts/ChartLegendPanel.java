@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.common.components.charts;
 
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.ui.ColorUtil;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.ListSpeedSearch;
@@ -15,6 +16,7 @@ import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.AbstractRenderer;
+import pl.thedeem.intellij.common.Icons;
 import pl.thedeem.intellij.dql.DQLBundle;
 
 import javax.swing.*;
@@ -22,6 +24,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.stream.IntStream;
 
 public class ChartLegendPanel extends JBScrollPane {
     private final JFreeChart chart;
@@ -84,6 +88,12 @@ public class ChartLegendPanel extends JBScrollPane {
                     int index = getIndexAtPoint(e.getPoint());
                     if (index >= 0) toggleSeriesVisibility(index);
                 }
+                if (e.isPopupTrigger()) showContextMenu(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) showContextMenu(e);
             }
 
             private void handlePoint(Point p) {
@@ -118,6 +128,74 @@ public class ChartLegendPanel extends JBScrollPane {
         SwingUtilities.invokeLater(this::syncChartWithModel);
     }
 
+    private void hideOthers(int index) {
+        IntStream.range(0, listModel.size()).forEach(i -> {
+            LegendItemData item = listModel.get(i);
+            listModel.set(i, new LegendItemData(item.name(), item.color(), i == index));
+        });
+        SwingUtilities.invokeLater(this::syncChartWithModel);
+    }
+
+    private void showAll() {
+        IntStream.range(0, listModel.size()).forEach(i -> {
+            LegendItemData item = listModel.get(i);
+            listModel.set(i, new LegendItemData(item.name(), item.color(), true));
+        });
+        SwingUtilities.invokeLater(this::syncChartWithModel);
+    }
+
+    private void showContextMenu(MouseEvent e) {
+        int index = getIndexAtPoint(e.getPoint());
+        if (index < 0) return;
+
+        LegendItemData item = listModel.get(index);
+
+        String toggleLabel = item.visible()
+                ? DQLBundle.message("components.visualization.legend.contextMenu.hide")
+                : DQLBundle.message("components.visualization.legend.contextMenu.show");
+        Icon toggleIcon = item.visible() ? Icons.LEGEND_HIDE : Icons.LEGEND_SHOW;
+
+        DefaultActionGroup group = new DefaultActionGroup();
+        group.add(new AnAction(toggleLabel, null, toggleIcon) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent ev) {
+                toggleSeriesVisibility(index);
+            }
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.EDT;
+            }
+        });
+        group.addSeparator();
+        group.add(new AnAction(DQLBundle.message("components.visualization.legend.contextMenu.hideOthers"), null, Icons.LEGEND_HIDE_OTHERS) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent ev) {
+                hideOthers(index);
+            }
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.EDT;
+            }
+        });
+        group.add(new AnAction(DQLBundle.message("components.visualization.legend.contextMenu.showAll"), null, Icons.LEGEND_SHOW_ALL) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent ev) {
+                showAll();
+            }
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.EDT;
+            }
+        });
+
+        ActionPopupMenu popupMenu = ActionManager.getInstance()
+                .createActionPopupMenu("ChartLegend.ContextMenu", group);
+        popupMenu.getComponent().show(legendList, e.getX(), e.getY());
+    }
+
     private void syncChartWithModel() {
         chart.setNotify(false);
         try {
@@ -141,7 +219,7 @@ public class ChartLegendPanel extends JBScrollPane {
         }
     }
 
-    private void applyToRenderer(Plot plot, int index, java.util.function.BiConsumer<AbstractRenderer, Integer> action) {
+    private void applyToRenderer(Plot plot, int index, BiConsumer<AbstractRenderer, Integer> action) {
         if (plot instanceof XYPlot xy && xy.getRenderer() instanceof AbstractRenderer r) action.accept(r, index);
         else if (plot instanceof CategoryPlot cp && cp.getRenderer() instanceof AbstractRenderer r)
             action.accept(r, index);
