@@ -75,11 +75,12 @@ public class DynatraceAlikeChartPanel extends ChartPanel {
 
     @Override
     protected void processMouseMotionEvent(@NotNull MouseEvent e) {
+        boolean continueEvent = true;
         if (handler != null) {
             Rectangle2D dataArea = getChartRenderingInfo().getPlotInfo().getDataArea();
             Point2D p = translateScreenToJava2D(e.getPoint());
             if (dataArea.contains(p)) {
-                handler.onMouseMoved(p, dataArea);
+                continueEvent = handler.onMouseMoved(p, dataArea);
                 hover.update(this, p);
             } else {
                 hover.clear();
@@ -90,16 +91,24 @@ public class DynatraceAlikeChartPanel extends ChartPanel {
             }
             repaint();
         }
+        if (!continueEvent) {
+            e.consume();
+            return;
+        }
         super.processMouseMotionEvent(e);
     }
 
     @Override
     protected void processMouseWheelEvent(@NotNull MouseWheelEvent e) {
-        super.processMouseWheelEvent(e);
         if (handler != null) {
-            handler.onMouseWheel(e, this);
+            boolean continueEvent = handler.onMouseWheel(e, this);
             repaint();
+            if (!continueEvent) {
+                e.consume();
+                return;
+            }
         }
+        super.processMouseWheelEvent(e);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package pl.thedeem.intellij.common.components.charts.style;
 
 import com.intellij.ui.JBColor;
+import com.intellij.util.MathUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.ValueAxis;
@@ -50,13 +51,14 @@ class CategoryPlotInteractionHandler implements PlotInteractionHandler {
     }
 
     @Override
-    public void onMouseMoved(@NotNull Point2D p, @NotNull Rectangle2D dataArea) {
+    public boolean onMouseMoved(@NotNull Point2D p, @NotNull Rectangle2D dataArea) {
         double mouseY = plot.getRangeAxis().java2DToValue(p.getY(), dataArea, plot.getRangeAxisEdge());
         plot.setRangeCrosshairValue(mouseY, true);
+        return true;
     }
 
     @Override
-    public void onMouseWheel(@NotNull MouseWheelEvent e, @NotNull ChartPanel panel) {
+    public boolean onMouseWheel(@NotNull MouseWheelEvent e, @NotNull ChartPanel panel) {
         if (e.isShiftDown()) {
             plot.panRangeAxes(e.getWheelRotation() * -0.1, panel.getChartRenderingInfo().getPlotInfo(), null);
         } else if (e.isControlDown()) {
@@ -64,6 +66,7 @@ class CategoryPlotInteractionHandler implements PlotInteractionHandler {
         } else {
             zoomDomain(e.getWheelRotation(), e.getPoint(), panel);
         }
+        return false;
     }
 
     private void zoomDomain(int wheelRotation, @NotNull Point mousePoint, @NotNull ChartPanel panel) {
@@ -78,11 +81,11 @@ class CategoryPlotInteractionHandler implements PlotInteractionHandler {
 
         Rectangle2D dataArea = panel.getChartRenderingInfo().getPlotInfo().getDataArea();
         double mouseRatio = dataArea.getWidth() > 0
-                ? Math.clamp((mousePoint.getX() - dataArea.getMinX()) / dataArea.getWidth(), 0.0, 1.0)
+                ? MathUtil.clamp((mousePoint.getX() - dataArea.getMinX()) / dataArea.getWidth(), 0.0, 1.0)
                 : 0.5;
 
         int anchorIndex = viewStart + (int) Math.round(mouseRatio * (viewSize - 1));
-        viewStart = Math.clamp(anchorIndex - (int) Math.round(mouseRatio * (newSize - 1)), 0, total - newSize);
+        viewStart = MathUtil.clamp(anchorIndex - (int) Math.round(mouseRatio * (newSize - 1)), 0, total - newSize);
         viewSize = newSize;
         applyView();
     }
@@ -90,7 +93,7 @@ class CategoryPlotInteractionHandler implements PlotInteractionHandler {
     private void panDomain(int wheelRotation) {
         int total = fullDataset.getColumnCount();
         int delta = (int) Math.max(1, Math.round(viewSize * PAN_FACTOR));
-        int newStart = Math.clamp(viewStart + (wheelRotation > 0 ? delta : -delta), 0, total - viewSize);
+        int newStart = MathUtil.clamp(viewStart + (wheelRotation > 0 ? delta : -delta), 0, total - viewSize);
         if (newStart == viewStart) return;
         viewStart = newStart;
         applyView();
@@ -101,8 +104,8 @@ class CategoryPlotInteractionHandler implements PlotInteractionHandler {
         Rectangle2D dataArea = panel.getChartRenderingInfo().getPlotInfo().getDataArea();
         if (dataArea.getWidth() <= 0 || viewSize <= 1) return;
 
-        double relLeft = Math.clamp((selectionRect.getMinX() - dataArea.getMinX()) / dataArea.getWidth(), 0.0, 1.0);
-        double relRight = Math.clamp((selectionRect.getMaxX() - dataArea.getMinX()) / dataArea.getWidth(), 0.0, 1.0);
+        double relLeft = MathUtil.clamp((selectionRect.getMinX() - dataArea.getMinX()) / dataArea.getWidth(), 0.0, 1.0);
+        double relRight = MathUtil.clamp((selectionRect.getMaxX() - dataArea.getMinX()) / dataArea.getWidth(), 0.0, 1.0);
 
         int newStart = viewStart + (int) Math.floor(relLeft * viewSize);
         int newEnd = viewStart + (int) Math.ceil(relRight * viewSize);

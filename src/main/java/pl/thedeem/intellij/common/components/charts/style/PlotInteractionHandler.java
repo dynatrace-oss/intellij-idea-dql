@@ -11,9 +11,9 @@ import java.awt.geom.Rectangle2D;
 interface PlotInteractionHandler {
     Stroke CROSSHAIR_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{3.0f}, 0);
 
-    void onMouseMoved(@NotNull Point2D p, @NotNull Rectangle2D dataArea);
+    boolean onMouseMoved(@NotNull Point2D p, @NotNull Rectangle2D dataArea);
 
-    void onMouseWheel(@NotNull MouseWheelEvent e, @NotNull ChartPanel panel);
+    boolean onMouseWheel(@NotNull MouseWheelEvent e, @NotNull ChartPanel panel);
 
     default void onMiddleMouseDragged(@NotNull Point current, @NotNull Point last, @NotNull ChartPanel panel) {
     }

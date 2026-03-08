@@ -53,24 +53,28 @@ class XYPlotInteractionHandler implements PlotInteractionHandler {
     }
 
     @Override
-    public void onMouseMoved(@NotNull Point2D p, @NotNull Rectangle2D dataArea) {
+    public boolean onMouseMoved(@NotNull Point2D p, @NotNull Rectangle2D dataArea) {
         double mouseX = plot.getDomainAxis().java2DToValue(p.getX(), dataArea, plot.getDomainAxisEdge());
         plot.setDomainCrosshairValue(mouseX, true);
         double mouseY = plot.getRangeAxis().java2DToValue(p.getY(), dataArea, plot.getRangeAxisEdge());
         plot.setRangeCrosshairValue(mouseY, true);
+        return true;
     }
 
     @Override
-    public void onMouseWheel(@NotNull MouseWheelEvent e, @NotNull ChartPanel panel) {
+    public boolean onMouseWheel(@NotNull MouseWheelEvent e, @NotNull ChartPanel panel) {
         if (e.isControlDown()) {
             if (plot instanceof Pannable pannable && pannable.isDomainPannable()) {
                 pannable.panDomainAxes(e.getWheelRotation() * 0.05, panel.getChartRenderingInfo().getPlotInfo(), null);
+                return false;
             }
         } else if (e.isShiftDown()) {
             if (plot instanceof Pannable pannable && pannable.isRangePannable()) {
                 pannable.panRangeAxes(e.getWheelRotation() * -0.1, panel.getChartRenderingInfo().getPlotInfo(), null);
+                return false;
             }
         }
+        return true;
     }
 
     @Override

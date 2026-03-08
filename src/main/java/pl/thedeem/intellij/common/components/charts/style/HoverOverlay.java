@@ -70,8 +70,10 @@ class HoverOverlay extends AbstractOverlay implements Overlay {
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g.translate(anchor.getX(), anchor.getY());
             g.setStroke(HIGHLIGHT_STROKE);
-            g.setPaint(current.seriesColor());
-            g.fill(HIGHLIGHT_SHAPE);
+            if (current.seriesColor() != null) {
+                g.setPaint(current.seriesColor());
+                g.fill(HIGHLIGHT_SHAPE);
+            }
             g.setPaint(JBColor.foreground());
             g.draw(HIGHLIGHT_SHAPE);
         } finally {
