@@ -138,7 +138,7 @@ public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLR
         if (dqlFile == null) {
             return null;
         }
-        PsiFile psiFile = ReadAction.compute(() -> {
+        PsiFile psiFile = ReadAction.nonBlocking(() -> {
             VirtualFile projectFile = ProjectUtil.guessProjectDir(project);
             if (projectFile == null) {
                 return null;
@@ -148,7 +148,7 @@ public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLR
                 return null;
             }
             return PsiManager.getInstance(project).findFile(file);
-        });
+        }).executeSynchronously();
         return psiFile != null ? psiFile.getText() : null;
     }
 }

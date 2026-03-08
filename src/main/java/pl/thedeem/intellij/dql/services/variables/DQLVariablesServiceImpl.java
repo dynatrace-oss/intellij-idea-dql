@@ -143,10 +143,10 @@ public final class DQLVariablesServiceImpl implements DQLVariablesService {
 
     @Override
     public @NotNull List<VariableDefinition> getDefinedVariables(@NotNull PsiFile file) {
-        return ReadAction.compute(() -> {
+        return ReadAction.nonBlocking(() -> {
             DQLQuery query = PsiTreeUtil.getChildOfType(file, DQLQuery.class);
             if (query == null) {
-                return List.of();
+                return List.<VariableDefinition>of();
             }
             List<VariableDefinition> result = new ArrayList<>();
             for (Map.Entry<String, List<VariableElement>> variable : query.getDefinedVariables().entrySet()) {
@@ -157,6 +157,6 @@ public final class DQLVariablesServiceImpl implements DQLVariablesService {
                 }
             }
             return Collections.unmodifiableList(result);
-        });
+        }).executeSynchronously();
     }
 }
