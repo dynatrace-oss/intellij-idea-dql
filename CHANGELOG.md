@@ -23,6 +23,16 @@
 - DQL style fix: the plugin will now enforce exactly one space after DQL command keyword (like `fetch`, `filter`, etc.).
 - The autocompletion of the DQL `data` `record` parameter will now automatically insert the function and will properly
   insert the comma if needed.
+- DQL enum validations will now be reported only for primitive values, as the plugin is not able to calculate complex
+  expressions without calling Dynatrace REST API. Example:
+
+  ```dqlexpr
+  // Dynamically calculating the duration from string - the `field` may contain values like "10h"
+  duration(
+    toLong(parse(field, "DIGIT+:amount")),
+    parse(field, "DIGIT+ BLANK? DATA:type")
+  )
+  ```
 
 ## [1.5.0] - 2026-02-14
 

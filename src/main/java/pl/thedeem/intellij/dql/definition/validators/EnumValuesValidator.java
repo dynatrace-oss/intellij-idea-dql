@@ -3,8 +3,9 @@ package pl.thedeem.intellij.dql.definition.validators;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
+import pl.thedeem.intellij.dql.psi.DQLPrimitiveExpression;
+import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class EnumValuesValidator extends AbstractDefinitionValidator {
         if (definition.allowedEnumValues() == null) {
             return result;
         }
-        for (PsiElement invalidValue : getInvalidValues(parameter, e -> !definition.allowedEnumValues().contains(e.getText().trim()))) {
+        for (PsiElement invalidValue : getInvalidValues(parameter, e -> e instanceof DQLPrimitiveExpression && !definition.allowedEnumValues().contains(e.getText().trim()))) {
             result.add(new DQLParameterValueTypesValidator.ValueIssue(
                     invalidValue,
                     DQLBundle.message(
