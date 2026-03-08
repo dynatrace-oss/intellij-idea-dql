@@ -15,6 +15,11 @@ public interface Icons {
     Icon PIE_CHART = IconLoader.getIcon("/icons/pieChart.svg", Icons.class);
     Icon AREA_CHART = IconLoader.getIcon("/icons/areaChart.svg", Icons.class);
 
+    Icon LEGEND_SHOW = IconLoader.getIcon("/icons/legendShow.svg", Icons.class);
+    Icon LEGEND_HIDE = IconLoader.getIcon("/icons/legendHide.svg", Icons.class);
+    Icon LEGEND_HIDE_OTHERS = IconLoader.getIcon("/icons/legendHideOthers.svg", Icons.class);
+    Icon LEGEND_SHOW_ALL = IconLoader.getIcon("/icons/legendShowAll.svg", Icons.class);
+
     static Icon scaleToBottomRight(@NotNull Icon base, @NotNull Icon original, float scale) {
         Icon scaled = IconUtil.scale(original, null, scale);
 
