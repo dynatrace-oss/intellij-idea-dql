@@ -18,6 +18,9 @@ interface PlotInteractionHandler {
     default void onMiddleMouseDragged(@NotNull Point current, @NotNull Point last, @NotNull ChartPanel panel) {
     }
 
+    default void onMiddleMouseReleased() {
+    }
+
     default void zoomToSelection(@NotNull Rectangle2D selectionRect, @NotNull ChartPanel panel) {
     }
 }

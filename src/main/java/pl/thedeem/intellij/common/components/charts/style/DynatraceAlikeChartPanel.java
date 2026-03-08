@@ -115,6 +115,7 @@ public class DynatraceAlikeChartPanel extends ChartPanel {
     public void mousePressed(@NotNull MouseEvent e) {
         if (SwingUtilities.isMiddleMouseButton(e)) {
             lastMiddleMousePoint = e.getPoint();
+            setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         } else {
             super.mousePressed(e);
         }
@@ -124,6 +125,10 @@ public class DynatraceAlikeChartPanel extends ChartPanel {
     public void mouseReleased(@NotNull MouseEvent e) {
         if (SwingUtilities.isMiddleMouseButton(e)) {
             lastMiddleMousePoint = null;
+            setCursor(Cursor.getDefaultCursor());
+            if (handler != null) {
+                handler.onMiddleMouseReleased();
+            }
         } else {
             super.mouseReleased(e);
         }
