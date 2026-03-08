@@ -71,7 +71,7 @@ public class DQLQueryParserServiceImpl implements DQLQueryParserService {
     }
 
     private Map<String, String> getFoundVariables(@NotNull PsiFile psiFile, @Nullable List<DQLVariablesService.VariableDefinition> variableDefinitions) {
-        return ReadAction.compute(() -> {
+        return ReadAction.nonBlocking(() -> {
             Collection<DQLVariableExpression> variables = PsiTreeUtil.findChildrenOfType(psiFile, DQLVariableExpression.class);
             Map<String, String> defs = new HashMap<>();
             for (DQLVariableExpression variable : variables) {
@@ -86,6 +86,6 @@ public class DQLQueryParserServiceImpl implements DQLQueryParserService {
                 }
             }
             return defs;
-        });
+        }).executeSynchronously();
     }
 }

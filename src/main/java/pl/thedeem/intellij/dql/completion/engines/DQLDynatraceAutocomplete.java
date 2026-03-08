@@ -98,7 +98,7 @@ public class DQLDynatraceAutocomplete {
                         ProgressManager.checkCanceled();
                         DQLQueryParserService parser = DQLQueryParserService.getInstance();
                         String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
-                        DQLQueryParserService.ParseResult substitutedQuery = ReadAction.compute(() -> parser.getSubstitutedQuery(parameters.getOriginalFile(), configuration.definedVariables()));
+                        DQLQueryParserService.ParseResult substitutedQuery = ReadAction.nonBlocking(() -> parser.getSubstitutedQuery(parameters.getOriginalFile(), configuration.definedVariables())).executeSynchronously();
                         return client.autocomplete(
                                 new DQLAutocompletePayload(substitutedQuery.parsed(), (long) substitutedQuery.getOriginalOffset(parameters.getPosition().getTextOffset())),
                                 apiToken
