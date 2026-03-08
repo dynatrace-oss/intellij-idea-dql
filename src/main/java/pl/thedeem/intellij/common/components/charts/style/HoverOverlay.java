@@ -90,6 +90,10 @@ class HoverOverlay extends AbstractOverlay implements Overlay {
                 continue;
             }
             Rectangle2D bar = e.getArea().getBounds2D();
+            Point2D toCompare = horizontal ? new Point2D.Double(bar.getCenterX(), java2D.getY()) : new Point2D.Double(java2D.getX(), bar.getCenterY());
+            if (!bar.contains(toCompare)) {
+                continue;
+            }
             double delta = horizontal
                     ? Math.abs(bar.getCenterY() - java2D.getY())
                     : Math.abs(bar.getCenterX() - java2D.getX());

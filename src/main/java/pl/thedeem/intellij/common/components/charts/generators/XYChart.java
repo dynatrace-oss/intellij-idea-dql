@@ -1,6 +1,7 @@
 package pl.thedeem.intellij.common.components.charts.generators;
 
 import com.intellij.openapi.ui.LabeledComponent;
+import com.intellij.ui.components.JBCheckBox;
 import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -86,7 +87,7 @@ public class XYChart extends AbstractChartGenerator {
                 ))
         );
 
-        JCheckBox logScaleCheckBox = new JCheckBox(
+        JBCheckBox logScaleCheckBox = new JBCheckBox(
                 DQLBundle.message("components.visualization.settings.logScale"),
                 Boolean.TRUE.equals(settings.get(ChartSettings.LOG_SCALE))
         );

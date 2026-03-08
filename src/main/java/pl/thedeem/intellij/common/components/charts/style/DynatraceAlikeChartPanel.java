@@ -135,8 +135,11 @@ public class DynatraceAlikeChartPanel extends ChartPanel {
         super.paintComponent(g);
         if (handler != null) {
             Graphics2D g2 = (Graphics2D) g.create();
-            handler.paintOverlay(g2, this);
-            g2.dispose();
+            try {
+                handler.paintOverlay(g2, this);
+            } finally {
+                g2.dispose();
+            }
         }
     }
 
