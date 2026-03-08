@@ -12,6 +12,7 @@
 - DQL results shown in the table will now be paged to avoid performance issues in IDE. By default, the table will be
   showing 1000 records, the user can change that to show up to 5000 records. If the number of records is higher than
   the selected page size, buttons to change the current page will be displayed.
+- DQL results shown in the table can now be filtered in the whole table, regardless the current page.
 
 ### Bug fixes
 

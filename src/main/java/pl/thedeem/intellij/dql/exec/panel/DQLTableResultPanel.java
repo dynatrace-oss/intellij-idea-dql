@@ -4,13 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.intellij.icons.AllIcons;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.JBUI;
@@ -37,6 +37,8 @@ import pl.thedeem.intellij.dql.fileProviders.DQLRecordFieldVirtualFile;
 import pl.thedeem.intellij.dql.fileProviders.DQLRecordVirtualFile;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -202,6 +204,65 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
             }
         });
         if (sorter != null) {
+            actions.add(new ToggleAction(DQLBundle.message("components.results.table.filter.action.title"), null, AllIcons.General.Filter) {
+                @Override
+                public boolean isSelected(@NotNull AnActionEvent e) {
+                    return StringUtil.isNotEmpty(sorter.getFilterText());
+                }
+
+                @Override
+                public void setSelected(@NotNull AnActionEvent e, boolean selected) {
+                    JBTextField filterField = new JBTextField(30);
+                    String current = sorter.getFilterText();
+                    if (current != null) {
+                        filterField.setText(current);
+                        filterField.selectAll();
+                    }
+
+                    JPanel panel = new JPanel(new BorderLayout());
+                    panel.setBorder(JBUI.Borders.empty(4, 6));
+                    panel.add(filterField, BorderLayout.CENTER);
+
+                    JBPopup popup = JBPopupFactory.getInstance()
+                            .createComponentPopupBuilder(panel, filterField)
+                            .setRequestFocus(true)
+                            .setResizable(false)
+                            .setMovable(false)
+                            .createPopup();
+
+                    filterField.getDocument().addDocumentListener(new DocumentListener() {
+                        @Override
+                        public void insertUpdate(DocumentEvent ev) {
+                            sorter.setFilter(filterField.getText());
+                        }
+
+                        @Override
+                        public void removeUpdate(DocumentEvent ev) {
+                            sorter.setFilter(filterField.getText());
+                        }
+
+                        @Override
+                        public void changedUpdate(DocumentEvent ev) {
+                            sorter.setFilter(filterField.getText());
+                        }
+                    });
+
+                    Component component = e.getData(PlatformDataKeys.CONTEXT_COMPONENT);
+                    if (e.getInputEvent() != null && e.getInputEvent().getComponent() != null) {
+                        component = e.getInputEvent().getComponent();
+                    }
+                    if (component != null) {
+                        popup.showUnderneathOf(component);
+                    } else {
+                        popup.showInFocusCenter();
+                    }
+                }
+
+                @Override
+                public @NotNull ActionUpdateThread getActionUpdateThread() {
+                    return ActionUpdateThread.EDT;
+                }
+            });
             actions.add(new TablePagingActions(sorter));
         }
         return actions.toArray(new AnAction[]{});
