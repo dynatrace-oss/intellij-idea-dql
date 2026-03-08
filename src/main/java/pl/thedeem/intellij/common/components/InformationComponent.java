@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.common.components;
 
+import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,6 +12,8 @@ public class InformationComponent extends JPanel {
         setLayout(new GridBagLayout());
         setBorder(JBUI.Borders.empty());
         setOpaque(false);
-        add(new JLabel(message, icon, JLabel.LEFT));
+        JBLabel label = new JBLabel(message, icon, JLabel.LEFT);
+        label.setCopyable(true);
+        add(label);
     }
 }
