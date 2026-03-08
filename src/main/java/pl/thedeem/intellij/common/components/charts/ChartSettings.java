@@ -15,6 +15,7 @@ public class ChartSettings {
     public static final Setting<String> GROUP_BY_COLUMN = new Setting<>("selectedGroupByColumn", String.class);
     public static final Setting<PlotOrientation> CHART_ORIENTATION = new Setting<>("chartOrientation", PlotOrientation.class);
     public static final Setting<Boolean> PIE_DISPLAY_LABELS = new Setting<>("displayLabels", Boolean.class);
+    public static final Setting<Boolean> LOG_SCALE = new Setting<>("logScale", Boolean.class);
     @SuppressWarnings("unchecked")
     public static final Setting<Set<String>> SELECTED_VALUES = new Setting<>("selectedValueColumns", (Class<Set<String>>) (Class<?>) Set.class);
     private final Map<String, Object> chartSettings;

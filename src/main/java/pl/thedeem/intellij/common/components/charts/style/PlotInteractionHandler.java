@@ -20,8 +20,10 @@ interface PlotInteractionHandler {
 
     default void onMiddleMouseReleased() {
     }
+    
+    default void onLeftMousePressed(@NotNull Point screenPoint, @NotNull ChartPanel panel) {
+    }
 
-    default void zoomToSelection(@NotNull Rectangle2D selectionRect, @NotNull ChartPanel panel) {
+    default void paintOverlay(@NotNull Graphics2D g2, @NotNull ChartPanel panel) {
     }
 }
-

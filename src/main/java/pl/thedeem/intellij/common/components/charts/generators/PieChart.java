@@ -10,6 +10,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
 import pl.thedeem.intellij.common.components.charts.ChartSettings;
+import pl.thedeem.intellij.common.components.simple.GroupedSettingsComponent;
 import pl.thedeem.intellij.common.components.simple.SearchableComboBox;
 import pl.thedeem.intellij.dql.DQLBundle;
 
@@ -34,40 +35,41 @@ public class PieChart extends AbstractChartGenerator {
             @NotNull ChartSettings chartSettings,
             @NotNull Consumer<Boolean> settingsChangeListener
     ) {
-        JPanel settingsPanel = new JPanel();
-        settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.Y_AXIS));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        settingsPanel.add(LabeledComponent.create(
-                new SearchableComboBox<>(
-                        columns.keySet(),
-                        chartSettings.get(ChartSettings.SELECTED_SERIES),
-                        EMPTY_COMBO_OPTION,
-                        selected -> {
-                            if (!Objects.equals(selected, chartSettings.get(ChartSettings.SELECTED_SERIES))) {
-                                chartSettings.set(ChartSettings.SELECTED_SERIES, selected);
-                                settingsChangeListener.consume(true);
-                            }
-                        }),
-                DQLBundle.message("components.visualization.settings.pieChart.category"),
-                BorderLayout.NORTH
-        ));
-
-        settingsPanel.add(LabeledComponent.create(
-                new SearchableComboBox<>(
-                        columns.keySet().stream()
-                                .filter(c -> SUPPORTED_NUMERIC_COLUMNS.test(columns.get(c)))
-                                .collect(Collectors.toSet()),
-                        chartSettings.get(ChartSettings.SELECTED_VALUES),
-                        EMPTY_COMBO_OPTION,
-                        selected -> {
-                            if (!Objects.equals(selected, chartSettings.get(ChartSettings.SELECTED_SERIES))) {
-                                chartSettings.set(ChartSettings.SELECTED_VALUES, new HashSet<>(Set.of((String) selected)));
-                                settingsChangeListener.consume(true);
-                            }
-                        }),
-                DQLBundle.message("components.visualization.settings.pieChart.value"),
-                BorderLayout.NORTH
-        ));
+        panel.add(new GroupedSettingsComponent(DQLBundle.message("components.visualization.settings.groups.series"))
+                .addSetting(LabeledComponent.create(
+                        new SearchableComboBox<>(
+                                columns.keySet(),
+                                chartSettings.get(ChartSettings.SELECTED_SERIES),
+                                EMPTY_COMBO_OPTION,
+                                selected -> {
+                                    if (!Objects.equals(selected, chartSettings.get(ChartSettings.SELECTED_SERIES))) {
+                                        chartSettings.set(ChartSettings.SELECTED_SERIES, selected);
+                                        settingsChangeListener.consume(true);
+                                    }
+                                }),
+                        DQLBundle.message("components.visualization.settings.pieChart.category"),
+                        BorderLayout.NORTH
+                ))
+                .addSetting(LabeledComponent.create(
+                        new SearchableComboBox<>(
+                                columns.keySet().stream()
+                                        .filter(c -> SUPPORTED_NUMERIC_COLUMNS.test(columns.get(c)))
+                                        .collect(Collectors.toSet()),
+                                chartSettings.get(ChartSettings.SELECTED_VALUES),
+                                EMPTY_COMBO_OPTION,
+                                selected -> {
+                                    if (!Objects.equals(selected, chartSettings.get(ChartSettings.SELECTED_SERIES))) {
+                                        chartSettings.set(ChartSettings.SELECTED_VALUES, new HashSet<>(Set.of((String) selected)));
+                                        settingsChangeListener.consume(true);
+                                    }
+                                }),
+                        DQLBundle.message("components.visualization.settings.pieChart.value"),
+                        BorderLayout.NORTH
+                ))
+        );
 
         JBCheckBox displayLabelsCheckbox = new JBCheckBox(
                 DQLBundle.message("components.visualization.settings.pieChart.displayLabels.enabled"),
@@ -77,15 +79,15 @@ public class PieChart extends AbstractChartGenerator {
             chartSettings.set(ChartSettings.PIE_DISPLAY_LABELS, displayLabelsCheckbox.isSelected());
             settingsChangeListener.consume(true);
         });
-
-        settingsPanel.add(LabeledComponent.create(
-                displayLabelsCheckbox,
-                DQLBundle.message("components.visualization.settings.pieChart.displayLabels"),
-                BorderLayout.NORTH
-        ));
-
-        settingsPanel.add(Box.createVerticalGlue());
-        return settingsPanel;
+        panel.add(new GroupedSettingsComponent(DQLBundle.message("components.visualization.settings.groups.series"))
+                .addSetting(LabeledComponent.create(
+                        displayLabelsCheckbox,
+                        DQLBundle.message("components.visualization.settings.pieChart.displayLabels"),
+                        BorderLayout.NORTH
+                ))
+        );
+        panel.add(Box.createVerticalGlue());
+        return panel;
     }
 
     @Override

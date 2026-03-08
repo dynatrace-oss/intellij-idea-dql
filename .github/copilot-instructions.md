@@ -43,6 +43,7 @@ and Dynatrace Pattern Language (DPL).
 - **Avoid EDT blocking operations**: Use background threads with `ProgressManager`
 - **Focus on performance optimization**: Cache expensive computations when possible, especially in language parsing and
   analysis.
+- **Avoid inline code blocks**: Do not use statements without braces.
 
 ## 3. TESTING SUMMARY
 
