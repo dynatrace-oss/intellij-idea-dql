@@ -15,6 +15,7 @@ import pl.thedeem.intellij.dql.psi.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class DQLStructureViewElement implements StructureViewTreeElement, SortableTreeElement {
     private final NavigatablePsiElement element;
@@ -45,8 +46,7 @@ public class DQLStructureViewElement implements StructureViewTreeElement, Sortab
 
     @Override
     public @NotNull String getAlphaSortKey() {
-        String name = element.getName();
-        return name != null ? name : "";
+        return Objects.requireNonNullElse(getPresentation().getPresentableText(), "");
     }
 
     @Override
