@@ -36,9 +36,7 @@ public class DynatraceAlikeChartPanel extends ChartPanel {
             setDomainZoomable(true);
             handler = new XYPlotInteractionHandler(plot);
         } else if (chart.getPlot() instanceof CategoryPlot plot) {
-            setMouseZoomable(true, true);
-            setRangeZoomable(false);
-            setDomainZoomable(true);
+            setMouseZoomable(false);
             handler = new CategoryPlotInteractionHandler(plot);
         } else {
             handler = null;
@@ -65,15 +63,6 @@ public class DynatraceAlikeChartPanel extends ChartPanel {
     }
 
     @Override
-    public void zoom(@NotNull Rectangle2D selection) {
-        super.zoom(selection);
-        if (handler != null) {
-            handler.zoomToSelection(selection, this);
-            repaint();
-        }
-    }
-
-    @Override
     protected void processMouseMotionEvent(@NotNull MouseEvent e) {
         boolean continueEvent = true;
         if (handler != null) {
@@ -81,7 +70,7 @@ public class DynatraceAlikeChartPanel extends ChartPanel {
             Point2D p = translateScreenToJava2D(e.getPoint());
             if (dataArea.contains(p)) {
                 continueEvent = handler.onMouseMoved(p, dataArea);
-                hover.update(this, p);
+                hover.onMouseMoved(this, p);
             } else {
                 hover.clear();
             }
@@ -117,6 +106,9 @@ public class DynatraceAlikeChartPanel extends ChartPanel {
             lastMiddleMousePoint = e.getPoint();
             setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         } else {
+            if (handler != null && SwingUtilities.isLeftMouseButton(e)) {
+                handler.onLeftMousePressed(e.getPoint(), this);
+            }
             super.mousePressed(e);
         }
     }
@@ -130,7 +122,24 @@ public class DynatraceAlikeChartPanel extends ChartPanel {
                 handler.onMiddleMouseReleased();
             }
         } else {
+            if (handler instanceof CategoryPlotInteractionHandler categoryHandler) {
+                categoryHandler.finishSelection(e.getPoint(), this);
+                repaint();
+            }
             super.mouseReleased(e);
+        }
+    }
+
+    @Override
+    public void paintComponent(@NotNull Graphics g) {
+        super.paintComponent(g);
+        if (handler != null) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            try {
+                handler.paintOverlay(g2, this);
+            } finally {
+                g2.dispose();
+            }
         }
     }
 

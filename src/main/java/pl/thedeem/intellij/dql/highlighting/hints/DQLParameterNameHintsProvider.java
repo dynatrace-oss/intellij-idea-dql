@@ -25,6 +25,7 @@ import java.util.function.Consumer;
  * Provides inlay for parameters in DQL.
  * Yields a lot of experimental usages warnings, but it is the recommended way to implement this feature.
  */
+@SuppressWarnings("UnstableApiUsage")
 public class DQLParameterNameHintsProvider implements InlayHintsProvider<DQLParameterNameHintsProvider.DQLParameterNameHintsSettings> {
     private static final SettingsKey<DQLParameterNameHintsSettings> KEY = new SettingsKey<>("dql.parameter.name.hints");
 
@@ -166,7 +167,7 @@ public class DQLParameterNameHintsProvider implements InlayHintsProvider<DQLPara
     }
 
     protected @NotNull JComponent createOptionComponent(@NotNull String name, boolean isSelected, @NotNull Consumer<Boolean> onChange) {
-        JCheckBox check = new JBCheckBox(name, isSelected);
+        JBCheckBox check = new JBCheckBox(name, isSelected);
         check.addActionListener(e -> onChange.accept(check.isSelected()));
         return check;
     }

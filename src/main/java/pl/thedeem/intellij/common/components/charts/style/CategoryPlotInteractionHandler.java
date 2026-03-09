@@ -4,12 +4,12 @@ import com.intellij.ui.JBColor;
 import com.intellij.util.MathUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.Range;
-import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.category.SlidingCategoryDataset;
 
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;
@@ -21,16 +21,13 @@ class CategoryPlotInteractionHandler implements PlotInteractionHandler {
     private static final double PAN_FACTOR = 0.1;
 
     private final CategoryPlot plot;
-    private final CategoryDataset fullDataset;
-    private int viewStart;
-    private int viewSize;
+    private final SlidingCategoryDataset dataset;
     private double dragAccumulator;
+    private Point selectionPressPoint;
 
     CategoryPlotInteractionHandler(@NotNull CategoryPlot plot) {
         this.plot = plot;
-        this.fullDataset = plot.getDataset();
-        this.viewStart = 0;
-        this.viewSize = fullDataset.getColumnCount();
+        this.dataset = (SlidingCategoryDataset) plot.getDataset();
 
         plot.setRangePannable(true);
         plot.setDomainCrosshairVisible(true);
@@ -65,9 +62,7 @@ class CategoryPlotInteractionHandler implements PlotInteractionHandler {
 
     @Override
     public boolean onMouseWheel(@NotNull MouseWheelEvent e, @NotNull ChartPanel panel) {
-        if (e.isShiftDown()) {
-            plot.panRangeAxes(e.getWheelRotation() * -0.1, panel.getChartRenderingInfo().getPlotInfo(), null);
-        } else if (e.isControlDown()) {
+        if (e.isControlDown()) {
             panDomain(e.getWheelRotation());
         } else {
             zoomDomain(e.getWheelRotation(), e.getPoint(), panel);
@@ -75,56 +70,104 @@ class CategoryPlotInteractionHandler implements PlotInteractionHandler {
         return false;
     }
 
-    private void zoomDomain(int wheelRotation, @NotNull Point mousePoint, @NotNull ChartPanel panel) {
-        int total = fullDataset.getColumnCount();
-        if (total <= 1) {
-            return;
+    @Override
+    public void onLeftMousePressed(@NotNull Point screenPoint, @NotNull ChartPanel panel) {
+        selectionPressPoint = screenPoint;
+    }
+
+    void finishSelection(@NotNull Point releaseScreenPoint, @NotNull ChartPanel panel) {
+        try {
+            if (selectionPressPoint == null) {
+                return;
+            }
+            Point2D pressJava2D = panel.translateScreenToJava2D(selectionPressPoint);
+            Point2D releaseJava2D = panel.translateScreenToJava2D(releaseScreenPoint);
+            double x = Math.min(pressJava2D.getX(), releaseJava2D.getX());
+            double y = Math.min(pressJava2D.getY(), releaseJava2D.getY());
+            double w = Math.abs(releaseJava2D.getX() - pressJava2D.getX());
+            double h = Math.abs(releaseJava2D.getY() - pressJava2D.getY());
+            if (w > 0 || h > 0) {
+                zoomToSelection(new Rectangle2D.Double(x, y, w, h), panel);
+            }
+        } finally {
+            selectionPressPoint = null;
         }
-
-        int delta = (int) Math.max(1, Math.round(viewSize * ZOOM_FACTOR));
-        int newSize = wheelRotation > 0
-                ? Math.min(total, viewSize + delta)
-                : Math.max(1, viewSize - delta);
-        if (newSize == viewSize) {
-            return;
-        }
-
-        Rectangle2D dataArea = panel.getChartRenderingInfo().getPlotInfo().getDataArea();
-        double mouseRatio = domainRatio(mousePoint, dataArea);
-
-        int anchorIndex = viewStart + (int) Math.round(mouseRatio * (viewSize - 1));
-        int newStart = MathUtil.clamp(anchorIndex - (int) Math.round(mouseRatio * (newSize - 1)), 0, total - newSize);
-        resizeView(newStart, newSize);
     }
 
     @Override
-    public void zoomToSelection(@NotNull Rectangle2D selectionRect, @NotNull ChartPanel panel) {
+    public void paintOverlay(@NotNull Graphics2D g2, @NotNull ChartPanel panel) {
+        if (selectionPressPoint == null) {
+            return;
+        }
+        Point current = panel.getMousePosition();
+        if (current == null) {
+            return;
+        }
         Rectangle2D dataArea = panel.getChartRenderingInfo().getPlotInfo().getDataArea();
-        double axisLength = domainAxisLength(dataArea);
-        if (axisLength <= 0 || viewSize <= 1) {
+        Point2D dataAreaMinScreen = panel.translateJava2DToScreen(new Point2D.Double(dataArea.getMinX(), dataArea.getMinY()));
+        Point2D dataAreaMaxScreen = panel.translateJava2DToScreen(new Point2D.Double(dataArea.getMaxX(), dataArea.getMaxY()));
+
+        Rectangle2D rect = createSelectionRectangle(current, dataAreaMinScreen, dataAreaMaxScreen);
+        g2.setPaint(panel.getZoomFillPaint());
+        g2.fill(rect);
+        g2.setPaint(panel.getZoomOutlinePaint());
+        g2.draw(rect);
+    }
+
+    private @NotNull Rectangle2D createSelectionRectangle(Point current, Point2D dataAreaMinScreen, Point2D dataAreaMaxScreen) {
+        double x1, y1, width, height;
+        if (isHorizontal()) {
+            y1 = Math.min(selectionPressPoint.getY(), current.getY());
+            height = Math.abs(current.getY() - selectionPressPoint.getY());
+            x1 = dataAreaMinScreen.getX();
+            width = dataAreaMaxScreen.getX() - dataAreaMinScreen.getX();
+        } else {
+            x1 = Math.min(selectionPressPoint.getX(), current.getX());
+            width = Math.abs(current.getX() - selectionPressPoint.getX());
+            y1 = dataAreaMinScreen.getY();
+            height = dataAreaMaxScreen.getY() - dataAreaMinScreen.getY();
+        }
+        return new Rectangle2D.Double(x1, y1, width, height);
+    }
+
+    private void zoomToSelection(@NotNull Rectangle2D selectionRect, @NotNull ChartPanel panel) {
+        Rectangle2D dataArea = panel.getChartRenderingInfo().getPlotInfo().getDataArea();
+        int total = dataset.getUnderlyingDataset().getColumnCount();
+        int viewSize = dataset.getMaximumCategoryCount();
+        if (total <= 0 || viewSize <= 0) {
             return;
         }
 
-        boolean horizontal = isHorizontal();
-        double axisMin = horizontal ? dataArea.getMinY() : dataArea.getMinX();
-        double relLeft, relRight;
-        if (horizontal) {
-            relLeft = 1.0 - MathUtil.clamp((selectionRect.getMaxY() - axisMin) / axisLength, 0.0, 1.0);
-            relRight = 1.0 - MathUtil.clamp((selectionRect.getMinY() - axisMin) / axisLength, 0.0, 1.0);
-        } else {
-            relLeft = MathUtil.clamp((selectionRect.getMinX() - axisMin) / axisLength, 0.0, 1.0);
-            relRight = MathUtil.clamp((selectionRect.getMaxX() - axisMin) / axisLength, 0.0, 1.0);
+        CategoryAxis axis = plot.getDomainAxis();
+        int viewStart = dataset.getFirstCategoryIndex();
+        int selectionStart = -1;
+        int selectionEnd = viewStart + viewSize;
+
+        for (int i = viewStart; i < viewStart + viewSize; i++) {
+            double coord = axis.getCategoryMiddle(i - viewStart, viewSize, dataArea, plot.getDomainAxisEdge());
+            boolean inside = isHorizontal()
+                    ? coord >= selectionRect.getMinY() && coord <= selectionRect.getMaxY()
+                    : coord >= selectionRect.getMinX() && coord <= selectionRect.getMaxX();
+            if (inside) {
+                if (selectionStart < 0) {
+                    selectionStart = i;
+                }
+                selectionEnd = i + 1;
+            }
         }
 
-        int newStart = viewStart + (int) Math.floor(relLeft * viewSize);
-        int newEnd = Math.min(viewStart + (int) Math.ceil(relRight * viewSize), fullDataset.getColumnCount());
-        resizeView(newStart, Math.max(1, newEnd - newStart));
+        if (selectionStart < 0) {
+            return;
+        }
+
+        int clampedStart = MathUtil.clamp(selectionStart, 0, total - 1);
+        int clampedEnd = MathUtil.clamp(selectionEnd, clampedStart + 1, total);
+        resizeView(clampedStart, clampedEnd - clampedStart);
     }
 
     private void resizeView(int newStart, int newSize) {
-        viewStart = newStart;
-        viewSize = newSize;
-        applyView();
+        dataset.setFirstCategoryIndex(newStart);
+        dataset.setMaximumCategoryCount(newSize);
     }
 
     @Override
@@ -136,6 +179,7 @@ class CategoryPlotInteractionHandler implements PlotInteractionHandler {
     public void onMiddleMouseDragged(@NotNull Point current, @NotNull Point last, @NotNull ChartPanel panel) {
         Rectangle2D dataArea = panel.getChartRenderingInfo().getPlotInfo().getDataArea();
         double axisLength = domainAxisLength(dataArea);
+        int viewSize = dataset.getMaximumCategoryCount();
         if (axisLength <= 0 || viewSize <= 1) {
             return;
         }
@@ -152,11 +196,36 @@ class CategoryPlotInteractionHandler implements PlotInteractionHandler {
         }
     }
 
+    private void zoomDomain(int wheelRotation, @NotNull Point mousePoint, @NotNull ChartPanel panel) {
+        int total = dataset.getUnderlyingDataset().getColumnCount();
+        int viewSize = dataset.getMaximumCategoryCount();
+        if (total <= 1) {
+            return;
+        }
+
+        int delta = (int) Math.max(1, Math.round(viewSize * ZOOM_FACTOR));
+        int newSize = wheelRotation > 0
+                ? Math.min(total, viewSize + delta)
+                : Math.max(1, viewSize - delta);
+        if (newSize == viewSize) {
+            return;
+        }
+
+        Rectangle2D dataArea = panel.getChartRenderingInfo().getPlotInfo().getDataArea();
+        Point2D java2DPoint = panel.translateScreenToJava2D(mousePoint);
+        double mouseRatio = domainRatio(java2DPoint, dataArea);
+
+        int viewStart = dataset.getFirstCategoryIndex();
+        double anchorPos = viewStart + mouseRatio * (viewSize - 1);
+        int newStart = MathUtil.clamp((int) Math.round(anchorPos - mouseRatio * (newSize - 1)), 0, total - newSize);
+        resizeView(newStart, newSize);
+    }
+
     private double domainAxisLength(@NotNull Rectangle2D dataArea) {
         return isHorizontal() ? dataArea.getHeight() : dataArea.getWidth();
     }
 
-    private double domainRatio(@NotNull Point mousePoint, @NotNull Rectangle2D dataArea) {
+    private double domainRatio(@NotNull Point2D mousePoint, @NotNull Rectangle2D dataArea) {
         boolean horizontal = isHorizontal();
         double axisLength = horizontal ? dataArea.getHeight() : dataArea.getWidth();
         if (axisLength <= 0) {
@@ -169,6 +238,7 @@ class CategoryPlotInteractionHandler implements PlotInteractionHandler {
     }
 
     private void panDomain(int wheelRotation) {
+        int viewSize = dataset.getMaximumCategoryCount();
         int delta = (int) Math.max(1, Math.round(viewSize * PAN_FACTOR));
         shiftView(wheelRotation > 0 ? delta : -delta);
     }
@@ -177,24 +247,13 @@ class CategoryPlotInteractionHandler implements PlotInteractionHandler {
         if (delta == 0) {
             return;
         }
-        int newStart = MathUtil.clamp(viewStart + delta, 0, fullDataset.getColumnCount() - viewSize);
-        if (newStart == viewStart) {
-            return;
+        int total = dataset.getUnderlyingDataset().getColumnCount();
+        int viewSize = dataset.getMaximumCategoryCount();
+        int viewStart = dataset.getFirstCategoryIndex();
+        int newStart = MathUtil.clamp(viewStart + delta, 0, total - viewSize);
+        if (newStart != viewStart) {
+            dataset.setFirstCategoryIndex(newStart);
         }
-        viewStart = newStart;
-        applyView();
-    }
-
-    private void applyView() {
-        int end = Math.min(viewStart + viewSize, fullDataset.getColumnCount());
-        DefaultCategoryDataset sliced = new DefaultCategoryDataset();
-        for (int r = 0; r < fullDataset.getRowCount(); r++) {
-            Comparable<?> rowKey = fullDataset.getRowKey(r);
-            for (int c = viewStart; c < end; c++) {
-                sliced.addValue(fullDataset.getValue(r, c), rowKey, fullDataset.getColumnKey(c));
-            }
-        }
-        plot.setDataset(sliced);
     }
 
     private boolean isHorizontal() {

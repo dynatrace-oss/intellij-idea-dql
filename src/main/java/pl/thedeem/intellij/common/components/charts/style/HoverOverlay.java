@@ -5,14 +5,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.entity.CategoryItemEntity;
-import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.panel.AbstractOverlay;
 import org.jfree.chart.panel.Overlay;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.xy.XYDataset;
 import pl.thedeem.intellij.dql.DQLBundle;
 
@@ -21,9 +19,10 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collections;
 
 class HoverOverlay extends AbstractOverlay implements Overlay {
-    private static final int HIT_TOLERANCE_PX = 20;
+    private static final int XY_HIT_TOLERANCE_PX = 20;
     private static final Shape HIGHLIGHT_SHAPE = new Ellipse2D.Double(-5.0, -5.0, 10, 10);
     private static final Stroke HIGHLIGHT_STROKE = new BasicStroke(1.5f);
 
@@ -34,24 +33,23 @@ class HoverOverlay extends AbstractOverlay implements Overlay {
         this.tooltipPanel = tooltipPanel;
     }
 
-    void update(@NotNull ChartPanel chartPanel, @NotNull Point2D mouseJava2D) {
+    void onMouseMoved(@NotNull ChartPanel chartPanel, @NotNull Point2D java2D) {
         Rectangle2D dataArea = chartPanel.getChartRenderingInfo().getPlotInfo().getDataArea();
-        if (dataArea.contains(mouseJava2D)) {
-            current = findClosestHitPoint(chartPanel, mouseJava2D, dataArea);
-            if (current != null) {
-                Point2D screen = chartPanel.translateJava2DToScreen(current.screenPoint());
-                JRootPane rootPane = SwingUtilities.getRootPane(chartPanel);
-                if (rootPane != null) {
-                    Point converted = SwingUtilities.convertPoint(chartPanel,
-                            (int) screen.getX(), (int) screen.getY(), rootPane.getLayeredPane());
-                    tooltipPanel.showTooltip(current.label(), current.seriesColor(),
-                            converted.x, converted.y, rootPane.getLayeredPane().getWidth());
-                }
-            } else {
-                tooltipPanel.hideTooltip();
-            }
-        } else {
+        if (!dataArea.contains(java2D)) {
             clear();
+            return;
+        }
+
+        current = switch (chartPanel.getChart().getPlot()) {
+            case CategoryPlot p -> findClosest(chartPanel, java2D, p);
+            case XYPlot p -> findClosest(chartPanel, java2D, dataArea, p);
+            default -> null;
+        };
+
+        if (current != null) {
+            showTooltip(chartPanel, current);
+        } else {
+            tooltipPanel.hideTooltip();
         }
     }
 
@@ -62,8 +60,9 @@ class HoverOverlay extends AbstractOverlay implements Overlay {
 
     @Override
     public void paintOverlay(@NotNull Graphics2D g2, @NotNull ChartPanel chartPanel) {
-        if (current == null) return;
-
+        if (current == null) {
+            return;
+        }
         Point2D anchor = chartPanel.translateJava2DToScreen(current.screenPoint());
         Graphics2D g = (Graphics2D) g2.create();
         try {
@@ -81,73 +80,92 @@ class HoverOverlay extends AbstractOverlay implements Overlay {
         }
     }
 
-    private @Nullable HitPoint findClosestHitPoint(@NotNull ChartPanel chartPanel,
-                                                   @NotNull Point2D mouseJava2D,
-                                                   @NotNull Rectangle2D dataArea) {
-        var entityCollection = chartPanel.getChartRenderingInfo().getEntityCollection();
-        if (entityCollection == null) return null;
-
-        boolean horizontalDomain = chartPanel.getChart().getPlot() instanceof CategoryPlot p
-                && p.getOrientation() == PlotOrientation.HORIZONTAL;
-
-        HitPoint bestMatch = null;
-        double minDistance = Double.MAX_VALUE;
-
-        for (Object entity : entityCollection.getEntities()) {
-            if (entity instanceof ChartEntity chartEntity) {
-                HitPoint candidate = toHitPoint(chartPanel, chartEntity, dataArea);
-                if (candidate != null) {
-                    double delta = horizontalDomain
-                            ? Math.abs(candidate.screenPoint().getY() - mouseJava2D.getY())
-                            : Math.abs(candidate.screenPoint().getX() - mouseJava2D.getX());
-                    if (delta <= HIT_TOLERANCE_PX) {
-                        double dist = candidate.screenPoint().distance(mouseJava2D);
-                        if (dist < minDistance) {
-                            minDistance = dist;
-                            bestMatch = candidate;
-                        }
-                    }
-                }
+    private static @Nullable HitPoint findClosest(@NotNull ChartPanel chartPanel, @NotNull Point2D java2D,
+                                                  @NotNull CategoryPlot plot) {
+        boolean horizontal = plot.getOrientation() == PlotOrientation.HORIZONTAL;
+        CategoryItemEntity best = null;
+        double minDelta = Double.MAX_VALUE;
+        for (Object obj : entities(chartPanel)) {
+            if (!(obj instanceof CategoryItemEntity e)) {
+                continue;
+            }
+            Rectangle2D bar = e.getArea().getBounds2D();
+            Point2D toCompare = horizontal ? new Point2D.Double(bar.getCenterX(), java2D.getY()) : new Point2D.Double(java2D.getX(), bar.getCenterY());
+            if (!bar.contains(toCompare)) {
+                continue;
+            }
+            double delta = horizontal
+                    ? Math.abs(bar.getCenterY() - java2D.getY())
+                    : Math.abs(bar.getCenterX() - java2D.getX());
+            if (delta < minDelta) {
+                minDelta = delta;
+                best = e;
             }
         }
-        return bestMatch;
+        if (best == null) {
+            return null;
+        }
+        Number value = best.getDataset().getValue(best.getRowKey(), best.getColumnKey());
+        if (value == null) {
+            return null;
+        }
+        Rectangle2D bar = best.getArea().getBounds2D();
+        double sx = horizontal ? bar.getMaxX() : bar.getCenterX();
+        double sy = horizontal ? bar.getCenterY() : bar.getMinY();
+        return new HitPoint(
+                new Point2D.Double(sx, sy),
+                DQLBundle.message("components.visualization.tooltip.value", best.getRowKey(), formatValue(value.doubleValue())),
+                plot.getRenderer().getSeriesPaint(best.getDataset().getRowIndex(best.getRowKey()))
+        );
     }
 
-    private static @Nullable HitPoint toHitPoint(@NotNull ChartPanel chartPanel,
-                                                 @NotNull ChartEntity entity,
-                                                 @NotNull Rectangle2D dataArea) {
-        if (entity instanceof XYItemEntity e && chartPanel.getChart().getPlot() instanceof XYPlot plot) {
+    private static @Nullable HitPoint findClosest(@NotNull ChartPanel chartPanel, @NotNull Point2D java2D,
+                                                  @NotNull Rectangle2D dataArea, @NotNull XYPlot plot) {
+        boolean horizontal = plot.getOrientation() == PlotOrientation.HORIZONTAL;
+        HitPoint best = null;
+        double minDist = Double.MAX_VALUE;
+        for (Object obj : entities(chartPanel)) {
+            if (!(obj instanceof XYItemEntity e)) {
+                continue;
+            }
             XYDataset dataset = e.getDataset();
             int series = e.getSeriesIndex();
             int item = e.getItem();
             double dataY = dataset.getYValue(series, item);
             double sx = plot.getDomainAxis().valueToJava2D(dataset.getXValue(series, item), dataArea, plot.getDomainAxisEdge());
             double sy = plot.getRangeAxis().valueToJava2D(dataY, dataArea, plot.getRangeAxisEdge());
-            return new HitPoint(
-                    new Point2D.Double(sx, sy),
-                    DQLBundle.message("components.visualization.tooltip.value", dataset.getSeriesKey(series), formatValue(dataY)),
-                    plot.getRenderer().getSeriesPaint(series)
-            );
-        }
-
-        if (entity instanceof CategoryItemEntity e && chartPanel.getChart().getPlot() instanceof CategoryPlot plot) {
-            CategoryDataset dataset = e.getDataset();
-            Number value = dataset.getValue(e.getRowKey(), e.getColumnKey());
-            if (value != null) {
-                int row = dataset.getRowIndex(e.getRowKey());
-                double dataY = value.doubleValue();
-                Rectangle2D barBounds = e.getArea().getBounds2D();
-                boolean horizontal = plot.getOrientation() == PlotOrientation.HORIZONTAL;
-                double sx = horizontal ? plot.getRangeAxis().valueToJava2D(dataY, dataArea, plot.getRangeAxisEdge()) : barBounds.getCenterX();
-                double sy = horizontal ? barBounds.getCenterY() : plot.getRangeAxis().valueToJava2D(dataY, dataArea, plot.getRangeAxisEdge());
-                return new HitPoint(
+            double axisDelta = horizontal ? Math.abs(sy - java2D.getY()) : Math.abs(sx - java2D.getX());
+            if (axisDelta > XY_HIT_TOLERANCE_PX) {
+                continue;
+            }
+            double dist = Math.hypot(sx - java2D.getX(), sy - java2D.getY());
+            if (dist < minDist) {
+                minDist = dist;
+                best = new HitPoint(
                         new Point2D.Double(sx, sy),
-                        DQLBundle.message("components.visualization.tooltip.value", e.getRowKey(), formatValue(dataY)),
-                        plot.getRenderer().getSeriesPaint(row)
+                        DQLBundle.message("components.visualization.tooltip.value", dataset.getSeriesKey(series), formatValue(dataY)),
+                        plot.getRenderer().getSeriesPaint(series)
                 );
             }
         }
-        return null;
+        return best;
+    }
+
+    private void showTooltip(@NotNull ChartPanel chartPanel, @NotNull HitPoint hit) {
+        JRootPane rootPane = SwingUtilities.getRootPane(chartPanel);
+        if (rootPane == null) {
+            return;
+        }
+        Point2D anchor = chartPanel.translateJava2DToScreen(hit.screenPoint());
+        Point converted = SwingUtilities.convertPoint(chartPanel,
+                (int) anchor.getX(), (int) anchor.getY(), rootPane.getLayeredPane());
+        tooltipPanel.showTooltip(hit.label(), hit.seriesColor(),
+                converted.x, converted.y, rootPane.getLayeredPane().getWidth());
+    }
+
+    private static @NotNull Iterable<?> entities(@NotNull ChartPanel chartPanel) {
+        var collection = chartPanel.getChartRenderingInfo().getEntityCollection();
+        return collection != null ? collection.getEntities() : Collections.emptyList();
     }
 
     private static String formatValue(double value) {

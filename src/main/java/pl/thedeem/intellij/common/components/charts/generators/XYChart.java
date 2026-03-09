@@ -1,11 +1,13 @@
 package pl.thedeem.intellij.common.components.charts.generators;
 
 import com.intellij.openapi.ui.LabeledComponent;
+import com.intellij.ui.components.JBCheckBox;
 import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -16,6 +18,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import pl.thedeem.intellij.common.components.charts.ChartSettings;
+import pl.thedeem.intellij.common.components.simple.GroupedSettingsComponent;
 import pl.thedeem.intellij.common.components.simple.MultipleValuesSelector;
 import pl.thedeem.intellij.common.components.simple.SearchableComboBox;
 import pl.thedeem.intellij.dql.DQLBundle;
@@ -53,35 +56,53 @@ public class XYChart extends AbstractChartGenerator {
                 .filter(e -> SUPPORTED_NUMERIC_COLUMNS.test(e.getValue()))
                 .map(Map.Entry::getKey).collect(java.util.stream.Collectors.toSet());
 
-        panel.add(LabeledComponent.create(
-                new SearchableComboBox<>(numCols, settings.get(ChartSettings.SELECTED_SERIES), EMPTY_COMBO_OPTION, val -> {
-                    settings.set(ChartSettings.SELECTED_SERIES, val);
-                    onChange.consume(true);
-                }),
-                DQLBundle.message("components.visualization.settings.xAxis"),
-                BorderLayout.NORTH
-        ));
+        panel.add(new GroupedSettingsComponent(DQLBundle.message("components.visualization.settings.groups.series"))
+                .addSetting(LabeledComponent.create(
+                        new SearchableComboBox<>(numCols, settings.get(ChartSettings.SELECTED_SERIES), EMPTY_COMBO_OPTION, val -> {
+                            settings.set(ChartSettings.SELECTED_SERIES, val);
+                            onChange.consume(true);
+                        }),
+                        DQLBundle.message("components.visualization.settings.xAxis"),
+                        BorderLayout.NORTH
+                ))
+                .addSetting(
+                        LabeledComponent.create(
+                                new MultipleValuesSelector<>(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION, numCols, settings.get(ChartSettings.SELECTED_VALUES, new HashSet<>()), (val, sel) -> {
+                                    Set<String> values = settings.get(ChartSettings.SELECTED_VALUES, new HashSet<>());
+                                    if (sel) values.add(val);
+                                    else values.remove(val);
+                                    onChange.consume(true);
+                                }),
+                                DQLBundle.message("components.visualization.settings.yAxis"),
+                                BorderLayout.NORTH
+                        )
+                )
+                .addSetting(LabeledComponent.create(
+                        new SearchableComboBox<>(columns.keySet(), settings.get(ChartSettings.GROUP_BY_COLUMN), EMPTY_COMBO_OPTION, val -> {
+                            settings.set(ChartSettings.GROUP_BY_COLUMN, val);
+                            onChange.consume(true);
+                        }),
+                        DQLBundle.message("components.visualization.settings.groupBy"),
+                        BorderLayout.NORTH
+                ))
+        );
 
-        panel.add(LabeledComponent.create(
-                new MultipleValuesSelector<>(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION, numCols, settings.get(ChartSettings.SELECTED_VALUES, new HashSet<>()), (val, sel) -> {
-                    Set<String> values = settings.get(ChartSettings.SELECTED_VALUES, new HashSet<>());
-                    if (sel) values.add(val);
-                    else values.remove(val);
-                    onChange.consume(true);
-                }),
-                DQLBundle.message("components.visualization.settings.yAxis"),
-                BorderLayout.NORTH
-        ));
-
-        panel.add(LabeledComponent.create(
-                new SearchableComboBox<>(columns.keySet(), settings.get(ChartSettings.GROUP_BY_COLUMN), EMPTY_COMBO_OPTION, val -> {
-                    settings.set(ChartSettings.GROUP_BY_COLUMN, val);
-                    onChange.consume(true);
-                }),
-                DQLBundle.message("components.visualization.settings.groupBy"),
-                BorderLayout.NORTH
-        ));
-
+        JBCheckBox logScaleCheckBox = new JBCheckBox(
+                DQLBundle.message("components.visualization.settings.logScale"),
+                Boolean.TRUE.equals(settings.get(ChartSettings.LOG_SCALE))
+        );
+        logScaleCheckBox.addActionListener(e -> {
+            settings.set(ChartSettings.LOG_SCALE, logScaleCheckBox.isSelected());
+            onChange.consume(true);
+        });
+        panel.add(new GroupedSettingsComponent(DQLBundle.message("components.visualization.settings.groups.chartSettings"))
+                .addSetting(LabeledComponent.create(
+                        logScaleCheckBox,
+                        DQLBundle.message("components.visualization.settings.scale"),
+                        BorderLayout.NORTH
+                ))
+        );
+        panel.add(Box.createVerticalGlue());
         return panel;
     }
 
@@ -93,6 +114,11 @@ public class XYChart extends AbstractChartGenerator {
 
     @Override
     protected void configureChart(@NotNull JFreeChart chart, @NotNull ChartSettings settings) {
+        if (chart.getPlot() instanceof XYPlot plot) {
+            if (Boolean.TRUE.equals(settings.get(ChartSettings.LOG_SCALE))) {
+                plot.setRangeAxis(new LogAxis(plot.getRangeAxis().getLabel()));
+            }
+        }
         super.configureChart(chart, settings);
 
         if (chart.getPlot() instanceof XYPlot plot && plot.getRenderer() instanceof XYLineAndShapeRenderer renderer) {

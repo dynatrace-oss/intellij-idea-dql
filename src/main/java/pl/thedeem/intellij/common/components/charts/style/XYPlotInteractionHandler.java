@@ -1,6 +1,7 @@
 package pl.thedeem.intellij.common.components.charts.style;
 
 import com.intellij.ui.JBColor;
+import com.intellij.util.MathUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.ValueAxis;
@@ -36,18 +37,22 @@ class XYPlotInteractionHandler implements PlotInteractionHandler {
 
         plot.getDomainAxis().addChangeListener(event -> {
             if (event.getAxis() instanceof ValueAxis axis) {
-                if (axis.getLowerBound() < domainBounds.getLowerBound())
+                if (axis.getLowerBound() < domainBounds.getLowerBound()) {
                     axis.setLowerBound(domainBounds.getLowerBound());
-                if (axis.getUpperBound() > domainBounds.getUpperBound())
+                }
+                if (axis.getUpperBound() > domainBounds.getUpperBound()) {
                     axis.setUpperBound(domainBounds.getUpperBound());
+                }
             }
         });
         plot.getRangeAxis().addChangeListener(event -> {
             if (event.getAxis() instanceof ValueAxis axis) {
-                if (axis.getLowerBound() < rangeBounds.getLowerBound())
+                if (axis.getLowerBound() < rangeBounds.getLowerBound()) {
                     axis.setLowerBound(rangeBounds.getLowerBound());
-                if (axis.getUpperBound() > rangeBounds.getUpperBound())
+                }
+                if (axis.getUpperBound() > rangeBounds.getUpperBound()) {
                     axis.setUpperBound(rangeBounds.getUpperBound());
+                }
             }
         });
     }
@@ -79,9 +84,22 @@ class XYPlotInteractionHandler implements PlotInteractionHandler {
 
     @Override
     public void onMiddleMouseDragged(@NotNull Point current, @NotNull Point last, @NotNull ChartPanel panel) {
-        double panX = -(current.getX() - last.getX()) / panel.getChartRenderingInfo().getPlotInfo().getDataArea().getWidth();
-        double panY = (current.getY() - last.getY()) / panel.getChartRenderingInfo().getPlotInfo().getDataArea().getHeight();
+        Rectangle2D dataArea = panel.getChartRenderingInfo().getPlotInfo().getDataArea();
+        double panX = -(current.getX() - last.getX()) / dataArea.getWidth();
+        double panY = (current.getY() - last.getY()) / dataArea.getHeight();
+
+        panX = clampedPan(panX, plot.getDomainAxis(), domainBounds);
+        panY = clampedPan(panY, plot.getRangeAxis(), rangeBounds);
+
         plot.panDomainAxes(panX, panel.getChartRenderingInfo().getPlotInfo(), current);
         plot.panRangeAxes(panY, panel.getChartRenderingInfo().getPlotInfo(), current);
+    }
+
+    private static double clampedPan(double pan, @NotNull ValueAxis axis, @NotNull Range bounds) {
+        double span = axis.getUpperBound() - axis.getLowerBound();
+        double delta = MathUtil.clamp(pan * span,
+                bounds.getLowerBound() - axis.getLowerBound(),
+                bounds.getUpperBound() - axis.getUpperBound());
+        return span != 0 ? delta / span : 0;
     }
 }
