@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+    <!-- Pie chart circle -->
+    <circle cx="8" cy="8" r="5.5" fill="none" stroke="#548AF7" stroke-width="1"/>
+    <!-- Pie slices (lines from center) -->
+    <line x1="8" y1="8" x2="8" y2="2.5" stroke="#548AF7" stroke-width="1"/>
+    <line x1="8" y1="8" x2="13.5" y2="8" stroke="#548AF7" stroke-width="1"/>
+    <line x1="8" y1="8" x2="5" y2="12.5" stroke="#548AF7" stroke-width="1"/>
+    <!-- Fill segments with different opacities -->
+    <path d="M 8 8 L 8 2.5 A 5.5 5.5 0 0 1 13.5 8 Z" fill="#548AF7" fill-opacity="0.7"/>
+    <path d="M 8 8 L 13.5 8 A 5.5 5.5 0 0 1 5 12.5 Z" fill="#548AF7" fill-opacity="0.4"/>
+    <path d="M 8 8 L 5 12.5 A 5.5 5.5 0 0 1 8 2.5 Z" fill="#548AF7" fill-opacity="0.2"/>
+</svg>
+

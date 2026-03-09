@@ -13,7 +13,6 @@ public interface Icons {
     Icon LINE_CHART = IconLoader.getIcon("/icons/lineChart.svg", Icons.class);
     Icon BAR_CHART = IconLoader.getIcon("/icons/barChart.svg", Icons.class);
     Icon PIE_CHART = IconLoader.getIcon("/icons/pieChart.svg", Icons.class);
-    Icon AREA_CHART = IconLoader.getIcon("/icons/areaChart.svg", Icons.class);
 
     Icon LEGEND_SHOW = IconLoader.getIcon("/icons/legendShow.svg", Icons.class);
     Icon LEGEND_HIDE = IconLoader.getIcon("/icons/legendHide.svg", Icons.class);
