@@ -62,7 +62,7 @@ public class PieChart extends AbstractChartGenerator {
                                 EMPTY_COMBO_OPTION,
                                 selected -> {
                                     if (!Objects.equals(selected, chartSettings.get(ChartSettings.SELECTED_SERIES))) {
-                                        chartSettings.set(ChartSettings.SELECTED_VALUES, new HashSet<>(Set.of((String) selected)));
+                                        chartSettings.set(ChartSettings.SELECTED_VALUES, new HashSet<>(selected != null ? Set.of((String) selected) : Set.of()));
                                         settingsChangeListener.consume(true);
                                     }
                                 }),
