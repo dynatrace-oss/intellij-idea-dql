@@ -5,6 +5,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
+import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.elements.NullElement;
 import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
@@ -33,7 +34,7 @@ public abstract class NullElementImpl extends ASTWrapperPsiElement implements Nu
 
     @Override
     public ItemPresentation getPresentation() {
-        return new StandardItemPresentation(this.getName(), this, DQLIcon.NULL);
+        return new StandardItemPresentation(DQLBundle.message("presentation.null"), this, DQLIcon.NULL);
     }
 
     @Override

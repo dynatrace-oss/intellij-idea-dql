@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
+import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseElement;
@@ -29,7 +30,7 @@ public abstract class NegativeValueExpressionImpl extends AbstractOperatorElemen
 
     @Override
     public ItemPresentation getPresentation() {
-        return new StandardItemPresentation(this.getName(), this, DQLIcon.DQL_EXPRESSION);
+        return new StandardItemPresentation(DQLBundle.message("presentation.negativeValue"), this, DQLIcon.DQL_EXPRESSION);
     }
 
     @Override

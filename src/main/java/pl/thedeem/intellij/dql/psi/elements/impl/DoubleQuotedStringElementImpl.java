@@ -12,6 +12,7 @@ import com.intellij.psi.util.CachedValuesManager;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.common.code.StringLiteralEscaper;
+import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.DQLElementFactory;
 import pl.thedeem.intellij.dql.psi.elements.StringElement;
@@ -43,7 +44,7 @@ public abstract class DoubleQuotedStringElementImpl extends ASTWrapperPsiElement
 
     @Override
     public ItemPresentation getPresentation() {
-        return new StandardItemPresentation(this.getName(), this, DQLIcon.DQL_STRING);
+        return new StandardItemPresentation(DQLBundle.message("presentation.string"), this, DQLIcon.DQL_STRING);
     }
 
     @Override

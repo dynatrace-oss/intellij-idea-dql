@@ -14,6 +14,7 @@ import com.intellij.psi.util.CachedValuesManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.StandardItemPresentation;
+import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.DQLElementFactory;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
@@ -67,7 +68,7 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
 
     @Override
     public ItemPresentation getPresentation() {
-        return new StandardItemPresentation(this.getName(), this, DQLIcon.DQL_VARIABLE);
+        return new StandardItemPresentation(DQLBundle.message("presentation.variable", this.getName()), this, DQLIcon.DQL_VARIABLE);
     }
 
     @Override
