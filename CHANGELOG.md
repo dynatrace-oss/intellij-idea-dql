@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Bug fixes
+
+- Fixing an issue with the pie chart throwing an error when the user selects the `-` value on the list of available
+  values.
+
 ## [1.6.0] - 2026-03-09
 
 ### Features
