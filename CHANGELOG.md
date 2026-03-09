@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-03-09
+
 ### Features
 
 - DQL query execution results can now be displayed as visualization. Supported types of graphs: timeseries, lines (XY
@@ -282,24 +284,15 @@
   - the file supports specifying `record` (JSON object), `array` (JSON array), `string`, `boolean`, `number`, and
     `null` types.
 
-[Unreleased]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.5.0...HEAD
-
+[Unreleased]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.4.0...v1.5.0
-
 [1.4.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.3.0...v1.4.0
-
 [1.3.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.2.0...v1.3.0
-
 [1.2.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.1.0...v1.2.0
-
 [1.1.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.4...v1.1.0
-
 [1.0.4]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.3...v1.0.4
-
 [1.0.3]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.2...v1.0.3
-
 [1.0.2]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.1...v1.0.2
-
 [1.0.1]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.0...v1.0.1
-
 [1.0.0]: https://github.com/dynatrace-oss/intellij-idea-dql/commits/v1.0.0
