@@ -23,6 +23,7 @@
 - DQL style fix: the plugin will now enforce exactly one space after DQL command keyword (like `fetch`, `filter`, etc.).
 - The autocompletion of the DQL `data` `record` parameter will now automatically insert the function and will properly
   insert the comma if needed.
+- Hover documentation for very long string will now be shortened to 2048 characters to avoid issues with IDE hanging
 - DQL enum validations will now be reported only for primitive values, as the plugin is not able to calculate complex
   expressions without calling Dynatrace REST API. Example:
 

@@ -17,7 +17,7 @@ public class DQLStringDocumentationProvider extends BaseDocumentationProvider<DQ
         return List.of(
                 buildTitledSection(
                         DQLBundle.message("documentation.string.content"),
-                        buildCodeBlock(element.getContent())
+                        buildCodeBlock(DQLBundle.shorten(element.getContent(), 2048))
                 )
         );
     }
