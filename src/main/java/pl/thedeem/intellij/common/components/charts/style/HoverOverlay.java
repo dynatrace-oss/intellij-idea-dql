@@ -11,6 +11,7 @@ import org.jfree.chart.panel.Overlay;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.xy.XYDataset;
 import pl.thedeem.intellij.dql.DQLBundle;
 
@@ -105,7 +106,11 @@ class HoverOverlay extends AbstractOverlay implements Overlay {
         if (best == null) {
             return null;
         }
-        Number value = best.getDataset().getValue(best.getRowKey(), best.getColumnKey());
+        CategoryDataset dataset = best.getDataset();
+        if (dataset.getRowIndex(best.getRowKey()) < 0 || dataset.getColumnIndex(best.getColumnKey()) < 0) {
+            return null;
+        }
+        Number value = dataset.getValue(best.getRowKey(), best.getColumnKey());
         if (value == null) {
             return null;
         }
@@ -115,7 +120,7 @@ class HoverOverlay extends AbstractOverlay implements Overlay {
         return new HitPoint(
                 new Point2D.Double(sx, sy),
                 DQLBundle.message("components.visualization.tooltip.value", best.getRowKey(), formatValue(value.doubleValue())),
-                plot.getRenderer().getSeriesPaint(best.getDataset().getRowIndex(best.getRowKey()))
+                plot.getRenderer().getSeriesPaint(dataset.getRowIndex(best.getRowKey()))
         );
     }
 
