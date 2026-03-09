@@ -58,11 +58,11 @@ public class PieChart extends AbstractChartGenerator {
                                 columns.keySet().stream()
                                         .filter(c -> SUPPORTED_NUMERIC_COLUMNS.test(columns.get(c)))
                                         .collect(Collectors.toSet()),
-                                chartSettings.get(ChartSettings.SELECTED_VALUES),
+                                chartSettings.get(ChartSettings.SELECTED_VALUES, Set.of()).stream().findFirst().orElse(null),
                                 EMPTY_COMBO_OPTION,
                                 selected -> {
-                                    if (!Objects.equals(selected, chartSettings.get(ChartSettings.SELECTED_SERIES))) {
-                                        chartSettings.set(ChartSettings.SELECTED_VALUES, new HashSet<>(selected != null ? Set.of((String) selected) : Set.of()));
+                                    if (!Objects.equals(selected, chartSettings.get(ChartSettings.SELECTED_VALUES, Set.of()).stream().findFirst().orElse(null))) {
+                                        chartSettings.set(ChartSettings.SELECTED_VALUES, new HashSet<>(selected != null ? Set.of(selected) : Set.of()));
                                         settingsChangeListener.consume(true);
                                     }
                                 }),
@@ -70,7 +70,7 @@ public class PieChart extends AbstractChartGenerator {
                         BorderLayout.NORTH
                 ))
         );
-
+ 
         JBCheckBox displayLabelsCheckbox = new JBCheckBox(
                 DQLBundle.message("components.visualization.settings.pieChart.displayLabels.enabled"),
                 chartSettings.get(ChartSettings.PIE_DISPLAY_LABELS, true)
