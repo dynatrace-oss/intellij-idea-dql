@@ -11,6 +11,7 @@ import org.jfree.chart.panel.Overlay;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.UnknownKeyException;
 import org.jfree.data.xy.XYDataset;
 import pl.thedeem.intellij.dql.DQLBundle;
 
@@ -105,7 +106,12 @@ class HoverOverlay extends AbstractOverlay implements Overlay {
         if (best == null) {
             return null;
         }
-        Number value = best.getDataset().getValue(best.getRowKey(), best.getColumnKey());
+        Number value;
+        try {
+            value = best.getDataset().getValue(best.getRowKey(), best.getColumnKey());
+        } catch (UnknownKeyException e) {
+            return null;
+        }
         if (value == null) {
             return null;
         }
