@@ -18,7 +18,7 @@
 
 ### Bug fixes
 
-- #145: Restarting the IDE will no longer automatically opens the `Services` view with the Dynatrace service being
+- #145: Restarting the IDE will no longer automatically open the `Services` view with the Dynatrace service being
   selected.
 - DQL Query Console now acts as a fully fledged DQL editor handled natively by IDE. This fixes all issues related to
   missing features like ctrl + Z or grammar checks in the console.
