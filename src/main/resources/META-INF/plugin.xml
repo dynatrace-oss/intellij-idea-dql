@@ -618,7 +618,6 @@
         >
             <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="RunnerActions"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="NewGroup"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="control alt E"/>
         </action>
         <action id="DQL.ManageTenants"
                 icon="AllIcons.General.GearPlain"
