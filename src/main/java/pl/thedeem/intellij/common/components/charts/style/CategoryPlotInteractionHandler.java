@@ -30,12 +30,10 @@ class CategoryPlotInteractionHandler implements PlotInteractionHandler {
         this.dataset = (SlidingCategoryDataset) plot.getDataset();
 
         plot.setRangePannable(true);
-        plot.setDomainCrosshairVisible(true);
+        plot.setDomainCrosshairVisible(false);
         plot.setRangeCrosshairVisible(true);
         plot.setRangeCrosshairLockedOnData(true);
-        plot.setDomainCrosshairPaint(JBColor.GRAY);
         plot.setRangeCrosshairPaint(JBColor.GRAY);
-        plot.setDomainCrosshairStroke(CROSSHAIR_STROKE);
         plot.setRangeCrosshairStroke(CROSSHAIR_STROKE);
 
         Range rangeBounds = new Range(plot.getRangeAxis().getLowerBound(), plot.getRangeAxis().getUpperBound());
