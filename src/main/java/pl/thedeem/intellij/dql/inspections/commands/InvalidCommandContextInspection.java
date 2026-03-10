@@ -16,6 +16,7 @@ import pl.thedeem.intellij.dql.inspections.fixes.RenameFileQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLCommandKeyword;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
+import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class InvalidCommandContextInspection extends LocalInspectionTool {
             @Override
             public void visitCommand(@NotNull DQLCommand command) {
                 super.visitCommand(command);
-
+                DQLDefinitionService service = DQLDefinitionService.getInstance(command.getProject());
                 Command definition = command.getDefinition();
                 if (definition == null || DQLUtil.isPartialFile(command.getContainingFile())) {
                     return;
@@ -39,7 +40,7 @@ public class InvalidCommandContextInspection extends LocalInspectionTool {
                     fixes.add(new RenameFileQuickFix(proposePartialName(command.getContainingFile().getName())));
                 }
                 fixes.add(new DropCommandQuickFix());
-                boolean isStartingCommand = "data_source".equals(definition.category());
+                boolean isStartingCommand = service.getDataSourceCommands().contains(definition.name());
                 DQLCommandKeyword keyword = command.getCommandKeyword();
                 if (command.isFirstStatement()) {
                     if (!isStartingCommand) {

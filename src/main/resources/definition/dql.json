@@ -1192,6 +1192,37 @@
         }
       ]
     },
+    "dql.command.jsonExtract": {
+      "name": "jsonExtract",
+      "description": "Extracts fields from a JSON string expression into the record.",
+      "experimental": true,
+      "synopsis": "jsonExtract input [, conflicts]",
+      "parameters": [
+        {
+          "name": "input",
+          "description": "A string expression containing the JSON object to extract fields from.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.string"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithFieldAccess"
+          ]
+        },
+        {
+          "name": "conflicts",
+          "description": "The name of the field where to store colliding fields. if not specified, collisions are discarded.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "parameterValueTypes": [
+            "dql.parameterValueType.simpleIdentifier"
+          ]
+        }
+      ]
+    },
     "dql.command.limit": {
       "name": "limit",
       "description": "Limits the number of returned records.",
@@ -6346,7 +6377,7 @@
       "name": "median",
       "description": "Calculates the median of the expression value in each bucket.",
       "category": "dql.functionCategory.expression timeseries",
-      "synopsis": "median(expression [, default] [, rate] [, scalar])",
+      "synopsis": "median(expression [, weight] [, default] [, rate] [, scalar])",
       "signatures": [
         {
           "parameters": [
@@ -6368,7 +6399,6 @@
             {
               "name": "weight",
               "description": "The weight of the corresponding expression (e.g. its sampling ratio).",
-              "experimental": true,
               "required": false,
               "requiresName": true,
               "assignmentSupport": "none",
@@ -6508,7 +6538,6 @@
     "dql.function.expressionTimeseriesPercentRank": {
       "name": "percentRank",
       "description": "Calculates the percentile rank for a given value.",
-      "experimental": true,
       "category": "dql.functionCategory.expression timeseries",
       "synopsis": "percentRank(expression, value [, default] [, rate] [, scalar])",
       "signatures": [
@@ -6537,7 +6566,6 @@
               "assignmentSupport": "none",
               "valueTypes": [
                 "dql.dataType.double",
-                "dql.dataType.duration",
                 "dql.dataType.long"
               ],
               "parameterValueTypes": [
@@ -6598,7 +6626,7 @@
       "name": "percentile",
       "description": "Calculates the requested percentile of the expression value in each bucket.",
       "category": "dql.functionCategory.expression timeseries",
-      "synopsis": "percentile(expression, percentile [, default] [, rate] [, scalar])",
+      "synopsis": "percentile(expression, percentile [, weight] [, default] [, rate] [, scalar])",
       "signatures": [
         {
           "parameters": [
@@ -6636,7 +6664,6 @@
             {
               "name": "weight",
               "description": "The weight of the corresponding expression (e.g. its sampling ratio).",
-              "experimental": true,
               "required": false,
               "requiresName": true,
               "assignmentSupport": "none",
@@ -6703,7 +6730,6 @@
     "dql.function.expressionTimeseriesPercentileFromSamples": {
       "name": "percentileFromSamples",
       "description": "Calculates the requested percentile of the array expression in each bucket.",
-      "experimental": true,
       "category": "dql.functionCategory.expression timeseries",
       "synopsis": "percentileFromSamples(expression, percentile [, originalCount] [, default] [, rate] [, scalar])",
       "signatures": [
@@ -9795,7 +9821,7 @@
       "name": "median",
       "description": "Calculates the median value of a field for a list of records.",
       "category": "dql.functionCategory.aggregation",
-      "synopsis": "median(expression)",
+      "synopsis": "median(expression [, weight])",
       "signatures": [
         {
           "parameters": [
@@ -9819,7 +9845,6 @@
             {
               "name": "weight",
               "description": "The weight of the corresponding expression (e.g. its sampling ratio).",
-              "experimental": true,
               "required": false,
               "requiresName": true,
               "assignmentSupport": "none",
@@ -10387,7 +10412,6 @@
     "dql.function.metricTimeseriesPercentRank": {
       "name": "percentRank",
       "description": "Calculates the percentile rank for a given value.",
-      "experimental": true,
       "category": "dql.functionCategory.timeseries",
       "synopsis": "percentRank(metricKey, value [, rollup] [, default] [, rate] [, scalar] [, filter])",
       "signatures": [
@@ -10411,7 +10435,6 @@
               "assignmentSupport": "none",
               "valueTypes": [
                 "dql.dataType.double",
-                "dql.dataType.duration",
                 "dql.dataType.long"
               ],
               "parameterValueTypes": [
@@ -10935,7 +10958,6 @@
     "dql.function.percentRank": {
       "name": "percentRank",
       "description": "Calculates the percentile rank for a given value.",
-      "experimental": true,
       "category": "dql.functionCategory.aggregation",
       "synopsis": "percentRank(expression, value)",
       "signatures": [
@@ -10986,7 +11008,7 @@
       "name": "percentile",
       "description": "Calculates the percentile value of a field for a list of records:percentile(x, 50) == median(x).",
       "category": "dql.functionCategory.aggregation",
-      "synopsis": "percentile(expression, percentile)",
+      "synopsis": "percentile(expression, percentile [, weight])",
       "signatures": [
         {
           "parameters": [
@@ -11026,7 +11048,6 @@
             {
               "name": "weight",
               "description": "The weight of the corresponding expression (e.g. its sampling ratio).",
-              "experimental": true,
               "required": false,
               "requiresName": true,
               "assignmentSupport": "none",
@@ -11053,7 +11074,6 @@
     "dql.function.percentileFromSamples": {
       "name": "percentileFromSamples",
       "description": "Calculates the percentile value of array fields.",
-      "experimental": true,
       "category": "dql.functionCategory.aggregation",
       "synopsis": "percentileFromSamples(expression, percentile [, originalCount])",
       "signatures": [
@@ -11117,7 +11137,7 @@
       "name": "percentiles",
       "description": "Calculates multiple percentile values of a field for a list of records (similar to percentile, but returns an array of values instead of a single one).",
       "category": "dql.functionCategory.aggregation",
-      "synopsis": "percentiles(expression, percentile, …)",
+      "synopsis": "percentiles(expression [, weight ,] percentile, …)",
       "signatures": [
         {
           "parameters": [
@@ -11141,7 +11161,6 @@
             {
               "name": "weight",
               "description": "The weight of the corresponding expression (e.g. its sampling ratio).",
-              "experimental": true,
               "required": false,
               "requiresName": true,
               "assignmentSupport": "none",

@@ -43,14 +43,13 @@ public class DQLCommandCompletionTest extends LightPlatformCodeInsightFixture4Te
 
     @Test
     public void testAfterStartingQueryFinishedShouldSuggestMoreCommands() {
-        when(serviceMock.getCommandsByCategory(DQLDefinitionService.STARTING_COMMANDS)).thenReturn(List.of(
-                DQLTestsUtils.createCommand("data", "data_source", List.of()),
-                DQLTestsUtils.createCommand("timeseries", "data_source", List.of())
-        ));
-        when(serviceMock.getCommandsByCategory(DQLDefinitionService.EXTENSION_COMMANDS)).thenReturn(List.of(
-                DQLTestsUtils.createCommand("filter", "filter", List.of()),
-                DQLTestsUtils.createCommand("sort", "order", List.of())
-        ));
+        when(serviceMock.getDataSourceCommands()).thenReturn(List.of("data", "timeseries"));
+        DQLTestsUtils.mockCommands(serviceMock,
+                DQLTestsUtils.createCommand("data", List.of()),
+                DQLTestsUtils.createCommand("timeseries", List.of()),
+                DQLTestsUtils.createCommand("filter", List.of()),
+                DQLTestsUtils.createCommand("sort", List.of())
+        );
         myFixture.configureByFiles("single-data-record-query.dql");
         myFixture.complete(CompletionType.BASIC);
 
@@ -62,14 +61,13 @@ public class DQLCommandCompletionTest extends LightPlatformCodeInsightFixture4Te
 
     @Test
     public void testInsideEmptyFileShouldSuggestQueryStartCommands() {
-        when(serviceMock.getCommandsByCategory(DQLDefinitionService.STARTING_COMMANDS)).thenReturn(List.of(
-                DQLTestsUtils.createCommand("data", "data_source", List.of()),
-                DQLTestsUtils.createCommand("timeseries", "data_source", List.of())
-        ));
-        when(serviceMock.getCommandsByCategory(DQLDefinitionService.EXTENSION_COMMANDS)).thenReturn(List.of(
-                DQLTestsUtils.createCommand("filter", "filter", List.of()),
-                DQLTestsUtils.createCommand("sort", "order", List.of())
-        ));
+        when(serviceMock.getDataSourceCommands()).thenReturn(List.of("data", "timeseries"));
+        DQLTestsUtils.mockCommands(serviceMock,
+                DQLTestsUtils.createCommand("data", List.of()),
+                DQLTestsUtils.createCommand("timeseries", List.of()),
+                DQLTestsUtils.createCommand("filter", List.of()),
+                DQLTestsUtils.createCommand("sort", List.of())
+        );
         myFixture.configureByFiles("empty.dql");
         myFixture.complete(CompletionType.BASIC);
 
@@ -81,16 +79,15 @@ public class DQLCommandCompletionTest extends LightPlatformCodeInsightFixture4Te
 
     @Test
     public void testInsideSubqueryShouldSuggestQueryStartCommands() {
-        when(serviceMock.getCommandsByCategory(DQLDefinitionService.STARTING_COMMANDS)).thenReturn(List.of(
-                DQLTestsUtils.createCommand("data", "data_source", List.of()),
-                DQLTestsUtils.createCommand("timeseries", "data_source", List.of())
-        ));
-        when(serviceMock.getCommandsByCategory(DQLDefinitionService.EXTENSION_COMMANDS)).thenReturn(List.of(
-                DQLTestsUtils.createCommand("append", "subquery", List.of(
+        when(serviceMock.getDataSourceCommands()).thenReturn(List.of("data", "timeseries"));
+        DQLTestsUtils.mockCommands(serviceMock,
+                DQLTestsUtils.createCommand("data", List.of()),
+                DQLTestsUtils.createCommand("timeseries", List.of()),
+                DQLTestsUtils.createCommand("append", List.of(
                         DQLTestsUtils.createParameter("subquery", List.of())
                 )),
-                DQLTestsUtils.createCommand("sort", "order", List.of())
-        ));
+                DQLTestsUtils.createCommand("sort", List.of())
+        );
         myFixture.configureByFiles("subquery-append.dql");
         myFixture.complete(CompletionType.BASIC);
 

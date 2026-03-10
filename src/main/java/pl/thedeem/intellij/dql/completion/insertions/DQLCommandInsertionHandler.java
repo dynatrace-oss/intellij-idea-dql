@@ -34,7 +34,8 @@ public class DQLCommandInsertionHandler implements InsertHandler<LookupElement> 
         template.setToReformat(true);
 
         Character lastNonEmptyCharacter = LangUtils.getPreviousNonEmptyCharacterFromDocument(context);
-        if ((lastNonEmptyCharacter == null || lastNonEmptyCharacter != '|') && DQLDefinitionService.EXTENSION_COMMANDS.test(definition.category())) {
+        DQLDefinitionService service = DQLDefinitionService.getInstance(context.getProject());
+        if ((lastNonEmptyCharacter == null || lastNonEmptyCharacter != '|') && !service.getDataSourceCommands().contains(definition.name())) {
             template.addTextSegment("| ");
         }
 

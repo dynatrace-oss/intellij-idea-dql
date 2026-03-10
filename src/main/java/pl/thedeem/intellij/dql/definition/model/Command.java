@@ -17,8 +17,6 @@ public final class Command {
     @JsonMerge(value = OptBoolean.TRUE)
     @JsonDeserialize(using = ParameterListMergingDeserializer.class)
     private List<Parameter> parameters;
-    // custom
-    private String category = "extension";
     private List<String> oneOfRequired;
 
     public Command() {
@@ -29,16 +27,13 @@ public final class Command {
             String description,
             String synopsis,
             Boolean experimental,
-            List<Parameter> parameters,
-            // custom
-            String category
+            List<Parameter> parameters
     ) {
         this.name = name;
         this.description = description;
         this.synopsis = synopsis;
         this.experimental = experimental;
         this.parameters = parameters;
-        this.category = category;
     }
 
     public String name() {
@@ -61,10 +56,6 @@ public final class Command {
         return Objects.requireNonNullElse(parameters, List.of());
     }
 
-    public String category() {
-        return category;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -85,10 +76,6 @@ public final class Command {
         this.parameters = parameters;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
     public List<String> oneOfRequired() {
         return oneOfRequired;
     }
@@ -106,13 +93,12 @@ public final class Command {
                 Objects.equals(this.description, that.description) &&
                 Objects.equals(this.synopsis, that.synopsis) &&
                 Objects.equals(this.experimental, that.experimental) &&
-                Objects.equals(this.parameters, that.parameters) &&
-                Objects.equals(this.category, that.category);
+                Objects.equals(this.parameters, that.parameters);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, synopsis, experimental, parameters, category);
+        return Objects.hash(name, description, synopsis, experimental, parameters);
     }
 
     @Override
@@ -122,8 +108,7 @@ public final class Command {
                 "description=" + description + ", " +
                 "synopsis=" + synopsis + ", " +
                 "experimental=" + experimental + ", " +
-                "parameters=" + parameters + ", " +
-                "category=" + category + ']';
+                "parameters=" + parameters + ']';
     }
 
     public Collection<Parameter> requiredParameters() {
