@@ -51,7 +51,7 @@ public final class ProjectServicesManager implements Disposable {
         );
         if (selectInView) {
             ServiceViewManager instance = ServiceViewManager.getInstance(project);
-            instance.select(service, ManagedServiceViewContributor.class, true, true);
+            instance.select(service, ManagedServiceViewContributor.class, true, false);
         }
     }
 

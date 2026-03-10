@@ -5,6 +5,9 @@
 ### Features
 
 - Updated DQL functions & commands database
+- DQL query execution can now be started from the editor with a shortcut `ctrl` + `enter`. If the user selected a part
+  of the query or the cursor is inside a subquery (for example, `append` command), IDE will as the user to decide which
+  part of the query they want to execute.
 
 ### Bug fixes
 

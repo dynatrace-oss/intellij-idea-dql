@@ -9,8 +9,6 @@
     <extensions defaultExtensionNs="com.intellij">
         <serviceViewContributor implementation="pl.thedeem.intellij.common.services.ManagedServiceViewContributor"/>
         <!-- region DQL -->
-        <postStartupActivity
-                implementation="pl.thedeem.intellij.dql.services.ui.ServicesAutoRegistrationStartupActivity"/>
         <fileType
                 name="DQL"
                 implementationClass="pl.thedeem.intellij.dql.DQLFileType"
@@ -335,7 +333,13 @@
         <notificationGroup id="DQL.Errors"
                            displayType="BALLOON" bundle="messages.DQLBundle" key="notification.group.dql.errors"/>
 
-        <!-- endregion -->
+        <postStartupActivity
+                implementation="pl.thedeem.intellij.dql.services.ui.ServicesAutoRegistrationStartupActivity"/>
+        <editorActionHandler id="DQL.QueryExecutor"
+                             action="EditorSplitLine"
+                             implementationClass="pl.thedeem.intellij.dql.actions.DQLSplitLineHandler"
+                             order="first"/>
+        <!-- endregion DQL -->
         <!-- region DPL -->
         <fileType name="DPL"
                   implementationClass="pl.thedeem.intellij.dpl.DPLFileType"
@@ -552,7 +556,7 @@
         <!-- Services -->
         <projectService serviceImplementation="pl.thedeem.intellij.dpl.definition.DPLDefinitionServiceImpl"
                         serviceInterface="pl.thedeem.intellij.dpl.definition.DPLDefinitionService"/>
-        <!-- endregion -->
+        <!-- endregion DPL -->
         <!-- region DQLExpr -->
         <fileType
                 name="DQLExpr"
