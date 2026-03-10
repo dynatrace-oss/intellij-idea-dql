@@ -11,6 +11,8 @@
 
 ### Bug fixes
 
+- #163: The DQL query selection (when executing the query) will now fully respect the user selection. Previously, it was
+  rounding the selection to the nearest DQL token, which caused issues in some border cases.
 - Fixing an issue with the pie chart throwing an error when the user selects the `-` value on the list of available
   values.
 

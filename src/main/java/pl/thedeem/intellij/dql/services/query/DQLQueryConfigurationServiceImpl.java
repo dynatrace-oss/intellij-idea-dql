@@ -24,9 +24,7 @@ import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLRunConfiguration;
-import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
-import pl.thedeem.intellij.dql.psi.DQLSubqueryExpression;
 import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
@@ -165,23 +163,10 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
     }
 
     private void getQueryFromSelection(@NotNull PsiFile file, @NotNull Editor editor, int start, int end, @NotNull Consumer<@NotNull String> consumer) {
-        PsiElement startingCommand = findMatchingElement(file.findElementAt(start));
-        PsiElement endCommand = findMatchingElement(file.findElementAt(end));
         List<SelectionContext> queries = new ArrayList<>(2);
-        queries.add(new SelectionContext(new TextRange(
-                startingCommand != null ? startingCommand.getTextRange().getStartOffset() : start,
-                endCommand != null ? endCommand.getTextRange().getEndOffset() : end
-        ), DQLBundle.message("services.executeDQL.selectQuery.selectedText")));
+        queries.add(new SelectionContext(new TextRange(start, end), DQLBundle.message("services.executeDQL.selectQuery.selectedText")));
         queries.add(new SelectionContext(file.getTextRange(), DQLBundle.message("services.executeDQL.selectQuery.wholeFile")));
         createSelectionPopup(editor, queries, textRange -> consumer.accept(textRange != null ? file.getFileDocument().getText(textRange) : file.getText()));
-    }
-
-    private @Nullable PsiElement findMatchingElement(@Nullable PsiElement psiElement) {
-        PsiElement element = PsiTreeUtil.getParentOfType(psiElement, DQLCommand.class, DQLQuery.class, DQLSubqueryExpression.class);
-        if (element instanceof DQLSubqueryExpression subqueryExpression) {
-            return subqueryExpression.getQuery();
-        }
-        return psiElement;
     }
 
     private static void createSelectionPopup(@NotNull Editor editor, @NotNull List<SelectionContext> queries, @NotNull Consumer<TextRange> selectedCallback) {
