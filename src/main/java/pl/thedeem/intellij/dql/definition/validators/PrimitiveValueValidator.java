@@ -3,11 +3,12 @@ package pl.thedeem.intellij.dql.definition.validators;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
-import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
+import pl.thedeem.intellij.dql.psi.DQLNegativeValueExpression;
 import pl.thedeem.intellij.dql.psi.DQLPrimitiveExpression;
+import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,10 +32,14 @@ public class PrimitiveValueValidator extends AbstractDefinitionValidator {
     }
 
     private boolean isInvalid(@NotNull PsiElement element, @NotNull Parameter definition) {
-        if (element instanceof DQLPrimitiveExpression) {
+        PsiElement toCheck = element;
+        if (element instanceof DQLNegativeValueExpression negative) {
+            toCheck = negative.getExpression();
+        }
+        if (toCheck instanceof DQLPrimitiveExpression) {
             return false;
         }
         List<String> types = Objects.requireNonNullElse(definition.parameterValueTypes(), List.of());
-        return !(element instanceof DQLFieldExpression) || types.stream().noneMatch(DQLDefinitionService.FIELD_IDENTIFIER_PARAMETER_VALUE_TYPES::contains);
+        return !(toCheck instanceof DQLFieldExpression) || types.stream().noneMatch(DQLDefinitionService.FIELD_IDENTIFIER_PARAMETER_VALUE_TYPES::contains);
     }
 }

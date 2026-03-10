@@ -6,6 +6,11 @@
 
 - Fixing an issue with the pie chart throwing an error when the user selects the `-` value on the list of available
   values.
+- Fixing an incorrect array accessor inspection for negative values, for example:
+
+  ```dqlexpr
+  splitString(file_path, "/")[-1]
+  ```
 
 ## [1.6.0] - 2026-03-09
 
