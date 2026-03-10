@@ -1,4 +1,14 @@
 {
+  "dataSources": [
+    "data",
+    "describe",
+    "fetch",
+    "load",
+    "metrics",
+    "smartscapeEdges",
+    "smartscapeNodes",
+    "timeseries"
+  ],
   "dataTypes": {
     "dql.dataType.null": {
       "name": "NULL",
@@ -37,7 +47,6 @@
   },
   "commands": {
     "dql.command.data": {
-      "category": "data_source",
       "parameters": [
         {
           "name": "record",
@@ -193,11 +202,7 @@
         }
       ]
     },
-    "dql.command.describe": {
-      "category": "data_source"
-    },
     "dql.command.fetch": {
-      "category": "data_source",
       "parameters": [
         {
           "name": "dataObject",
@@ -576,9 +581,6 @@
         }
       ]
     },
-    "dql.command.load": {
-      "category": "data_source"
-    },
     "dql.command.lookup": {
       "parameters": [
         {
@@ -896,7 +898,6 @@
       ]
     },
     "dql.command.metrics": {
-      "category": "data_source",
       "parameters": [
         {
           "name": "bucket",
@@ -954,12 +955,6 @@
           ]
         }
       ]
-    },
-    "dql.command.smartscapeEdges": {
-      "category": "data_source"
-    },
-    "dql.command.smartscapeNodes": {
-      "category": "data_source"
     },
     "dql.command.sort": {
       "parameters": [
@@ -1081,7 +1076,6 @@
       ]
     },
     "dql.command.timeseries": {
-      "category": "data_source",
       "parameters": [
         {
           "name": "bucket",

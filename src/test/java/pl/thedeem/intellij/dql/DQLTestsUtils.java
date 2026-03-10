@@ -3,19 +3,22 @@ package pl.thedeem.intellij.dql;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.definition.model.*;
+import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
 public class DQLTestsUtils {
-    public static Command createCommand(
+    public static @NotNull Command createCommand(
             @NotNull String name,
-            @NotNull String type,
             @NotNull List<Parameter> parameters
     ) {
-        return new Command(name, "empty description", "synopsis", false, parameters, type);
+        return new Command(name, "empty description", "synopsis", false, parameters);
     }
 
-    public static Function createFunction(
+    public static @NotNull Function createFunction(
             @NotNull String name,
             @NotNull List<String> returnedValues,
             @NotNull List<Parameter> parameters
@@ -24,7 +27,7 @@ public class DQLTestsUtils {
         return new Function(name, "empty description", "some category", "synopis", false, false, List.of(signature));
     }
 
-    public static Parameter createParameter(
+    public static @NotNull Parameter createParameter(
             @NotNull String name,
             @Nullable List<String> types,
             boolean required,
@@ -54,7 +57,7 @@ public class DQLTestsUtils {
         return parameter;
     }
 
-    public static Parameter createParameter(
+    public static @NotNull Parameter createParameter(
             @NotNull String name,
             @NotNull List<String> types
     ) {
@@ -77,7 +80,7 @@ public class DQLTestsUtils {
         );
     }
 
-    public static Operator createOperator(@NotNull String name, @NotNull List<String> output, @NotNull List<Parameter> parameters) {
+    public static @NotNull Operator createOperator(@NotNull String name, @NotNull List<String> output, @NotNull List<Parameter> parameters) {
         Signature signature = new Signature(parameters, output, false);
         return new Operator(
                 name,
@@ -85,5 +88,12 @@ public class DQLTestsUtils {
                 "symbol",
                 List.of(signature)
         );
+    }
+
+    public static void mockCommands(@NotNull DQLDefinitionService mock, @NotNull Command... commands) {
+        when(mock.getCommands()).thenReturn(List.of(commands));
+        for (Command command : commands) {
+            when(mock.getCommandByName(eq(command.name()))).thenReturn(command);
+        }
     }
 }

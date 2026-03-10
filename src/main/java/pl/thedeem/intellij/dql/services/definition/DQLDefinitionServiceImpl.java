@@ -22,8 +22,6 @@ public class DQLDefinitionServiceImpl implements DQLDefinitionService {
     private CachedValue<DQLDefinition> definition;
     private CachedValue<Map<String, String>> commandsMapping;
     private CachedValue<Map<String, Set<String>>> functionsMapping;
-    private CachedValue<Map<String, List<Command>>> commandsByCategory;
-    private CachedValue<Map<String, List<Function>>> functionsByDataType;
     private CachedValue<Map<String, List<Function>>> functionsByCategory;
 
     public DQLDefinitionServiceImpl(@NotNull Project project) {
@@ -55,21 +53,6 @@ public class DQLDefinitionServiceImpl implements DQLDefinitionService {
         }
         Set<String> id = this.functionsMapping.getValue().get(name.toLowerCase());
         return id != null ? id.stream().map(s -> getDefinition().functions().get(s)).toList() : List.of();
-    }
-
-    @Override
-    public @NotNull Collection<Function> getFunctionsByReturnType(@NotNull Predicate<String> filter) {
-        if (this.functionsByDataType == null) {
-            this.functionsByDataType = CachedValuesManager.getManager(project).createCachedValue(
-                    () -> new CachedValueProvider.Result<>(loadFunctionsByDataType(), tracker),
-                    false);
-        }
-        return functionsByDataType.getValue().entrySet().stream()
-                .filter(e -> filter.test(e.getKey()))
-                .map(Map.Entry::getValue)
-                .filter(Objects::nonNull)
-                .flatMap(List::stream)
-                .toList();
     }
 
     @Override
@@ -134,19 +117,8 @@ public class DQLDefinitionServiceImpl implements DQLDefinitionService {
     }
 
     @Override
-    public @NotNull Collection<Command> getCommandsByCategory(@NotNull Predicate<String> filter) {
-        if (this.commandsByCategory == null) {
-            this.commandsByCategory = CachedValuesManager.getManager(project).createCachedValue(
-                    () -> new CachedValueProvider.Result<>(loadCommandsByCategories(), tracker),
-                    false);
-        }
-
-        return commandsByCategory.getValue().entrySet().stream()
-                .filter(e -> filter.test(e.getKey()))
-                .map(Map.Entry::getValue)
-                .filter(Objects::nonNull)
-                .flatMap(List::stream)
-                .toList();
+    public @NotNull Collection<String> getDataSourceCommands() {
+        return getDefinition().dataSources();
     }
 
     @Override
@@ -177,16 +149,6 @@ public class DQLDefinitionServiceImpl implements DQLDefinitionService {
         return DQLDefinition.empty();
     }
 
-    private @NotNull Map<String, List<Command>> loadCommandsByCategories() {
-        Map<String, List<Command>> result = new HashMap<>();
-        Map<String, Command> commands = getDefinition().commands();
-        for (Command value : commands.values()) {
-            result.putIfAbsent(value.category(), new ArrayList<>());
-            result.get(value.category()).add(value);
-        }
-        return result;
-    }
-
     private @NotNull Map<String, List<Function>> loadFunctionsByCategories() {
         Map<String, List<Function>> result = new HashMap<>();
         Map<String, Function> functions = getDefinition().functions();
@@ -213,22 +175,6 @@ public class DQLDefinitionServiceImpl implements DQLDefinitionService {
             String name = functions.getValue().name().toLowerCase();
             result.putIfAbsent(name, new HashSet<>());
             result.get(name).add(functions.getKey());
-        }
-        return result;
-    }
-
-    private @NotNull Map<String, List<Function>> loadFunctionsByDataType() {
-        Map<String, List<Function>> result = new HashMap<>();
-        for (Function function : getFunctions()) {
-            for (Signature signature : function.signatures()) {
-                for (String output : signature.outputs()) {
-                    result.putIfAbsent(output, new ArrayList<>());
-                    List<Function> included = result.get(output);
-                    if (!included.contains(function)) {
-                        included.add(function);
-                    }
-                }
-            }
         }
         return result;
     }

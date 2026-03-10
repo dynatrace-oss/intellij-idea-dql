@@ -7,30 +7,35 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.dql.completion.DQLPsiPatterns;
-import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.Command;
+import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+
+import java.util.Collection;
 
 public class DQLStatementKeywordsCompletion {
     public void autocomplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         PsiElement position = parameters.getPosition();
         DQLDefinitionService service = DQLDefinitionService.getInstance(position.getProject());
-
+        Collection<String> dsCommands = service.getDataSourceCommands();
         if (DQLUtil.isPartialFile(position.getContainingFile())) {
             if (DQLPsiPatterns.SUGGEST_QUERY_START.accepts(position)) {
                 for (Command command : service.getCommands()) {
                     AutocompleteUtils.autocomplete(command, result);
                 }
             } else if (DQLPsiPatterns.QUERY_COMMAND.accepts(position)) {
-                for (Command command : service.getCommandsByCategory(DQLDefinitionService.EXTENSION_COMMANDS)) {
+                for (Command command : service.getCommands().stream().filter(command -> !dsCommands.contains(command.name())).toList()) {
                     AutocompleteUtils.autocomplete(command, result);
                 }
             }
         } else if (DQLPsiPatterns.SUGGEST_QUERY_START.accepts(position)) {
-            for (Command command : service.getCommandsByCategory(DQLDefinitionService.STARTING_COMMANDS)) {
-                AutocompleteUtils.autocomplete(command, result);
+            for (String commandName : dsCommands) {
+                Command command = service.getCommandByName(commandName);
+                if (command != null) {
+                    AutocompleteUtils.autocomplete(command, result);
+                }
             }
         } else if (DQLPsiPatterns.QUERY_COMMAND.accepts(position)) {
-            for (Command command : service.getCommandsByCategory(DQLDefinitionService.EXTENSION_COMMANDS)) {
+            for (Command command : service.getCommands().stream().filter(command -> !dsCommands.contains(command.name())).toList()) {
                 AutocompleteUtils.autocomplete(command, result);
             }
         }

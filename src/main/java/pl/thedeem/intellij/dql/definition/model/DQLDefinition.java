@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.annotation.OptBoolean;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -22,6 +23,7 @@ public final class DQLDefinition {
     private Map<String, Operator> operators;
     @JsonMerge(value = OptBoolean.TRUE)
     private Map<String, Operator> searchOperators;
+    private List<String> dataSources;
 
     public DQLDefinition() {
     }
@@ -33,7 +35,8 @@ public final class DQLDefinition {
             Map<String, FunctionCategory> functionCategories,
             Map<String, Function> functions,
             Map<String, Operator> operators,
-            Map<String, Operator> searchOperators
+            Map<String, Operator> searchOperators,
+            List<String> dataSources
     ) {
         this.dataTypes = dataTypes;
         this.parameterValueTypes = parameterValueTypes;
@@ -42,10 +45,11 @@ public final class DQLDefinition {
         this.functions = functions;
         this.operators = operators;
         this.searchOperators = searchOperators;
+        this.dataSources = dataSources;
     }
 
     public static @NotNull DQLDefinition empty() {
-        return new DQLDefinition(Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of());
+        return new DQLDefinition(Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), List.of());
     }
 
     public Map<String, DataType> dataTypes() {
@@ -115,12 +119,13 @@ public final class DQLDefinition {
                 Objects.equals(this.functionCategories, that.functionCategories) &&
                 Objects.equals(this.functions, that.functions) &&
                 Objects.equals(this.operators, that.operators) &&
-                Objects.equals(this.searchOperators, that.searchOperators);
+                Objects.equals(this.searchOperators, that.searchOperators) &&
+                Objects.equals(this.dataSources, that.dataSources);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dataTypes, parameterValueTypes, commands, functionCategories, functions, operators, searchOperators);
+        return Objects.hash(dataTypes, parameterValueTypes, commands, functionCategories, functions, operators, searchOperators, dataSources);
     }
 
     @Override
@@ -132,7 +137,15 @@ public final class DQLDefinition {
                 "functionCategories=" + functionCategories + ", " +
                 "functions=" + functions + ", " +
                 "operators=" + operators + ", " +
-                "searchOperators=" + searchOperators + ']';
+                "searchOperators=" + searchOperators +
+                "dataSources=" + dataSources + ']';
     }
 
+    public List<String> dataSources() {
+        return dataSources;
+    }
+
+    public void setDataSources(List<String> dataSources) {
+        this.dataSources = dataSources;
+    }
 }

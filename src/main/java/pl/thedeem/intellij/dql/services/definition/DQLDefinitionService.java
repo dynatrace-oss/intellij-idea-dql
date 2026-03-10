@@ -12,8 +12,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public interface DQLDefinitionService {
-    Predicate<String> STARTING_COMMANDS = "data_source"::equals;
-    Predicate<String> EXTENSION_COMMANDS = STARTING_COMMANDS.negate();
     Set<String> STRING_PARAMETER_VALUE_TYPES = Set.of(
             "dql.parameterValueType.bucket",
             "dql.parameterValueType.dplPattern",
@@ -49,8 +47,6 @@ public interface DQLDefinitionService {
 
     @NotNull List<Function> getFunctionByName(@NotNull String name);
 
-    @NotNull Collection<Function> getFunctionsByReturnType(@NotNull Predicate<String> filter);
-
     @NotNull Collection<Function> getFunctionsByCategory(@NotNull Predicate<String> filter);
 
     @NotNull Collection<Function> getFunctionsByCategoryAndReturnType(@NotNull Predicate<String> category, @NotNull Predicate<String> values);
@@ -61,7 +57,7 @@ public interface DQLDefinitionService {
 
     @Nullable Command getCommandByName(@NotNull String name);
 
-    @NotNull Collection<Command> getCommandsByCategory(@NotNull Predicate<String> filter);
+    @NotNull Collection<String> getDataSourceCommands();
 
     @NotNull Collection<Command> getCommands();
 

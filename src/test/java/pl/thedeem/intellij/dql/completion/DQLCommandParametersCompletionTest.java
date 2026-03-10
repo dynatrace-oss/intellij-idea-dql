@@ -43,8 +43,8 @@ public class DQLCommandParametersCompletionTest extends LightPlatformCodeInsight
 
     @Test
     public void testAtTheEndOfCommandShouldSuggestCommandParameters() {
-        when(serviceMock.getCommandByName("fetch")).thenReturn(
-                DQLTestsUtils.createCommand("fetch", "data_source", List.of(
+        DQLTestsUtils.mockCommands(serviceMock,
+                DQLTestsUtils.createCommand("fetch", List.of(
                         DQLTestsUtils.createParameter("source", List.of("dql.dataType.string"), true, List.of(), List.of(), null, false),
                         DQLTestsUtils.createParameter("from", List.of("dql.dataType.timestamp")),
                         DQLTestsUtils.createParameter("to", List.of("dql.dataType.timestamp"))
@@ -61,11 +61,14 @@ public class DQLCommandParametersCompletionTest extends LightPlatformCodeInsight
 
     @Test
     public void testInsideCommandShouldNotSuggestAlreadyProvidedParameters() {
-        when(serviceMock.getCommandByName("fetch")).thenReturn(DQLTestsUtils.createCommand("fetch", "data_source", List.of(
-                DQLTestsUtils.createParameter("source", List.of("dql.dataType.string"), true, List.of(), List.of(), null, false),
-                DQLTestsUtils.createParameter("from", List.of("dql.dataType.timestamp")),
-                DQLTestsUtils.createParameter("to", List.of("dql.dataType.timestamp"))
-        )));
+        when(serviceMock.getDataSourceCommands()).thenReturn(List.of("fetch"));
+        DQLTestsUtils.mockCommands(serviceMock,
+                DQLTestsUtils.createCommand("fetch", List.of(
+                        DQLTestsUtils.createParameter("source", List.of("dql.dataType.string"), true, List.of(), List.of(), null, false),
+                        DQLTestsUtils.createParameter("from", List.of("dql.dataType.timestamp")),
+                        DQLTestsUtils.createParameter("to", List.of("dql.dataType.timestamp"))
+                ))
+        );
         myFixture.configureByFiles("command-with-some-parameters.dql");
         myFixture.complete(CompletionType.BASIC);
 

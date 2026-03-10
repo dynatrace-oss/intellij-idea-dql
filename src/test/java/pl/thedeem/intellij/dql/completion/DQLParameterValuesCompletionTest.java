@@ -35,14 +35,11 @@ public class DQLParameterValuesCompletionTest extends LightPlatformCodeInsightFi
                 serviceMock,
                 getTestRootDisposable()
         );
-
-        when(serviceMock.getCommandByName("data")).thenReturn(
-                DQLTestsUtils.createCommand("data", "data_source", List.of(
+        DQLTestsUtils.mockCommands(serviceMock,
+                DQLTestsUtils.createCommand("data", List.of(
                         DQLTestsUtils.createParameter("record", List.of("dql.dataType.record"), true, List.of(), List.of(), null, false)
-                ))
-        );
-        when(serviceMock.getCommandByName("fetch")).thenReturn(
-                DQLTestsUtils.createCommand("fetch", "data_source", List.of(
+                )),
+                DQLTestsUtils.createCommand("fetch", List.of(
                         DQLTestsUtils.createParameter("dataObject", List.of("dql.dataType.dataObject"), true, List.of(), null, null, false),
                         DQLTestsUtils.createParameter("scanLimitGBytes", List.of("dql.dataType.long"), true, List.of(), null, null, false)
                 ))
@@ -50,8 +47,8 @@ public class DQLParameterValuesCompletionTest extends LightPlatformCodeInsightFi
         when(serviceMock.getFunctionByName("record")).thenReturn(List.of(
                 DQLTestsUtils.createFunction("record", List.of("dql.dataType.record"), List.of(
                         DQLTestsUtils.createParameter("record", List.of("dql.dataType.record"), true, List.of(), List.of(), null, false)
-                )))
-        );
+                ))
+        ));
         when(serviceMock.getFunctionCategoriesForParameterTypes(any())).thenReturn(List.of());
     }
 
