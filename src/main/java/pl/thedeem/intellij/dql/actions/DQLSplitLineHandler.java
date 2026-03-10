@@ -17,10 +17,8 @@ import pl.thedeem.intellij.dql.DQLFileType;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 import pl.thedeem.intellij.dql.exec.DQLProcessHandler;
-import pl.thedeem.intellij.dql.services.notifications.DQLNotificationsService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 
-import java.util.List;
 import java.util.Objects;
 
 import static pl.thedeem.intellij.dql.actions.ExecuteDQLQueryAction.PREFERRED_EXECUTION_NAME;
@@ -43,12 +41,9 @@ public class DQLSplitLineHandler extends EditorActionHandler {
         );
 
         if (configuration.tenant() == null) {
-            DQLNotificationsService.getInstance(project).showErrorNotification(
-                    DQLBundle.message("action.DQL.ExecuteDQLQuery.notifications.missingTenant.title"),
-                    DQLBundle.message("action.DQL.ExecuteDQLQuery.notifications.missingTenant.description"),
-                    project,
-                    List.of()
-            );
+            EditorActionManager.getInstance()
+                    .getActionHandler(IdeActions.ACTION_EDITOR_SPLIT)
+                    .execute(editor, caret, e);
             return;
         }
         DQLQueryConfigurationService.getInstance().getQueryFromEditorContext(file, editor, (consumer) -> {

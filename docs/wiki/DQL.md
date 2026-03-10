@@ -169,7 +169,9 @@ data record(
 
 ### Query execution
 
-When a Dynatrace tenant connection is configured, you can execute DQL queries directly from the IDE.
+When a Dynatrace tenant connection is configured, you can execute DQL queries directly from the IDE by clicking on
+the execute button, selecting the `Execute DQL Query` option from the context menu, or by using the `ctrl` + `enter`
+shortcut when inside a DQL editor.
 
 ![An example result](images/dql-execution.png)
 
