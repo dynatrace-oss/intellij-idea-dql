@@ -137,7 +137,7 @@ public final class DQLDefinition {
                 "functionCategories=" + functionCategories + ", " +
                 "functions=" + functions + ", " +
                 "operators=" + operators + ", " +
-                "searchOperators=" + searchOperators +
+                "searchOperators=" + searchOperators + ", " +
                 "dataSources=" + dataSources + ']';
     }
 
