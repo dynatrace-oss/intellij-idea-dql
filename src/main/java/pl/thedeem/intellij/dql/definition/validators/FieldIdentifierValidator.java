@@ -29,6 +29,8 @@ public class FieldIdentifierValidator extends AbstractDefinitionValidator {
                 toProcess.add(assign.getLeftExpression());
             } else if (element instanceof DQLArrayExpression array) {
                 toProcess.add(array.getLeftExpression());
+            } else if (element instanceof DQLNegativeValueExpression negative) {
+                toProcess.add(negative.getExpression());
             } else if (
                     !(element instanceof DQLString && definition.parameterValueTypes().contains("dql.parameterValueType.fieldPattern")) &&
                             !(element instanceof DQLPrimitiveExpression && definition.parameterValueTypes().contains("dql.parameterValueType.primitiveValue")) &&

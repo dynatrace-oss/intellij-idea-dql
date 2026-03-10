@@ -7,7 +7,7 @@ import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
-import pl.thedeem.intellij.dql.psi.elements.BaseElement;
+import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.NegativeValueExpression;
 import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
@@ -41,10 +41,14 @@ public abstract class NegativeValueExpressionImpl extends AbstractOperatorElemen
     @Override
     public @NotNull Collection<String> getDataType() {
         DQLExpression expression = findChildByClass(DQLExpression.class);
-        if (expression instanceof BaseElement element) {
+        if (expression instanceof BaseTypedElement element) {
             return element.getDataType();
         }
         return super.getDataType();
     }
 
+    @Override
+    public boolean accessesData() {
+        return getLeftExpression() instanceof BaseTypedElement typed ? typed.accessesData() : super.accessesData();
+    }
 }
