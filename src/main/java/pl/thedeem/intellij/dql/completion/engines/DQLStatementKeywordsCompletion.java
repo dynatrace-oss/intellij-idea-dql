@@ -23,9 +23,9 @@ public class DQLStatementKeywordsCompletion {
                     AutocompleteUtils.autocomplete(command, result);
                 }
             } else if (DQLPsiPatterns.QUERY_COMMAND.accepts(position)) {
-                for (Command command : service.getCommands().stream().filter(command -> !dsCommands.contains(command.name())).toList()) {
-                    AutocompleteUtils.autocomplete(command, result);
-                }
+                service.getCommands().stream()
+                        .filter(command -> !dsCommands.contains(command.name()))
+                        .forEach(command -> AutocompleteUtils.autocomplete(command, result));
             }
         } else if (DQLPsiPatterns.SUGGEST_QUERY_START.accepts(position)) {
             for (String commandName : dsCommands) {
@@ -35,9 +35,9 @@ public class DQLStatementKeywordsCompletion {
                 }
             }
         } else if (DQLPsiPatterns.QUERY_COMMAND.accepts(position)) {
-            for (Command command : service.getCommands().stream().filter(command -> !dsCommands.contains(command.name())).toList()) {
-                AutocompleteUtils.autocomplete(command, result);
-            }
+            service.getCommands().stream()
+                    .filter(command -> !dsCommands.contains(command.name()))
+                    .forEach(command -> AutocompleteUtils.autocomplete(command, result));
         }
     }
 }

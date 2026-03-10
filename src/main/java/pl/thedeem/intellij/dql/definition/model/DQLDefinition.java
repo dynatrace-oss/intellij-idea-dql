@@ -142,7 +142,7 @@ public final class DQLDefinition {
     }
 
     public List<String> dataSources() {
-        return dataSources;
+        return Objects.requireNonNullElseGet(dataSources, List::of);
     }
 
     public void setDataSources(List<String> dataSources) {
