@@ -49,6 +49,6 @@ public abstract class NegativeValueExpressionImpl extends AbstractOperatorElemen
 
     @Override
     public boolean accessesData() {
-        return getRightExpression() instanceof BaseTypedElement typed ? typed.accessesData() : super.accessesData();
+        return getLeftExpression() instanceof BaseTypedElement typed ? typed.accessesData() : super.accessesData();
     }
 }

@@ -3,11 +3,12 @@ package pl.thedeem.intellij.dql.definition.validators;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLAssignExpression;
 import pl.thedeem.intellij.dql.psi.DQLBracketExpression;
+import pl.thedeem.intellij.dql.psi.DQLNegativeValueExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
+import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public abstract class AbstractDefinitionValidator {
                 case DQLParameterExpression param -> toValidate.add(param.getExpression());
                 case DQLBracketExpression bracket -> toValidate.addAll(bracket.getExpressionList());
                 case DQLAssignExpression assign -> toValidate.add(assign.getRightExpression());
+                case DQLNegativeValueExpression negative -> toValidate.add(negative.getExpression());
                 case null -> {
                 }
                 default -> {
