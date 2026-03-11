@@ -1,6 +1,7 @@
 package pl.thedeem.intellij.dql.exec.panel;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
@@ -38,10 +39,10 @@ public class DQLExecutionErrorPanel extends BorderLayoutPanel {
 
     public DQLExecutionErrorPanel(@NotNull String message, @NotNull List<String> details) {
         this();
-        JPanel errorPanel = new JPanel();
+        JBPanel<?> errorPanel = new JBPanel<>()
+                .withBorder(JBUI.Borders.empty())
+                .andTransparent();
         errorPanel.setLayout(new BoxLayout(errorPanel, BoxLayout.Y_AXIS));
-        errorPanel.setOpaque(false);
-        errorPanel.setBorder(JBUI.Borders.empty());
         InformationComponent header = new InformationComponent(DQLBundle.message("error.detailed.title"), AllIcons.General.Error);
         header.setAlignmentX(InformationComponent.CENTER_ALIGNMENT);
         errorPanel.add(header);
@@ -53,8 +54,8 @@ public class DQLExecutionErrorPanel extends BorderLayoutPanel {
             errorPanel.add(createHtmlField("<ul>" + String.join("", details.stream().map(p -> "<li>" + p + "</li>").toList()) + "</ul>"));
         }
 
-        JPanel centeringWrapper = new JPanel(new GridBagLayout());
-        centeringWrapper.setOpaque(false);
+        JBPanel<?> centeringWrapper = new JBPanel<>(new GridBagLayout())
+                .andTransparent();
         centeringWrapper.add(errorPanel, new GridBagConstraints());
         addToCenter(new TransparentScrollPane(centeringWrapper));
     }

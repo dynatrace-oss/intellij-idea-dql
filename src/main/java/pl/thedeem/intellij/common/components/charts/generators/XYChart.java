@@ -2,6 +2,7 @@ package pl.thedeem.intellij.common.components.charts.generators;
 
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.ui.components.JBCheckBox;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +50,7 @@ public class XYChart extends AbstractChartGenerator {
 
     @Override
     public @Nullable JComponent createSettingsComponent(@NotNull ChartSettings settings, @NotNull Consumer<Boolean> onChange) {
-        JPanel panel = new JPanel();
+        JBPanel<?> panel = new JBPanel<>();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         Set<String> numCols = columns.entrySet().stream()

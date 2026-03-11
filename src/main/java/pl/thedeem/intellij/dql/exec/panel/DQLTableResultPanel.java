@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.ColumnInfo;
@@ -61,8 +62,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
 
     public DQLTableResultPanel(@Nullable DQLResult result, @NotNull Project project) {
         super();
-        setOpaque(false);
-        setBorder(JBUI.Borders.empty());
+        withBorder(JBUI.Borders.empty()).andTransparent();
         this.result = result;
         if (result == null || result.getRecords() == null || result.getRecords().isEmpty()) {
             addToCenter(new TransparentScrollPane(new InformationComponent(
@@ -219,8 +219,8 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
                         filterField.selectAll();
                     }
 
-                    JPanel panel = new JPanel(new BorderLayout());
-                    panel.setBorder(JBUI.Borders.empty(4, 6));
+                    JBPanel<?> panel = new JBPanel<>(new BorderLayout())
+                            .withBorder(JBUI.Borders.empty(4, 6));
                     panel.add(filterField, BorderLayout.CENTER);
 
                     JBPopup popup = JBPopupFactory.getInstance()

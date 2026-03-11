@@ -9,6 +9,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.RoundedLineBorder;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
@@ -121,8 +122,8 @@ public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfig
 
         public QuerySelectionPanel(JComponent fileComponent, JComponent textComponent) {
             super();
-            setBorder(JBUI.Borders.empty(10, 0));
-            JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+            withBorder(JBUI.Borders.empty(10, 0));
+            JBPanel<?> buttons = new JBPanel<>(new FlowLayout(FlowLayout.LEFT, 4, 0));
             BorderLayoutPanel selectionPanel = JBUI.Panels.simplePanel();
             ButtonGroup group = new ButtonGroup();
             this.fileComponent = fileComponent;

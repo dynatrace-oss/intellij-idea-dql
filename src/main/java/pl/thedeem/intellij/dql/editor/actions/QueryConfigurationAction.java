@@ -3,6 +3,7 @@ package pl.thedeem.intellij.dql.editor.actions;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.psi.PsiFile;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
@@ -51,9 +52,9 @@ public class QueryConfigurationAction extends AnAction implements CustomComponen
     @Override
     public @NotNull JComponent createCustomComponent(@NotNull Presentation presentation, @NotNull String place) {
         if (component == null) {
-            component = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 3));
-            component.setOpaque(false);
-            component.setBorder(JBUI.Borders.empty());
+            component = new JBPanel<>(new FlowLayout(FlowLayout.LEFT, 0, 3))
+                    .withBorder(JBUI.Borders.empty())
+                    .andTransparent();
             DefaultActionGroup group = new DefaultActionGroup();
             group.add(new TenantSelectorAction() {
                 @Override

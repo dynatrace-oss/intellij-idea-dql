@@ -5,6 +5,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.ui.OnePixelSplitter;
 import com.intellij.ui.SimpleListCellRenderer;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import net.miginfocom.swing.MigLayout;
@@ -27,23 +28,22 @@ import java.util.Set;
 public abstract class AbstractChartComponent extends BorderLayoutPanel {
     private static final Logger logger = Logger.getInstance(AbstractChartComponent.class);
     protected final BorderLayoutPanel chartContainer = new BorderLayoutPanel();
-    protected final BorderLayoutPanel legendPanel = new BorderLayoutPanel();
-    protected final JPanel settingsPanel = new JPanel(new MigLayout("fillx, wrap 1"));
+    protected final BorderLayoutPanel legendPanel;
+    protected final JBPanel<?> settingsPanel;
     protected final OnePixelSplitter contentPanel = new OnePixelSplitter();
     protected ChartGenerator chartGenerator;
     protected final ChartSettings chartSettings;
 
     public AbstractChartComponent() {
+        withBorder(JBUI.Borders.empty()).andTransparent();
+
         this.chartSettings = new ChartSettings()
                 .set(ChartSettings.LEGEND_POSITION, ChartSettings.LegendPosition.RIGHT)
                 .set(ChartSettings.SELECTED_VALUES, new HashSet<>());
-        this.legendPanel.setOpaque(false);
-        this.legendPanel.setBorder(JBUI.Borders.empty(JBUI.scale(5)));
+        this.legendPanel = new BorderLayoutPanel().withBorder(JBUI.Borders.empty(JBUI.scale(5))).andTransparent();
+        this.settingsPanel = new JBPanel<>(new MigLayout("fillx, wrap 1")).withBorder(JBUI.Borders.empty(JBUI.scale(5)));
         this.contentPanel.setOpaque(false);
         this.contentPanel.setBorder(JBUI.Borders.empty());
-        this.settingsPanel.setBorder(JBUI.Borders.empty(JBUI.scale(5)));
-        setOpaque(false);
-        setBorder(JBUI.Borders.empty());
 
         addToCenter(new OnePixelSplitter() {{
             setFirstComponent(contentPanel);

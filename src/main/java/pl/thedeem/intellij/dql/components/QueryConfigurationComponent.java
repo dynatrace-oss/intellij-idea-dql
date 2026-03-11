@@ -2,6 +2,7 @@ package pl.thedeem.intellij.dql.components;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.Consumer;
 import com.intellij.util.ui.JBUI;
@@ -13,7 +14,7 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import javax.swing.*;
 import java.awt.*;
 
-public class QueryConfigurationComponent extends JPanel {
+public class QueryConfigurationComponent extends JBPanel<QueryConfigurationComponent> {
     private final ResizableTextField scanLimit;
     private final ResizableTextField maxBytes;
     private final ResizableTextField maxRecords;
@@ -23,8 +24,7 @@ public class QueryConfigurationComponent extends JPanel {
     }
 
     public QueryConfigurationComponent(boolean withLabels) {
-        setOpaque(false);
-        setBorder(JBUI.Borders.empty());
+        withBorder(JBUI.Borders.empty()).andTransparent();
 
         scanLimit = ResizableTextField.createNumericField(
                 DQLBundle.message("components.queryConfiguration.options.scanLimit.placeholder"),
@@ -81,9 +81,9 @@ public class QueryConfigurationComponent extends JPanel {
         iconLabel.setToolTipText(labelText);
         iconLabel.setBorder(JBUI.Borders.empty(JBUI.scale(4)));
         iconLabel.setOpaque(false);
-        JComponent wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        wrapper.setOpaque(false);
-        wrapper.setBorder(JBUI.Borders.empty());
+        JBPanel<?> wrapper = new JBPanel<>(new FlowLayout(FlowLayout.LEFT, 0, 0))
+                .withBorder(JBUI.Borders.empty())
+                .andTransparent();
         wrapper.add(iconLabel);
         wrapper.add(field);
         return wrapper;

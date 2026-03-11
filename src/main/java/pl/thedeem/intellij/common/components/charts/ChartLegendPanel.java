@@ -5,6 +5,7 @@ import com.intellij.ui.ColorUtil;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.ListSpeedSearch;
 import com.intellij.ui.components.JBList;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
@@ -228,7 +229,7 @@ public class ChartLegendPanel extends JBScrollPane {
     private record LegendItemData(@NotNull String name, @NotNull Color color, boolean visible) {
     }
 
-    private class LegendItemRenderer extends JPanel implements ListCellRenderer<LegendItemData> {
+    private class LegendItemRenderer extends JBPanel<LegendItemRenderer> implements ListCellRenderer<LegendItemData> {
         private final JLabel label = new JLabel();
         private final JPanel colorBox = new JPanel() {
             @Override

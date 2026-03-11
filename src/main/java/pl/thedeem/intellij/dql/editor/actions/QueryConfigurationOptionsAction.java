@@ -8,6 +8,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.DocumentAdapter;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
@@ -87,9 +88,9 @@ public class QueryConfigurationOptionsAction extends AnAction implements CustomC
     @Override
     public @NotNull JComponent createCustomComponent(@NotNull Presentation presentation, @NotNull String place) {
         if (component == null) {
-            component = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 3));
-            component.setOpaque(false);
-            component.setBorder(JBUI.Borders.empty());
+            component = new JBPanel<>(new FlowLayout(FlowLayout.LEFT, 0, 3))
+                    .withBorder(JBUI.Borders.empty())
+                    .andTransparent();
             DefaultActionGroup group = new DefaultActionGroup();
 
             group.addAction(new ToggleAction(

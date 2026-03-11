@@ -2,6 +2,7 @@ package pl.thedeem.intellij.common.components.charts.generators;
 
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.ui.components.JBCheckBox;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +36,7 @@ public class PieChart extends AbstractChartGenerator {
             @NotNull ChartSettings chartSettings,
             @NotNull Consumer<Boolean> settingsChangeListener
     ) {
-        JPanel panel = new JPanel();
+        JBPanel<?> panel = new JBPanel<>();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         panel.add(new GroupedSettingsComponent(DQLBundle.message("components.visualization.settings.groups.series"))
@@ -70,7 +71,7 @@ public class PieChart extends AbstractChartGenerator {
                         BorderLayout.NORTH
                 ))
         );
- 
+
         JBCheckBox displayLabelsCheckbox = new JBCheckBox(
                 DQLBundle.message("components.visualization.settings.pieChart.displayLabels.enabled"),
                 chartSettings.get(ChartSettings.PIE_DISPLAY_LABELS, true)

@@ -3,6 +3,7 @@ package pl.thedeem.intellij.common.components.charts.generators;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.ui.SimpleListCellRenderer;
 import com.intellij.ui.components.JBCheckBox;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -68,7 +69,7 @@ public class CategoryChart extends AbstractChartGenerator {
             @NotNull ChartSettings settings,
             @NotNull Consumer<Boolean> onChange
     ) {
-        JComponent panel = new JPanel();
+        JBPanel<?> panel = new JBPanel<>();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         panel.add(new GroupedSettingsComponent(DQLBundle.message("components.visualization.settings.groups.series"))
