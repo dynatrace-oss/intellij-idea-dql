@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class MultiLineCellRenderer extends JTextArea implements TableCellRenderer {
     public MultiLineCellRenderer() {
@@ -29,9 +31,9 @@ public class MultiLineCellRenderer extends JTextArea implements TableCellRendere
     public static void installOn(JTable table) {
         MultiLineCellRenderer renderer = new MultiLineCellRenderer();
         table.setDefaultRenderer(Object.class, renderer);
-        table.addComponentListener(new java.awt.event.ComponentAdapter() {
+        table.addComponentListener(new ComponentAdapter() {
             @Override
-            public void componentResized(java.awt.event.ComponentEvent e) {
+            public void componentResized(ComponentEvent e) {
                 adjustRowHeights(table, renderer);
             }
         });

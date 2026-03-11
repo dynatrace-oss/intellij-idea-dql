@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.ui.ColorUtil;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.ListSpeedSearch;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
@@ -230,8 +231,8 @@ public class ChartLegendPanel extends JBScrollPane {
     }
 
     private class LegendItemRenderer extends JBPanel<LegendItemRenderer> implements ListCellRenderer<LegendItemData> {
-        private final JLabel label = new JLabel();
-        private final JPanel colorBox = new JPanel() {
+        private final JBLabel label = new JBLabel();
+        private final JBPanel<?> colorBox = new JBPanel<>() {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();

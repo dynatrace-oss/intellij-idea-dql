@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.table.JBTable;
@@ -281,7 +282,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
 
     private static final class NullableBooleanRenderer extends CommonTableCellRenderer {
         private final TableCellRenderer delegate = new JBTable().getDefaultRenderer(Boolean.class);
-        private final JLabel empty = new JLabel();
+        private final JBLabel empty = new JBLabel();
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
