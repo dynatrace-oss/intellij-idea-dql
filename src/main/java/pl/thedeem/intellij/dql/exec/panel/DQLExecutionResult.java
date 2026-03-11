@@ -35,10 +35,9 @@ public class DQLExecutionResult extends BorderLayoutPanel {
     private final DQLVisualizationPanel visualizationPanel;
     private final DQLTableResultPanel tablePanel;
 
-    private final CardLayout cardLayout;
+    private final JBCardLayout cardLayout;
     private final JBPanel<?> cardPanel;
 
-    private ResultsDisplayMode displayMode;
 
     public DQLExecutionResult(@NotNull Project project, @NotNull DQLResult result, @Nullable ZonedDateTime executionTime, @Nullable QueryConfiguration params) {
         withBorder(JBUI.Borders.empty()).andTransparent();
@@ -130,7 +129,6 @@ public class DQLExecutionResult extends BorderLayoutPanel {
     }
 
     public void setDisplayMode(@NotNull ResultsDisplayMode displayMode) {
-        this.displayMode = displayMode;
         cardLayout.show(cardPanel, displayMode.name());
         customActions.removeAll();
         switch (displayMode) {
@@ -157,10 +155,6 @@ public class DQLExecutionResult extends BorderLayoutPanel {
         }
     }
 
-    public @NotNull ResultsDisplayMode getDisplayMode() {
-        return displayMode;
-    }
-
     public @NotNull ActionGroup getToolbarActions() {
         return panelToolbar;
     }
@@ -169,12 +163,14 @@ public class DQLExecutionResult extends BorderLayoutPanel {
         return new ToggleAction(text, null, icon) {
             @Override
             public boolean isSelected(@NotNull AnActionEvent e) {
-                return getDisplayMode() == mode;
+                Component found = cardLayout.findComponentById(mode.name());
+                return found != null && found.isVisible();
             }
 
             @Override
             public void setSelected(@NotNull AnActionEvent e, boolean b) {
-                if (getDisplayMode() != mode) {
+                Component found = cardLayout.findComponentById(mode.name());
+                if (found == null || !found.isVisible()) {
                     setDisplayMode(mode);
                 }
             }
