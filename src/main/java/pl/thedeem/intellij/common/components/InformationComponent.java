@@ -12,7 +12,6 @@ public class InformationComponent extends JBPanel<InformationComponent> {
     public InformationComponent(@NotNull String message, @NotNull Icon icon) {
         super(new GridBagLayout());
         withBorder(JBUI.Borders.empty()).andTransparent();
-        setLayout(new GridBagLayout());
         JBLabel label = new JBLabel(message, icon, JLabel.LEFT);
         label.setCopyable(true);
         add(label);

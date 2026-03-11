@@ -66,17 +66,17 @@ public class DQLExecutionSummary extends JBPanel<DQLExecutionSummary> {
     private static @NotNull String formatDuration(@NotNull Duration duration) {
         long seconds = Math.max(0L, duration.getSeconds());
         if (seconds < 60) {
-            return DQLBundle.message("duration.seconds", seconds);
+            return seconds == 1 ? DQLBundle.message("duration.second", seconds) : DQLBundle.message("duration.seconds", seconds);
         }
         long minutes = seconds / 60;
         if (minutes < 60) {
-            return DQLBundle.message("duration.minutes", minutes);
+            return minutes == 1 ? DQLBundle.message("duration.minute", minutes) : DQLBundle.message("duration.minutes", minutes);
         }
         long hours = minutes / 60;
         if (hours < 24) {
-            return DQLBundle.message("duration.hours", hours);
+            return hours == 1 ? DQLBundle.message("duration.hour", hours) : DQLBundle.message("duration.hours", hours);
         }
         long days = hours / 24;
-        return DQLBundle.message("duration.days", days);
+        return days == 1 ? DQLBundle.message("duration.day", days) : DQLBundle.message("duration.days", days);
     }
 }
