@@ -1,65 +1,69 @@
 package pl.thedeem.intellij.common.components.charts.style;
 
 import com.intellij.ui.JBColor;
+import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.dql.DQLBundle;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
 
-class TooltipPanel extends JPanel {
+class TooltipPanel extends JBPanel<TooltipPanel> {
     private static final Color TOOLTIP_BACKGROUND = JBColor.namedColor("ToolTip.background", JBColor.background());
     private static final Color TOOLTIP_BORDER = JBColor.namedColor("ToolTip.borderColor", new JBColor(0xC4C4C4, 0x555555));
-
-    private final JPanel seriesSquare = new JPanel();
-    private final JLabel valueLabel = new JLabel();
+    private final int squareSize = getFontMetrics(JBUI.Fonts.label()).getAscent();
 
     TooltipPanel() {
-        setLayout(new MigLayout("insets 4, gap 4", "[][]"));
-        setOpaque(true);
+        super(new MigLayout("insets 4, gap 4", "[][]"));
+        withBackground(TOOLTIP_BACKGROUND)
+                .withBorder(JBUI.Borders.empty(JBUI.scale(3)))
+                .andOpaque();
         setVisible(false);
-        setBackground(TOOLTIP_BACKGROUND);
-        setBorder(JBUI.Borders.empty(JBUI.scale(3)));
-
-        int squareSize = getFontMetrics(JBUI.Fonts.label()).getAscent();
-        seriesSquare.setPreferredSize(new Dimension(squareSize, squareSize));
-        seriesSquare.setBorder(BorderFactory.createLineBorder(TOOLTIP_BORDER));
-        seriesSquare.setOpaque(true);
-
-        valueLabel.setFont(JBUI.Fonts.label());
-        valueLabel.setForeground(JBColor.namedColor("ToolTip.foreground", JBColor.foreground()));
-
-        add(seriesSquare);
-        add(valueLabel);
     }
 
-    void showTooltip(@NotNull String label, @Nullable Paint seriesColor, int x, int y, int panelWidth) {
-        valueLabel.setText(label);
-        seriesSquare.setBackground(seriesColor instanceof Color c ? c : JBColor.BLUE);
-        seriesSquare.setVisible(seriesColor != null);
-
+    void showTooltip(@NotNull ChartHitPoint hitPoint, @NotNull Point2D point, int panelWidth) {
+        add(new JBLabel(DQLBundle.message("components.visualization.tooltip.title", hitPoint.getDomainLabel()))
+                        .withFont(JBUI.Fonts.label().asBold()),
+                "span 2, wrap");
+        add(new JSeparator(), "span 2, growx, wrap");
+        add(new JBPanel<>()
+                .withPreferredSize(squareSize, squareSize)
+                .withBorder(BorderFactory.createLineBorder(TOOLTIP_BORDER))
+                .withBackground(hitPoint.seriesPaint() instanceof Color c ? c : JBColor.BLUE)
+                .andOpaque());
+        add(new JBLabel(DQLBundle.message("components.visualization.tooltip.value",
+                hitPoint.getSeriesName(),
+                formatValue(hitPoint.getYValue())
+        )));
+        recalculateBounds(point, panelWidth);
         setVisible(true);
         revalidate();
-
-        Dimension preferred = getPreferredSize();
-        int bx = x + 10;
-        int by = y - 8 - preferred.height;
-
-        if (bx + preferred.width > panelWidth) {
-            bx = x - preferred.width - 10;
-        }
-        if (by < 0) {
-            by = y + 10;
-        }
-
-        setBounds(bx, by, preferred.width, preferred.height);
         repaint();
     }
 
-    void hideTooltip() {
-        setVisible(false);
-        valueLabel.setText(null);
+    private void recalculateBounds(@NotNull Point2D point, int panelWidth) {
+        Dimension preferred = getPreferredSize();
+        double bx = point.getX() + 10;
+        double by = point.getY() - 8 - preferred.height;
+
+        if (bx + preferred.width > panelWidth) {
+            bx = point.getX() - preferred.width - 10;
+        }
+        if (by < 0) {
+            by = point.getY() + 10;
+        }
+
+        setBounds((int) bx, (int) by, preferred.width, preferred.height);
+    }
+
+    private static @NotNull String formatValue(double value) {
+        if (value == Math.floor(value) && Double.isFinite(value)) {
+            return String.valueOf((long) value);
+        }
+        return String.format("%.4g", value);
     }
 }
