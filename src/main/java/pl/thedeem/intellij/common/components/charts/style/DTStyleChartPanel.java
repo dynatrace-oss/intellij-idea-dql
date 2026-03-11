@@ -16,19 +16,19 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 public class DTStyleChartPanel extends ChartPanel {
-    private final TooltipPanel tooltipPanel = new TooltipPanel();
-    private final HoverOverlay hover = new HoverOverlay(tooltipPanel);
+    private final HoveringFeature hover = new HoveringFeature();
     private final PlotInteractionHandler handler;
     private Point lastMiddleMousePoint;
+    private TooltipPanel tooltip;
+    private ChartHoverPoint hoverPoint;
 
     public DTStyleChartPanel(@NotNull JFreeChart chart) {
         super(chart);
-
+        setLayout(null);
         setBorder(JBUI.Borders.empty());
         setBackground(JBColor.background());
         setMouseWheelEnabled(true);
         setDisplayToolTips(false);
-        addOverlay(hover);
 
         if (chart.getPlot() instanceof XYPlot plot) {
             setMouseZoomable(true, true);
@@ -44,41 +44,27 @@ public class DTStyleChartPanel extends ChartPanel {
     }
 
     @Override
-    public void addNotify() {
-        super.addNotify();
-        JLayeredPane layeredPane = getRootLayeredPane();
-        if (layeredPane != null) {
-            layeredPane.add(tooltipPanel, JLayeredPane.POPUP_LAYER);
-        }
-    }
-
-    @Override
-    public void removeNotify() {
-        JLayeredPane layeredPane = getRootLayeredPane();
-        if (layeredPane != null) {
-            layeredPane.remove(tooltipPanel);
-        }
-        hover.clear();
-        super.removeNotify();
-    }
-
-    @Override
     protected void processMouseMotionEvent(@NotNull MouseEvent e) {
         boolean continueEvent = true;
+        Rectangle2D dataArea = getChartRenderingInfo().getPlotInfo().getDataArea();
+        Point2D p = translateScreenToJava2D(e.getPoint());
         if (handler != null) {
-            Rectangle2D dataArea = getChartRenderingInfo().getPlotInfo().getDataArea();
-            Point2D p = translateScreenToJava2D(e.getPoint());
-            if (dataArea.contains(p)) {
-                continueEvent = handler.onMouseMoved(p, dataArea);
-                hover.onMouseMoved(this, p);
-            } else {
-                hover.clear();
-            }
+            continueEvent = handler.onMouseMoved(p, dataArea);
             if (SwingUtilities.isMiddleMouseButton(e) && lastMiddleMousePoint != null) {
                 handler.onMiddleMouseDragged(e.getPoint(), lastMiddleMousePoint, this);
                 lastMiddleMousePoint = e.getPoint();
             }
             repaint();
+        }
+        if (dataArea.contains(p)) {
+            ChartHitPoint hit = hover.findHitPoint(this, p);
+            if (hit != null) {
+                showHit(hit);
+            } else {
+                hideHit();
+            }
+        } else {
+            hideHit();
         }
         if (!continueEvent) {
             e.consume();
@@ -143,8 +129,29 @@ public class DTStyleChartPanel extends ChartPanel {
         }
     }
 
-    private JLayeredPane getRootLayeredPane() {
-        JRootPane rootPane = SwingUtilities.getRootPane(this);
-        return rootPane != null ? rootPane.getLayeredPane() : null;
+    private void showHit(@NotNull ChartHitPoint hit) {
+        hideHit();
+        Point2D anchor = translateJava2DToScreen(hit.point());
+        Point anchorPoint = new Point((int) anchor.getX(), (int) anchor.getY());
+
+        tooltip = new TooltipPanel();
+        add(tooltip);
+        tooltip.showTooltip(hit, anchorPoint, getWidth());
+
+        hoverPoint = new ChartHoverPoint();
+        add(hoverPoint);
+        hoverPoint.show(anchorPoint, hit.seriesPaint());
+    }
+
+    private void hideHit() {
+        if (tooltip != null) {
+            remove(tooltip);
+            tooltip = null;
+        }
+        if (hoverPoint != null) {
+            remove(hoverPoint);
+            hoverPoint = null;
+        }
+        repaint();
     }
 }
