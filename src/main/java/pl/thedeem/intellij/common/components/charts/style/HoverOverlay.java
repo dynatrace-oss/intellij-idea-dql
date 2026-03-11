@@ -4,16 +4,20 @@ import com.intellij.ui.JBColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.TickUnit;
 import org.jfree.chart.entity.CategoryItemEntity;
 import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.panel.AbstractOverlay;
 import org.jfree.chart.panel.Overlay;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.general.Dataset;
 import org.jfree.data.xy.XYDataset;
-import pl.thedeem.intellij.dql.DQLBundle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,16 +68,14 @@ class HoverOverlay extends AbstractOverlay implements Overlay {
         if (current == null) {
             return;
         }
-        Point2D anchor = chartPanel.translateJava2DToScreen(current.screenPoint());
+        Point2D anchor = chartPanel.translateJava2DToScreen(current.point());
         Graphics2D g = (Graphics2D) g2.create();
         try {
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g.translate(anchor.getX(), anchor.getY());
             g.setStroke(HIGHLIGHT_STROKE);
-            if (current.seriesColor() != null) {
-                g.setPaint(current.seriesColor());
-                g.fill(HIGHLIGHT_SHAPE);
-            }
+            g.setPaint(current.seriesPaint());
+            g.fill(HIGHLIGHT_SHAPE);
             g.setPaint(JBColor.foreground());
             g.draw(HIGHLIGHT_SHAPE);
         } finally {
@@ -81,8 +83,11 @@ class HoverOverlay extends AbstractOverlay implements Overlay {
         }
     }
 
-    private static @Nullable HitPoint findClosest(@NotNull ChartPanel chartPanel, @NotNull Point2D java2D,
-                                                  @NotNull CategoryPlot plot) {
+    private static @Nullable HitPoint findClosest(
+            @NotNull ChartPanel chartPanel,
+            @NotNull Point2D java2D,
+            @NotNull CategoryPlot plot
+    ) {
         boolean horizontal = plot.getOrientation() == PlotOrientation.HORIZONTAL;
         CategoryItemEntity best = null;
         double minDelta = Double.MAX_VALUE;
@@ -118,9 +123,11 @@ class HoverOverlay extends AbstractOverlay implements Overlay {
         double sx = horizontal ? bar.getMaxX() : bar.getCenterX();
         double sy = horizontal ? bar.getCenterY() : bar.getMinY();
         return new HitPoint(
-                new Point2D.Double(sx, sy),
-                DQLBundle.message("components.visualization.tooltip.value", best.getRowKey(), formatValue(value.doubleValue())),
-                plot.getRenderer().getSeriesPaint(dataset.getRowIndex(best.getRowKey()))
+                plot,
+                dataset,
+                dataset.getRowIndex(best.getRowKey()),
+                dataset.getColumnIndex(best.getColumnKey()),
+                new Point2D.Double(sx, sy)
         );
     }
 
@@ -146,11 +153,7 @@ class HoverOverlay extends AbstractOverlay implements Overlay {
             double dist = Math.hypot(sx - java2D.getX(), sy - java2D.getY());
             if (dist < minDist) {
                 minDist = dist;
-                best = new HitPoint(
-                        new Point2D.Double(sx, sy),
-                        DQLBundle.message("components.visualization.tooltip.value", dataset.getSeriesKey(series), formatValue(dataY)),
-                        plot.getRenderer().getSeriesPaint(series)
-                );
+                best = new HitPoint(plot, dataset, series, item, new Point2D.Double(sx, sy));
             }
         }
         return best;
@@ -161,11 +164,10 @@ class HoverOverlay extends AbstractOverlay implements Overlay {
         if (rootPane == null) {
             return;
         }
-        Point2D anchor = chartPanel.translateJava2DToScreen(hit.screenPoint());
+        Point2D anchor = chartPanel.translateJava2DToScreen(hit.point());
         Point converted = SwingUtilities.convertPoint(chartPanel,
                 (int) anchor.getX(), (int) anchor.getY(), rootPane.getLayeredPane());
-        tooltipPanel.showTooltip(hit.label(), hit.seriesColor(),
-                converted.x, converted.y, rootPane.getLayeredPane().getWidth());
+        tooltipPanel.showTooltip(hit, converted, rootPane.getLayeredPane().getWidth());
     }
 
     private static @NotNull Iterable<?> entities(@NotNull ChartPanel chartPanel) {
@@ -173,13 +175,57 @@ class HoverOverlay extends AbstractOverlay implements Overlay {
         return collection != null ? collection.getEntities() : Collections.emptyList();
     }
 
-    private static String formatValue(double value) {
-        if (value == Math.floor(value) && Double.isFinite(value)) {
-            return String.valueOf((long) value);
-        }
-        return String.format("%.4g", value);
-    }
+    record HitPoint(
+            @NotNull Plot plot,
+            @NotNull Dataset dataset,
+            int series,
+            int item,
+            @NotNull Point2D point
+    ) {
 
-    private record HitPoint(@NotNull Point2D screenPoint, @NotNull String label, @Nullable Paint seriesColor) {
+        @NotNull Paint seriesPaint() {
+            Paint paint = null;
+            if (plot instanceof XYPlot xyPlot) {
+                paint = xyPlot.getRenderer().getSeriesPaint(series);
+            } else if (plot instanceof CategoryPlot categoryPlot) {
+                paint = categoryPlot.getRenderer().getSeriesPaint(series);
+            }
+            return paint != null ? paint : JBColor.GRAY;
+        }
+
+        double getYValue() {
+            return switch (dataset) {
+                case XYDataset d -> d.getYValue(series, item);
+                case CategoryDataset d -> {
+                    Number value = d.getValue(series, item);
+                    yield value != null ? value.doubleValue() : Double.NaN;
+                }
+                default -> Double.NaN;
+            };
+        }
+
+        @NotNull String getSeriesName() {
+            return switch (dataset) {
+                case XYDataset d -> d.getSeriesKey(series).toString();
+                case CategoryDataset d -> d.getRowKey(series).toString();
+                default -> String.valueOf(series);
+            };
+        }
+
+        @NotNull String getDomainLabel() {
+            if (plot instanceof XYPlot xyPlot && dataset instanceof XYDataset xyDataset) {
+                double xValue = xyDataset.getXValue(series, item);
+                TickUnit tickUnit = switch (xyPlot.getDomainAxis()) {
+                    case DateAxis axis -> axis.getTickUnit();
+                    case NumberAxis axis -> axis.getTickUnit();
+                    default -> null;
+                };
+                return tickUnit != null ? tickUnit.valueToString(xValue) : String.valueOf(xValue);
+            }
+            if (plot instanceof CategoryPlot && dataset instanceof CategoryDataset categoryDataset) {
+                return categoryDataset.getColumnKey(item).toString();
+            }
+            return String.valueOf(item);
+        }
     }
 }

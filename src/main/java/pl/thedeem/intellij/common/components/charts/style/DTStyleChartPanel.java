@@ -15,13 +15,13 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-public class DynatraceAlikeChartPanel extends ChartPanel {
+public class DTStyleChartPanel extends ChartPanel {
     private final TooltipPanel tooltipPanel = new TooltipPanel();
     private final HoverOverlay hover = new HoverOverlay(tooltipPanel);
     private final PlotInteractionHandler handler;
     private Point lastMiddleMousePoint;
 
-    public DynatraceAlikeChartPanel(@NotNull JFreeChart chart) {
+    public DTStyleChartPanel(@NotNull JFreeChart chart) {
         super(chart);
 
         setBorder(JBUI.Borders.empty());
