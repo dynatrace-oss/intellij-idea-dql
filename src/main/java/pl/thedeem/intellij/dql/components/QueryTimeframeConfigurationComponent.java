@@ -3,6 +3,7 @@ package pl.thedeem.intellij.dql.components;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.Consumer;
 import com.intellij.util.ui.JBUI;
@@ -14,7 +15,7 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import javax.swing.*;
 import java.util.List;
 
-public class QueryTimeframeConfigurationComponent extends JPanel {
+public class QueryTimeframeConfigurationComponent extends JBPanel<QueryTimeframeConfigurationComponent> {
     protected final JBTextField queryStartField;
     protected final JBTextField queryEndField;
 
@@ -23,8 +24,7 @@ public class QueryTimeframeConfigurationComponent extends JPanel {
     }
 
     public QueryTimeframeConfigurationComponent(boolean withLabel) {
-        setOpaque(false);
-        setBorder(JBUI.Borders.empty());
+        withBorder(JBUI.Borders.empty()).andTransparent();
 
         queryStartField = ResizableTextField.createTimeField(
                 DQLBundle.message("components.queryTimeframe.options.timeframeFrom.placeholder"),

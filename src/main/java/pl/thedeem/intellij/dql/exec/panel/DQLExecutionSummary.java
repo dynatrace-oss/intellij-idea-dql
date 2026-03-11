@@ -2,6 +2,7 @@ package pl.thedeem.intellij.dql.exec.panel;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,10 +17,10 @@ import java.awt.event.MouseEvent;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
-public class DQLExecutionSummary extends JPanel {
+public class DQLExecutionSummary extends JBPanel<DQLExecutionSummary> {
     public DQLExecutionSummary(@NotNull DQLResult result, @Nullable ZonedDateTime executionTime) {
         super(new FlowLayout(FlowLayout.LEFT));
-        setBorder(JBUI.Borders.empty());
+        withBorder(JBUI.Borders.empty());
         JBLabel summary = new JBLabel(DQLBundle.message(
                 "components.executionSummary.simpleSummary.title",
                 result.getRecords().size(),
@@ -65,17 +66,17 @@ public class DQLExecutionSummary extends JPanel {
     private static @NotNull String formatDuration(@NotNull Duration duration) {
         long seconds = Math.max(0L, duration.getSeconds());
         if (seconds < 60) {
-            return seconds + "s";
+            return seconds == 1 ? DQLBundle.message("duration.second", seconds) : DQLBundle.message("duration.seconds", seconds);
         }
         long minutes = seconds / 60;
         if (minutes < 60) {
-            return minutes + "m";
+            return minutes == 1 ? DQLBundle.message("duration.minute", minutes) : DQLBundle.message("duration.minutes", minutes);
         }
         long hours = minutes / 60;
         if (hours < 24) {
-            return hours + "h";
+            return hours == 1 ? DQLBundle.message("duration.hour", hours) : DQLBundle.message("duration.hours", hours);
         }
         long days = hours / 24;
-        return days + "d";
+        return days == 1 ? DQLBundle.message("duration.day", days) : DQLBundle.message("duration.days", days);
     }
 }

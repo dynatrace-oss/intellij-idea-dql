@@ -21,9 +21,7 @@ import java.util.List;
 public class DQLMetadataPanel extends BorderLayoutPanel {
     public DQLMetadataPanel(@NotNull DQLResult.DQLGrailMetadata metadata, @Nullable ZonedDateTime executionTime) {
         super();
-        setOpaque(false);
-        setBorder(JBUI.Borders.empty());
-
+        withBorder(JBUI.Borders.empty()).andTransparent();
         addToCenter(new TransparentScrollPane(prepareView(metadata, executionTime)));
     }
 

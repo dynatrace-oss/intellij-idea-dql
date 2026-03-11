@@ -19,8 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
@@ -29,11 +27,7 @@ public class FormattedLanguageText extends BorderLayoutPanel implements Disposab
     private final EditorTextField editorField;
 
     public FormattedLanguageText(@NotNull Language language, @NotNull Project project, boolean isViewer) {
-        setOpaque(false);
-        setBorder(JBUI.Borders.empty());
-        JPanel spinner = new JPanel(new GridBagLayout());
-        spinner.setOpaque(false);
-        spinner.setBorder(JBUI.Borders.empty());
+        withBorder(JBUI.Borders.empty()).andTransparent();
         processIcon = new LoadingPanel(DQLBundle.message("components.preparingView"));
         addToCenter(processIcon);
         editorField = IntelliJUtils.createEditorPanel(project, language, isViewer);

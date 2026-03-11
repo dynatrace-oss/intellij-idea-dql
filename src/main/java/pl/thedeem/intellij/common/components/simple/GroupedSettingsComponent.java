@@ -13,13 +13,11 @@ public class GroupedSettingsComponent extends JBPanel<GroupedSettingsComponent> 
     public GroupedSettingsComponent(@NotNull String title) {
         super();
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setOpaque(false);
-        setBorder(JBUI.Borders.empty());
+        withBorder(JBUI.Borders.empty()).andTransparent();
         add(new TitledSeparator(title));
 
-        children = new JBPanel<>();
+        children = new JBPanel<>().withBorder(JBUI.Borders.empty(JBUI.scale(10), 0));
         children.setLayout(new BoxLayout(children, BoxLayout.Y_AXIS));
-        children.setBorder(JBUI.Borders.empty(JBUI.scale(10), 0));
         add(children);
     }
 

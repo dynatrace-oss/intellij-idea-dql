@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.components.JBCheckBox;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.util.xmlb.annotations.Attribute;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -52,7 +53,7 @@ public class DQLParameterNameHintsProvider implements InlayHintsProvider<DQLPara
     @Override
     public @NotNull ImmediateConfigurable createConfigurable(@NotNull DQLParameterNameHintsSettings settings) {
         return listener -> {
-            JPanel panel = new JPanel();
+            JBPanel<?> panel = new JBPanel<>();
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
             panel.add(createOptionComponent(
                     DQLBundle.message("settings.inlayHints.parameters.functions.description"),
