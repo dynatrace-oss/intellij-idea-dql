@@ -4,6 +4,8 @@ import com.intellij.icons.AllIcons;
 import com.intellij.json.JsonLanguage;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.JBCardLayout;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
@@ -20,28 +22,29 @@ import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import javax.swing.*;
 import java.awt.*;
 import java.time.ZonedDateTime;
-import java.util.Objects;
 
 public class DQLExecutionResult extends BorderLayoutPanel {
     private final Project project;
     private final DefaultActionGroup customActions;
     private final DefaultActionGroup panelToolbar;
     private final DQLResult result;
-    private final ZonedDateTime executionTime;
     private final QueryConfiguration params;
 
     private final FormattedLanguageText queryPanel;
     private final FormattedLanguageText jsonPanel;
     private final DQLVisualizationPanel visualizationPanel;
-    private final DQLMetadataPanel metadataPanel;
     private final DQLTableResultPanel tablePanel;
+
+    private final CardLayout cardLayout;
+    private final JBPanel<?> cardPanel;
 
     private ResultsDisplayMode displayMode;
 
     public DQLExecutionResult(@NotNull Project project, @NotNull DQLResult result, @Nullable ZonedDateTime executionTime, @Nullable QueryConfiguration params) {
+        withBorder(JBUI.Borders.empty()).andTransparent();
+
         this.result = result;
         this.project = project;
-        this.executionTime = executionTime;
         this.params = params;
 
         this.customActions = new DefaultActionGroup();
@@ -49,12 +52,19 @@ public class DQLExecutionResult extends BorderLayoutPanel {
         this.queryPanel = new FormattedLanguageText(DynatraceQueryLanguage.INSTANCE, project, true);
         this.jsonPanel = new FormattedLanguageText(JsonLanguage.INSTANCE, project, true);
         this.visualizationPanel = new DQLVisualizationPanel(result);
-        this.metadataPanel = new DQLMetadataPanel(result.getGrailMetadata(), executionTime);
         this.tablePanel = new DQLTableResultPanel(result, project);
 
-        this.setOpaque(false);
-        this.setBorder(JBUI.Borders.empty());
-        refreshView();
+        this.cardLayout = new JBCardLayout();
+        this.cardPanel = new JBPanel<>(cardLayout).andTransparent();
+        this.cardPanel.add(tablePanel, ResultsDisplayMode.TABLE.name());
+        this.cardPanel.add(jsonPanel, ResultsDisplayMode.JSON.name());
+        this.cardPanel.add(visualizationPanel, ResultsDisplayMode.VISUALIZATION.name());
+        this.cardPanel.add(new DQLMetadataPanel(result.getGrailMetadata(), executionTime), ResultsDisplayMode.METADATA.name());
+        this.cardPanel.add(queryPanel, ResultsDisplayMode.USED_QUERY.name());
+
+        this.addToCenter(cardPanel);
+        this.addToBottom(new TransparentScrollPane(new DQLExecutionSummary(result, executionTime)));
+        setDisplayMode(ResultsDisplayMode.TABLE);
     }
 
     private DefaultActionGroup createPanelToolbar() {
@@ -119,47 +129,36 @@ public class DQLExecutionResult extends BorderLayoutPanel {
         return group;
     }
 
-    public void show(@NotNull Component comp, @NotNull AnAction... actions) {
-        this.removeAll();
-        this.addToCenter(comp);
-        this.revalidate();
-        this.repaint();
-        this.customActions.removeAll();
-        for (AnAction action : actions) {
-            this.customActions.add(action);
-        }
-    }
-
-
     public void setDisplayMode(@NotNull ResultsDisplayMode displayMode) {
         this.displayMode = displayMode;
-        refreshView();
-    }
-
-    private void refreshView() {
-        ResultsDisplayMode displayMode = getDisplayMode();
+        cardLayout.show(cardPanel, displayMode.name());
+        customActions.removeAll();
         switch (displayMode) {
             case USED_QUERY -> {
-                show(queryPanel);
                 if (result.getGrailMetadata() != null) {
                     queryPanel.showResult(() -> result.getGrailMetadata().getQuery());
                 } else if (params != null) {
-                    queryPanel.showResult(() -> params.query());
+                    queryPanel.showResult(params::query);
                 }
             }
-            case JSON -> {
-                show(jsonPanel);
-                jsonPanel.showResult(() -> IntelliJUtils.prettyPrintJson(result.getRecords()));
+            case JSON -> jsonPanel.showResult(() -> IntelliJUtils.prettyPrintJson(result.getRecords()));
+            case VISUALIZATION -> {
+                for (AnAction action : visualizationPanel.getToolbarActions()) {
+                    customActions.add(action);
+                }
             }
-            case VISUALIZATION -> show(visualizationPanel, visualizationPanel.getToolbarActions());
-            case METADATA -> show(metadataPanel);
-            default -> show(tablePanel, tablePanel.getToolbarActions());
+            case TABLE -> {
+                for (AnAction action : tablePanel.getToolbarActions()) {
+                    customActions.add(action);
+                }
+            }
+            default -> {
+            }
         }
-        addToBottom(new TransparentScrollPane(new DQLExecutionSummary(result, executionTime)));
     }
 
     public @NotNull ResultsDisplayMode getDisplayMode() {
-        return Objects.requireNonNullElse(this.displayMode, ResultsDisplayMode.TABLE);
+        return displayMode;
     }
 
     public @NotNull ActionGroup getToolbarActions() {
