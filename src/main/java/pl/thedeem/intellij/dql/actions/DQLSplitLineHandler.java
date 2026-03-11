@@ -1,11 +1,9 @@
 package pl.thedeem.intellij.dql.actions;
 
 import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
-import com.intellij.openapi.editor.actionSystem.EditorActionManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
@@ -24,14 +22,18 @@ import java.util.Objects;
 import static pl.thedeem.intellij.dql.actions.ExecuteDQLQueryAction.PREFERRED_EXECUTION_NAME;
 
 public class DQLSplitLineHandler extends EditorActionHandler {
+    private final EditorActionHandler originalHandler;
+
+    public DQLSplitLineHandler(EditorActionHandler originalHandler) {
+        this.originalHandler = originalHandler;
+    }
+
     @Override
     protected void doExecute(@NotNull Editor editor, @Nullable Caret caret, @NotNull DataContext e) {
         Project project = editor.getProject();
         PsiFile file = project != null ? PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument()) : null;
         if (project == null || file == null || !DQLFileType.INSTANCE.equals(file.getFileType())) {
-            EditorActionManager.getInstance()
-                    .getActionHandler(IdeActions.ACTION_EDITOR_SPLIT)
-                    .execute(editor, caret, e);
+            originalHandler.execute(editor, caret, e);
             return;
         }
 
@@ -41,9 +43,7 @@ public class DQLSplitLineHandler extends EditorActionHandler {
         );
 
         if (configuration.tenant() == null) {
-            EditorActionManager.getInstance()
-                    .getActionHandler(IdeActions.ACTION_EDITOR_SPLIT)
-                    .execute(editor, caret, e);
+            originalHandler.execute(editor, caret, e);
             return;
         }
         DQLQueryConfigurationService.getInstance().getQueryFromEditorContext(file, editor, (consumer) -> {
