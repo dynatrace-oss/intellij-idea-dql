@@ -25,12 +25,7 @@ class TooltipPanel extends JBPanel<TooltipPanel> {
         setVisible(false);
     }
 
-    void showTooltip(
-            @NotNull ChartHitPoint hitPoint,
-            @NotNull Point2D point,
-            int panelWidth
-    ) {
-        removeAll();
+    void showTooltip(@NotNull ChartHitPoint hitPoint, @NotNull Point2D point, int panelWidth) {
         add(new JBLabel(DQLBundle.message("components.visualization.tooltip.title", hitPoint.getDomainLabel()))
                         .withFont(JBUI.Fonts.label().asBold()),
                 "span 2, wrap");
@@ -44,9 +39,9 @@ class TooltipPanel extends JBPanel<TooltipPanel> {
                 hitPoint.getSeriesName(),
                 formatValue(hitPoint.getYValue())
         )));
+        recalculateBounds(point, panelWidth);
         setVisible(true);
         revalidate();
-        recalculateBounds(point, panelWidth);
         repaint();
     }
 
