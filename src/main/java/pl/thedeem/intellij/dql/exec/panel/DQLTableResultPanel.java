@@ -10,11 +10,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.ColumnInfo;
-import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.components.BorderLayoutPanel;
@@ -39,12 +38,7 @@ import pl.thedeem.intellij.dql.fileProviders.DQLRecordFieldVirtualFile;
 import pl.thedeem.intellij.dql.fileProviders.DQLRecordVirtualFile;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
@@ -62,8 +56,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
     private final DQLResult result;
     protected CommonTable table = null;
     protected PagingRowSorter sorter = null;
-    protected String includeFilter = null;
-    protected String excludeFilter = null;
+    protected final List<TableFilter> filters = new ArrayList<>();
 
     public DQLTableResultPanel(@Nullable DQLResult result, @NotNull Project project) {
         super();
@@ -231,44 +224,52 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
 
                 @Override
                 public void setSelected(@NotNull AnActionEvent e, boolean selected) {
-                    JBTextField includeField = new JBTextField(includeFilter, 20);
-                    JBTextField excludeField = new JBTextField(excludeFilter, 20);
-                    JPanel panel = FormBuilder.createFormBuilder()
-                            .addLabeledComponent(DQLBundle.message("components.results.table.filter.include.label"), includeField)
-                            .addLabeledComponent(DQLBundle.message("components.results.table.filter.exclude.label"), excludeField)
-                            .getPanel();
+                    DefaultTableModel tableModel = createFilterTableModel();
+                    JBTable filterTable = createFilterEditorTable(tableModel);
+
+                    JPanel panel = ToolbarDecorator.createDecorator(filterTable)
+                            .setAddAction(button -> {
+                                tableModel.addRow(new Object[]{"=", ""});
+                                int newRow = tableModel.getRowCount() - 1;
+                                filterTable.setRowSelectionInterval(newRow, newRow);
+                                filterTable.editCellAt(newRow, 1);
+                                Component editorComp = filterTable.getEditorComponent();
+                                if (editorComp != null) {
+                                    editorComp.requestFocusInWindow();
+                                }
+                            })
+                            .setRemoveAction(button -> {
+                                if (filterTable.isEditing()) {
+                                    filterTable.getCellEditor().cancelCellEditing();
+                                }
+                                int[] rows = filterTable.getSelectedRows();
+                                for (int i = rows.length - 1; i >= 0; i--) {
+                                    tableModel.removeRow(rows[i]);
+                                }
+                            })
+                            .addExtraAction(new AnAction(DQLBundle.message("components.results.table.filter.action.clearAll"), null, AllIcons.Actions.GC) {
+                                @Override
+                                public void actionPerformed(@NotNull AnActionEvent e) {
+                                    if (filterTable.isEditing()) {
+                                        filterTable.getCellEditor().cancelCellEditing();
+                                    }
+                                    tableModel.setRowCount(0);
+                                }
+                            })
+                            .disableUpDownActions()
+                            .createPanel();
                     panel.setBorder(JBUI.Borders.empty(5));
+
+                    tableModel.addTableModelListener(ev -> syncAndApplyFilters(tableModel));
+
                     JBPopup popup = JBPopupFactory.getInstance()
-                            .createComponentPopupBuilder(panel, includeField)
+                            .createComponentPopupBuilder(panel, filterTable)
                             .setRequestFocus(true)
-                            .setResizable(false)
-                            .setMovable(false)
+                            .setResizable(true)
+                            .setMovable(true)
+                            .setCancelOnOtherWindowOpen(false)
                             .createPopup();
 
-                    DocumentListener updateFilter = new DocumentListener() {
-                        @Override
-                        public void insertUpdate(DocumentEvent ev) {
-                            applyFilter();
-                        }
-
-                        @Override
-                        public void removeUpdate(DocumentEvent ev) {
-                            applyFilter();
-                        }
-
-                        @Override
-                        public void changedUpdate(DocumentEvent ev) {
-                            applyFilter();
-                        }
-
-                        private void applyFilter() {
-                            includeFilter = includeField.getText();
-                            excludeFilter = excludeField.getText();
-                            sorter.setFilter(buildFilter());
-                        }
-                    };
-                    includeField.getDocument().addDocumentListener(updateFilter);
-                    excludeField.getDocument().addDocumentListener(updateFilter);
 
                     Component component = e.getData(PlatformDataKeys.CONTEXT_COMPONENT);
                     if (e.getInputEvent() != null && e.getInputEvent().getComponent() != null) {
@@ -383,13 +384,13 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
         group.add(createEDTAction(
                 DQLBundle.message("components.results.table.contextMenu.openCell"),
                 DQLBundle.message("components.results.table.contextMenu.openCell.description"),
-                AllIcons.Actions.PreviewDetails,
+                AllIcons.Actions.MoveTo2,
                 () -> openSelectedCell(table, columnTypes, project)
         ));
         group.add(createEDTAction(
                 DQLBundle.message("components.results.table.contextMenu.openRow"),
                 DQLBundle.message("components.results.table.contextMenu.openRow.description"),
-                AllIcons.Actions.PreviewDetails,
+                AllIcons.Actions.MoveTo2,
                 () -> openSelectedRow(table, project)
         ));
         if (sorter != null) {
@@ -399,7 +400,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
                     DQLBundle.message("components.results.table.contextMenu.filterValue.description"),
                     AllIcons.General.Filter,
                     () -> {
-                        this.includeFilter = cellValueString;
+                        filters.add(new TableFilter(true, cellValueString));
                         sorter.setFilter(buildFilter());
                     }
             ));
@@ -408,7 +409,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
                     DQLBundle.message("components.results.table.contextMenu.filterOutValue.description"),
                     AllIcons.General.Filter,
                     () -> {
-                        this.excludeFilter = cellValueString;
+                        filters.add(new TableFilter(false, cellValueString));
                         sorter.setFilter(buildFilter());
                     }
             ));
@@ -459,20 +460,67 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
         };
     }
 
+    private @NotNull DefaultTableModel createFilterTableModel() {
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"", ""}, 0) {
+            @Override
+            public Class<?> getColumnClass(int col) {
+                return String.class;
+            }
+        };
+        for (TableFilter f : filters) {
+            model.addRow(new Object[]{f.include() ? "=" : "!=", f.text()});
+        }
+        return model;
+    }
+
+    private @NotNull JBTable createFilterEditorTable(@NotNull DefaultTableModel model) {
+        JBTable filterTable = new JBTable(model) {{
+            setVisibleRowCount(5);
+            setTableHeader(null);
+            setRowSelectionAllowed(true);
+            setColumnSelectionAllowed(false);
+        }};
+
+        TableColumn typeCol = filterTable.getColumnModel().getColumn(0);
+        typeCol.setMinWidth(JBUI.scale(50));
+        typeCol.setMaxWidth(JBUI.scale(50));
+        typeCol.setCellEditor(new DefaultCellEditor(new JComboBox<>(new String[]{"=", "!="})));
+        TableColumn filterCol = filterTable.getColumnModel().getColumn(1);
+        filterCol.setMinWidth(JBUI.scale(250));
+        filterCol.setMaxWidth(JBUI.scale(250));
+
+        return filterTable;
+    }
+
+    private void syncAndApplyFilters(@NotNull DefaultTableModel model) {
+        filters.clear();
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String type = Objects.toString(model.getValueAt(i, 0), "=");
+            String text = Objects.toString(model.getValueAt(i, 1), "").trim();
+            if (!text.isBlank()) {
+                filters.add(new TableFilter("=".equals(type), text));
+            }
+        }
+        if (sorter != null) {
+            sorter.setFilter(buildFilter());
+        }
+    }
+
     private @Nullable RowFilter<Object, Object> buildFilter() {
-        List<RowFilter<Object, Object>> filters = new ArrayList<>();
-        if (StringUtil.isNotEmpty(includeFilter)) {
-            filters.add(RowFilter.regexFilter("(?i)" + Pattern.quote(includeFilter)));
+        List<RowFilter<Object, Object>> rowFilters = new ArrayList<>();
+        for (TableFilter filter : filters) {
+            RowFilter<Object, Object> f = RowFilter.regexFilter("(?i)" + Pattern.quote(filter.text()));
+            rowFilters.add(filter.include ? f : RowFilter.notFilter(f));
         }
-        if (StringUtil.isNotEmpty(excludeFilter)) {
-            filters.add(RowFilter.notFilter(RowFilter.regexFilter("(?i)" + Pattern.quote(excludeFilter))));
-        }
-        if (filters.isEmpty()) {
+        if (rowFilters.isEmpty()) {
             return null;
         }
-        if (filters.size() == 1) {
-            return filters.getFirst();
+        if (rowFilters.size() == 1) {
+            return rowFilters.getFirst();
         }
-        return RowFilter.andFilter(filters);
+        return RowFilter.andFilter(rowFilters);
+    }
+
+    public record TableFilter(boolean include, @NotNull String text) {
     }
 }

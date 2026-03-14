@@ -10,6 +10,8 @@
   part of the query they want to execute.
 - Chart tooltips now display the X-axis value as a bold title above the series data row inside tooltips.
 - The DQL results table now shows a right-click context menu on cells.
+- Filtering the DQL table results now supports specifying multiple filters at the same time. Added support for exclude
+  filters.
 
 ### Bug fixes
 
