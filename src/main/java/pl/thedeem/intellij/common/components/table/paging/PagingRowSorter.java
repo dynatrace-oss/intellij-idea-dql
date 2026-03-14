@@ -9,14 +9,12 @@ import javax.swing.event.RowSorterEvent;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class PagingRowSorter extends RowSorter<TableModel> {
     private final TableRowSorter<TableModel> delegate;
     private int pageSize;
     private int currentPage;
     private int totalRowCount;
-    private String filterText;
 
     public PagingRowSorter(@NotNull TableModel model, int pageSize) {
         this.delegate = new TableRowSorter<>(model);
@@ -51,17 +49,13 @@ public class PagingRowSorter extends RowSorter<TableModel> {
         fireRowSorterChanged(null);
     }
 
-    public @Nullable String getFilterText() {
-        return filterText;
+    public boolean isFilterActive() {
+        return delegate.getRowFilter() != null;
     }
 
-    public void setFilter(@Nullable String text) {
-        this.filterText = (text == null || text.isBlank()) ? null : text;
-        if (this.filterText == null) {
-            delegate.setRowFilter(null);
-        } else {
-            delegate.setRowFilter(RowFilter.regexFilter("(?i)" + Pattern.quote(this.filterText)));
-        }
+
+    public void setFilter(@Nullable RowFilter<Object, Object> rowFilter) {
+        delegate.setRowFilter(rowFilter);
     }
 
     public int getCurrentPage() {
