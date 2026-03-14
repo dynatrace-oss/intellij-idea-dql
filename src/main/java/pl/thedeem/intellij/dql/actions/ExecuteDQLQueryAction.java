@@ -2,6 +2,7 @@ package pl.thedeem.intellij.dql.actions;
 
 import com.intellij.lang.Language;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -17,6 +18,7 @@ import pl.thedeem.intellij.dql.exec.DQLProcessHandler;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
 import pl.thedeem.intellij.dql.services.notifications.DQLNotificationsService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
+import pl.thedeem.intellij.dql.services.query.DQLQuerySelectorService;
 
 import java.util.List;
 import java.util.Objects;
@@ -47,6 +49,7 @@ public class ExecuteDQLQueryAction extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent original) {
         AnActionEvent e = updateEvent(original);
         PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
+        Editor editor = e.getData(CommonDataKeys.EDITOR);
         QueryConfiguration configuration = getConfiguration(e, file);
         if (file == null || configuration.tenant() == null) {
             if (e.getProject() != null) {
@@ -60,17 +63,21 @@ public class ExecuteDQLQueryAction extends AnAction {
             return;
         }
         Project project = file.getProject();
-        DQLExecutionService service = new DQLExecutionService(
-                DQLBundle.message(
-                        "services.executeDQL.serviceName",
-                        Objects.requireNonNullElseGet(e.getData(PREFERRED_EXECUTION_NAME), file::getName)
-                ),
-                configuration,
-                project,
-                new DQLProcessHandler()
-        );
-        ProjectServicesManager.getInstance(project).registerService(service);
-        service.startExecution();
+        DQLQuerySelectorService.getInstance().getQueryFromEditorContext(file, editor, (query) -> {
+            QueryConfiguration copy = configuration.copy();
+            copy.setQuery(query);
+            DQLExecutionService service = new DQLExecutionService(
+                    DQLBundle.message(
+                            "services.executeDQL.serviceName",
+                            Objects.requireNonNullElseGet(e.getData(PREFERRED_EXECUTION_NAME), file::getName)
+                    ),
+                    configuration,
+                    project,
+                    new DQLProcessHandler()
+            );
+            ProjectServicesManager.getInstance(project).registerService(service);
+            service.startExecution();
+        });
     }
 
     protected @NotNull AnActionEvent updateEvent(@NotNull AnActionEvent e) {

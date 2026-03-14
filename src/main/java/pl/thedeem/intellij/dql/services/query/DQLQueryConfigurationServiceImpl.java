@@ -3,38 +3,21 @@ package pl.thedeem.intellij.dql.services.query;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.injected.editor.VirtualFileWindow;
-import com.intellij.lang.injection.InjectedLanguageManager;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.ui.popup.JBPopupListener;
-import com.intellij.openapi.ui.popup.LightweightWindowEvent;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.ui.ColoredListCellRenderer;
-import com.intellij.ui.JBColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.IntelliJUtils;
-import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLRunConfiguration;
-import pl.thedeem.intellij.dql.psi.DQLQuery;
 import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
-import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationService {
     @Override
@@ -59,27 +42,9 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
     }
 
     @Override
-    public @NotNull QueryConfiguration getQueryConfiguration(@NotNull Project project, @NotNull VirtualFile file) {
-        QueryConfiguration configuration = file.getUserData(QUERY_CONFIGURATION);
-        if (configuration == null) {
-            configuration = Objects.requireNonNullElseGet(
-                    createConfigurationFromRunManager(project, file),
-                    () -> createDefaultConfiguration(project, file)
-            );
-        }
-        if (configuration.tenant() != null) {
-            DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(configuration.tenant());
-            if (tenant == null) {
-                configuration.setTenant(null);
-            }
-        }
-        return configuration;
-    }
-
-    @Override
     public @NotNull QueryConfiguration createDefaultConfiguration(@NotNull PsiFile file) {
         QueryConfiguration result = createDefaultConfiguration(file.getProject(), file.getVirtualFile());
-        result.setQuery(file.getText());
+        result.setQuery(DQLQuerySelectorService.getInstance().getQueryText(file));
         return result;
     }
 
@@ -114,24 +79,6 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
     }
 
     @Override
-    public void getQueryFromEditorContext(@NotNull PsiFile file, @Nullable Editor editor, @NotNull Consumer<@NotNull String> consumer) {
-        if (editor == null) {
-            consumer.accept(file.getText());
-            return;
-        }
-        int start = editor.getSelectionModel().getSelectionStart();
-        int end = editor.getSelectionModel().getSelectionEnd();
-        InjectedLanguageManager injector = InjectedLanguageManager.getInstance(file.getProject());
-        if (injector.isInjectedFragment(file)) {
-            consumer.accept(injector.getUnescapedText(file));
-        } else if (start != end) {
-            getQueryFromSelection(file, editor, start, end, consumer);
-        } else {
-            getQueryFromSubqueries(file, editor, consumer);
-        }
-    }
-
-    @Override
     public void updateConfiguration(@NotNull PsiFile file, @NotNull QueryConfiguration configuration) {
         UserDataHolder dataHolder = Objects.requireNonNullElse(file.getVirtualFile(), file);
         dataHolder.putUserData(QUERY_CONFIGURATION, configuration);
@@ -140,85 +87,5 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
     @Override
     public void updateConfiguration(@NotNull VirtualFile file, @NotNull QueryConfiguration configuration) {
         file.putUserData(QUERY_CONFIGURATION, configuration);
-    }
-
-    private static void getQueryFromSubqueries(@NotNull PsiFile file, @NotNull Editor editor, @NotNull Consumer<@NotNull String> consumer) {
-        List<SelectionContext> queries = new ArrayList<>();
-        PsiElement element = file.findElementAt(editor.getSelectionModel().getSelectionStart());
-        while (element != null) {
-            DQLQuery parent = PsiTreeUtil.getParentOfType(element, DQLQuery.class);
-            if (parent != null) {
-                queries.add(new SelectionContext(parent.getTextRange(), DQLBundle.message("services.executeDQL.selectQuery.subquery", DQLBundle.shorten(parent.getText()))));
-            }
-            element = parent;
-        }
-        if (queries.size() < 2) {
-            consumer.accept(file.getText());
-            return;
-        }
-        queries.removeLast();
-        queries.add(new SelectionContext(file.getTextRange(), DQLBundle.message("services.executeDQL.selectQuery.wholeFile")));
-
-        createSelectionPopup(editor, queries.reversed(), textRange -> consumer.accept(textRange != null ? file.getFileDocument().getText(textRange) : file.getText()));
-    }
-
-    private void getQueryFromSelection(@NotNull PsiFile file, @NotNull Editor editor, int start, int end, @NotNull Consumer<@NotNull String> consumer) {
-        List<SelectionContext> queries = new ArrayList<>(2);
-        queries.add(new SelectionContext(new TextRange(start, end), DQLBundle.message("services.executeDQL.selectQuery.selectedText")));
-        queries.add(new SelectionContext(file.getTextRange(), DQLBundle.message("services.executeDQL.selectQuery.wholeFile")));
-        createSelectionPopup(editor, queries, textRange -> consumer.accept(textRange != null ? file.getFileDocument().getText(textRange) : file.getText()));
-    }
-
-    private static void createSelectionPopup(@NotNull Editor editor, @NotNull List<SelectionContext> queries, @NotNull Consumer<TextRange> selectedCallback) {
-        MarkupModel markupModel = editor.getMarkupModel();
-        TextAttributes attributes = new TextAttributes();
-        attributes.setEffectType(EffectType.BOXED);
-        attributes.setEffectColor(JBColor.GREEN);
-
-        JBPopupFactory.getInstance()
-                .createPopupChooserBuilder(queries)
-                .setTitle(DQLBundle.message("services.executeDQL.selectQuery.title"))
-                .setItemChosenCallback(e -> selectedCallback.accept(e.range()))
-                .setRenderer(new ColoredListCellRenderer<>() {
-                    @Override
-                    protected void customizeCellRenderer(@NotNull JList<? extends SelectionContext> jList, SelectionContext context, int index, boolean selected, boolean hasFocus) {
-                        append(context.fragment());
-                    }
-                })
-                .setItemSelectedCallback(e -> {
-                    if (e != null) {
-                        markupModel.removeAllHighlighters();
-                        markupModel.addRangeHighlighter(
-                                e.range().getStartOffset(),
-                                e.range().getEndOffset(),
-                                HighlighterLayer.SELECTION - 1,
-                                attributes,
-                                HighlighterTargetArea.EXACT_RANGE
-                        );
-                    }
-                })
-                .addListener(new JBPopupListener() {
-                    @Override
-                    public void beforeShown(@NotNull LightweightWindowEvent event) {
-                        SelectionContext context = queries.getFirst();
-                        markupModel.addRangeHighlighter(
-                                context.range().getStartOffset(),
-                                context.range().getEndOffset(),
-                                HighlighterLayer.SELECTION - 1,
-                                attributes,
-                                HighlighterTargetArea.EXACT_RANGE
-                        );
-                    }
-
-                    @Override
-                    public void onClosed(@NotNull LightweightWindowEvent event) {
-                        markupModel.removeAllHighlighters();
-                    }
-                })
-                .createPopup()
-                .showInBestPositionFor(editor);
-    }
-
-    private record SelectionContext(@NotNull TextRange range, @NotNull String fragment) {
     }
 }

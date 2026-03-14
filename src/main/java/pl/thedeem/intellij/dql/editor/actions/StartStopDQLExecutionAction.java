@@ -25,6 +25,7 @@ import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 import pl.thedeem.intellij.dql.exec.DQLProcessHandler;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
+import pl.thedeem.intellij.dql.services.query.DQLQuerySelectorService;
 
 import java.util.List;
 import java.util.Objects;
@@ -130,12 +131,11 @@ public class StartStopDQLExecutionAction extends AnAction {
 
     private void startService(@NotNull Project project, @NotNull AnActionEvent e, @NotNull PsiFile file) {
         Editor editor = getEditor(e);
-        DQLQueryConfigurationService configurationService = DQLQueryConfigurationService.getInstance();
         QueryConfiguration config = Objects.requireNonNullElseGet(
                 e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION),
-                () -> configurationService.getQueryConfiguration(file)
+                () -> DQLQueryConfigurationService.getInstance().getQueryConfiguration(file)
         );
-        configurationService.getQueryFromEditorContext(file, editor, (query) -> {
+        DQLQuerySelectorService.getInstance().getQueryFromEditorContext(file, editor, (query) -> {
             QueryConfiguration configuration = config.copy();
             configuration.setQuery(query);
             e.getPresentation().setEnabled(false);
