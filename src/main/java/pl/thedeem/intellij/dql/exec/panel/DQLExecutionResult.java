@@ -16,6 +16,7 @@ import pl.thedeem.intellij.common.components.FormattedLanguageText;
 import pl.thedeem.intellij.common.components.TransparentScrollPane;
 import pl.thedeem.intellij.common.sdk.model.DQLResult;
 import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 
@@ -37,7 +38,6 @@ public class DQLExecutionResult extends BorderLayoutPanel {
 
     private final JBCardLayout cardLayout;
     private final JBPanel<?> cardPanel;
-
 
     public DQLExecutionResult(@NotNull Project project, @NotNull DQLResult result, @Nullable ZonedDateTime executionTime, @Nullable QueryConfiguration params) {
         withBorder(JBUI.Borders.empty()).andTransparent();
@@ -91,7 +91,7 @@ public class DQLExecutionResult extends BorderLayoutPanel {
         group.addAction(createModeToggleAction(
                 ResultsDisplayMode.USED_QUERY,
                 DQLBundle.message("components.executionResult.actions.dqlQueryView.title"),
-                AllIcons.Actions.Preview
+                DQLIcon.SHOW_QUERY
         ));
         group.addAction(new AnAction(
                 DQLBundle.message("components.executionResult.actions.saveToFile.title"),

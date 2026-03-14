@@ -15,6 +15,8 @@
 - The DQL results table now shows a right-click context menu on cells.
 - Filtering the DQL table results now supports specifying multiple filters at the same time. Added support for exclude
   filters.
+- The DQL execution error panel now includes a "Show Executed Query" button that reveals the DQL query that was used
+  for the failed execution.
 
 ### Bug fixes
 
