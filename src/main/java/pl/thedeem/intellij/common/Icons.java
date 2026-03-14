@@ -29,25 +29,33 @@ public interface Icons {
         int border = JBUI.scale(1);
 
         return new Icon() {
+            private BufferedImage cachedImage;
+            private float cachedPixelScale;
+
             @Override
             public void paintIcon(Component c, Graphics g, int x, int y) {
-                BufferedImage image = UIUtil.createImage(c, getIconWidth(), getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-                Graphics2D g2d = image.createGraphics();
-                try {
-                    base.paintIcon(c, g2d, 0, 0);
-                    g2d.setComposite(AlphaComposite.Clear);
-                    g2d.fillOval(
-                            badgeX - border,
-                            badgeY - border,
-                            scaled.getIconWidth() + 2 * border,
-                            scaled.getIconHeight() + 2 * border
-                    );
-                    g2d.setComposite(AlphaComposite.SrcOver);
-                    scaled.paintIcon(c, g2d, badgeX, badgeY);
-                } finally {
-                    g2d.dispose();
+                float pixelScale = JBUI.pixScale(c);
+                if (cachedImage == null || Float.compare(cachedPixelScale, pixelScale) != 0) {
+                    cachedPixelScale = pixelScale;
+                    BufferedImage image = UIUtil.createImage(c, getIconWidth(), getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D g2d = image.createGraphics();
+                    try {
+                        base.paintIcon(c, g2d, 0, 0);
+                        g2d.setComposite(AlphaComposite.Clear);
+                        g2d.fillOval(
+                                badgeX - border,
+                                badgeY - border,
+                                scaled.getIconWidth() + 2 * border,
+                                scaled.getIconHeight() + 2 * border
+                        );
+                        g2d.setComposite(AlphaComposite.SrcOver);
+                        scaled.paintIcon(c, g2d, badgeX, badgeY);
+                    } finally {
+                        g2d.dispose();
+                    }
+                    cachedImage = image;
                 }
-                g.drawImage(image, x, y, null);
+                g.drawImage(cachedImage, x, y, c);
             }
 
             @Override
