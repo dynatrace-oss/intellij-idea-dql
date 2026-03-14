@@ -9,6 +9,7 @@
   of the query or the cursor is inside a subquery (for example, `append` command), IDE will as the user to decide which
   part of the query they want to execute.
 - Chart tooltips now display the X-axis value as a bold title above the series data row inside tooltips.
+- The DQL results table now shows a right-click context menu on cells.
 
 ### Bug fixes
 

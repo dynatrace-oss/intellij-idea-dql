@@ -11,10 +11,10 @@ import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.ColumnInfo;
+import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.components.BorderLayoutPanel;
@@ -46,12 +46,14 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithToolbarActions {
@@ -60,6 +62,8 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
     private final DQLResult result;
     protected CommonTable table = null;
     protected PagingRowSorter sorter = null;
+    protected String includeFilter = null;
+    protected String excludeFilter = null;
 
     public DQLTableResultPanel(@Nullable DQLResult result, @NotNull Project project) {
         super();
@@ -108,6 +112,20 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
                 if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
                     JTable target = (JTable) e.getSource();
                     openSelectedCell(target, columnTypes, project);
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showCellContextMenu(e, table, columnTypes, project);
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showCellContextMenu(e, table, columnTypes, project);
                 }
             }
         });
@@ -208,45 +226,49 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
             actions.add(new ToggleAction(DQLBundle.message("components.results.table.filter.action.title"), null, AllIcons.General.Filter) {
                 @Override
                 public boolean isSelected(@NotNull AnActionEvent e) {
-                    return StringUtil.isNotEmpty(sorter.getFilterText());
+                    return sorter.isFilterActive();
                 }
 
                 @Override
                 public void setSelected(@NotNull AnActionEvent e, boolean selected) {
-                    JBTextField filterField = new JBTextField(30);
-                    String current = sorter.getFilterText();
-                    if (current != null) {
-                        filterField.setText(current);
-                        filterField.selectAll();
-                    }
-
-                    JBPanel<?> panel = new JBPanel<>(new BorderLayout())
-                            .withBorder(JBUI.Borders.empty(4, 6));
-                    panel.add(filterField, BorderLayout.CENTER);
-
+                    JBTextField includeField = new JBTextField(includeFilter, 20);
+                    JBTextField excludeField = new JBTextField(excludeFilter, 20);
+                    JPanel panel = FormBuilder.createFormBuilder()
+                            .addLabeledComponent(DQLBundle.message("components.results.table.filter.include.label"), includeField)
+                            .addLabeledComponent(DQLBundle.message("components.results.table.filter.exclude.label"), excludeField)
+                            .getPanel();
+                    panel.setBorder(JBUI.Borders.empty(5));
                     JBPopup popup = JBPopupFactory.getInstance()
-                            .createComponentPopupBuilder(panel, filterField)
+                            .createComponentPopupBuilder(panel, includeField)
                             .setRequestFocus(true)
                             .setResizable(false)
                             .setMovable(false)
                             .createPopup();
 
-                    filterField.getDocument().addDocumentListener(new DocumentListener() {
+                    DocumentListener updateFilter = new DocumentListener() {
                         @Override
                         public void insertUpdate(DocumentEvent ev) {
-                            sorter.setFilter(filterField.getText());
+                            applyFilter();
                         }
 
                         @Override
                         public void removeUpdate(DocumentEvent ev) {
-                            sorter.setFilter(filterField.getText());
+                            applyFilter();
                         }
 
                         @Override
                         public void changedUpdate(DocumentEvent ev) {
-                            sorter.setFilter(filterField.getText());
+                            applyFilter();
                         }
-                    });
+
+                        private void applyFilter() {
+                            includeFilter = includeField.getText();
+                            excludeFilter = excludeField.getText();
+                            sorter.setFilter(buildFilter());
+                        }
+                    };
+                    includeField.getDocument().addDocumentListener(updateFilter);
+                    excludeField.getDocument().addDocumentListener(updateFilter);
 
                     Component component = e.getData(PlatformDataKeys.CONTEXT_COMPONENT);
                     if (e.getInputEvent() != null && e.getInputEvent().getComponent() != null) {
@@ -334,6 +356,69 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
         }
     }
 
+    private void showCellContextMenu(@NotNull MouseEvent e, @NotNull JTable table, @NotNull Map<String, String> columnTypes, @NotNull Project project) {
+        int row = table.getSelectedRow();
+        int col = table.getSelectedColumn();
+        if (row == -1 || col == -1) {
+            return;
+        }
+        String cellValueString = Objects.requireNonNullElse(ComponentsUtils.prepareColumnValue(table.getValueAt(row, col)), "").toString();
+        DefaultActionGroup group = new DefaultActionGroup();
+        group.add(createEDTAction(
+                DQLBundle.message("components.results.table.contextMenu.copyCell"),
+                DQLBundle.message("components.results.table.contextMenu.copyCell.description"),
+                AllIcons.Actions.Copy,
+                () -> Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(cellValueString), null)
+        ));
+        group.add(createEDTAction(
+                DQLBundle.message("components.results.table.contextMenu.copyRow"),
+                DQLBundle.message("components.results.table.contextMenu.copyRow.description"),
+                AllIcons.Actions.Copy,
+                () -> Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
+                        new StringSelection(Objects.requireNonNullElse(ComponentsUtils.getJsonContentForRows(table, row, 1), "")),
+                        null
+                )
+        ));
+        group.addSeparator();
+        group.add(createEDTAction(
+                DQLBundle.message("components.results.table.contextMenu.openCell"),
+                DQLBundle.message("components.results.table.contextMenu.openCell.description"),
+                AllIcons.Actions.PreviewDetails,
+                () -> openSelectedCell(table, columnTypes, project)
+        ));
+        group.add(createEDTAction(
+                DQLBundle.message("components.results.table.contextMenu.openRow"),
+                DQLBundle.message("components.results.table.contextMenu.openRow.description"),
+                AllIcons.Actions.PreviewDetails,
+                () -> openSelectedRow(table, project)
+        ));
+        if (sorter != null) {
+            group.addSeparator();
+            group.add(createEDTAction(
+                    DQLBundle.message("components.results.table.contextMenu.filterValue"),
+                    DQLBundle.message("components.results.table.contextMenu.filterValue.description"),
+                    AllIcons.General.Filter,
+                    () -> {
+                        this.includeFilter = cellValueString;
+                        sorter.setFilter(buildFilter());
+                    }
+            ));
+            group.add(createEDTAction(
+                    DQLBundle.message("components.results.table.contextMenu.filterOutValue"),
+                    DQLBundle.message("components.results.table.contextMenu.filterOutValue.description"),
+                    AllIcons.General.Filter,
+                    () -> {
+                        this.excludeFilter = cellValueString;
+                        sorter.setFilter(buildFilter());
+                    }
+            ));
+        }
+
+        ActionPopupMenu popupMenu = ActionManager.getInstance()
+                .createActionPopupMenu("DQL.TableCellContextMenu", group);
+        popupMenu.getComponent().show(table, e.getX(), e.getY());
+    }
+
     private void openSelectedCell(@NotNull JTable table, @NotNull Map<String, String> columnTypes, @NotNull Project project) {
         int row = table.getSelectedRow();
         int col = table.getSelectedColumn();
@@ -358,5 +443,36 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
                 DQLBundle.message("components.results.table.actions.openRecord.tabTitle"),
                 rowValues
         ), true);
+    }
+
+    private @NotNull AnAction createEDTAction(@NotNull String title, @Nullable String description, @Nullable Icon icon, @NotNull Runnable action) {
+        return new AnAction(title, description, icon) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                action.run();
+            }
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.EDT;
+            }
+        };
+    }
+
+    private @Nullable RowFilter<Object, Object> buildFilter() {
+        List<RowFilter<Object, Object>> filters = new ArrayList<>();
+        if (StringUtil.isNotEmpty(includeFilter)) {
+            filters.add(RowFilter.regexFilter("(?i)" + Pattern.quote(includeFilter)));
+        }
+        if (StringUtil.isNotEmpty(excludeFilter)) {
+            filters.add(RowFilter.notFilter(RowFilter.regexFilter("(?i)" + Pattern.quote(excludeFilter))));
+        }
+        if (filters.isEmpty()) {
+            return null;
+        }
+        if (filters.size() == 1) {
+            return filters.getFirst();
+        }
+        return RowFilter.andFilter(filters);
     }
 }
