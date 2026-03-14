@@ -115,12 +115,20 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         contentPanel.removeAll();
         additionalActions.removeAll();
         if (configuration.query() == null) {
-            contentPanel.addToCenter(new DQLExecutionErrorPanel(DQLBundle.message("services.executeDQL.errors.invalidPayload")));
+            contentPanel.addToCenter(new DQLExecutionErrorPanel(
+                    DQLBundle.message("services.executeDQL.errors.invalidPayload"),
+                    configuration.query(),
+                    project
+            ));
             return;
         }
         DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(configuration.tenant());
         if (tenant == null) {
-            contentPanel.addToCenter(new DQLExecutionErrorPanel(DQLBundle.message("services.executeDQL.errors.missingTenant", configuration.tenant())));
+            contentPanel.addToCenter(new DQLExecutionErrorPanel(
+                    DQLBundle.message("services.executeDQL.errors.missingTenant", configuration.tenant()),
+                    configuration.query(),
+                    project
+            ));
             return;
         }
         DQLExecuteInProgressPanel progressPanel = new DQLExecuteInProgressPanel();
@@ -347,7 +355,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
             }
             ApplicationManager.getApplication().invokeLater(() -> {
                 contentPanel.removeAll();
-                contentPanel.add(new DQLExecutionErrorPanel(e));
+                contentPanel.add(new DQLExecutionErrorPanel(e, configuration.query(), project));
                 contentPanel.revalidate();
                 contentPanel.repaint();
             });

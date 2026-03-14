@@ -24,6 +24,7 @@ public interface DQLIcon extends Icons {
     Icon DQL_ARRAY = AllIcons.Debugger.Db_array;
     Icon DQL_RECORD = AllIcons.FileTypes.Json;
     Icon INTENTION = AllIcons.Actions.Edit;
+    Icon SHOW_QUERY = Icons.scaleToBottomRight(AllIcons.Debugger.Console, AllIcons.General.Balloon, 0.5f);
     Icon GUTTER_EXECUTE_DQL = Icons.scaleToBottomRight(AllIcons.Actions.Execute, DYNATRACE_LOGO, 0.5f);
     Icon GUTTER_EXECUTE_SETTINGS = Icons.scaleToBottomRight(AllIcons.General.GearPlain, DYNATRACE_LOGO, 0.5f);
     Icon QUERY_CONSOLE = Icons.scaleToBottomRight(AllIcons.General.ProjectTab, DYNATRACE_LOGO, 0.5f);
