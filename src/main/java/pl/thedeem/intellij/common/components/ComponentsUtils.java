@@ -37,7 +37,7 @@ public class ComponentsUtils {
                 int selectedRows = copyFromTable.getSelectedRowCount();
                 int col = copyFromTable.getSelectedColumn();
                 if (selectedRows > 1) {
-                    String jsonContent = getJsonContentForRows(table, row, selectedRows);
+                    String jsonContent = getJsonContentForRows(table, table.getSelectedRows());
                     StringSelection selection = new StringSelection(jsonContent != null ? jsonContent : "");
                     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
                 } else if (row != -1 && col != -1) {
@@ -49,23 +49,23 @@ public class ComponentsUtils {
         });
     }
 
-    public static @Nullable String getJsonContentForRows(@NotNull JTable table, int startRow, int rowCount) {
-        if (startRow != -1) {
-            List<Map<String, Object>> results = new ArrayList<>();
-            for (int i = startRow; i < startRow + rowCount; i++) {
-                Map<String, Object> rowValues = new HashMap<>();
-                for (int col = 0; col < table.getColumnCount(); col++) {
-                    rowValues.put(table.getColumnName(col), prepareColumnValue(table.getValueAt(i, col)));
-                }
-                results.add(rowValues);
-            }
-            try {
-                return mapper.writeValueAsString(results);
-            } catch (JsonProcessingException ex) {
-                return null;
-            }
+    public static @Nullable String getJsonContentForRows(@NotNull JTable table, int @NotNull [] rows) {
+        if (rows.length == 0) {
+            return null;
         }
-        return null;
+        List<Map<String, Object>> results = new ArrayList<>();
+        for (int row : rows) {
+            Map<String, Object> rowValues = new HashMap<>();
+            for (int col = 0; col < table.getColumnCount(); col++) {
+                rowValues.put(table.getColumnName(col), prepareColumnValue(table.getValueAt(row, col)));
+            }
+            results.add(rowValues);
+        }
+        try {
+            return mapper.writeValueAsString(results);
+        } catch (JsonProcessingException ex) {
+            return null;
+        }
     }
 
     public static @Nullable Object prepareColumnValue(@Nullable Object value) {

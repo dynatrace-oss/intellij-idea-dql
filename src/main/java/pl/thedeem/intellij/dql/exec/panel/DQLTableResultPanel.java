@@ -376,7 +376,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
                 DQLBundle.message("components.results.table.contextMenu.copyRow.description"),
                 AllIcons.Actions.Copy,
                 () -> Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
-                        new StringSelection(Objects.requireNonNullElse(ComponentsUtils.getJsonContentForRows(table, row, 1), "")),
+                        new StringSelection(Objects.requireNonNullElse(ComponentsUtils.getJsonContentForRows(table, table.getSelectedRows()), "")),
                         null
                 )
         ));
