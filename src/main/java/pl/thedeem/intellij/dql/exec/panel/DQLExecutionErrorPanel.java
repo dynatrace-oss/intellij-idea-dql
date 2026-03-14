@@ -85,6 +85,9 @@ public class DQLExecutionErrorPanel extends BorderLayoutPanel {
                 splitter.setSecondComponent(queryViewer);
                 queryViewer.showResult(() -> query);
             } else {
+                if (splitter.getSecondComponent() instanceof FormattedLanguageText viewer) {
+                    viewer.dispose();
+                }
                 splitter.setSecondComponent(null);
             }
 
