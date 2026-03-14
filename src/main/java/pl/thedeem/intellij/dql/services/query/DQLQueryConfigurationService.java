@@ -2,7 +2,6 @@ package pl.thedeem.intellij.dql.services.query;
 
 import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -10,8 +9,6 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
-
-import java.util.function.Consumer;
 
 public interface DQLQueryConfigurationService {
     Key<QueryConfiguration> QUERY_CONFIGURATION = Key.create("DQL_QUERY_CONFIGURATION");
@@ -23,15 +20,11 @@ public interface DQLQueryConfigurationService {
 
     @NotNull QueryConfiguration getQueryConfiguration(@NotNull PsiFile file);
 
-    @NotNull QueryConfiguration getQueryConfiguration(@NotNull Project project, @NotNull VirtualFile file);
-
     @NotNull QueryConfiguration createDefaultConfiguration(@NotNull PsiFile file);
 
     @NotNull QueryConfiguration createDefaultConfiguration(@NotNull Project project, @Nullable VirtualFile virtualFile);
 
     @NotNull QueryConfiguration createDefaultConfiguration();
-
-    void getQueryFromEditorContext(@NotNull PsiFile file, @Nullable Editor editor, @NotNull Consumer<@NotNull String> consumer);
 
     void updateConfiguration(@NotNull PsiFile file, @NotNull QueryConfiguration configuration);
 

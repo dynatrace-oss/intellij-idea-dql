@@ -301,6 +301,9 @@
         <applicationService
                 serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationServiceImpl"
                 serviceInterface="pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService"/>
+        <applicationService
+                serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLQuerySelectorServiceImpl"
+                serviceInterface="pl.thedeem.intellij.dql.services.query.DQLQuerySelectorService"/>
 
         <projectService serviceImplementation="pl.thedeem.intellij.dql.services.variables.DQLVariablesServiceImpl"
                         serviceInterface="pl.thedeem.intellij.dql.services.variables.DQLVariablesService"/>
@@ -337,7 +340,7 @@
                 implementation="pl.thedeem.intellij.dql.services.ui.ServicesAutoRegistrationStartupActivity"/>
         <editorActionHandler id="DQL.QueryExecutor"
                              action="EditorSplitLine"
-                             implementationClass="pl.thedeem.intellij.dql.actions.DQLSplitLineHandler"
+                             implementationClass="pl.thedeem.intellij.dql.editor.DQLSplitLineHandler"
                              order="first"/>
         <!-- endregion DQL -->
         <!-- region DPL -->
