@@ -71,7 +71,7 @@ public class ExecuteDQLQueryAction extends AnAction {
                             "services.executeDQL.serviceName",
                             Objects.requireNonNullElseGet(e.getData(PREFERRED_EXECUTION_NAME), file::getName)
                     ),
-                    configuration,
+                    copy,
                     project,
                     new DQLProcessHandler()
             );
