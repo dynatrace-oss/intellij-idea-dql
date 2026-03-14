@@ -474,20 +474,17 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
     }
 
     private @NotNull JBTable createFilterEditorTable(@NotNull DefaultTableModel model) {
-        JBTable filterTable = new JBTable(model) {{
-            setVisibleRowCount(5);
-            setTableHeader(null);
-            setRowSelectionAllowed(true);
-            setColumnSelectionAllowed(false);
-        }};
-
+        JBTable filterTable = new JBTable(model);
+        filterTable.setVisibleRowCount(5);
+        filterTable.setTableHeader(null);
+        filterTable.setRowSelectionAllowed(true);
+        filterTable.setColumnSelectionAllowed(false);
         TableColumn typeCol = filterTable.getColumnModel().getColumn(0);
         typeCol.setMinWidth(JBUI.scale(50));
         typeCol.setMaxWidth(JBUI.scale(50));
         typeCol.setCellEditor(new DefaultCellEditor(new JComboBox<>(new String[]{"=", "!="})));
         TableColumn filterCol = filterTable.getColumnModel().getColumn(1);
-        filterCol.setMinWidth(JBUI.scale(250));
-        filterCol.setMaxWidth(JBUI.scale(250));
+        filterCol.setPreferredWidth(JBUI.scale(250));
 
         return filterTable;
     }
