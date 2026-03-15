@@ -95,7 +95,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
 
     @Override
     public void dispose() {
-        disposeAndClearContent();
+        ApplicationManager.getApplication().invokeLater(this::disposeAndClearContent);
         stopExecution();
     }
 
@@ -169,11 +169,11 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
             return;
         }
         stopping.set(true);
-        disposeAndClearContent();
-        contentPanel.addToCenter(new InformationComponent(
-                DQLBundle.message("services.executeDQL.cancelRequested", this.requestToken),
-                AllIcons.General.Information)
-        );
+        String cancelMessage = DQLBundle.message("services.executeDQL.cancelRequested", this.requestToken);
+        ApplicationManager.getApplication().invokeLater(() -> {
+            disposeAndClearContent();
+            contentPanel.addToCenter(new InformationComponent(cancelMessage, AllIcons.General.Information));
+        });
         ScheduledFuture<?> scheduledFuture = pollingFutureRef.get();
         if (scheduledFuture != null && !scheduledFuture.isCancelled() && !scheduledFuture.isDone() && this.requestToken != null) {
             scheduledFuture.cancel(true);
