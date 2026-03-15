@@ -33,26 +33,6 @@ public class DQLQuerySelectorServiceImpl implements DQLQuerySelectorService {
     }
 
     @Override
-    public @NotNull String getQueryText(@NotNull PsiFile file, @NotNull TextRange range) {
-        InjectedLanguageManager injector = InjectedLanguageManager.getInstance(file.getProject());
-        if (!injector.isInjectedFragment(file)) {
-            return file.getFileDocument().getText(range);
-        }
-
-        if (file.getViewProvider().getDocument() instanceof DocumentWindow window) {
-            int injectedStart = window.hostToInjected(range.getStartOffset());
-            int injectedEnd = window.hostToInjected(range.getEndOffset());
-
-            int unescapedStart = injector.mapInjectedOffsetToUnescaped(file, injectedStart);
-            int unescapedEnd = injector.mapInjectedOffsetToUnescaped(file, injectedEnd);
-
-            String fullUnescaped = injector.getUnescapedText(file);
-            return fullUnescaped.substring(unescapedStart, unescapedEnd);
-        }
-        return "";
-    }
-
-    @Override
     public void getQueryFromEditorContext(@NotNull PsiFile file, @Nullable Editor editor, @NotNull Consumer<@NotNull String> consumer) {
         if (editor == null) {
             consumer.accept(getQueryText(file));
@@ -60,12 +40,31 @@ public class DQLQuerySelectorServiceImpl implements DQLQuerySelectorService {
         }
         int start = editor.getSelectionModel().getSelectionStart();
         int end = editor.getSelectionModel().getSelectionEnd();
-        List<SelectionContext> contexts = start != end ? getQueryFromSelection(file, start, end) : getQueryFromSubqueries(file, editor);
+        List<SelectionContext> contexts = start != end ? getQueryFromSelection(file, editor, start, end) : getQueryFromSubqueries(file, editor);
         if (contexts.isEmpty()) {
             consumer.accept(getQueryText(file));
         } else {
-            createSelectionPopup(editor, contexts, range -> consumer.accept(getQueryText(file, range)));
+            createSelectionPopup(editor, contexts, range -> consumer.accept(getQueryText(file, editor, range)));
         }
+    }
+
+    private @NotNull String getQueryText(@NotNull PsiFile file, @NotNull Editor editor, @NotNull TextRange range) {
+        InjectedLanguageManager injector = InjectedLanguageManager.getInstance(file.getProject());
+        if (!injector.isInjectedFragment(file)) {
+            return file.getFileDocument().getText(range);
+        }
+
+        int injectedStart = range.getStartOffset();
+        int injectedEnd = range.getEndOffset();
+        if (file.getViewProvider().getDocument() instanceof DocumentWindow window && !(editor.getDocument() instanceof DocumentWindow)) {
+            injectedStart = window.hostToInjected(range.getStartOffset());
+            injectedEnd = window.hostToInjected(range.getEndOffset());
+        }
+        int unescapedStart = injector.mapInjectedOffsetToUnescaped(file, injectedStart);
+        int unescapedEnd = injector.mapInjectedOffsetToUnescaped(file, injectedEnd);
+
+        String fullUnescaped = injector.getUnescapedText(file);
+        return fullUnescaped.substring(unescapedStart, unescapedEnd);
     }
 
     private @NotNull List<SelectionContext> getQueryFromSubqueries(@NotNull PsiFile file, @NotNull Editor editor) {
@@ -73,7 +72,9 @@ public class DQLQuerySelectorServiceImpl implements DQLQuerySelectorService {
         int offset = editor.getCaretModel().getOffset();
         PsiElement element = file.findElementAt(offset);
         InjectedLanguageManager injector = InjectedLanguageManager.getInstance(file.getProject());
-        if (injector.isInjectedFragment(file) && file.getViewProvider().getDocument() instanceof DocumentWindow documentWindow) {
+        if (injector.isInjectedFragment(file)
+                && file.getViewProvider().getDocument() instanceof DocumentWindow documentWindow
+                && !(editor.getDocument() instanceof DocumentWindow)) {
             int injectedOffset = documentWindow.hostToInjected(offset);
             element = file.findElementAt(injectedOffset);
         }
@@ -82,7 +83,7 @@ public class DQLQuerySelectorServiceImpl implements DQLQuerySelectorService {
             DQLQuery parent = PsiTreeUtil.getParentOfType(element, DQLQuery.class);
             if (parent != null) {
                 queries.add(new SelectionContext(
-                        getMappedTextRange(file, parent.getTextRange()),
+                        getMappedTextRange(file, parent.getTextRange(), editor),
                         DQLBundle.message("services.executeDQL.selectQuery.subquery", DQLBundle.shorten(parent.getText()))
                 ));
             }
@@ -93,21 +94,21 @@ public class DQLQuerySelectorServiceImpl implements DQLQuerySelectorService {
         }
         queries.removeLast();
         queries.add(new SelectionContext(
-                getMappedTextRange(file, file.getTextRange()),
+                getMappedTextRange(file, file.getTextRange(), editor),
                 DQLBundle.message("services.executeDQL.selectQuery.wholeFile")
         ));
 
         return queries;
     }
 
-    private @NotNull List<SelectionContext> getQueryFromSelection(@NotNull PsiFile file, int start, int end) {
+    private @NotNull List<SelectionContext> getQueryFromSelection(@NotNull PsiFile file, @NotNull Editor editor, int start, int end) {
         List<SelectionContext> queries = new ArrayList<>(2);
         queries.add(new SelectionContext(
                 new TextRange(start, end),
                 DQLBundle.message("services.executeDQL.selectQuery.selectedText")
         ));
         queries.add(new SelectionContext(
-                getMappedTextRange(file, file.getTextRange()),
+                getMappedTextRange(file, file.getTextRange(), editor),
                 DQLBundle.message("services.executeDQL.selectQuery.wholeFile")
         ));
         return queries;
@@ -163,14 +164,15 @@ public class DQLQuerySelectorServiceImpl implements DQLQuerySelectorService {
                 .showInBestPositionFor(editor);
     }
 
-    private @NotNull TextRange getMappedTextRange(@NotNull PsiFile file, @NotNull TextRange range) {
+    private @NotNull TextRange getMappedTextRange(@NotNull PsiFile file, @NotNull TextRange range, @NotNull Editor editor) {
         InjectedLanguageManager injector = InjectedLanguageManager.getInstance(file.getProject());
-        if (injector.isInjectedFragment(file)) {
+        if (injector.isInjectedFragment(file) && file.getViewProvider().getDocument() instanceof DocumentWindow
+                && !(editor.getDocument() instanceof DocumentWindow)) {
             return injector.injectedToHost(file, range);
         }
         return range;
     }
 
-    private record SelectionContext(@NotNull TextRange range, @NotNull String fragment) {
+    protected record SelectionContext(@NotNull TextRange range, @NotNull String fragment) {
     }
 }
