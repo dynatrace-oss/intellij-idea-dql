@@ -1,6 +1,5 @@
 package pl.thedeem.intellij.dql.services.ui;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
@@ -61,7 +60,7 @@ public class ConnectedTenantsServiceGroup implements ManagedServiceGroup {
             actions.add(new AnAction(
                     DQLBundle.message("services.connectedTenants.actions.allSettings.title"),
                     null,
-                    AllIcons.General.GearPlain
+                    DQLIcon.DT_SETTINGS
             ) {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
@@ -75,7 +74,7 @@ public class ConnectedTenantsServiceGroup implements ManagedServiceGroup {
             actions.addAction(new AnAction(
                     DQLBundle.message("services.connectedTenants.actions.manageTenants.title"),
                     null,
-                    DQLIcon.MANAGE_TENANTS
+                    DQLIcon.DT_TENANT
             ) {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent anActionEvent) {

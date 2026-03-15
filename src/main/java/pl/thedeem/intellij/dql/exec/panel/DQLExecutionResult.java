@@ -10,12 +10,12 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.common.Icons;
 import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.common.components.FormattedLanguageText;
 import pl.thedeem.intellij.common.components.TransparentScrollPane;
 import pl.thedeem.intellij.common.sdk.model.DQLResult;
 import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 
@@ -37,7 +37,6 @@ public class DQLExecutionResult extends BorderLayoutPanel {
 
     private final JBCardLayout cardLayout;
     private final JBPanel<?> cardPanel;
-
 
     public DQLExecutionResult(@NotNull Project project, @NotNull DQLResult result, @Nullable ZonedDateTime executionTime, @Nullable QueryConfiguration params) {
         withBorder(JBUI.Borders.empty()).andTransparent();
@@ -81,17 +80,17 @@ public class DQLExecutionResult extends BorderLayoutPanel {
         group.addAction(createModeToggleAction(
                 ResultsDisplayMode.VISUALIZATION,
                 DQLBundle.message("components.executionResult.actions.visualizationView.title"),
-                Icons.PIE_CHART
+                DQLIcon.PIE_CHART
         ));
         group.addAction(createModeToggleAction(
                 ResultsDisplayMode.METADATA,
                 DQLBundle.message("components.executionResult.actions.metadataView.title"),
-                AllIcons.Actions.Annotate
+                DQLIcon.QUERY_METADATA
         ));
         group.addAction(createModeToggleAction(
                 ResultsDisplayMode.USED_QUERY,
                 DQLBundle.message("components.executionResult.actions.dqlQueryView.title"),
-                AllIcons.Actions.Preview
+                DQLIcon.QUERY_USED
         ));
         group.addAction(new AnAction(
                 DQLBundle.message("components.executionResult.actions.saveToFile.title"),

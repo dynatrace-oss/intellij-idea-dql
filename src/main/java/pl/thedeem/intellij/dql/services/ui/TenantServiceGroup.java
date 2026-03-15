@@ -75,7 +75,7 @@ public class TenantServiceGroup implements ManagedServiceGroup {
             actions.addAction(new AnAction(
                     DQLBundle.message("services.tenantGroup.actions.configure.title"),
                     null,
-                    AllIcons.General.GearPlain
+                    DQLIcon.DT_TENANT
             ) {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent anActionEvent) {

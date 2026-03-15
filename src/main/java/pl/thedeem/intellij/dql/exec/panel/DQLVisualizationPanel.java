@@ -7,7 +7,6 @@ import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.common.Icons;
 import pl.thedeem.intellij.common.components.PanelWithToolbarActions;
 import pl.thedeem.intellij.common.components.charts.AbstractChartComponent;
 import pl.thedeem.intellij.common.components.charts.generators.CategoryChart;
@@ -17,6 +16,7 @@ import pl.thedeem.intellij.common.components.charts.generators.XYChart;
 import pl.thedeem.intellij.common.sdk.model.DQLRecord;
 import pl.thedeem.intellij.common.sdk.model.DQLResult;
 import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
 
 import java.time.Instant;
@@ -47,7 +47,7 @@ public class DQLVisualizationPanel extends AbstractChartComponent implements Pan
 
     public @NotNull AnAction[] getToolbarActions() {
         return List.of(
-                new ToggleAction(DQLBundle.message("components.visualization.chartTypes.line"), null, Icons.LINE_CHART) {
+                new ToggleAction(DQLBundle.message("components.visualization.chartTypes.line"), null, DQLIcon.LINE_CHART) {
                     @Override
                     public boolean isSelected(@NotNull AnActionEvent e) {
                         return type == ChartType.LINE;
@@ -66,7 +66,7 @@ public class DQLVisualizationPanel extends AbstractChartComponent implements Pan
                         return ActionUpdateThread.EDT;
                     }
                 },
-                new ToggleAction(DQLBundle.message("components.visualization.chartTypes.bar"), null, Icons.BAR_CHART) {
+                new ToggleAction(DQLBundle.message("components.visualization.chartTypes.bar"), null, DQLIcon.BAR_CHART) {
                     @Override
                     public boolean isSelected(@NotNull AnActionEvent e) {
                         return type == ChartType.BAR;
@@ -85,7 +85,7 @@ public class DQLVisualizationPanel extends AbstractChartComponent implements Pan
                         return ActionUpdateThread.EDT;
                     }
                 },
-                new ToggleAction(DQLBundle.message("components.visualization.chartTypes.pie"), null, Icons.PIE_CHART) {
+                new ToggleAction(DQLBundle.message("components.visualization.chartTypes.pie"), null, DQLIcon.PIE_CHART) {
                     @Override
                     public boolean isSelected(@NotNull AnActionEvent e) {
                         return type == ChartType.PIE;

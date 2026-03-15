@@ -1,15 +1,21 @@
 package pl.thedeem.intellij.dql.exec.panel;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.project.Project;
+import com.intellij.ui.OnePixelSplitter;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.components.FormattedLanguageText;
 import pl.thedeem.intellij.common.components.InformationComponent;
 import pl.thedeem.intellij.common.components.TransparentScrollPane;
 import pl.thedeem.intellij.common.sdk.errors.*;
 import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.DQLIcon;
+import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 
 import javax.swing.*;
 import javax.swing.text.html.HTMLDocument;
@@ -22,23 +28,28 @@ import java.util.Objects;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
-public class DQLExecutionErrorPanel extends BorderLayoutPanel {
+public class DQLExecutionErrorPanel extends BorderLayoutPanel implements Disposable {
+    private FormattedLanguageText queryViewer;
+
     protected DQLExecutionErrorPanel() {
         super();
-        setOpaque(false);
-        setBorder(JBUI.Borders.empty());
+        withBorder(JBUI.Borders.empty()).andTransparent();
     }
 
-    public DQLExecutionErrorPanel(@NotNull Exception e) {
-        this(getErrorMessage(e), getErrorDetails(e));
+    public DQLExecutionErrorPanel(@NotNull Exception e, @Nullable String query, @Nullable Project project) {
+        this(getErrorMessage(e), getErrorDetails(e), query, project);
     }
 
-    public DQLExecutionErrorPanel(@NotNull String message) {
-        this(message, List.of());
+    public DQLExecutionErrorPanel(@NotNull String message, @Nullable String query, @Nullable Project project) {
+        this(message, List.of(), query, project);
     }
 
-    public DQLExecutionErrorPanel(@NotNull String message, @NotNull List<String> details) {
+    public DQLExecutionErrorPanel(@NotNull String message, @NotNull List<String> details, @Nullable String query, @Nullable Project project) {
         this();
+        if (query != null && project != null) {
+            this.queryViewer = new FormattedLanguageText(DynatraceQueryLanguage.INSTANCE, project, true);
+        }
+
         JBPanel<?> errorPanel = new JBPanel<>()
                 .withBorder(JBUI.Borders.empty())
                 .andTransparent();
@@ -57,7 +68,37 @@ public class DQLExecutionErrorPanel extends BorderLayoutPanel {
         JBPanel<?> centeringWrapper = new JBPanel<>(new GridBagLayout())
                 .andTransparent();
         centeringWrapper.add(errorPanel, new GridBagConstraints());
-        addToCenter(new TransparentScrollPane(centeringWrapper));
+
+        if (query != null && project != null) {
+            OnePixelSplitter splitter = new OnePixelSplitter(false, 0.45f);
+            splitter.setFirstComponent(new TransparentScrollPane(centeringWrapper));
+            JButton showQueryButton = createQueryToggleButton(query, splitter);
+            errorPanel.add(Box.createVerticalStrut(JBUI.scale(8)));
+            errorPanel.add(showQueryButton);
+            addToCenter(splitter);
+        } else {
+            addToCenter(new TransparentScrollPane(centeringWrapper));
+        }
+    }
+
+    private @NotNull JButton createQueryToggleButton(@NotNull String query, @NotNull OnePixelSplitter splitter) {
+        JButton showQueryButton = new JButton(DQLBundle.message("components.executionError.showQuery.show"), DQLIcon.QUERY_USED);
+        showQueryButton.setAlignmentX(CENTER_ALIGNMENT);
+        showQueryButton.addActionListener(e -> {
+            boolean nowVisible = splitter.getSecondComponent() != null;
+            if (!nowVisible) {
+                splitter.setSecondComponent(queryViewer);
+                queryViewer.showResult(() -> query);
+            } else {
+                splitter.setSecondComponent(null);
+            }
+
+            showQueryButton.setText(nowVisible ?
+                    DQLBundle.message("components.executionError.showQuery.show")
+                    : DQLBundle.message("components.executionError.showQuery.hide")
+            );
+        });
+        return showQueryButton;
     }
 
     private static String getErrorMessage(@NotNull Exception exception) {
@@ -136,5 +177,12 @@ public class DQLExecutionErrorPanel extends BorderLayoutPanel {
             return String.valueOf(start);
         }
         return start + " - " + end;
+    }
+
+    @Override
+    public void dispose() {
+        if (queryViewer != null) {
+            queryViewer.dispose();
+        }
     }
 }
