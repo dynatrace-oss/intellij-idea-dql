@@ -79,7 +79,7 @@ public class DQLQueryParserServiceImplTest extends LightPlatformCodeInsightFixtu
     }
 
     @Test
-    public void shouldNotSubstituteVariableDefinitionsInStringAndCommends() {
+    public void shouldNotSubstituteVariableDefinitionsInStringAndComments() {
         String expected = """
                 /* $myVariable */
                 data record(field = "$myVariable")
