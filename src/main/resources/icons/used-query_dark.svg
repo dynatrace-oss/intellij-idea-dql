@@ -1,0 +1,29 @@
+<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+    <g id="main" mask="url(#badgeMask)">
+        <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="#25324D" stroke="#CED0D6"/>
+        <g id="console-content">
+            <path d="M5 5 L8 7 L5 9"
+                  stroke="#CED0D6"
+                  stroke-width="1"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+        </g>
+    </g>
+
+    <g id="badge" transform="translate(6.4 5.6) scale(0.7)">
+        <rect x="2.5" y="1.5" width="11" height="13" rx="1.5" stroke="#3574F0" fill="#25324D"/>
+        <rect x="5" y="5" width="6" height="1" rx="0.5" fill="#3574F0"/>
+        <rect x="5" y="7.5" width="6" height="1" rx="0.5" fill="#3574F0"/>
+        <rect x="5" y="10" width="6" height="1" rx="0.5" fill="#3574F0"/>
+    </g>
+
+    <defs>
+        <mask id="badgeMask">
+            <rect x="0" y="0" width="16" height="16" fill="white"/>
+            <g transform="translate(6.4 5.6) scale(0.7)">
+                <rect x="2.5" y="1.5" width="11" height="13" rx="1.5" stroke="black" fill="none" stroke-width="3"/>
+            </g>
+        </mask>
+    </defs>
+</svg>

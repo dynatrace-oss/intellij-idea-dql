@@ -1,6 +1,7 @@
 package pl.thedeem.intellij.dql.exec.panel;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.OnePixelSplitter;
 import com.intellij.ui.components.JBPanel;
@@ -27,7 +28,9 @@ import java.util.Objects;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
-public class DQLExecutionErrorPanel extends BorderLayoutPanel {
+public class DQLExecutionErrorPanel extends BorderLayoutPanel implements Disposable {
+    private FormattedLanguageText queryViewer;
+
     protected DQLExecutionErrorPanel() {
         super();
         withBorder(JBUI.Borders.empty()).andTransparent();
@@ -43,6 +46,9 @@ public class DQLExecutionErrorPanel extends BorderLayoutPanel {
 
     public DQLExecutionErrorPanel(@NotNull String message, @NotNull List<String> details, @Nullable String query, @Nullable Project project) {
         this();
+        if (query != null && project != null) {
+            this.queryViewer = new FormattedLanguageText(DynatraceQueryLanguage.INSTANCE, project, true);
+        }
 
         JBPanel<?> errorPanel = new JBPanel<>()
                 .withBorder(JBUI.Borders.empty())
@@ -66,7 +72,7 @@ public class DQLExecutionErrorPanel extends BorderLayoutPanel {
         if (query != null && project != null) {
             OnePixelSplitter splitter = new OnePixelSplitter(false, 0.45f);
             splitter.setFirstComponent(new TransparentScrollPane(centeringWrapper));
-            JButton showQueryButton = createQueryToggleButton(query, splitter, project);
+            JButton showQueryButton = createQueryToggleButton(query, splitter);
             errorPanel.add(Box.createVerticalStrut(JBUI.scale(8)));
             errorPanel.add(showQueryButton);
             addToCenter(splitter);
@@ -75,19 +81,15 @@ public class DQLExecutionErrorPanel extends BorderLayoutPanel {
         }
     }
 
-    private static @NotNull JButton createQueryToggleButton(@NotNull String query, @NotNull OnePixelSplitter splitter, @NotNull Project project) {
-        JButton showQueryButton = new JButton(DQLBundle.message("components.executionError.showQuery.show"), DQLIcon.SHOW_QUERY);
+    private @NotNull JButton createQueryToggleButton(@NotNull String query, @NotNull OnePixelSplitter splitter) {
+        JButton showQueryButton = new JButton(DQLBundle.message("components.executionError.showQuery.show"), DQLIcon.QUERY_USED);
         showQueryButton.setAlignmentX(CENTER_ALIGNMENT);
         showQueryButton.addActionListener(e -> {
             boolean nowVisible = splitter.getSecondComponent() != null;
             if (!nowVisible) {
-                FormattedLanguageText queryViewer = new FormattedLanguageText(DynatraceQueryLanguage.INSTANCE, project, true);
                 splitter.setSecondComponent(queryViewer);
                 queryViewer.showResult(() -> query);
             } else {
-                if (splitter.getSecondComponent() instanceof FormattedLanguageText viewer) {
-                    viewer.dispose();
-                }
                 splitter.setSecondComponent(null);
             }
 
@@ -175,5 +177,12 @@ public class DQLExecutionErrorPanel extends BorderLayoutPanel {
             return String.valueOf(start);
         }
         return start + " - " + end;
+    }
+
+    @Override
+    public void dispose() {
+        if (queryViewer != null) {
+            queryViewer.dispose();
+        }
     }
 }

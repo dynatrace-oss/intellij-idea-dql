@@ -10,7 +10,6 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.common.Icons;
 import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.common.components.FormattedLanguageText;
 import pl.thedeem.intellij.common.components.TransparentScrollPane;
@@ -81,17 +80,17 @@ public class DQLExecutionResult extends BorderLayoutPanel {
         group.addAction(createModeToggleAction(
                 ResultsDisplayMode.VISUALIZATION,
                 DQLBundle.message("components.executionResult.actions.visualizationView.title"),
-                Icons.PIE_CHART
+                DQLIcon.PIE_CHART
         ));
         group.addAction(createModeToggleAction(
                 ResultsDisplayMode.METADATA,
                 DQLBundle.message("components.executionResult.actions.metadataView.title"),
-                AllIcons.Actions.Annotate
+                DQLIcon.QUERY_METADATA
         ));
         group.addAction(createModeToggleAction(
                 ResultsDisplayMode.USED_QUERY,
                 DQLBundle.message("components.executionResult.actions.dqlQueryView.title"),
-                DQLIcon.SHOW_QUERY
+                DQLIcon.QUERY_USED
         ));
         group.addAction(new AnAction(
                 DQLBundle.message("components.executionResult.actions.saveToFile.title"),

@@ -2,6 +2,7 @@ package pl.thedeem.intellij.dql.editor.gutter;
 
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
+import com.intellij.icons.AllIcons;
 import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -16,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFile;
-import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.actions.ExecuteDQLQueryAction;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
@@ -32,7 +32,7 @@ public class DQLFileQueryExecutionLineMarkerProvider extends AbstractDQLQueryLin
 
     @Override
     public @NotNull Icon getIcon() {
-        return DQLIcon.GUTTER_EXECUTE_DQL;
+        return AllIcons.Actions.Execute;
     }
 
     @Override

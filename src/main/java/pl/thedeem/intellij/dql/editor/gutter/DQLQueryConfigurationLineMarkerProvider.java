@@ -34,7 +34,7 @@ public class DQLQueryConfigurationLineMarkerProvider extends AbstractDQLQueryLin
 
     @Override
     public @NotNull Icon getIcon() {
-        return DQLIcon.GUTTER_EXECUTE_SETTINGS;
+        return DQLIcon.DT_SETTINGS;
     }
 
     @Override

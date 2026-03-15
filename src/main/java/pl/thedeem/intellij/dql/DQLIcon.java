@@ -1,6 +1,7 @@
 package pl.thedeem.intellij.dql;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.util.IconLoader;
 import pl.thedeem.intellij.common.Icons;
 
 import javax.swing.*;
@@ -24,10 +25,20 @@ public interface DQLIcon extends Icons {
     Icon DQL_ARRAY = AllIcons.Debugger.Db_array;
     Icon DQL_RECORD = AllIcons.FileTypes.Json;
     Icon INTENTION = AllIcons.Actions.Edit;
-    Icon SHOW_QUERY = Icons.scaleToBottomRight(AllIcons.Debugger.Console, AllIcons.General.Balloon, 0.5f);
-    Icon GUTTER_EXECUTE_DQL = Icons.scaleToBottomRight(AllIcons.Actions.Execute, DYNATRACE_LOGO, 0.5f);
-    Icon GUTTER_EXECUTE_SETTINGS = Icons.scaleToBottomRight(AllIcons.General.GearPlain, DYNATRACE_LOGO, 0.5f);
-    Icon QUERY_CONSOLE = Icons.scaleToBottomRight(AllIcons.General.ProjectTab, DYNATRACE_LOGO, 0.5f);
-    Icon MANAGE_TENANTS = Icons.scaleToBottomRight(AllIcons.Actions.Annotate, DYNATRACE_LOGO, 0.5f);
+
+    Icon QUERY_CONSOLE = IconLoader.getIcon("/icons/dt-execute.svg", Icons.class);
+    Icon DT_SETTINGS = IconLoader.getIcon("/icons/dt-settings.svg", Icons.class);
+    Icon DT_TENANT = IconLoader.getIcon("/icons/dt-tenant.svg", Icons.class);
+    Icon QUERY_METADATA = IconLoader.getIcon("/icons/query-metadata.svg", Icons.class);
+    Icon QUERY_USED = IconLoader.getIcon("/icons/used-query.svg", Icons.class);
+
     Icon EXTERNAL_VALIDATION_ENABLED = Icons.scaleToBottomRight(AllIcons.General.InspectionsOK, AllIcons.Actions.Lightning, 0.5f);
+
+    Icon LINE_CHART = IconLoader.getIcon("/icons/charts/line-chart.svg", Icons.class);
+    Icon BAR_CHART = IconLoader.getIcon("/icons/charts/bar-chart.svg", Icons.class);
+    Icon PIE_CHART = IconLoader.getIcon("/icons/charts/pie-chart.svg", Icons.class);
+    Icon LEGEND_SHOW = AllIcons.Actions.Show;
+    Icon LEGEND_HIDE = IconLoader.getIcon("/icons/charts/legend-hide.svg", Icons.class);
+    Icon LEGEND_HIDE_OTHERS = IconLoader.getIcon("/icons/charts/legend-hide-others.svg", Icons.class);
+    Icon LEGEND_SHOW_ALL = IconLoader.getIcon("/icons/charts/legend-show-all.svg", Icons.class);
 }

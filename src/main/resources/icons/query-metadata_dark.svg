@@ -1,0 +1,26 @@
+<!-- Copyright 2000-2022 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license. -->
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g id="main" mask="url(#badgeMask)">
+        <rect x="2.5" y="1.5" width="11" height="13" rx="1.5" stroke="#CED0D6"/>
+        <rect x="5" y="5" width="6" height="1" rx="0.5" fill="#CED0D6"/>
+        <rect x="5" y="7.5" width="6" height="1" rx="0.5" fill="#CED0D6"/>
+    </g>
+
+    <g id="badge" transform="translate(5 6.2) scale(0.7)">
+        <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M3.5 7.77777V11.75C3.5 11.9394 3.607 12.1125 3.77639 12.1972L7.77639 14.1972C7.91716 14.2676 8.08284 14.2676 8.22361 14.1972L12.2236 12.1972C12.393 12.1125 12.5 11.9394 12.5 11.75V7.77777L11.5 8.33333V11.441L8 13.191L4.5 11.441V8.33333L3.5 7.77777Z"
+              fill="#548AF7"/>
+        <path d="M15 6.38889L8 2.5L1 6.38889L8 10.2778L15 6.38889ZM15 6.38889V10.2778" stroke="#548AF7"
+              stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <defs>
+        <mask id="badgeMask">
+            <rect x="0" y="0" width="16" height="16" fill="white"/>
+            <g transform="translate(5 6.2) scale(0.7)">
+                <path d="M3.5 7.77777V11.75C3.5 11.9394 3.607 12.1125 3.77639 12.1972L7.77639 14.1972C7.91716 14.2676 8.08284 14.2676 8.22361 14.1972L12.2236 12.1972C12.393 12.1125 12.5 11.9394 12.5 11.75V7.77777L11.5 8.33333V11.441L8 13.191L4.5 11.441V8.33333L3.5 7.77777Z M15 6.38889L8 2.5L1 6.38889L8 10.2778L15 6.38889ZM15 6.38889V10.2778"
+                      fill="none" stroke="black" stroke-width="3"/>
+            </g>
+        </mask>
+    </defs>
+</svg>

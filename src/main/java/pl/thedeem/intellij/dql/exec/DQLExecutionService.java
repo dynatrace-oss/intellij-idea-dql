@@ -93,6 +93,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
 
     @Override
     public void dispose() {
+        this.contentPanel.removeAll();
         stopExecution();
     }
 

@@ -18,8 +18,8 @@ import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.AbstractRenderer;
-import pl.thedeem.intellij.common.Icons;
 import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.DQLIcon;
 
 import javax.swing.*;
 import java.awt.*;
@@ -155,7 +155,7 @@ public class ChartLegendPanel extends JBScrollPane {
         String toggleLabel = item.visible()
                 ? DQLBundle.message("components.visualization.legend.contextMenu.hide")
                 : DQLBundle.message("components.visualization.legend.contextMenu.show");
-        Icon toggleIcon = item.visible() ? Icons.LEGEND_HIDE : Icons.LEGEND_SHOW;
+        Icon toggleIcon = item.visible() ? DQLIcon.LEGEND_HIDE : DQLIcon.LEGEND_SHOW;
 
         DefaultActionGroup group = new DefaultActionGroup();
         group.add(new AnAction(toggleLabel, null, toggleIcon) {
@@ -170,7 +170,7 @@ public class ChartLegendPanel extends JBScrollPane {
             }
         });
         group.addSeparator();
-        group.add(new AnAction(DQLBundle.message("components.visualization.legend.contextMenu.hideOthers"), null, Icons.LEGEND_HIDE_OTHERS) {
+        group.add(new AnAction(DQLBundle.message("components.visualization.legend.contextMenu.hideOthers"), null, DQLIcon.LEGEND_HIDE_OTHERS) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent ev) {
                 hideOthers(index);
@@ -181,7 +181,7 @@ public class ChartLegendPanel extends JBScrollPane {
                 return ActionUpdateThread.EDT;
             }
         });
-        group.add(new AnAction(DQLBundle.message("components.visualization.legend.contextMenu.showAll"), null, Icons.LEGEND_SHOW_ALL) {
+        group.add(new AnAction(DQLBundle.message("components.visualization.legend.contextMenu.showAll"), null, DQLIcon.LEGEND_SHOW_ALL) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent ev) {
                 showAll();
