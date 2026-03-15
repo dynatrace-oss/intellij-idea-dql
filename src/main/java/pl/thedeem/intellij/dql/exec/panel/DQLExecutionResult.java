@@ -2,6 +2,7 @@ package pl.thedeem.intellij.dql.exec.panel;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.json.JsonLanguage;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.JBCardLayout;
@@ -23,7 +24,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.ZonedDateTime;
 
-public class DQLExecutionResult extends BorderLayoutPanel {
+public class DQLExecutionResult extends BorderLayoutPanel implements Disposable {
     private final Project project;
     private final DefaultActionGroup customActions;
     private final DefaultActionGroup panelToolbar;
@@ -156,6 +157,12 @@ public class DQLExecutionResult extends BorderLayoutPanel {
 
     public @NotNull ActionGroup getToolbarActions() {
         return panelToolbar;
+    }
+
+    @Override
+    public void dispose() {
+        queryPanel.dispose();
+        jsonPanel.dispose();
     }
 
     private @NotNull AnAction createModeToggleAction(@NotNull ResultsDisplayMode mode, @NotNull String text, @NotNull Icon icon) {

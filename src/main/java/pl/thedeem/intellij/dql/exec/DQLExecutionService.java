@@ -4,6 +4,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.ActivityTracker;
 import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -48,6 +49,7 @@ import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
 import javax.swing.*;
+import java.awt.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -93,7 +95,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
 
     @Override
     public void dispose() {
-        this.contentPanel.removeAll();
+        ApplicationManager.getApplication().invokeLater(this::disposeAndClearContent);
         stopExecution();
     }
 
@@ -113,7 +115,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
 
     public void startExecution() {
         executionTime = Instant.now().atZone(ZoneId.systemDefault());
-        contentPanel.removeAll();
+        disposeAndClearContent();
         additionalActions.removeAll();
         if (configuration.query() == null) {
             contentPanel.addToCenter(new DQLExecutionErrorPanel(
@@ -167,11 +169,11 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
             return;
         }
         stopping.set(true);
-        contentPanel.removeAll();
-        contentPanel.addToCenter(new InformationComponent(
-                DQLBundle.message("services.executeDQL.cancelRequested", this.requestToken),
-                AllIcons.General.Information)
-        );
+        String cancelMessage = DQLBundle.message("services.executeDQL.cancelRequested", this.requestToken);
+        ApplicationManager.getApplication().invokeLater(() -> {
+            disposeAndClearContent();
+            contentPanel.addToCenter(new InformationComponent(cancelMessage, AllIcons.General.Information));
+        });
         ScheduledFuture<?> scheduledFuture = pollingFutureRef.get();
         if (scheduledFuture != null && !scheduledFuture.isCancelled() && !scheduledFuture.isDone() && this.requestToken != null) {
             scheduledFuture.cancel(true);
@@ -316,7 +318,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
                             processHandler.notifyExecutionFinished();
                             this.loading.set(false);
                             ApplicationManager.getApplication().invokeLater(() -> {
-                                this.contentPanel.removeAll();
+                                disposeAndClearContent();
                                 if (result.getResult() != null) {
                                     DQLExecutionResult resultPanel = new DQLExecutionResult(project, result.getResult(), executionTime, configuration);
                                     this.contentPanel.add(resultPanel);
@@ -355,7 +357,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
                 pollingFutureRef.get().cancel(true);
             }
             ApplicationManager.getApplication().invokeLater(() -> {
-                contentPanel.removeAll();
+                disposeAndClearContent();
                 contentPanel.add(new DQLExecutionErrorPanel(e, configuration.query(), project));
                 contentPanel.revalidate();
                 contentPanel.repaint();
@@ -425,5 +427,14 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
                     .setInitialConfiguration(this.configuration);
         }
         return new OpenFileDescriptor(project, virtualFile);
+    }
+
+    private void disposeAndClearContent() {
+        for (Component component : contentPanel.getComponents()) {
+            if (component instanceof Disposable disposable) {
+                disposable.dispose();
+            }
+        }
+        contentPanel.removeAll();
     }
 }
