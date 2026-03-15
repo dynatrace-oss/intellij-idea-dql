@@ -21,10 +21,12 @@ import pl.thedeem.intellij.dql.DQLBundle;
 
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 public class FormattedLanguageText extends BorderLayoutPanel implements Disposable {
     private final LoadingPanel processIcon;
     private final EditorTextField editorField;
+    private volatile Future<?> pendingFoldingTask;
 
     public FormattedLanguageText(@NotNull Language language, @NotNull Project project, boolean isViewer) {
         withBorder(JBUI.Borders.empty()).andTransparent();
@@ -66,13 +68,12 @@ public class FormattedLanguageText extends BorderLayoutPanel implements Disposab
                     if (editorField.getEditor() == null) {
                         return;
                     }
-                    ReadAction.nonBlocking(() -> {
+                    pendingFoldingTask = ReadAction.nonBlocking(() -> {
                                 if (editorField.getEditor() != null) {
                                     return CodeFoldingManager.getInstance(project).updateFoldRegionsAsync(editorField.getEditor(), true);
                                 }
                                 return null;
                             })
-                            .expireWith(FormattedLanguageText.this)
                             .finishOnUiThread(ModalityState.any(), runnable -> {
                                 if (runnable != null) {
                                     runnable.run();
@@ -97,6 +98,9 @@ public class FormattedLanguageText extends BorderLayoutPanel implements Disposab
 
     @Override
     public void dispose() {
+        if (pendingFoldingTask != null) {
+            pendingFoldingTask.cancel(true);
+        }
         processIcon.dispose();
     }
 }
