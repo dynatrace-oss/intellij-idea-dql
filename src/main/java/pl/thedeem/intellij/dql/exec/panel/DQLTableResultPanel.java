@@ -19,6 +19,7 @@ import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.actions.CustomPopupAction;
 import pl.thedeem.intellij.common.components.ComponentsUtils;
 import pl.thedeem.intellij.common.components.InformationComponent;
 import pl.thedeem.intellij.common.components.PanelWithToolbarActions;
@@ -71,20 +72,6 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
             this.table = createTableComponent(project);
             this.sorter = PagingRowSorter.install(table, 1000);
             addToCenter(createTableView(project));
-        }
-    }
-
-    public void showColumnSettingsPopup(@NotNull AnActionEvent e) {
-        if (table == null || result == null) {
-            return;
-        }
-        JBPopup popup = table.createColumnsReorderPopup(result.getColumns());
-        Component c = e.getData(PlatformDataKeys.CONTEXT_COMPONENT);
-        if (e.getInputEvent() != null && e.getInputEvent().getComponent() != null) {
-            c = e.getInputEvent().getComponent();
-        }
-        if (c != null) {
-            popup.showUnderneathOf(c);
         }
     }
 
@@ -209,77 +196,21 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
     @Override
     public @NotNull AnAction[] getToolbarActions() {
         List<AnAction> actions = new ArrayList<>();
-        actions.add(new AnAction(DQLBundle.message("components.executionResult.actions.changeColumnsList.title"), null, AllIcons.Actions.PreviewDetails) {
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent e) {
-                showColumnSettingsPopup(e);
-            }
-        });
+        actions.add(new CustomPopupAction(
+                () -> DQLBundle.message("components.executionResult.actions.changeColumnsList.title"),
+                AllIcons.Nodes.DataColumn,
+                () -> table == null || result == null ? null : table.createColumnsReorderPopup(result.getColumns())
+        ));
+
         if (sorter != null) {
-            actions.add(new ToggleAction(DQLBundle.message("components.results.table.filter.action.title"), null, AllIcons.General.Filter) {
+            actions.add(new CustomPopupAction(
+                    () -> DQLBundle.message("components.results.table.filter.action.title"),
+                    AllIcons.General.Filter,
+                    this::createFilterTablePopup) {
                 @Override
-                public boolean isSelected(@NotNull AnActionEvent e) {
-                    return sorter.isFilterActive();
-                }
-
-                @Override
-                public void setSelected(@NotNull AnActionEvent e, boolean selected) {
-                    DefaultTableModel tableModel = createFilterTableModel();
-                    JBTable filterTable = createFilterEditorTable(tableModel);
-
-                    JPanel panel = ToolbarDecorator.createDecorator(filterTable)
-                            .setAddAction(button -> {
-                                tableModel.addRow(new Object[]{"=", ""});
-                                int newRow = tableModel.getRowCount() - 1;
-                                filterTable.setRowSelectionInterval(newRow, newRow);
-                                filterTable.editCellAt(newRow, 1);
-                                Component editorComp = filterTable.getEditorComponent();
-                                if (editorComp != null) {
-                                    editorComp.requestFocusInWindow();
-                                }
-                            })
-                            .setRemoveAction(button -> {
-                                if (filterTable.isEditing()) {
-                                    filterTable.getCellEditor().cancelCellEditing();
-                                }
-                                int[] rows = filterTable.getSelectedRows();
-                                for (int i = rows.length - 1; i >= 0; i--) {
-                                    tableModel.removeRow(rows[i]);
-                                }
-                            })
-                            .addExtraAction(new AnAction(DQLBundle.message("components.results.table.filter.action.clearAll"), null, AllIcons.Actions.GC) {
-                                @Override
-                                public void actionPerformed(@NotNull AnActionEvent e) {
-                                    if (filterTable.isEditing()) {
-                                        filterTable.getCellEditor().cancelCellEditing();
-                                    }
-                                    tableModel.setRowCount(0);
-                                }
-                            })
-                            .disableUpDownActions()
-                            .createPanel();
-                    panel.setBorder(JBUI.Borders.empty(5));
-
-                    tableModel.addTableModelListener(ev -> syncAndApplyFilters(tableModel));
-
-                    JBPopup popup = JBPopupFactory.getInstance()
-                            .createComponentPopupBuilder(panel, filterTable)
-                            .setRequestFocus(true)
-                            .setResizable(true)
-                            .setMovable(true)
-                            .setCancelOnOtherWindowOpen(false)
-                            .createPopup();
-
-
-                    Component component = e.getData(PlatformDataKeys.CONTEXT_COMPONENT);
-                    if (e.getInputEvent() != null && e.getInputEvent().getComponent() != null) {
-                        component = e.getInputEvent().getComponent();
-                    }
-                    if (component != null) {
-                        popup.showUnderneathOf(component);
-                    } else {
-                        popup.showInFocusCenter();
-                    }
+                public void update(@NotNull AnActionEvent e) {
+                    super.update(e);
+                    Toggleable.setSelected(e.getPresentation(), sorter.isFilterActive());
                 }
 
                 @Override
@@ -292,69 +223,52 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
         return actions.toArray(new AnAction[]{});
     }
 
-    private static final class DQLCellRenderer extends CommonTableCellRenderer {
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            if (value instanceof ZonedDateTime zonedDateTime) {
-                setText(zonedDateTime.format(DQLUtil.USER_FRIENDLY_DATE_FORMATTER));
-            }
-            return c;
-        }
-    }
+    private @NotNull JBPopup createFilterTablePopup() {
+        DefaultTableModel tableModel = createFilterTableModel();
+        JBTable filterTable = createFilterEditorTable(tableModel);
 
-    private static final class NullableBooleanRenderer extends CommonTableCellRenderer {
-        private final TableCellRenderer delegate = new JBTable().getDefaultRenderer(Boolean.class);
-        private final JBLabel empty = new JBLabel();
+        JPanel panel = ToolbarDecorator.createDecorator(filterTable)
+                .setAddAction(button -> {
+                    tableModel.addRow(new Object[]{"=", ""});
+                    int newRow = tableModel.getRowCount() - 1;
+                    filterTable.setRowSelectionInterval(newRow, newRow);
+                    filterTable.editCellAt(newRow, 1);
+                    Component editorComp = filterTable.getEditorComponent();
+                    if (editorComp != null) {
+                        editorComp.requestFocusInWindow();
+                    }
+                })
+                .setRemoveAction(button -> {
+                    if (filterTable.isEditing()) {
+                        filterTable.getCellEditor().cancelCellEditing();
+                    }
+                    int[] rows = filterTable.getSelectedRows();
+                    for (int i = rows.length - 1; i >= 0; i--) {
+                        tableModel.removeRow(rows[i]);
+                    }
+                })
+                .addExtraAction(new AnAction(DQLBundle.message("components.results.table.filter.action.clearAll"), null, AllIcons.Actions.GC) {
+                    @Override
+                    public void actionPerformed(@NotNull AnActionEvent e) {
+                        if (filterTable.isEditing()) {
+                            filterTable.getCellEditor().cancelCellEditing();
+                        }
+                        tableModel.setRowCount(0);
+                    }
+                })
+                .disableUpDownActions()
+                .createPanel();
+        panel.setBorder(JBUI.Borders.empty(5));
 
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component original = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            if (value == null && original instanceof JComponent component) {
-                empty.setOpaque(component.isOpaque());
-                empty.setBackground(component.getBackground());
-                empty.setForeground(component.getForeground());
-                empty.setBorder(component.getBorder());
-                empty.setText("");
-                empty.setIcon(null);
-                return empty;
-            }
-            return original;
-        }
-    }
+        tableModel.addTableModelListener(ev -> syncAndApplyFilters(tableModel));
 
-    private static final class DQLHeaderRenderer extends CommonTableHeaderRenderer {
-        private final Map<String, String> columnTypes;
-
-        public DQLHeaderRenderer(Map<String, String> columnTypes, JTableHeader header) {
-            super(header.getDefaultRenderer());
-            this.columnTypes = columnTypes;
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            if (c instanceof JLabel label) {
-                String columnName = table.getColumnName(column);
-                String columnType = columnTypes.get(columnName);
-                JLabel cResult = label;
-                if (label.getIcon() == null && StringUtil.isNotEmpty(columnType)) {
-                    Icon icon = switch (columnType) {
-                        case "long", "double", "number" -> DQLIcon.DQL_NUMBER;
-                        case "array" -> DQLIcon.DQL_ARRAY;
-                        case "record" -> DQLIcon.DQL_RECORD;
-                        case "boolean" -> DQLIcon.DQL_BOOLEAN;
-                        case "timestamp", "timeframe" -> DQLIcon.DQL_TIME_FIELD;
-                        default -> DQLIcon.DQL_FIELD;
-                    };
-                    cResult = new JLabel(label.getText(), icon, JLabel.LEFT);
-                    cResult.setToolTipText(columnType);
-                }
-                cResult.setHorizontalAlignment(SwingConstants.CENTER);
-                return cResult;
-            }
-            return c;
-        }
+        return JBPopupFactory.getInstance()
+                .createComponentPopupBuilder(panel, filterTable)
+                .setRequestFocus(true)
+                .setResizable(true)
+                .setMovable(true)
+                .setCancelOnOtherWindowOpen(false)
+                .createPopup();
     }
 
     private void showCellContextMenu(@NotNull MouseEvent e, @NotNull JTable table, @NotNull Map<String, String> columnTypes, @NotNull Project project) {
@@ -519,5 +433,70 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
     }
 
     public record TableFilter(boolean include, @NotNull String text) {
+    }
+
+    private static final class DQLCellRenderer extends CommonTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (value instanceof ZonedDateTime zonedDateTime) {
+                setText(zonedDateTime.format(DQLUtil.USER_FRIENDLY_DATE_FORMATTER));
+            }
+            return c;
+        }
+    }
+
+    private static final class NullableBooleanRenderer extends CommonTableCellRenderer {
+        private final TableCellRenderer delegate = new JBTable().getDefaultRenderer(Boolean.class);
+        private final JBLabel empty = new JBLabel();
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component original = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (value == null && original instanceof JComponent component) {
+                empty.setOpaque(component.isOpaque());
+                empty.setBackground(component.getBackground());
+                empty.setForeground(component.getForeground());
+                empty.setBorder(component.getBorder());
+                empty.setText("");
+                empty.setIcon(null);
+                return empty;
+            }
+            return original;
+        }
+    }
+
+    private static final class DQLHeaderRenderer extends CommonTableHeaderRenderer {
+        private final Map<String, String> columnTypes;
+
+        public DQLHeaderRenderer(Map<String, String> columnTypes, JTableHeader header) {
+            super(header.getDefaultRenderer());
+            this.columnTypes = columnTypes;
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (c instanceof JLabel label) {
+                String columnName = table.getColumnName(column);
+                String columnType = columnTypes.get(columnName);
+                JLabel cResult = label;
+                if (label.getIcon() == null && StringUtil.isNotEmpty(columnType)) {
+                    Icon icon = switch (columnType) {
+                        case "long", "double", "number" -> DQLIcon.DQL_NUMBER;
+                        case "array" -> DQLIcon.DQL_ARRAY;
+                        case "record" -> DQLIcon.DQL_RECORD;
+                        case "boolean" -> DQLIcon.DQL_BOOLEAN;
+                        case "timestamp", "timeframe" -> DQLIcon.DQL_TIME_FIELD;
+                        default -> DQLIcon.DQL_FIELD;
+                    };
+                    cResult = new JLabel(label.getText(), icon, JLabel.LEFT);
+                    cResult.setToolTipText(columnType);
+                }
+                cResult.setHorizontalAlignment(SwingConstants.CENTER);
+                return cResult;
+            }
+            return c;
+        }
     }
 }
