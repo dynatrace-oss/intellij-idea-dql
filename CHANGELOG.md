@@ -17,6 +17,8 @@
   filters.
 - The DQL execution error panel now includes a "Show Executed Query" button that reveals the DQL query that was used
   for the failed execution.
+- Small UI updates:
+  - Changing used icons in multiple places to better match the action they represent
 
 ### Bug fixes
 
