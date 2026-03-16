@@ -19,7 +19,7 @@ public class CustomPopupAction extends DefaultActionGroup {
     public CustomPopupAction(
             @NotNull Supplier<@NlsActions.ActionText String> name,
             @Nullable Icon icon,
-            @NotNull Supplier<JBPopup> popupSupplier
+            @NotNull Supplier<@Nullable JBPopup> popupSupplier
     ) {
         super(name, true);
         this.popupSupplier = popupSupplier;
@@ -33,13 +33,19 @@ public class CustomPopupAction extends DefaultActionGroup {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         super.actionPerformed(e);
+        JBPopup popup = popupSupplier.get();
+        if (popup == null) {
+            return;
+        }
         Component c = e.getData(PlatformDataKeys.CONTEXT_COMPONENT);
         if (e.getInputEvent() != null && e.getInputEvent().getComponent() != null) {
             c = e.getInputEvent().getComponent();
         }
-        JBPopup popup = popupSupplier.get();
-        if (c != null && popup != null) {
+
+        if (c != null) {
             popup.showUnderneathOf(c);
+        } else {
+            popup.showInFocusCenter();
         }
     }
 }
