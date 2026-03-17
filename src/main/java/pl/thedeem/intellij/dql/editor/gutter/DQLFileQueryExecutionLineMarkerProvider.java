@@ -103,12 +103,12 @@ public class DQLFileQueryExecutionLineMarkerProvider extends AbstractDQLQueryLin
                 }
 
                 QueryConfiguration configuration = service.getQueryConfiguration(marked.getContainingFile()).copy();
-                configuration.setQuery(query.getText());
                 DataContext customContext = SimpleDataContext.builder()
                         .setParent(original.getDataContext())
                         .add(CommonDataKeys.PSI_FILE, InjectedLanguageManager.getInstance(marked.getProject()).getTopLevelFile(marked))
                         .add(CommonDataKeys.PSI_ELEMENT, marked)
                         .add(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, configuration)
+                        .add(ExecuteDQLQueryAction.DQL_QUERY, query.getText())
                         .build();
                 return original.withDataContext(customContext);
             }

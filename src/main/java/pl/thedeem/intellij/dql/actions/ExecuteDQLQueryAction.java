@@ -25,6 +25,7 @@ import java.util.Objects;
 
 public class ExecuteDQLQueryAction extends AnAction {
     public static final DataKey<String> PREFERRED_EXECUTION_NAME = DataKey.create("DQL_PREFERRED_EXECUTION_NAME");
+    public static final DataKey<String> DQL_QUERY = DataKey.create("DQL_QUERY");
 
     @Override
     public void update(@NotNull AnActionEvent original) {
@@ -63,21 +64,31 @@ public class ExecuteDQLQueryAction extends AnAction {
             return;
         }
         Project project = file.getProject();
+        if (e.getData(DQL_QUERY) != null) {
+            QueryConfiguration copy = configuration.copy();
+            copy.setQuery(e.getData(DQL_QUERY));
+            executeDQLQuery(e, file, copy, project);
+            return;
+        }
         DQLQuerySelectorService.getInstance().getQueryFromEditorContext(file, editor, (query) -> {
             QueryConfiguration copy = configuration.copy();
             copy.setQuery(query);
-            DQLExecutionService service = new DQLExecutionService(
-                    DQLBundle.message(
-                            "services.executeDQL.serviceName",
-                            Objects.requireNonNullElseGet(e.getData(PREFERRED_EXECUTION_NAME), file::getName)
-                    ),
-                    copy,
-                    project,
-                    new DQLProcessHandler()
-            );
-            ProjectServicesManager.getInstance(project).registerService(service);
-            service.startExecution();
+            executeDQLQuery(e, file, copy, project);
         });
+    }
+
+    private static void executeDQLQuery(@NotNull AnActionEvent e, @NotNull PsiFile file, @NotNull QueryConfiguration configuration, @NotNull Project project) {
+        DQLExecutionService service = new DQLExecutionService(
+                DQLBundle.message(
+                        "services.executeDQL.serviceName",
+                        Objects.requireNonNullElseGet(e.getData(PREFERRED_EXECUTION_NAME), file::getName)
+                ),
+                configuration,
+                project,
+                new DQLProcessHandler()
+        );
+        ProjectServicesManager.getInstance(project).registerService(service);
+        service.startExecution();
     }
 
     protected @NotNull AnActionEvent updateEvent(@NotNull AnActionEvent e) {

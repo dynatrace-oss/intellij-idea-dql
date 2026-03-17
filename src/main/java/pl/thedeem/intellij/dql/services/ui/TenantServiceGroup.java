@@ -33,7 +33,7 @@ public class TenantServiceGroup implements ManagedServiceGroup {
     @Override
     public @NotNull ItemPresentation getPresentation() {
         DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(tenantId);
-        return new StandardItemPresentation(tenant != null ? tenant.getName() : tenantId, null, DQLIcon.DYNATRACE_LOGO);
+        return new StandardItemPresentation(tenant != null ? tenant.getName() : tenantId, null, DQLIcon.DT_TENANT);
     }
 
     @Override
