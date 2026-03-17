@@ -2,7 +2,7 @@ package pl.thedeem.intellij.common.sdk.errors;
 
 import java.util.Objects;
 
-public abstract class DQLInvalidResponseException extends DQLApiException {
+public abstract class DQLInvalidResponseException extends DTIoException {
     public DQLInvalidResponseException(String message) {
         super(message);
     }

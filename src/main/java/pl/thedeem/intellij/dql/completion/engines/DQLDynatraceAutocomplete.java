@@ -2,7 +2,6 @@ package pl.thedeem.intellij.dql.completion.engines;
 
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
-import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
@@ -22,7 +21,6 @@ import pl.thedeem.intellij.common.sdk.model.DQLAutocompleteResult;
 import pl.thedeem.intellij.common.sdk.model.DQLSuggestion;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.services.notifications.DQLNotificationsService;
@@ -97,7 +95,7 @@ public class DQLDynatraceAutocomplete {
                     try {
                         ProgressManager.checkCanceled();
                         DQLQueryParserService parser = DQLQueryParserService.getInstance();
-                        String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
+                        String apiToken = DynatraceTenantsService.getInstance().resolveApiToken(project, tenant);
                         DQLQueryParserService.ParseResult substitutedQuery = ReadAction.nonBlocking(() -> parser.getSubstitutedQuery(parameters.getOriginalFile(), configuration.definedVariables())).executeSynchronously();
                         return client.autocomplete(
                                 new DQLAutocompletePayload(substitutedQuery.parsed(), (long) substitutedQuery.getOriginalOffset(parameters.getPosition().getTextOffset())),

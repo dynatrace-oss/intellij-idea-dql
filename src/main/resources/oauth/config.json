@@ -1,0 +1,48 @@
+{
+  "environments": [
+    {
+      "domains": [
+        "dev.apps.dynatracelabs.com"
+      ],
+      "authUrl": "https://sso-dev.dynatracelabs.com/oauth2/authorize",
+      "tokenUrl": "https://dev.token.dynatracelabs.com/sso/oauth2/token",
+      "clientId": "dt0s12.intellij-dql-dev"
+    },
+    {
+      "domains": [
+        "sprint.apps.dynatracelabs.com"
+      ],
+      "authUrl": "https://sso-sprint.dynatracelabs.com/oauth2/authorize",
+      "tokenUrl": "https://hard.token.dynatracelabs.com/sso/oauth2/token",
+      "clientId": "dt0s12.intellij-dql-sprint"
+    },
+    {
+      "authUrl": "https://sso.dynatrace.com/oauth2/authorize",
+      "tokenUrl": "https://token.dynatrace.com/sso/oauth2/token",
+      "clientId": "dt0s12.intellij-dql-prod"
+    }
+  ],
+  "defaultScopes": [
+    "openid",
+    "offline_access",
+    "storage:buckets:read",
+    "storage:logs:read",
+    "storage:spans:read",
+    "storage:events:read",
+    "storage:bizevents:read",
+    "storage:metrics:read",
+    "storage:entities:read",
+    "storage:system:read",
+    "storage:fieldsets:read",
+    "storage:fieldset-definitions:read",
+    "storage:filter-segments:read",
+    "storage:bucket-definitions:read",
+    "storage:security.events:read",
+    "storage:application.snapshots:read",
+    "storage:smartscape:read",
+    "storage:user.events:read",
+    "storage:user.sessions:read",
+    "storage:user.replays:read"
+  ]
+}
+

@@ -288,6 +288,8 @@
 
         <!-- Services -->
         <applicationService serviceImplementation="pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService"/>
+        <applicationService serviceInterface="pl.thedeem.intellij.dql.services.dynatrace.DynatraceOAuthService"
+                            serviceImplementation="pl.thedeem.intellij.dql.services.dynatrace.DynatraceOAuthServiceImpl"/>
         <applicationService
                 serviceImplementation="pl.thedeem.intellij.dql.services.parameters.DQLParametersCalculatorServiceImpl"
                 serviceInterface="pl.thedeem.intellij.dql.services.parameters.DQLParametersCalculatorService"/>

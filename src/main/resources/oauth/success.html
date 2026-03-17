@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynatrace | Authentication Success</title>
+    <style>
+        :root {
+            --bg-color: #19192c;
+            --surface-color: #292a3e;
+            --text-primary: #ffffff;
+            --text-secondary: #b7b7b7;
+            --dt-green: #73ad21;
+            --dt-blue: #323248;
+            --dt-blue-hover: #2f2f4f;
+            --border-color: #32363c;
+            --dt-red: #dc172a;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'BerninaSans', 'Barlow', 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: var(--surface-color);
+            width: 100%;
+            max-width: 440px;
+            padding: 48px;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .status-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(115, 173, 33, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 400;
+            margin: 0 0 12px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 32px;
+        }
+
+        .btn {
+            background-color: var(--dt-blue);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 2px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.1s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background-color: var(--dt-blue-hover);
+        }
+
+        .status-icon svg {
+            fill: var(--dt-green);
+            width: 32px;
+            height: 32px;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="status-icon">
+        <svg viewBox="0 0 24 24">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+        </svg>
+    </div>
+
+    <h1>Authenticated</h1>
+    <p>The DQL plugin is now connected to your tenant. You can close this tab now.</p>
+
+    <button class="btn" id="closeBtn" onclick="closeTab()">Close Tab</button>
+</div>
+
+<script>
+    function closeTab() {
+        window.close();
+        setTimeout(function () {
+            document.getElementById('closeBtn').style.display = 'none';
+            document.querySelector('p').textContent = 'Could not close the tab automatically. Please close it manually.';
+        }, 300);
+    }
+</script>
+
+</body>
+</html>

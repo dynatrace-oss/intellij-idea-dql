@@ -59,6 +59,7 @@ public class DynatraceTenantsConfigurable implements Configurable {
         DynatraceTenant selectedTenant = tenantList.getSelectedValue();
         if (selectedTenant != null) {
             TenantSettingsDialog dialog = new TenantSettingsDialog(selectedTenant);
+            dialog.getPreferredSize().setSize(800, 200);
             if (dialog.showAndGet()) {
                 DynatraceTenant updatedTenant = dialog.getTenant();
                 if (updatedTenant != null) {

@@ -98,7 +98,7 @@ public class DynatraceRestClient {
         }
     }
 
-    private <T> T handleResponse(HttpResponse<String> response, TypeReference<T> typeRef) throws DQLApiException {
+    private <T> T handleResponse(HttpResponse<String> response, TypeReference<T> typeRef) throws DTIoException {
         int status = response.statusCode();
         String body = response.body();
         try {
