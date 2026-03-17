@@ -10,7 +10,7 @@
   part of the query they want to execute. The shortcut works for DQL fragments injected into other languages as long as
   the cursor is inside the DQL fragment.
 - DQL queries injected into other languages now support query selection contexts. Previously, for injected fragments,
-  always the whole query was used, ignoring the cursor context. The same principle was applied to gutter icons.
+  always the whole query was used, ignoring the cursor context.
 - Chart tooltips now display the X-axis value as a bold title above the series data row inside tooltips.
 - The DQL results table now shows a right-click context menu on cells.
 - Filtering the DQL table results now supports specifying multiple filters at the same time. Added support for exclude
