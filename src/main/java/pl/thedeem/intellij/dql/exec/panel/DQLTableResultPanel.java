@@ -210,7 +210,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
                 @Override
                 public void update(@NotNull AnActionEvent e) {
                     super.update(e);
-                    Toggleable.setSelected(e.getPresentation(), sorter.isFilterActive());
+                    e.getPresentation().setIcon(sorter.isFilterActive() ? DQLIcon.FILTER_ACTIVE : AllIcons.General.Filter);
                 }
 
                 @Override
