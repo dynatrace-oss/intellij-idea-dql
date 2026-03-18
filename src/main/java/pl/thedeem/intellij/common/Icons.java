@@ -10,13 +10,15 @@ import javax.swing.*;
 public interface Icons {
     Icon DYNATRACE_LOGO = IconLoader.getIcon("/icons/dynatrace.svg", Icons.class);
 
-    static Icon scaleToBottomRight(@NotNull Icon base, @NotNull Icon badge, float scale) {
+    static Icon layer(@NotNull Icon base, @NotNull Icon badge, int position) {
         LayeredIcon layeredIcon = new LayeredIcon(2);
         layeredIcon.setIcon(base, 0);
-
-        Icon scaled = IconUtil.scale(badge, null, scale);
-        layeredIcon.setIcon(scaled, 1, SwingConstants.SOUTH_EAST);
-
+        layeredIcon.setIcon(badge, 1, position);
         return layeredIcon;
+    }
+
+    static Icon layerScaled(@NotNull Icon base, @NotNull Icon badge, float scale, int position) {
+        Icon scaled = IconUtil.scale(badge, null, scale);
+        return layer(base, scaled, position);
     }
 }
