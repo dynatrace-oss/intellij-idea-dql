@@ -124,11 +124,6 @@ After the connection to the tenant is added, the plugin uses
 DQLs.
 
 You can connect to the Dynatrace tenant in IntelliJ settings (`Tools` -> `Dynatrace Query Language` -> `Tenants`).
-Currently, the only supported authentication method is providing a token. You can see more about that
-[in the official docs](https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/basics/dynatrace-api-authentication).
-By default, the token should include the `storage:buckets:read` permission, but you will also need to add permissions to
-the specific data types, like: `storage:logs:read`, `storage:spans:read`, `storage:events:read`,
-`storage:bizevents:read`, `storage:entities:read` etc., depending on your needs.
 
 #### DQL execution on a specific tenant
 

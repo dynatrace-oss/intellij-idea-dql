@@ -16,10 +16,21 @@ Alternatively, you can provide the connection details in the IDE settings under 
 
 ### Adding a Dynatrace tenant connection
 
-Currently, the only supported authentication method is providing a token. You can see more about that
-[in the official docs](https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/basics/dynatrace-api-authentication).
+There are currently two supported authentication methods for connecting to a Dynatrace tenant: SSO and platform token.
+The first tenant on the list will become the default one, used for features like live validation and autocompletion.
+
+#### SSO
+
+Using the SSO method is straight-forward. IDE will open a browser window where you can log in to your tenant and grant
+the necessary permissions to the plugin.
+
+You will be notified each time the session expires, and you will be able to easily sign in again.
+
+#### Platform token
+
+The plugin is able to connect to a Dynatrace tenant using a platform token. This method of authentication requires
+manual token creation (you can read more about that
+[in the official docs](https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-api/basics/dynatrace-api-authentication)).
 By default, the token should include the `storage:buckets:read` permission, but you will also need to add permissions to
 the specific data types, like: `storage:logs:read`, `storage:spans:read`, `storage:events:read`,
 `storage:bizevents:read`, `storage:entities:read` etc., depending on your needs.
-
-The first tenant on the list will become the default one, used for features like live validation and autocompletion.
