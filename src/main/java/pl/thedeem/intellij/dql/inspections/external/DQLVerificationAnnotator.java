@@ -1,7 +1,6 @@
 package pl.thedeem.intellij.dql.inspections.external;
 
 import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.lang.annotation.HighlightSeverity;
@@ -61,13 +60,13 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
         DynatraceTenantsService tenantsService = DynatraceTenantsService.getInstance();
         DynatraceTenant tenant = tenantsService.findTenant(configuration.tenant());
         if (tenant != null) {
-            String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
             DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
             try {
                 DQLQueryParserService.ParseResult parseResult = WriteCommandAction.runWriteCommandAction(
                         project,
                         (Computable<DQLQueryParserService.ParseResult>) () -> parser.getSubstitutedQuery(input.file, configuration.definedVariables())
                 );
+                String apiToken = DynatraceTenantsService.getInstance().resolveApiToken(project, tenant);
                 DQLVerifyResponse response = client.verifyDQL(new DQLVerifyPayload(parseResult.parsed()), apiToken);
                 return new Result(response, parseResult);
             } catch (ConnectException e) {

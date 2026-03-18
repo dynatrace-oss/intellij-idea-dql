@@ -20,6 +20,7 @@ import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import javax.swing.*;
 import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +104,8 @@ public class DQLExecutionErrorPanel extends BorderLayoutPanel implements Disposa
 
     private static String getErrorMessage(@NotNull Exception exception) {
         return switch (exception) {
+            case ConnectException error ->
+                    DQLBundle.message("components.executionError.errors.connectionFailed", error.getMessage());
             case DQLErrorResponseException error ->
                     DQLBundle.message("components.executionError.errors.executionFailed", error.getApiMessage());
             case DQLNotAuthorizedException error ->

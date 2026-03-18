@@ -10,6 +10,7 @@ import com.intellij.ui.EditorTextField;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.RoundedLineBorder;
 import com.intellij.ui.components.JBPanel;
+import com.intellij.ui.components.JBRadioButton;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
@@ -115,8 +116,8 @@ public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfig
     }
 
     private static final class QuerySelectionPanel extends BorderLayoutPanel {
-        private final JRadioButton fromFile;
-        private final JRadioButton fromText;
+        private final JBRadioButton fromFile;
+        private final JBRadioButton fromText;
         private final JComponent fileComponent;
         private final JComponent textComponent;
 
@@ -128,8 +129,8 @@ public class ExecuteDQLSettingsEditor extends SettingsEditor<ExecuteDQLRunConfig
             ButtonGroup group = new ButtonGroup();
             this.fileComponent = fileComponent;
             this.textComponent = textComponent;
-            fromFile = new JRadioButton(DQLBundle.message("runConfiguration.executeDQL.settings.query.fromFile"));
-            fromText = new JRadioButton(DQLBundle.message("runConfiguration.executeDQL.settings.query.fromText"));
+            fromFile = new JBRadioButton(DQLBundle.message("runConfiguration.executeDQL.settings.query.fromFile"));
+            fromText = new JBRadioButton(DQLBundle.message("runConfiguration.executeDQL.settings.query.fromText"));
             fromFile.addActionListener(e -> setFromFile(true));
             fromText.addActionListener(e -> setFromFile(false));
             group.add(fromFile);

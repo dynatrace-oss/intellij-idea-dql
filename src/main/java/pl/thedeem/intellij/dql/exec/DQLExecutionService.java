@@ -2,7 +2,6 @@ package pl.thedeem.intellij.dql.exec;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ActivityTracker;
-import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
@@ -136,7 +135,6 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         }
         DQLExecuteInProgressPanel progressPanel = new DQLExecuteInProgressPanel();
         contentPanel.addToCenter(progressPanel);
-        String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
         DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
         DQLExecutePayload payload = this.preparePayload(configuration, project);
         this.executionId = String.valueOf(payload.getQuery().hashCode());
@@ -144,6 +142,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         this.loading.set(true);
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             requestToken = this.executeApiCall(() -> {
+                String apiToken = DynatraceTenantsService.getInstance().resolveApiToken(project, tenant);
                 DQLExecuteResponse executedResponse = client.executeDQL(payload, apiToken);
                 logger.info(String.format(
                         "The DQL query %s for the tenant %s was started to be executed and has a request token: %s (state: %s)",
@@ -158,7 +157,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
             });
 
             if (requestToken != null) {
-                pollingFutureRef.set(startPollingRequest(requestToken, client, apiToken, progressPanel));
+                pollingFutureRef.set(startPollingRequest(requestToken, client, progressPanel));
             }
         });
     }
@@ -177,29 +176,33 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         ScheduledFuture<?> scheduledFuture = pollingFutureRef.get();
         if (scheduledFuture != null && !scheduledFuture.isCancelled() && !scheduledFuture.isDone() && this.requestToken != null) {
             scheduledFuture.cancel(true);
-            String apiToken = PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(tenant.getCredentialId()));
-            DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
-            logger.info(String.format(
-                    "Stopping the query execution %s with the token %s for the DQL query %s (tenant %s)",
-                    executionId,
-                    requestToken,
-                    executionId,
-                    tenant.getName()
-            ));
-            this.executeApiCall(() -> {
-                DQLPollResponse result = client.cancelDQL(requestToken, apiToken);
+            ApplicationManager.getApplication().executeOnPooledThread(() -> {
+                DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
                 logger.info(String.format(
-                        "The query %s with ID %s was stopped on tenant %s. Returned: %s",
+                        "Stopping the query execution %s with the token %s for the DQL query %s (tenant %s)",
                         executionId,
                         requestToken,
-                        tenant.getName(),
-                        result != null
+                        executionId,
+                        tenant.getName()
                 ));
-                processHandler.notifyExecutionFinished();
-                return result;
+                this.executeApiCall(() -> {
+                    String apiToken = DynatraceTenantsService.getInstance().resolveApiToken(project, tenant);
+                    DQLPollResponse result = client.cancelDQL(requestToken, apiToken);
+                    logger.info(String.format(
+                            "The query %s with ID %s was stopped on tenant %s. Returned: %s",
+                            executionId,
+                            requestToken,
+                            tenant.getName(),
+                            result != null
+                    ));
+                    processHandler.notifyExecutionFinished();
+                    return result;
+                });
+                stopping.set(false);
             });
+        } else {
+            stopping.set(false);
         }
-        stopping.set(false);
     }
 
     public boolean isRunning() {
@@ -298,11 +301,13 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         return configuration;
     }
 
-    private ScheduledFuture<?> startPollingRequest(@NotNull String requestToken, @NotNull DynatraceRestClient client, @Nullable String apiToken, DQLExecuteInProgressPanel progressPanel) {
+    private ScheduledFuture<?> startPollingRequest(@NotNull String requestToken, @NotNull DynatraceRestClient client, @NotNull DQLExecuteInProgressPanel progressPanel) {
         return AppExecutorUtil.getAppScheduledExecutorService().scheduleWithFixedDelay(
                 () -> {
                     logger.info(String.format("Verifying if the DQL query %s with the request token %s has finished...", executionId, requestToken));
                     this.executeApiCall(() -> {
+                        DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(configuration.tenant());
+                        String apiToken = DynatraceTenantsService.getInstance().resolveApiToken(project, tenant);
                         result = client.pollDQLState(requestToken, apiToken);
                         logger.info(String.format(
                                 "Polling response for the DQL query %s with the request token %s: state: %s, progress: %s",

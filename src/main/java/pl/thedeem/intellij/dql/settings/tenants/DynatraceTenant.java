@@ -8,6 +8,7 @@ public class DynatraceTenant {
     private String name;
     private String url;
     private String credentialId;
+    private AuthType authType = AuthType.API_TOKEN;
 
     public DynatraceTenant() {
     }
@@ -16,6 +17,13 @@ public class DynatraceTenant {
         this.url = url;
         this.name = name != null ? name : url;
         this.credentialId = credentialId;
+    }
+
+    public DynatraceTenant(String name, String url, String credentialId, AuthType authType) {
+        this.url = url;
+        this.name = name != null ? name : url;
+        this.credentialId = credentialId;
+        this.authType = authType;
     }
 
     public String getUrl() {
@@ -43,6 +51,14 @@ public class DynatraceTenant {
         return this;
     }
 
+    public AuthType getAuthType() {
+        return authType != null ? authType : AuthType.API_TOKEN;
+    }
+
+    public void setAuthType(AuthType authType) {
+        this.authType = authType;
+    }
+
     @Override
     public String toString() {
         return StringUtil.isNotEmpty(name) ? name : url;
@@ -55,12 +71,17 @@ public class DynatraceTenant {
         DynatraceTenant that = (DynatraceTenant) o;
         return Objects.equals(url, that.url)
                 && Objects.equals(name, that.name)
-                && Objects.equals(credentialId, that.credentialId);
+                && Objects.equals(credentialId, that.credentialId)
+                && getAuthType() == that.getAuthType();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, credentialId, name);
+        return Objects.hash(url, credentialId, name, getAuthType());
+    }
+
+    public enum AuthType {
+        API_TOKEN,
+        SSO_OAUTH
     }
 }
- 

@@ -4,6 +4,9 @@
 
 ### Features
 
+- Added SSO OAuth authentication support for Dynatrace tenant connections. Users can now choose between
+  API Token and SSO OAuth when configuring a tenant. The SSO OAuth flow opens a browser for Dynatrace login
+  and securely stores refresh tokens for automatic token renewal.
 - Updated DQL functions & commands database
 - DQL query execution can now be started from the editor with a shortcut `ctrl` + `enter`. If the user selected a part
   of the query or the cursor is inside a subquery (for example, `append` command), IDE will as the user to decide which
