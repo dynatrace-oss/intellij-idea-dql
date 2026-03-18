@@ -109,14 +109,16 @@ public class TenantSettingsDialog extends DialogWrapper {
             name.setText(urlField.getText());
         }
 
+        String urlText = urlField.getText();
+        if (urlText.isEmpty()) {
+            setErrorText(DQLBundle.message("settings.dql.tenants.form.error.missingUrl"));
+            return;
+        }
+
         try {
             URL ignored = URI.create(urlField.getText()).toURL();
         } catch (MalformedURLException | IllegalArgumentException e) {
             setErrorText(DQLBundle.message("settings.dql.tenants.form.error.invalidTenantUrl", e.getMessage()));
-            return;
-        }
-        if (urlField.getText().isEmpty()) {
-            setErrorText(DQLBundle.message("settings.dql.tenants.form.error.missingUrl"));
             return;
         }
 

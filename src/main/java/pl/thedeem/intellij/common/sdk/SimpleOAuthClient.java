@@ -3,6 +3,7 @@ package pl.thedeem.intellij.common.sdk;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.util.Urls;
+import com.intellij.xml.util.XmlStringUtil;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.apache.http.NameValuePair;
@@ -187,14 +188,14 @@ public class SimpleOAuthClient {
     private String loadCallbackPage(String path, @Nullable String error) {
         String defaultMessage = "Process completed. You can close this window.";
         if (error != null) {
-            defaultMessage = "Error: " + error + ". You can close this window.";
+            defaultMessage = "Error: " + XmlStringUtil.escapeString(error) + ". You can close this window.";
         }
         try (var is = getClass().getResourceAsStream(path)) {
             if (is == null) {
                 return defaultMessage;
             }
             String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-            return error != null ? content.replace("{{ERROR}}", error) : content;
+            return error != null ? content.replace("{{ERROR}}", XmlStringUtil.escapeString(error)) : content;
         } catch (IOException ignored) {
             return defaultMessage;
         }

@@ -105,7 +105,6 @@
     function closeTab() {
         window.close();
         setTimeout(function () {
-            document.getElementById('closeBtn').style.display = 'none';
             document.querySelector('p').textContent = 'Could not close the tab automatically. Please close it manually.';
         }, 300);
     }

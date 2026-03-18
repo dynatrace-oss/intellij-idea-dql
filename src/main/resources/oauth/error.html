@@ -41,17 +41,6 @@
         .status-icon {
             width: 64px;
             height: 64px;
-            background: rgba(115, 173, 33, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 24px;
-        }
-
-        .status-icon {
-            width: 64px;
-            height: 64px;
             background: rgba(220, 23, 42, 0.1);
             border-radius: 50%;
             display: flex;
@@ -133,7 +122,6 @@
     function closeTab() {
         window.close();
         setTimeout(function () {
-            document.getElementById('closeBtn').style.display = 'none';
             document.querySelector('p').textContent = 'Could not close the tab automatically. Please close it manually.';
         }, 300);
     }

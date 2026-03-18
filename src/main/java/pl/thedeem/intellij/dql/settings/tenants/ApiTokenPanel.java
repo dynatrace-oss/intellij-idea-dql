@@ -63,6 +63,7 @@ public class ApiTokenPanel extends BorderLayoutPanel implements Disposable {
     @Override
     public void dispose() {
         Arrays.fill(passwordField.getPassword(), ' ');
+        passwordField.setText("");
         loading.dispose();
     }
 }

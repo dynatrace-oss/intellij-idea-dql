@@ -39,7 +39,7 @@ public class OAuthSignInPanel extends JBPanel<OAuthSignInPanel> implements Dispo
         this.urlSupplier = urlSupplier;
 
         statusPanel = new BorderLayoutPanel();
-        signInButton = new JButton(DQLBundle.message("settings.dql.tenants.form.oauth.signIn"), AllIcons.General.SelectIn);
+        signInButton = new JButton(DQLBundle.message("settings.dql.tenants.form.oauth.signIn"), AllIcons.Actions.MoveToWindow);
         signInButton.setVisible(false);
         signOutButton = new JButton(DQLBundle.message("settings.dql.tenants.form.oauth.signOut"), AllIcons.Actions.Exit);
         signOutButton.setVisible(false);
