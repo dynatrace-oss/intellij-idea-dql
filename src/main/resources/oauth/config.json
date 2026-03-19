@@ -33,6 +33,7 @@
     "storage:metrics:read",
     "storage:entities:read",
     "storage:system:read",
+    "storage:files:read",
     "storage:fieldsets:read",
     "storage:fieldset-definitions:read",
     "storage:filter-segments:read",
