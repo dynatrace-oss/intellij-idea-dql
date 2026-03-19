@@ -249,4 +249,9 @@ public final class Parameter {
     public boolean requiresFieldName() {
         return "mandatory".equalsIgnoreCase(assignmentSupport());
     }
+
+    @Override
+    public String toString() {
+        return this.name + " (" + this.description + ")";
+    }
 }

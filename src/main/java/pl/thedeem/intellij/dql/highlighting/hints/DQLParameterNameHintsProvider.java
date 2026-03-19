@@ -152,12 +152,12 @@ public class DQLParameterNameHintsProvider implements InlayHintsProvider<DQLPara
             if (definition == null) {
                 continue;
             }
-            List<List<PsiElement>> groups = parameter.getParameterGroups();
+            List<List<PsiElement>> groups = parameter.parameterGroups();
             for (List<PsiElement> group : groups) {
                 if (!(group.getFirst() instanceof DQLParameterExpression)) {
                     int textOffset = group.getFirst().getTextOffset();
                     if (definition.variadic()) {
-                        result.add(new Hint((!parameter.included().isEmpty() ? "…" : "") + definition.name(), textOffset));
+                        result.add(new Hint((parameter.values().size() > 1 ? "…" : "") + definition.name(), textOffset));
                     } else if (parameters.size() > 1) {
                         result.add(new Hint(definition.name(), textOffset));
                     }

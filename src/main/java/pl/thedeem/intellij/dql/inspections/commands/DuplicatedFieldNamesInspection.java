@@ -7,13 +7,13 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiNamedElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.fixes.DropElementQuickFix;
 import pl.thedeem.intellij.dql.inspections.fixes.SetFieldNameQuickFix;
 import pl.thedeem.intellij.dql.psi.*;
 import pl.thedeem.intellij.dql.psi.elements.BaseElement;
+import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 
 import java.util.*;
 
@@ -58,8 +58,8 @@ public class DuplicatedFieldNamesInspection extends LocalInspectionTool {
         Set<String> seenNames = new HashSet<>();
         List<PsiElement> invalidElements = new ArrayList<>();
         List<PsiElement> toProcess = new ArrayList<>();
-        if (!parameter.included().isEmpty()) {
-            toProcess.addAll(parameter.getExpressions());
+        if (parameter.expressions().size() > 1) {
+            toProcess.addAll(parameter.expressions());
         } else {
             toProcess.add(parameter.holder());
         }

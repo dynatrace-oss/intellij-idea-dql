@@ -16,9 +16,7 @@ import org.jsoup.internal.StringUtil;
 import pl.thedeem.intellij.dql.definition.model.DQLDurationType;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
-import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
-import pl.thedeem.intellij.dql.psi.DQLParenthesisedExpression;
-import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
+import pl.thedeem.intellij.dql.psi.*;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 import pl.thedeem.intellij.dqlpart.DQLPartFileType;
 
@@ -138,6 +136,19 @@ public class DQLUtil {
         PsiElement result = element;
         while (result instanceof DQLParenthesisedExpression parenthesisedExpression) {
             result = parenthesisedExpression.getExpression();
+        }
+        return result;
+    }
+
+    public static @Nullable DQLExpression flattenBrackets(@Nullable DQLExpression element) {
+        if (element == null) {
+            return null;
+        }
+        DQLExpression result = element;
+        while (result instanceof DQLBracketExpression bracket
+                && bracket.getExpressionList().size() == 1
+                && bracket.getExpressionList().getFirst() instanceof DQLBracketExpression) {
+            result = bracket.getExpressionList().getFirst();
         }
         return result;
     }

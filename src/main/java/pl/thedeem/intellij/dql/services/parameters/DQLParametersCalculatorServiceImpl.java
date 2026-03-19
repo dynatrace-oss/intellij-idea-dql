@@ -1,118 +1,140 @@
 package pl.thedeem.intellij.dql.services.parameters;
 
-import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLBracketExpression;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
+import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DQLParametersCalculatorServiceImpl implements DQLParametersCalculatorService {
     @Override
-    public @NotNull List<MappedParameter> mapParameters(@NotNull List<DQLExpression> definedParameters, @NotNull List<Parameter> definitions) {
-        Set<String> usedParameters = usedNamedParameters(definedParameters);
-        List<String> unusedParameters = new ArrayList<>(unusedParameters(usedParameters, definitions));
-        Map<String, Parameter> availableParameters = availableParameters(definitions);
+    public @NotNull List<MappedParameter> mapParameters(@NotNull DQLParametersOwner holder, @NotNull List<Parameter> definitions) {
+        List<DQLExpression> toProcess = new ArrayList<>(holder.getParameterExpressions());
+
+        Set<String> usedNamedParams = collectNamedParameterNames(toProcess);
+        Map<String, Parameter> definitionsByName = buildDefinitionsByName(definitions);
+        List<Parameter> unfilledUnnamed = buildUnfilledUnnamedParameters(definitions, usedNamedParams);
+        // DQL requires either 1-element values or values enclosed within brackets if the variadic requires name or there are more unnamed variadic params
+        boolean allVariadicRequireBrackets = definitions.stream().filter(p -> p.variadic() && !p.requiresName()).toList().size() > 1;
+
         List<MappedParameter> result = new ArrayList<>();
+        MappedParameter activeVariadic = null;
 
-        MappedParameter variadic = null;
-        MappedParameter previous = null;
-        boolean conflictingVariadic = definitions.stream().filter(Parameter::variadic).count() > 1;
-        for (DQLExpression defined : definedParameters) {
-            MappedParameter mappedParameter = null;
-            if (defined instanceof DQLParameterExpression named) {
-                mappedParameter = createNamedParameter(named, availableParameters, previous);
-            } else if (variadic == null) {
-                mappedParameter = createUnnamedParameter(defined, availableParameters, unusedParameters);
-            } else {
-                variadic.included().add(defined);
-            }
-            if (mappedParameter != null) {
-                result.add(mappedParameter);
-                variadic = calculateVariadic(mappedParameter, variadic, conflictingVariadic);
-                previous = mappedParameter;
-            } else {
-                previous = variadic;
-            }
-        }
-        return result;
-    }
+        while (!toProcess.isEmpty()) {
+            DQLExpression currentExpression = toProcess.removeFirst();
+            DQLExpression flattened = DQLUtil.flattenBrackets(currentExpression);
+            List<DQLExpression> nestedParameters = flattened != null ? findNestedParameters(flattened) : List.of();
+            toProcess.addAll(0, nestedParameters);
 
-    private @Nullable MappedParameter calculateVariadic(@NotNull MappedParameter parameter, @Nullable MappedParameter currentVariadic, boolean conflictingVariadic) {
-        Parameter definition = parameter.definition();
-        if (definition == null) {
-            return currentVariadic;
-        }
-        // sticky variadic only work for parameters that do not require name
-        // If the parameter value is already enclosed with `{}`, it does not stick
-        if (definition.variadic() && !definition.requiresName()) {
-            PsiElement toCheck = parameter.holder() instanceof DQLParameterExpression named ? named.getExpression() : parameter.holder();
-            return conflictingVariadic && toCheck instanceof DQLBracketExpression ? currentVariadic : parameter;
-        }
-        return currentVariadic;
-    }
-
-    private @Nullable MappedParameter createNamedParameter(@NotNull DQLParameterExpression named, @NotNull Map<String, Parameter> availableParameters, @Nullable MappedParameter previousParameter) {
-        String name = Objects.requireNonNullElse(named.getName(), "");
-        Parameter parameter = availableParameters.get(name.toLowerCase());
-        if (parameter == null && "alias".equalsIgnoreCase(name) && previousParameter != null && previousParameter.definition() != null) {
-            if (previousParameter.definition().allowsFieldName()) {
-                previousParameter.included().add(named);
-                return null;
-            }
-        }
-        return new MappedParameter(
-                parameter,
-                named,
-                new ArrayList<>()
-        );
-    }
-
-    private @NotNull MappedParameter createUnnamedParameter(@NotNull DQLExpression expression, @NotNull Map<String, Parameter> availableParameters, @NotNull List<String> unusedParameters) {
-        if (unusedParameters.isEmpty()) {
-            return new MappedParameter(null, expression, new ArrayList<>());
-        }
-        String name = unusedParameters.removeFirst();
-        Parameter parameter = availableParameters.get(name.toLowerCase());
-        return new MappedParameter(
-                parameter,
-                expression,
-                new ArrayList<>()
-        );
-    }
-
-    private @NotNull Map<String, Parameter> availableParameters(@NotNull List<Parameter> definitions) {
-        Map<String, Parameter> result = new HashMap<>();
-        for (Parameter definition : definitions) {
-            result.put(definition.name().toLowerCase(), definition);
-            if (definition.aliases() != null) {
-                for (String alias : definition.aliases()) {
-                    result.put(alias.toLowerCase(), definition);
+            if (flattened instanceof DQLParameterExpression named && !"alias".equalsIgnoreCase(named.getName())) {
+                String name = named.getName() != null ? named.getName().toLowerCase() : "";
+                Parameter definition = definitionsByName.get(name);
+                MappedParameter parameter = new MappedParameter(definition, currentExpression);
+                result.add(parameter);
+                if (canBecomeVariadic(activeVariadic, allVariadicRequireBrackets, definition)) {
+                    activeVariadic = parameter;
                 }
+                continue;
             }
+
+            if (activeVariadic != null) {
+                activeVariadic.addChildExpression(currentExpression);
+                continue;
+            }
+
+            if (!unfilledUnnamed.isEmpty()) {
+                Parameter definition = unfilledUnnamed.removeFirst();
+                MappedParameter parameter = new MappedParameter(definition, currentExpression);
+                result.add(parameter);
+                if (canBecomeVariadic(activeVariadic, allVariadicRequireBrackets, definition)) {
+                    activeVariadic = parameter;
+                }
+                continue;
+            }
+
+            result.add(new MappedParameter(null, currentExpression));
         }
 
         return result;
     }
 
-    private @NotNull Set<String> usedNamedParameters(@NotNull List<DQLExpression> definedParameters) {
-        return definedParameters.stream()
-                .filter(d -> d instanceof DQLParameterExpression expr && expr.getName() != null)
-                .map(d -> ((DQLParameterExpression) d).getName())
-                .collect(Collectors.toSet());
+    private @NotNull List<DQLExpression> findNestedParameters(@NotNull DQLExpression flattened) {
+        List<DQLExpression> nested = new ArrayList<>();
+        if (!(flattened instanceof DQLBracketExpression brackets)) {
+            return nested;
+        }
+        List<DQLExpression> toProcess = new ArrayList<>(brackets.getExpressionList());
+        while (!toProcess.isEmpty()) {
+            DQLExpression current = toProcess.removeFirst();
+            if (current instanceof DQLBracketExpression bracket) {
+                toProcess.addAll(0, bracket.getExpressionList());
+                continue;
+            }
+            if (current instanceof DQLParameterExpression named && !"alias".equalsIgnoreCase(named.getName())) {
+                nested.add(current);
+            }
+        }
+        return nested;
     }
 
-    private @NotNull List<String> unusedParameters(@NotNull Set<String> usedParameters, @NotNull List<Parameter> definitions) {
-        return definitions.stream()
-                .filter(p -> !p.hidden())
-                .sorted(Comparator.comparing(Parameter::requiresName))
-                .map(Parameter::name)
-                .filter(name -> !usedParameters.contains(name))
-                .toList();
+    private boolean canBecomeVariadic(
+            @Nullable MappedParameter activeVariadic,
+            boolean allVariadicRequireBrackets,
+            @Nullable Parameter definition
+    ) {
+        // Only values in brackets are allowed for such cases - and they will be a single elements
+        if (allVariadicRequireBrackets) {
+            return false;
+        }
+        if (activeVariadic != null) {
+            return false;
+        }
+        if (definition == null) {
+            return false;
+        }
+        return definition.variadic() && !definition.requiresName();
+    }
+
+    private @NotNull Map<String, Parameter> buildDefinitionsByName(@NotNull List<Parameter> definitions) {
+        Map<String, Parameter> map = new HashMap<>();
+        for (Parameter def : definitions) {
+            map.put(def.name().toLowerCase(), def);
+        }
+        return map;
+    }
+
+    private @NotNull List<Parameter> buildUnfilledUnnamedParameters(
+            @NotNull List<Parameter> definitions,
+            @NotNull Set<String> usedNamedParams
+    ) {
+        List<Parameter> unfilled = new ArrayList<>();
+        for (Parameter def : definitions) {
+            if (!def.requiresName() && usedNamedParams.stream().noneMatch(n -> n.equalsIgnoreCase(def.name()))) {
+                unfilled.add(def);
+            }
+        }
+        return unfilled;
+    }
+
+    private @NotNull Set<String> collectNamedParameterNames(@NotNull List<DQLExpression> expressions) {
+        Set<String> names = new HashSet<>();
+        List<DQLExpression> toProcess = new ArrayList<>(expressions);
+        while (!toProcess.isEmpty()) {
+            DQLExpression expression = toProcess.removeFirst();
+            if (expression instanceof DQLBracketExpression bracket) {
+                toProcess.addAll(0, bracket.getExpressionList());
+                continue;
+            }
+            if (expression instanceof DQLParameterExpression named && named.getName() != null) {
+                names.add(named.getName());
+            }
+        }
+        return Set.copyOf(names);
     }
 }

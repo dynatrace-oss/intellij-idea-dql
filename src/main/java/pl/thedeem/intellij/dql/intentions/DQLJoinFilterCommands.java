@@ -110,7 +110,7 @@ public class DQLJoinFilterCommands extends PsiElementBaseIntentionAction impleme
                     if (definition == null || condition == null) {
                         return "";
                     }
-                    List<String> parts = condition.getExpressions().stream().map(p -> {
+                    List<String> parts = condition.expressions().stream().map(p -> {
                         if (p instanceof DQLParenthesisedExpression || p instanceof DQLPrimitiveExpression || p instanceof DQLFieldExpression) {
                             return p.getText();
                         }

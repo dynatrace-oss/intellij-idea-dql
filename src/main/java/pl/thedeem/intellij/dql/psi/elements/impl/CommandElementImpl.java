@@ -117,15 +117,14 @@ public abstract class CommandElementImpl extends ASTWrapperPsiElement implements
         return getParameters().stream().filter(p -> name.equals(p.name())).findFirst().orElse(null);
     }
 
-    public List<DQLExpression> getParameterArguments() {
+    @Override
+    public @NotNull List<DQLExpression> getParameterExpressions() {
         return PsiTreeUtil.getChildrenOfTypeAsList(this, DQLExpression.class);
     }
 
     private List<MappedParameter> recalculateParameters() {
         Command definition = getDefinition();
-        List<DQLExpression> defined = getParameterArguments();
         List<Parameter> definitions = definition != null ? definition.parameters() : List.of();
-        DQLParametersCalculatorService calculatorService = DQLParametersCalculatorService.getInstance();
-        return calculatorService.mapParameters(defined, definitions);
+        return DQLParametersCalculatorService.getInstance().mapParameters(this, definitions);
     }
 }

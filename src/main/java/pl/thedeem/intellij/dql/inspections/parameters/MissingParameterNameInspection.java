@@ -26,7 +26,7 @@ public class MissingParameterNameInspection extends LocalInspectionTool {
                         return;
                     }
 
-                    if (definition.requiresName() && !parameter.isExplicitlyNamed()) {
+                    if (definition.requiresName() && !parameter.explicitlyNamed()) {
                         holder.registerProblem(
                                 parameter.holder(),
                                 DQLBundle.message(

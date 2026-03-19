@@ -151,6 +151,11 @@ public abstract class AbstractOperatorElementImpl extends ASTWrapperPsiElement i
         return expressions.size() > 1 ? expressions.getLast() : null;
     }
 
+    @Override
+    public @NotNull List<DQLExpression> getParameterExpressions() {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, DQLExpression.class);
+    }
+
     private @NotNull List<MappedParameter> recalculateParameters() {
         Signature signature = getSignature();
         if (signature == null) {
@@ -160,7 +165,7 @@ public abstract class AbstractOperatorElementImpl extends ASTWrapperPsiElement i
         List<MappedParameter> parameters = new ArrayList<>();
         for (PsiElement child : getExpressions()) {
             Parameter parameter = signature.parameters().size() > i ? signature.parameters().get(i) : null;
-            parameters.add(new MappedParameter(parameter, child, List.of()));
+            parameters.add(new MappedParameter(parameter, child));
             i++;
         }
         return parameters;

@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.definition.model;
 
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -14,65 +15,46 @@ import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 import java.util.*;
 
-public record MappedParameter(
-        @Nullable Parameter definition,
-        @NotNull PsiElement holder,
-        @NotNull List<PsiElement> included
-) implements BaseTypedElement {
-    public @Nullable String name() {
-        if (definition != null) {
-            return definition.name();
-        }
-        if (holder instanceof DQLParameterExpression named) {
-            return named.getName();
-        }
-        return null;
+public class MappedParameter implements BaseTypedElement {
+    private final Parameter definition;
+    private final PsiElement holder;
+    private final List<PsiElement> expressions;
+    private final List<PsiElement> values;
+    private final List<List<PsiElement>> parameterGroups;
+    private final String name;
+
+    public MappedParameter(@Nullable Parameter definition, @NotNull PsiElement holder) {
+        this.definition = definition;
+        this.holder = holder;
+        this.expressions = new ArrayList<>();
+        this.values = new ArrayList<>();
+        this.parameterGroups = new ArrayList<>();
+        this.name = calculateName();
+        addChildExpression(holder);
     }
 
-    public @NotNull List<List<PsiElement>> getParameterGroups() {
-        List<List<PsiElement>> result = new ArrayList<>();
-
-        PsiElement previous = null;
-        for (PsiElement expression : getExpressions()) {
-            DQLExpression prevSibling = PsiTreeUtil.getPrevSiblingOfType(expression, DQLExpression.class);
-            if (prevSibling != previous || result.isEmpty()) {
-                result.add(new ArrayList<>());
-            }
-            result.getLast().add(expression);
-            previous = expression;
-        }
-        return result;
+    public @Nullable Parameter definition() {
+        return definition;
     }
 
-    public boolean includes(PsiElement expression) {
-        return holder == expression || included.contains(expression);
-    }
-
-    public boolean isExplicitlyNamed() {
-        return holder instanceof DQLParameterExpression;
+    public @NotNull PsiElement holder() {
+        return holder;
     }
 
     @Override
     public @NotNull Collection<String> getDataType() {
-        if (included.isEmpty()) {
-            if (holder instanceof BaseTypedElement entity) {
-                return entity.getDataType();
+        Set<String> result = new HashSet<>();
+        for (PsiElement expression : expressions) {
+            if (expression instanceof BaseElement element) {
+                result.addAll(element.getDataType());
             }
-        } else {
-            Set<String> result = new HashSet<>();
-            for (PsiElement expression : getExpressions()) {
-                if (expression instanceof BaseElement element) {
-                    result.addAll(element.getDataType());
-                }
-            }
-            return result;
         }
-        return Set.of();
+        return result;
     }
 
     @Override
     public boolean accessesData() {
-        for (PsiElement value : getExpressions()) {
+        for (PsiElement value : expressions) {
             if (value instanceof BaseTypedElement entity && entity.accessesData()) {
                 return true;
             }
@@ -85,16 +67,46 @@ public record MappedParameter(
         return DQLFieldNamesService.getInstance().calculateFieldName(holder);
     }
 
-    public @NotNull List<PsiElement> getExpressions() {
-        List<PsiElement> expressions = new ArrayList<>();
-        expressions.add(holder);
-        expressions.addAll(included);
+    @Override
+    public String toString() {
+        return "%s with %s expressions (%s values)".formatted(name(), expressions.size(), values.size());
+    }
+
+    public @NotNull List<PsiElement> expressions() {
         return expressions;
+    }
+
+    public @NotNull List<PsiElement> values() {
+        return values;
+    }
+
+    public @NotNull List<List<PsiElement>> parameterGroups() {
+        return parameterGroups;
+    }
+
+    public void addChildExpression(@NotNull PsiElement currentExpression) {
+        if (!expressions.contains(currentExpression)) {
+            expressions.add(currentExpression);
+            values.addAll(unpackValues(currentExpression));
+            calculateParameterGroup(currentExpression);
+        }
+    }
+
+    public @Nullable String name() {
+        return name;
+    }
+
+    public boolean includes(@NotNull PsiElement expression) {
+        return expressions.contains(expression);
+    }
+
+    public boolean explicitlyNamed() {
+        return holder instanceof DQLParameterExpression;
     }
 
     public @NotNull List<PsiElement> unpackExpressions() {
         List<PsiElement> result = new ArrayList<>();
-        List<PsiElement> toProcess = new ArrayList<>(getExpressions());
+        List<PsiElement> toProcess = new ArrayList<>(expressions);
 
         while (!toProcess.isEmpty()) {
             PsiElement element = DQLUtil.unpackParenthesis(toProcess.removeFirst());
@@ -102,6 +114,52 @@ public record MappedParameter(
                 toProcess.addAll(bracket.getExpressionList());
             } else if (element != null) {
                 result.add(element);
+            }
+        }
+        return result;
+    }
+
+    private @Nullable String calculateName() {
+        if (definition != null) {
+            return definition.name();
+        }
+        if (holder instanceof DQLParameterExpression named) {
+            return named.getName();
+        }
+        return null;
+    }
+
+    private void calculateParameterGroup(@NotNull PsiElement element) {
+        DQLExpression prevSibling = PsiTreeUtil.getPrevSiblingOfType(element, DQLExpression.class);
+        for (List<PsiElement> parameterGroup : parameterGroups) {
+            if (parameterGroup.getLast() == prevSibling) {
+                parameterGroup.add(element);
+                return;
+            }
+        }
+        ArrayList<PsiElement> newGroup = new ArrayList<>();
+        newGroup.add(element);
+        parameterGroups.add(newGroup);
+    }
+
+    private @NotNull List<PsiElement> unpackValues(@NotNull PsiElement expression) {
+        List<PsiElement> result = new ArrayList<>();
+        List<PsiElement> toProcess = new ArrayList<>();
+        toProcess.add(expression);
+        while (!toProcess.isEmpty()) {
+            PsiElement element = DQLUtil.unpackParenthesis(toProcess.removeFirst());
+            switch (element) {
+                case DQLBracketExpression bracket -> toProcess.addAll(bracket.getExpressionList());
+                case DQLParameterExpression parameter -> {
+                    if (StringUtil.equalsIgnoreCase("alias", parameter.getName())) {
+                        result.add(parameter);
+                    } else if (holder == parameter) {
+                        toProcess.add(parameter.getExpression());
+                    }
+                }
+                case null -> {
+                }
+                default -> result.add(element);
             }
         }
         return result;

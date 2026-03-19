@@ -36,7 +36,7 @@ public class MultipleParameterGroupsInspection extends LocalInspectionTool {
 
     private void validateParameterGroups(@NotNull List<MappedParameter> parameters, @NotNull ProblemsHolder holder) {
         for (MappedParameter parameter : parameters) {
-            List<List<PsiElement>> groups = parameter.getParameterGroups();
+            List<List<PsiElement>> groups = parameter.parameterGroups();
             if (groups.size() > 1) {
                 holder.registerProblem(
                         parameter.holder(),

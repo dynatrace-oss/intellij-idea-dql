@@ -29,6 +29,31 @@ public class DQLTestsUtils {
 
     public static @NotNull Parameter createParameter(
             @NotNull String name,
+            boolean required,
+            boolean requiresName,
+            boolean variadic
+    ) {
+        return new Parameter(
+                name,
+                "description",
+                required,
+                requiresName,
+                false,
+                variadic,
+                "optional",
+                List.of(),
+                List.of("dql.parameterValueType.expressionWithFieldAccess"),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
+    public static @NotNull Parameter createParameter(
+            @NotNull String name,
             @Nullable List<String> types,
             boolean required,
             @Nullable List<String> disallows,
