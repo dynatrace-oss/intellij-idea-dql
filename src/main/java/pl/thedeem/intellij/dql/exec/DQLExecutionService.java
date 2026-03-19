@@ -139,7 +139,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
 
                 @Override
                 public void update(@NotNull AnActionEvent e) {
-                    e.getPresentation().setEnabledAndVisible(getResult() != null);
+                    e.getPresentation().setEnabledAndVisible(!isRunning() && getResult() != null);
                 }
 
                 @Override
@@ -290,7 +290,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         if (future == null || future.isDone()) {
             return;
         }
-        String cancelMessage = DQLBundle.message("services.executeDQL.cancelRequested", this.executionId);
+        String cancelMessage = DQLBundle.message("services.executeDQL.cancelRequested");
         ApplicationManager.getApplication().invokeLater(() -> {
             disposeAndClearContent();
             contentPanel.addToCenter(new InformationComponent(cancelMessage, AllIcons.General.Information));
@@ -303,16 +303,16 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         return future != null && !future.isDone();
     }
 
-    public @Nullable DQLPollResponse getResult() {
+    public @NotNull QueryConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    private @Nullable DQLPollResponse getResult() {
         CompletableFuture<DQLPollResponse> future = executionFuture.get();
         if (future == null || !future.isDone() || future.isCancelled() || future.isCompletedExceptionally()) {
             return null;
         }
         return future.getNow(null);
-    }
-
-    public @NotNull QueryConfiguration getConfiguration() {
-        return configuration;
     }
 
     private @NotNull DQLExecutePayload preparePayload(@NotNull QueryConfiguration configuration, @NotNull Project project) {

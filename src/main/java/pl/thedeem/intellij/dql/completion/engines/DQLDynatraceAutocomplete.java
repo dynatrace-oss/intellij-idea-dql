@@ -93,6 +93,9 @@ public class DQLDynatraceAutocomplete {
                         return rest.withStandardErrorHandling(rest.autocompleteQuery(tenant, substitutedQuery.parsed(), offset), tenant).get();
                     } catch (ExecutionException e) {
                         return null;
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return null;
                     }
                 }),
                 ProgressManager.getInstance().getProgressIndicator()
