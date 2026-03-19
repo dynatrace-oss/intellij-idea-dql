@@ -4,8 +4,6 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.lang.annotation.HighlightSeverity;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
@@ -14,16 +12,11 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.common.sdk.DynatraceRestClient;
-import pl.thedeem.intellij.common.sdk.errors.DQLInvalidResponseException;
-import pl.thedeem.intellij.common.sdk.errors.DQLNotAuthorizedException;
 import pl.thedeem.intellij.common.sdk.model.DQLSyntaxErrorPositionDetails;
-import pl.thedeem.intellij.common.sdk.model.DQLVerifyPayload;
 import pl.thedeem.intellij.common.sdk.model.DQLVerifyResponse;
-import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
-import pl.thedeem.intellij.dql.services.notifications.DQLNotificationsService;
+import pl.thedeem.intellij.dql.services.dynatrace.DynatraceRestService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryParserService;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
@@ -31,18 +24,10 @@ import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 import pl.thedeem.intellij.dqlexpr.DQLExprFileType;
 
-import java.io.IOException;
-import java.net.ConnectException;
-import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationAnnotator.Input, DQLVerificationAnnotator.Result> {
-    public record Input(PsiFile file) {
-    }
-
-    public record Result(DQLVerifyResponse response, @Nullable DQLQueryParserService.ParseResult parsedQuery) {
-    }
-
     @Override
     public Input collectInformation(@NotNull PsiFile file, @NotNull Editor editor, boolean hasErrors) {
         return new Input(file);
@@ -58,48 +43,17 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
         QueryConfiguration configuration = configurationService.getQueryConfiguration(input.file);
         DQLQueryParserService parser = DQLQueryParserService.getInstance();
         DynatraceTenantsService tenantsService = DynatraceTenantsService.getInstance();
+        DynatraceRestService rest = DynatraceRestService.getInstance(project);
         DynatraceTenant tenant = tenantsService.findTenant(configuration.tenant());
         if (tenant != null) {
-            DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
+            DQLQueryParserService.ParseResult parseResult = WriteCommandAction.runWriteCommandAction(
+                    project,
+                    (Computable<DQLQueryParserService.ParseResult>) () -> parser.getSubstitutedQuery(input.file, configuration.definedVariables())
+            );
             try {
-                DQLQueryParserService.ParseResult parseResult = WriteCommandAction.runWriteCommandAction(
-                        project,
-                        (Computable<DQLQueryParserService.ParseResult>) () -> parser.getSubstitutedQuery(input.file, configuration.definedVariables())
-                );
-                String apiToken = DynatraceTenantsService.getInstance().resolveApiToken(project, tenant);
-                DQLVerifyResponse response = client.verifyDQL(new DQLVerifyPayload(parseResult.parsed()), apiToken);
+                DQLVerifyResponse response = rest.withStandardErrorHandling(rest.verifyQuery(tenant, parseResult.parsed()), tenant).get();
                 return new Result(response, parseResult);
-            } catch (ConnectException e) {
-                ApplicationManager.getApplication().invokeLater(() -> DQLNotificationsService.getInstance(project).showErrorNotification(
-                        DQLBundle.message("notifications.error.invalidConnection.title", tenant.getName()),
-                        DQLBundle.message("notifications.error.invalidConnection.message", tenant.getName(), tenant.getUrl(), e.getMessage()),
-                        project,
-                        List.of(ActionManager.getInstance().getAction("DQL.ManageTenants"))
-                ));
-                return new Result(new DQLVerifyResponse(), null);
-            } catch (DQLNotAuthorizedException e) {
-                ApplicationManager.getApplication().invokeLater(() -> DQLNotificationsService.getInstance(project).showErrorNotification(
-                        DQLBundle.message("notifications.error.invalidAuth.title", tenant.getName()),
-                        DQLBundle.message("notifications.error.invalidAuth.message", tenant.getName(), e.getApiMessage()),
-                        project,
-                        List.of(ActionManager.getInstance().getAction("DQL.ManageTenants"))
-                ));
-                return new Result(new DQLVerifyResponse(), null);
-            } catch (DQLInvalidResponseException e) {
-                ApplicationManager.getApplication().invokeLater(() -> DQLNotificationsService.getInstance(project).showErrorNotification(
-                        DQLBundle.message("notifications.error.invalidResponse.title", tenant.getName()),
-                        DQLBundle.message("notifications.error.invalidResponse.message", e.getApiMessage()),
-                        project,
-                        List.of(ActionManager.getInstance().getAction("DQL.ManageTenants"))
-                ));
-                return new Result(new DQLVerifyResponse(), null);
-            } catch (IOException | InterruptedException e) {
-                ApplicationManager.getApplication().invokeLater(() -> DQLNotificationsService.getInstance(project).showErrorNotification(
-                        DQLBundle.message("notifications.error.unknownError.title", tenant.getName()),
-                        DQLBundle.message("notifications.error.unknownError.message", e.getMessage()),
-                        project,
-                        List.of(ActionManager.getInstance().getAction("DQL.ManageTenants"))
-                ));
+            } catch (ExecutionException | InterruptedException e) {
                 return new Result(new DQLVerifyResponse(), null);
             }
         }
@@ -145,5 +99,11 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
             case "WARN", "WARNING" -> ProblemHighlightType.WARNING;
             default -> ProblemHighlightType.GENERIC_ERROR;
         };
+    }
+
+    public record Input(PsiFile file) {
+    }
+
+    public record Result(DQLVerifyResponse response, @Nullable DQLQueryParserService.ParseResult parsedQuery) {
     }
 }

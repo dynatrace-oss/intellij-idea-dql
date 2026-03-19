@@ -307,6 +307,8 @@
                 serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLQuerySelectorServiceImpl"
                 serviceInterface="pl.thedeem.intellij.dql.services.query.DQLQuerySelectorService"/>
 
+        <projectService serviceImplementation="pl.thedeem.intellij.dql.services.dynatrace.DynatraceRestServiceImpl"
+                        serviceInterface="pl.thedeem.intellij.dql.services.dynatrace.DynatraceRestService"/>
         <projectService serviceImplementation="pl.thedeem.intellij.dql.services.variables.DQLVariablesServiceImpl"
                         serviceInterface="pl.thedeem.intellij.dql.services.variables.DQLVariablesService"/>
         <projectService serviceImplementation="pl.thedeem.intellij.dql.services.definition.DQLDefinitionServiceImpl"
