@@ -2,9 +2,10 @@
 
 ## [Unreleased]
 
-### Notes
+### Breaking changes
 
-- Updated the minimum supported version of IntelliJ IDEA to 2025.1.
+- Updated the minimum supported version of IntelliJ IDEA to 2025.1. Please update your IDE to use the latest features of
+  the plugin.
 
 ## [1.7.0] - 2026-03-19
 
