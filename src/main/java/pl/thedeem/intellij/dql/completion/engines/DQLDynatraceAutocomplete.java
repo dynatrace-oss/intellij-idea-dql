@@ -2,7 +2,6 @@ package pl.thedeem.intellij.dql.completion.engines;
 
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
-import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.application.ex.ApplicationUtil;
@@ -13,25 +12,17 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.completion.CompletionUtils;
-import pl.thedeem.intellij.common.sdk.DynatraceRestClient;
-import pl.thedeem.intellij.common.sdk.errors.DQLInvalidResponseException;
-import pl.thedeem.intellij.common.sdk.errors.DQLNotAuthorizedException;
-import pl.thedeem.intellij.common.sdk.model.DQLAutocompletePayload;
 import pl.thedeem.intellij.common.sdk.model.DQLAutocompleteResult;
 import pl.thedeem.intellij.common.sdk.model.DQLSuggestion;
-import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
-import pl.thedeem.intellij.dql.services.notifications.DQLNotificationsService;
+import pl.thedeem.intellij.dql.services.dynatrace.DynatraceRestService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryParserService;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
-import java.io.IOException;
-import java.net.ConnectException;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -47,9 +38,8 @@ public class DQLDynatraceAutocomplete {
         if (tenant == null) {
             return;
         }
-        DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
         try {
-            DQLAutocompleteResult autocomplete = getAutocompleteResult(parameters, tenant, client, configuration);
+            DQLAutocompleteResult autocomplete = getAutocompleteResult(parameters, tenant, configuration);
             if (autocomplete == null) {
                 return;
             }
@@ -86,7 +76,6 @@ public class DQLDynatraceAutocomplete {
     private static DQLAutocompleteResult getAutocompleteResult(
             @NotNull CompletionParameters parameters,
             @NotNull DynatraceTenant tenant,
-            @NotNull DynatraceRestClient client,
             @NotNull QueryConfiguration configuration
     ) throws ExecutionException {
         Project project = parameters.getOriginalFile().getProject();
@@ -94,44 +83,18 @@ public class DQLDynatraceAutocomplete {
                 ApplicationManager.getApplication().executeOnPooledThread(() -> {
                     try {
                         ProgressManager.checkCanceled();
-                        DQLQueryParserService parser = DQLQueryParserService.getInstance();
-                        String apiToken = DynatraceTenantsService.getInstance().resolveApiToken(project, tenant);
-                        DQLQueryParserService.ParseResult substitutedQuery = ReadAction.nonBlocking(() -> parser.getSubstitutedQuery(parameters.getOriginalFile(), configuration.definedVariables())).executeSynchronously();
-                        return client.autocomplete(
-                                new DQLAutocompletePayload(substitutedQuery.parsed(), (long) substitutedQuery.getOriginalOffset(parameters.getPosition().getTextOffset())),
-                                apiToken
-                        );
-                    } catch (ConnectException e) {
-                        ApplicationManager.getApplication().invokeLater(() -> DQLNotificationsService.getInstance(project).showErrorNotification(
-                                DQLBundle.message("notifications.error.invalidConnection.title", tenant.getName()),
-                                DQLBundle.message("notifications.error.invalidConnection.message", tenant.getName(), tenant.getUrl(), e.getMessage()),
-                                project,
-                                List.of(ActionManager.getInstance().getAction("DQL.ManageTenants"))
-                        ));
+                        DQLQueryParserService.ParseResult substitutedQuery = ReadAction.nonBlocking(
+                                () -> DQLQueryParserService.getInstance().getSubstitutedQuery(
+                                        parameters.getOriginalFile(),
+                                        configuration.definedVariables()
+                                )).executeSynchronously();
+                        long offset = substitutedQuery.getOriginalOffset(parameters.getPosition().getTextOffset());
+                        DynatraceRestService rest = DynatraceRestService.getInstance(project);
+                        return rest.withStandardErrorHandling(rest.autocompleteQuery(tenant, substitutedQuery.parsed(), offset), tenant).get();
+                    } catch (ExecutionException e) {
                         return null;
-                    } catch (DQLNotAuthorizedException e) {
-                        ApplicationManager.getApplication().invokeLater(() -> DQLNotificationsService.getInstance(project).showErrorNotification(
-                                DQLBundle.message("notifications.error.invalidAuth.title", tenant.getName()),
-                                DQLBundle.message("notifications.error.invalidAuth.message", tenant.getName(), e.getApiMessage()),
-                                project,
-                                List.of(ActionManager.getInstance().getAction("DQL.ManageTenants"))
-                        ));
-                        return null;
-                    } catch (DQLInvalidResponseException e) {
-                        ApplicationManager.getApplication().invokeLater(() -> DQLNotificationsService.getInstance(project).showErrorNotification(
-                                DQLBundle.message("notifications.error.invalidResponse.title", tenant.getName()),
-                                DQLBundle.message("notifications.error.invalidResponse.message", e.getApiMessage()),
-                                project,
-                                List.of(ActionManager.getInstance().getAction("DQL.ManageTenants"))
-                        ));
-                        return null;
-                    } catch (IOException e) {
-                        ApplicationManager.getApplication().invokeLater(() -> DQLNotificationsService.getInstance(project).showErrorNotification(
-                                DQLBundle.message("notifications.error.unknownError.title", tenant.getName()),
-                                DQLBundle.message("notifications.error.unknownError.message", e.getMessage()),
-                                project,
-                                List.of(ActionManager.getInstance().getAction("DQL.ManageTenants"))
-                        ));
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                         return null;
                     }
                 }),

@@ -14,7 +14,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.pom.Navigatable;
-import com.intellij.util.concurrency.AppExecutorUtil;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,10 +21,7 @@ import org.jsoup.internal.StringUtil;
 import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.common.components.InformationComponent;
-import pl.thedeem.intellij.common.components.LoadingPanel;
-import pl.thedeem.intellij.common.sdk.DynatraceRestClient;
 import pl.thedeem.intellij.common.sdk.model.DQLExecutePayload;
-import pl.thedeem.intellij.common.sdk.model.DQLExecuteResponse;
 import pl.thedeem.intellij.common.sdk.model.DQLPollResponse;
 import pl.thedeem.intellij.common.services.ManagedService;
 import pl.thedeem.intellij.common.services.ManagedServiceGroup;
@@ -40,6 +36,7 @@ import pl.thedeem.intellij.dql.exec.panel.DQLExecutionErrorPanel;
 import pl.thedeem.intellij.dql.exec.panel.DQLExecutionResult;
 import pl.thedeem.intellij.dql.fileProviders.DQLQueryConsoleVirtualFile;
 import pl.thedeem.intellij.dql.fileProviders.DQLResultVirtualFile;
+import pl.thedeem.intellij.dql.services.dynatrace.DynatraceRestService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryParserService;
 import pl.thedeem.intellij.dql.services.ui.ConnectedTenantsServiceGroup;
@@ -54,30 +51,23 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class DQLExecutionService implements ManagedService, UiDataProvider {
     public static final DataKey<DQLExecutionService> EXECUTION_SERVICE = DataKey.create("executionService");
-
     private static final Logger logger = Logger.getInstance(DQLExecutionService.class);
-    private final static int POLL_INTERVAL = 200;
 
     private final DQLProcessHandler processHandler;
     private final Project project;
     private final String name;
     private final DefaultActionGroup additionalActions = new DefaultActionGroup();
-    private final AtomicReference<ScheduledFuture<?>> pollingFutureRef = new AtomicReference<>(null);
-    private final AtomicReference<Boolean> stopping = new AtomicReference<>(false);
-    private final AtomicReference<Boolean> loading = new AtomicReference<>(false);
+    private final AtomicReference<CompletableFuture<DQLPollResponse>> executionFuture = new AtomicReference<>(null);
     private final BorderLayoutPanel contentPanel;
     private final QueryConfiguration configuration;
     private final QueryConfiguration configurationCopy;
 
-    private String requestToken;
-    private DQLPollResponse result;
     private String executionId;
     private DefaultActionGroup actions;
     private ZonedDateTime executionTime;
@@ -89,7 +79,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         this.configuration = params;
         this.configurationCopy = params.copy();
         this.contentPanel = new BorderLayoutPanel();
-        this.contentPanel.addToCenter(new LoadingPanel(DQLBundle.message("services.executeDQL.information.startedExecuting")));
+        this.contentPanel.addToCenter(new InformationComponent(DQLBundle.message("services.executeDQL.information.startedExecuting"), AllIcons.General.Information));
     }
 
     @Override
@@ -110,107 +100,6 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
             return List.of(ConnectedTenantsServiceGroup.getInstance());
         }
         return List.of(ConnectedTenantsServiceGroup.getInstance(), new TenantServiceGroup(tenant));
-    }
-
-    public void startExecution() {
-        executionTime = Instant.now().atZone(ZoneId.systemDefault());
-        disposeAndClearContent();
-        additionalActions.removeAll();
-        if (configuration.query() == null) {
-            contentPanel.addToCenter(new DQLExecutionErrorPanel(
-                    DQLBundle.message("services.executeDQL.errors.invalidPayload"),
-                    configuration.query(),
-                    project
-            ));
-            return;
-        }
-        DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(configuration.tenant());
-        if (tenant == null) {
-            contentPanel.addToCenter(new DQLExecutionErrorPanel(
-                    DQLBundle.message("services.executeDQL.errors.missingTenant", configuration.tenant()),
-                    configuration.query(),
-                    project
-            ));
-            return;
-        }
-        DQLExecuteInProgressPanel progressPanel = new DQLExecuteInProgressPanel();
-        contentPanel.addToCenter(progressPanel);
-        DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
-        DQLExecutePayload payload = this.preparePayload(configuration, project);
-        this.executionId = String.valueOf(payload.getQuery().hashCode());
-        logger.info(String.format("Executing a DQL query with hash %s on the tenant: %s", payload.getQuery().hashCode(), tenant.getName()));
-        this.loading.set(true);
-        ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            requestToken = this.executeApiCall(() -> {
-                String apiToken = DynatraceTenantsService.getInstance().resolveApiToken(project, tenant);
-                DQLExecuteResponse executedResponse = client.executeDQL(payload, apiToken);
-                logger.info(String.format(
-                        "The DQL query %s for the tenant %s was started to be executed and has a request token: %s (state: %s)",
-                        this.executionId,
-                        tenant.getName(),
-                        executedResponse.getRequestToken(),
-                        executedResponse.getState()
-                ));
-                String token = executedResponse.getRequestToken();
-                progressPanel.update(executedResponse);
-                return token;
-            });
-
-            if (requestToken != null) {
-                pollingFutureRef.set(startPollingRequest(requestToken, client, progressPanel));
-            }
-        });
-    }
-
-    public void stopExecution() {
-        DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(configuration != null ? configuration.tenant() : null);
-        if (tenant == null || executionId == null) {
-            return;
-        }
-        stopping.set(true);
-        String cancelMessage = DQLBundle.message("services.executeDQL.cancelRequested", this.requestToken);
-        ApplicationManager.getApplication().invokeLater(() -> {
-            disposeAndClearContent();
-            contentPanel.addToCenter(new InformationComponent(cancelMessage, AllIcons.General.Information));
-        });
-        ScheduledFuture<?> scheduledFuture = pollingFutureRef.get();
-        if (scheduledFuture != null && !scheduledFuture.isCancelled() && !scheduledFuture.isDone() && this.requestToken != null) {
-            scheduledFuture.cancel(true);
-            ApplicationManager.getApplication().executeOnPooledThread(() -> {
-                DynatraceRestClient client = new DynatraceRestClient(tenant.getUrl());
-                logger.info(String.format(
-                        "Stopping the query execution %s with the token %s for the DQL query %s (tenant %s)",
-                        executionId,
-                        requestToken,
-                        executionId,
-                        tenant.getName()
-                ));
-                this.executeApiCall(() -> {
-                    String apiToken = DynatraceTenantsService.getInstance().resolveApiToken(project, tenant);
-                    DQLPollResponse result = client.cancelDQL(requestToken, apiToken);
-                    logger.info(String.format(
-                            "The query %s with ID %s was stopped on tenant %s. Returned: %s",
-                            executionId,
-                            requestToken,
-                            tenant.getName(),
-                            result != null
-                    ));
-                    processHandler.notifyExecutionFinished();
-                    return result;
-                });
-                stopping.set(false);
-            });
-        } else {
-            stopping.set(false);
-        }
-    }
-
-    public boolean isRunning() {
-        if (stopping.get() || loading.get()) {
-            return true;
-        }
-        ScheduledFuture<?> scheduledFuture = this.pollingFutureRef.get();
-        return scheduledFuture != null && !scheduledFuture.isCancelled() && !scheduledFuture.isDone();
     }
 
     @Override
@@ -250,7 +139,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
 
                 @Override
                 public void update(@NotNull AnActionEvent e) {
-                    e.getPresentation().setEnabledAndVisible(getResult() != null);
+                    e.getPresentation().setEnabledAndVisible(!isRunning() && getResult() != null);
                 }
 
                 @Override
@@ -293,85 +182,137 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         dataSink.set(QueryConfigurationAction.SHOW_QUERY_VALIDATION_OPTION, false);
     }
 
-    public @Nullable DQLPollResponse getResult() {
-        return result != null ? result : null;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        DQLExecutionService that = (DQLExecutionService) o;
+        return Objects.equals(configuration.tenant(), that.configuration.tenant())
+                && Objects.equals(getServiceId(), that.getServiceId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                configuration.tenant(),
+                getServiceId()
+        );
+    }
+
+    @Override
+    public @Nullable Navigatable getNavigatable() {
+        String originalFile = configuration.originalFile();
+        VirtualFile virtualFile = null;
+        if (originalFile != null) {
+            virtualFile = IntelliJUtils.getProjectRelativeFile(originalFile, project);
+        }
+        if (virtualFile == null) {
+            virtualFile = new DQLQueryConsoleVirtualFile(this.name, this.configuration.query())
+                    .setInitialConfiguration(this.configuration);
+        }
+        return new OpenFileDescriptor(project, virtualFile);
+    }
+
+    public void startExecution() {
+        executionTime = Instant.now().atZone(ZoneId.systemDefault());
+        disposeAndClearContent();
+        additionalActions.removeAll();
+
+        if (configuration.query() == null) {
+            contentPanel.addToCenter(new DQLExecutionErrorPanel(
+                    DQLBundle.message("services.executeDQL.errors.invalidPayload"),
+                    configuration.query(),
+                    project
+            ));
+            return;
+        }
+
+        DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(configuration.tenant());
+        if (tenant == null) {
+            contentPanel.addToCenter(new DQLExecutionErrorPanel(
+                    DQLBundle.message("services.executeDQL.errors.missingTenant", configuration.tenant()),
+                    configuration.query(),
+                    project
+            ));
+            return;
+        }
+
+        DQLExecuteInProgressPanel progressPanel = new DQLExecuteInProgressPanel();
+        contentPanel.addToCenter(progressPanel);
+
+        DQLExecutePayload payload = preparePayload(configuration, project);
+        executionId = String.valueOf(payload.getQuery().hashCode());
+        logger.info(String.format("Executing a DQL query with hash %s on the tenant: %s", executionId, tenant.getName()));
+
+        CompletableFuture<DQLPollResponse> future = DynatraceRestService.getInstance(project).executeQuery(tenant, payload, progressPanel::update);
+        executionFuture.set(future);
+
+        future.whenComplete((result, error) -> {
+            ActivityTracker.getInstance().inc();
+            if (future.isCancelled() || error instanceof CancellationException) {
+                processHandler.notifyExecutionFinished();
+                return;
+            }
+            if (error != null) {
+                logger.warn("An error occurred while executing DQL query " + executionId, error);
+                processHandler.notifyExecutionError(error.getMessage());
+                Exception exception = error instanceof Exception e ? e : new RuntimeException(error);
+                ApplicationManager.getApplication().invokeLater(() -> {
+                    disposeAndClearContent();
+                    contentPanel.add(new DQLExecutionErrorPanel(exception, configuration.query(), project));
+                    contentPanel.revalidate();
+                    contentPanel.repaint();
+                });
+                return;
+            }
+            logger.info(String.format("The DQL query %s was executed correctly.", executionId));
+            processHandler.notifyExecutionFinished();
+            ApplicationManager.getApplication().invokeLater(() -> {
+                disposeAndClearContent();
+                if (result.getResult() != null) {
+                    DQLExecutionResult resultPanel = new DQLExecutionResult(project, result.getResult(), executionTime, configuration);
+                    contentPanel.add(resultPanel);
+                    additionalActions.addAction(resultPanel.getToolbarActions());
+                } else {
+                    contentPanel.add(new InformationComponent(
+                            DQLBundle.message("services.executeDQL.information.missingResults"),
+                            AllIcons.General.Information
+                    ));
+                }
+                contentPanel.revalidate();
+                contentPanel.repaint();
+            });
+        });
+    }
+
+    public void stopExecution() {
+        CompletableFuture<DQLPollResponse> future = executionFuture.get();
+        if (future == null || future.isDone()) {
+            return;
+        }
+        String cancelMessage = DQLBundle.message("services.executeDQL.cancelRequested");
+        ApplicationManager.getApplication().invokeLater(() -> {
+            disposeAndClearContent();
+            contentPanel.addToCenter(new InformationComponent(cancelMessage, AllIcons.General.Information));
+        });
+        future.cancel(true);
+    }
+
+    public boolean isRunning() {
+        CompletableFuture<DQLPollResponse> future = executionFuture.get();
+        return future != null && !future.isDone();
     }
 
     public @NotNull QueryConfiguration getConfiguration() {
         return configuration;
     }
 
-    private ScheduledFuture<?> startPollingRequest(@NotNull String requestToken, @NotNull DynatraceRestClient client, @NotNull DQLExecuteInProgressPanel progressPanel) {
-        return AppExecutorUtil.getAppScheduledExecutorService().scheduleWithFixedDelay(
-                () -> {
-                    logger.info(String.format("Verifying if the DQL query %s with the request token %s has finished...", executionId, requestToken));
-                    this.executeApiCall(() -> {
-                        DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(configuration.tenant());
-                        String apiToken = DynatraceTenantsService.getInstance().resolveApiToken(project, tenant);
-                        result = client.pollDQLState(requestToken, apiToken);
-                        logger.info(String.format(
-                                "Polling response for the DQL query %s with the request token %s: state: %s, progress: %s",
-                                executionId,
-                                requestToken,
-                                result.state,
-                                result.progress
-                        ));
-
-                        if (result.isFinished()) {
-                            logger.info(String.format("The DQL query %s - %s was executed correctly.", executionId, requestToken));
-                            pollingFutureRef.get().cancel(false);
-                            processHandler.notifyExecutionFinished();
-                            this.loading.set(false);
-                            ApplicationManager.getApplication().invokeLater(() -> {
-                                disposeAndClearContent();
-                                if (result.getResult() != null) {
-                                    DQLExecutionResult resultPanel = new DQLExecutionResult(project, result.getResult(), executionTime, configuration);
-                                    this.contentPanel.add(resultPanel);
-                                    this.additionalActions.addAction(resultPanel.getToolbarActions());
-                                } else {
-                                    this.contentPanel.add(
-                                            new InformationComponent(
-                                                    DQLBundle.message("services.executeDQL.information.missingResults"),
-                                                    AllIcons.General.Information
-                                            )
-                                    );
-                                }
-                                this.contentPanel.revalidate();
-                                this.contentPanel.repaint();
-                            });
-                        } else {
-                            progressPanel.update(result);
-                        }
-                        return result;
-                    });
-                },
-                200,
-                POLL_INTERVAL,
-                TimeUnit.MILLISECONDS);
-    }
-
-    private <T> T executeApiCall(@NotNull Callable<T> apiCall) {
-        try {
-            T result = apiCall.call();
-            ActivityTracker.getInstance().inc();
-            return result;
-        } catch (Exception e) {
-            logger.warn("An error was found when executing the API call to the DT tenant. Cancelling the execution...", e);
-            processHandler.notifyExecutionError(e.getMessage());
-            if (pollingFutureRef.get() != null) {
-                pollingFutureRef.get().cancel(true);
-            }
-            ApplicationManager.getApplication().invokeLater(() -> {
-                disposeAndClearContent();
-                contentPanel.add(new DQLExecutionErrorPanel(e, configuration.query(), project));
-                contentPanel.revalidate();
-                contentPanel.repaint();
-            });
-        } finally {
-            loading.set(false);
-            stopping.set(false);
+    private @Nullable DQLPollResponse getResult() {
+        CompletableFuture<DQLPollResponse> future = executionFuture.get();
+        if (future == null || !future.isDone() || future.isCancelled() || future.isCompletedExceptionally()) {
+            return null;
         }
-        return null;
+        return future.getNow(null);
     }
 
     private @NotNull DQLExecutePayload preparePayload(@NotNull QueryConfiguration configuration, @NotNull Project project) {
@@ -402,36 +343,6 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         result.setMaxResultRecords(configuration.maxResultRecords());
         result.setTimezone(ZoneId.systemDefault().getId());
         return result;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        DQLExecutionService that = (DQLExecutionService) o;
-        return Objects.equals(configuration.tenant(), that.configuration.tenant())
-                && Objects.equals(getServiceId(), that.getServiceId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-                configuration.tenant(),
-                getServiceId()
-        );
-    }
-
-    @Override
-    public @Nullable Navigatable getNavigatable() {
-        String originalFile = configuration.originalFile();
-        VirtualFile virtualFile = null;
-        if (originalFile != null) {
-            virtualFile = IntelliJUtils.getProjectRelativeFile(originalFile, project);
-        }
-        if (virtualFile == null) {
-            virtualFile = new DQLQueryConsoleVirtualFile(this.name, this.configuration.query())
-                    .setInitialConfiguration(this.configuration);
-        }
-        return new OpenFileDescriptor(project, virtualFile);
     }
 
     private void disposeAndClearContent() {
