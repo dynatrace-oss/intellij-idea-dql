@@ -6,6 +6,7 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.util.CachedValue;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
+import org.codehaus.plexus.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.StandardItemPresentation;
@@ -84,6 +85,12 @@ public abstract class ParameterExpressionImpl extends ASTWrapperPsiElement imple
             return null;
         }
         MappedParameter parameter = parent.getParameter(this);
-        return parameter != null ? parameter.definition() : null;
+        if (parameter == null) {
+            return null;
+        }
+        if (!StringUtils.equalsIgnoreCase(parameter.name(), this.getName())) {
+            return null;
+        }
+        return parameter.definition();
     }
 }
