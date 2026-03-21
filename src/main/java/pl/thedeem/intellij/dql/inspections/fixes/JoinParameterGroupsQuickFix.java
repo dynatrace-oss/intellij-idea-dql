@@ -45,7 +45,7 @@ public class JoinParameterGroupsQuickFix implements LocalQuickFix {
         }
 
         StringBuilder toInsert = new StringBuilder();
-        List<List<PsiElement>> groups = parameter.getParameterGroups();
+        List<List<PsiElement>> groups = parameter.parameterGroups();
 
         for (int i = groups.size() - 1; i >= 1; i--) {
             List<PsiElement> group = groups.get(i);

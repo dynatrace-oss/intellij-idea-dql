@@ -147,15 +147,18 @@ public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement im
         return definition.signatures().isEmpty() ? null : definition.signatures().getFirst();
     }
 
+    @Override
+    public @NotNull List<DQLExpression> getParameterExpressions() {
+        return getFunctionArguments();
+    }
+
     private List<MappedParameter> recalculateParameters() {
         Signature signature = getSignature();
         if (signature == null) {
             return List.of();
         }
-        List<DQLExpression> defined = getFunctionArguments();
         List<Parameter> available = Objects.requireNonNullElse(signature.parameters(), List.of());
-        DQLParametersCalculatorService service = DQLParametersCalculatorService.getInstance();
-        return service.mapParameters(defined, available);
+        return DQLParametersCalculatorService.getInstance().mapParameters(this, available);
     }
 
     private @Nullable Function recalculateDefinition() {

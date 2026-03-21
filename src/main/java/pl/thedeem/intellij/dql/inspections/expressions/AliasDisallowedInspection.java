@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.fixes.DropElementQuickFix;
 import pl.thedeem.intellij.dql.psi.*;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
@@ -54,7 +55,8 @@ public class AliasDisallowedInspection extends LocalInspectionTool {
     private void validateAliasParameter(@NotNull DQLParameterExpression alias, @Nullable PsiElement previous, @NotNull MappedParameter parameter, @NotNull ProblemsHolder holder) {
         DQLExpression value = alias.getExpression();
         String valueText = value != null ? value.getText() : null;
-        if (parameter.definition() == null || !parameter.definition().allowsFieldName()) {
+        Parameter definition = parameter.definition();
+        if (definition == null || !definition.allowsFieldName()) {
             holder.registerProblem(
                     alias,
                     DQLBundle.message("inspection.command.invalidAlias.cannotBeNamed", valueText),

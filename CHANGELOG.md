@@ -7,6 +7,21 @@
 - Updated the minimum supported version of IntelliJ IDEA to 2025.1. Please update your IDE to use the latest features of
   the plugin.
 
+### Features
+
+- Improved local parameters calculation to better match what DQL engine offers. The plugin is now able to calculate
+  "embedded" parameters, for example:
+
+   ```dql
+   timeseries {
+     oom_kills = sum(dt.kubernetes.container.oom_kills, default: 0, rollup: sum),
+     nonempty: true,
+     filter: k8s.namespace.name == "vulnerability-scan",
+     by: { cluster_name=k8s.cluster.name, k8s.pod.name },
+     max_oom_kills = max(dt.kubernetes.container.oom_kills, default: 0, rollup: sum)
+   }
+   ```
+
 ## [1.7.0] - 2026-03-19
 
 ### Features

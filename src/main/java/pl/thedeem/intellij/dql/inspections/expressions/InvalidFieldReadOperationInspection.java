@@ -41,7 +41,7 @@ public class InvalidFieldReadOperationInspection extends LocalInspectionTool {
     private void validateParameters(@NotNull List<MappedParameter> parameters, @NotNull ProblemsHolder holder) {
         for (MappedParameter parameter : parameters) {
             if (readonlyDisallowed(parameter) && parameter.definition() != null) {
-                for (PsiElement value : parameter.getExpressions()) {
+                for (PsiElement value : parameter.expressions()) {
                     validateValue(value, holder);
                 }
             }

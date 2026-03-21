@@ -450,7 +450,7 @@
           "name": "on",
           "description": "Records must match this condition in order to be joined.",
           "required": true,
-          "requiresName": false,
+          "requiresName": true,
           "assignmentSupport": "none",
           "variadic": true,
           "parameterValueTypes": [
@@ -513,7 +513,7 @@
           "name": "on",
           "description": "Records must match this condition in order to be joined.",
           "required": true,
-          "requiresName": false,
+          "requiresName": true,
           "assignmentSupport": "none",
           "variadic": true,
           "parameterValueTypes": [

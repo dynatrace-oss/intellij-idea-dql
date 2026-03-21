@@ -12,8 +12,6 @@ import pl.thedeem.intellij.dql.documentation.providers.*;
 import pl.thedeem.intellij.dql.psi.*;
 import pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl;
 
-import java.util.Objects;
-
 public class DQLDocumentationProvider extends AbstractDocumentationProvider {
     @Override
     public @Nullable String generateDoc(@NotNull PsiElement element, @Nullable PsiElement originalElement) {
@@ -22,11 +20,7 @@ public class DQLDocumentationProvider extends AbstractDocumentationProvider {
                     new DQLCommandDocumentationProvider(command);
             case DQLParameterName parameterName -> {
                 if (parameterName.getParent() instanceof DQLParameterExpression parameter) {
-                    if (parameter.getParent() instanceof DQLCommand command) {
-                        yield new DQLParameterDocumentationProvider(Objects.requireNonNull(command.getParameter(parameter)));
-                    } else if (parameter.getParent() instanceof DQLFunctionExpression function) {
-                        yield new DQLParameterDocumentationProvider(Objects.requireNonNull(function.getParameter(parameter)));
-                    }
+                    yield new DQLParameterDocumentationProvider(parameter);
                 }
                 yield new BaseDocumentationProvider<>(parameterName, DQLBundle.message("documentation.parameter.type"), "AllIcons.Nodes.Parameter");
             }

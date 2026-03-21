@@ -32,7 +32,7 @@ public class DropInvalidParameterQuickFix implements LocalQuickFix {
             return;
         }
 
-        for (List<PsiElement> parameterGroup : parameter.getParameterGroups()) {
+        for (List<PsiElement> parameterGroup : parameter.parameterGroups()) {
             int start = parameterGroup.getFirst().getTextRange().getStartOffset();
             int end = parameterGroup.getLast().getTextRange().getEndOffset();
 
@@ -40,7 +40,7 @@ public class DropInvalidParameterQuickFix implements LocalQuickFix {
             if (previousElement != null && previousElement.getNode().getElementType() == DQLTypes.COMMA) {
                 start = previousElement.getTextRange().getStartOffset();
             } else {
-                PsiElement nextElement = PsiUtils.getNextElement(parameter.included().isEmpty() ? parameter.holder() : parameter.included().getLast());
+                PsiElement nextElement = PsiUtils.getNextElement(parameter.expressions().size() == 1 ? parameter.holder() : parameter.expressions().getLast());
                 if (nextElement != null && nextElement.getNode().getElementType() == DQLTypes.COMMA) {
                     end = nextElement.getTextRange().getEndOffset();
                 }

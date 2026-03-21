@@ -13,8 +13,8 @@ public class DQLParameterValueTypesValidatorImpl implements DQLParameterValueTyp
     @Override
     public @NotNull List<ValueIssue> validate(@NotNull PsiElement parameter, @NotNull Parameter definition) {
         List<ValueIssue> result = new ArrayList<>();
-        List<String> types = Objects.requireNonNullElse(definition.parameterValueTypes(), List.of());
-        List<String> values = Objects.requireNonNullElse(definition.valueTypes(), List.of());
+        List<String> types = Objects.requireNonNullElseGet(definition.parameterValueTypes(), List::of);
+        List<String> values = Objects.requireNonNullElseGet(definition.valueTypes(), List::of);
         if (!types.isEmpty()) {
             result.addAll(validateTypes(parameter, types, definition));
         }

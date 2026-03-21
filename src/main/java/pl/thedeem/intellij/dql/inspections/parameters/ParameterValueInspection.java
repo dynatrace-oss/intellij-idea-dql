@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
+import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
@@ -44,12 +45,13 @@ public class ParameterValueInspection extends LocalInspectionTool {
     }
 
     private List<DQLParameterValueTypesValidator.ValueIssue> findIssues(@NotNull MappedParameter parameter, @NotNull DQLParameterValueTypesValidator service) {
-        if (parameter.definition() == null) {
+        Parameter definition = parameter.definition();
+        if (definition == null) {
             return List.of();
         }
         List<DQLParameterValueTypesValidator.ValueIssue> result = new ArrayList<>();
-        for (PsiElement expression : parameter.getExpressions()) {
-            result.addAll(service.validate(expression, parameter.definition()));
+        for (PsiElement expression : parameter.values()) {
+            result.addAll(service.validate(expression, definition));
         }
         return result;
     }

@@ -21,7 +21,7 @@ public class InvalidParameterNameInspection extends LocalInspectionTool {
                     MappedParameter parameter = parametersOwner.getParameter(expression);
                     if (parameter != null) {
                         Parameter definition = parameter.definition();
-                        if (definition != null && !definition.allowsName() && parameter.isExplicitlyNamed()) {
+                        if (definition != null && !definition.allowsName() && parameter.explicitlyNamed()) {
                             holder.registerProblem(
                                     expression,
                                     DQLBundle.message("inspection.parameter.invalidName.notAllowed", definition.name())

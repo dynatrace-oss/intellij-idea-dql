@@ -32,10 +32,10 @@ public class AdvisedBracketsAroundParametersInspection extends LocalInspectionTo
                     if (!parameter.holder().equals(expression)) {
                         return;
                     }
-                    if (!definition.variadic() || parameter.included().isEmpty()) {
+                    if (!definition.variadic() || parameter.expressions().size() == 1) {
                         return;
                     }
-                    for (List<PsiElement> group : parameter.getParameterGroups()) {
+                    for (List<PsiElement> group : parameter.parameterGroups()) {
                         if (group.size() > 1 && shouldAdviseBrackets(command)) {
                             holder.registerProblem(
                                     group.getFirst(),

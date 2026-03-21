@@ -56,10 +56,10 @@ public class ReplaceFetchWithMetricsQuickFix extends AbstractReplaceElementQuick
                 .filter(p -> p.definition() != null && metricsParameters.contains(p.name()))
                 .map(p -> {
                     String result = "";
-                    if (p.definition().requiresName() && !p.isExplicitlyNamed()) {
+                    if (p.definition().requiresName() && !p.explicitlyNamed()) {
                         result += p.name() + ": ";
                     }
-                    result += String.join(", ", p.getExpressions().stream().map(PsiElement::getText).toList());
+                    result += String.join(", ", p.expressions().stream().map(PsiElement::getText).toList());
                     return result;
 
                 }).toList());

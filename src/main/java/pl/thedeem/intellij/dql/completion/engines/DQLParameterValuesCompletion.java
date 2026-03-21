@@ -7,11 +7,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
-import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.definition.model.Function;
 import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
+import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,7 +40,7 @@ public class DQLParameterValuesCompletion {
         if (definition == null) {
             return;
         }
-        if (definition.requiresName() && !parameter.isExplicitlyNamed()) {
+        if (definition.requiresName() && !parameter.explicitlyNamed()) {
             return;
         }
         if (definition.allowedEnumValues() != null) {

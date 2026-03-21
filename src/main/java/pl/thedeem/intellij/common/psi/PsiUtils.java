@@ -53,6 +53,20 @@ public class PsiUtils {
         return elements.reversed();
     }
 
+    public static <T> @Nullable T getParentElement(PsiElement element, Predicate<PsiElement> allowed, Class<T> parentClass) {
+        PsiElement result = element.getParent();
+        while (result != null) {
+            if (parentClass.isInstance(result)) {
+                return parentClass.cast(result);
+            }
+            if (!allowed.test(result)) {
+                return null;
+            }
+            result = result.getParent();
+        }
+        return null;
+    }
+
     public static PsiElement getPreviousElement(PsiElement element) {
         PsiElement prev = element.getPrevSibling();
         while (prev != null && PlatformPatterns.psiElement().whitespaceCommentEmptyOrError().accepts(prev)) {
