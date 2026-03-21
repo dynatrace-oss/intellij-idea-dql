@@ -10,6 +10,7 @@
 
 - Improved local parameters calculation to better match what DQL engine offers. The plugin is now able to calculate
   "embedded" parameters, for example:
+
    ```dql
    timeseries {
      oom_kills = sum(dt.kubernetes.container.oom_kills, default: 0, rollup: sum),
