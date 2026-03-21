@@ -22,7 +22,7 @@
         NUMBERED_IDENTIFIER = 'regexp:[0-9]+[a-zA-Z_]+'
         POSITIVE_LONG = 'regexp:[0-9]+'
         POSITIVE_DOUBLE = 'regexp:[0-9]+\.[0-9]+'
-        POSITIVE_SCIENTIFIC_NOTATION = 'regexp:[0-9]+\.[0-9]+e-?[0-9]+'
+        POSITIVE_SCIENTIFIC_NOTATION = 'regexp:[0-9]+\.[0-9]+e(-?[0-9]+)?'
         HEX_NUMBER = 'regexp:0[xX][0-9a-fA-F]+'
         EOL_COMMENT = 'regexp://.*'
         TRUE = 'true'

@@ -2,7 +2,9 @@ package pl.thedeem.intellij.dql.psi.elements.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
@@ -41,6 +43,15 @@ public abstract class ArrayExpressionImpl extends AbstractOperatorElementImpl im
     @Override
     protected String getOperationId() {
         return "dql.operator.array";
+    }
+
+    @Override
+    public @Nullable PsiElement getBaseExpression() {
+        PsiElement leftSide = getLeftExpression();
+        while (leftSide instanceof ArrayExpression arrayExpression) {
+            leftSide = arrayExpression.getLeftExpression();
+        }
+        return leftSide;
     }
 }
 
