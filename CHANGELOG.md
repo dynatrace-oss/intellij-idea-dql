@@ -22,6 +22,15 @@
    }
    ```
 
+### Bug fixes
+
+- `1e` is now a valid number (previously it was treated as an unknown duration type)
+- `join` conditions now support recursive `[]` accessors for `left` and `right` fields, for example:
+
+  ```dqlexpr
+  left[k8s.pod.uid] == right[objectRef][uid]
+  ```
+
 ## [1.7.0] - 2026-03-19
 
 ### Features

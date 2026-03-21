@@ -3,11 +3,11 @@ package pl.thedeem.intellij.dql.definition.validators;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLArrayExpression;
 import pl.thedeem.intellij.dql.psi.DQLEqualityExpression;
 import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
+import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ public class JoinConditionValidator extends AbstractDefinitionValidator {
 
     private static boolean isJoinOperandInvalid(PsiElement expression, Set<String> fieldNames) {
         if (expression instanceof DQLArrayExpression arrayExpression) {
-            if (arrayExpression.getLeftExpression() instanceof DQLFieldExpression fieldExpression) {
+            if (arrayExpression.getBaseExpression() instanceof DQLFieldExpression fieldExpression) {
                 return !fieldNames.contains(fieldExpression.getName());
             }
         }
