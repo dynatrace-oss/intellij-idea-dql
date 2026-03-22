@@ -19,7 +19,7 @@ public class EnumValuesValidator extends AbstractParameterValidator {
         }
 
         List<DQLParameterValueTypesValidator.ValueIssue> result = new ArrayList<>();
-        if (definition.allowedEnumValues() == null) {
+        if (definition.allowedEnumValues().isEmpty()) {
             return result;
         }
         for (PsiElement invalidValue : getInvalidValues(parameter, e -> isInvalid(e, definition))) {

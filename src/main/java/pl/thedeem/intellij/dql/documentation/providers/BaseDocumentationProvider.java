@@ -131,7 +131,7 @@ public class BaseDocumentationProvider<T extends PsiElement> extends GenericDocu
     }
 
     protected @NotNull HtmlChunk prepareEnumValuesDescription(@NotNull Parameter parameter) {
-        if (parameter.allowedEnumValues() != null) {
+        if (!parameter.allowedEnumValues().isEmpty()) {
             return buildSeparatedElements(parameter.allowedEnumValues(), HtmlChunk.tag("tt"));
         }
         return HtmlChunk.empty();

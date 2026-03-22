@@ -42,7 +42,7 @@ public class DQLParameterValuesCompletion {
         if (definition.requiresName() && !parameter.explicitlyNamed()) {
             return;
         }
-        if (definition.allowedEnumValues() != null) {
+        if (!definition.allowedEnumValues().isEmpty()) {
             for (String enumValue : definition.allowedEnumValues()) {
                 AutocompleteUtils.autocompleteStaticValue(enumValue, result);
             }

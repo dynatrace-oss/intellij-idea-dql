@@ -21,7 +21,7 @@ public class HighlightEnumValues implements AnnotatorEngine {
         ) {
             MappedParameter parameter = command.getParameter(argument);
             Parameter definition = parameter != null ? parameter.definition() : null;
-            if (definition != null && definition.allowedEnumValues() != null && !definition.allowedEnumValues().isEmpty()) {
+            if (definition != null && !definition.allowedEnumValues().isEmpty()) {
                 holder.newSilentAnnotation(HighlightOptions.HIGHLIGHT_SEVERITY)
                         .range(element.getTextRange())
                         .textAttributes(DQLColorScheme.ENUM_VALUE)

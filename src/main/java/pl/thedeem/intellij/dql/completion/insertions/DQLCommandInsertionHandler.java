@@ -68,10 +68,10 @@ public class DQLCommandInsertionHandler implements InsertHandler<LookupElement> 
                     InsertionsUtils.handleInsertionDefaultValue(param, template);
                     i++;
                     blockedNames.add(param.name());
-                    if (param.aliases() != null) {
+                    if (!param.aliases().isEmpty()) {
                         blockedNames.addAll(param.aliases());
                     }
-                    if (param.excludes() != null) {
+                    if (!param.excludes().isEmpty()) {
                         blockedNames.addAll(param.excludes());
                     }
                 }

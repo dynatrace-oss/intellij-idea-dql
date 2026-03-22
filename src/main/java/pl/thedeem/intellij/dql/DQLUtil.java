@@ -180,14 +180,14 @@ public class DQLUtil {
                     if (names.contains(p.name().toLowerCase())) {
                         return false;
                     }
-                    if (p.excludes() != null) {
+                    if (!p.excludes().isEmpty()) {
                         for (String exclude : p.excludes()) {
                             if (names.contains(exclude.toLowerCase())) {
                                 return false;
                             }
                         }
                     }
-                    if (p.aliases() != null) {
+                    if (!p.aliases().isEmpty()) {
                         for (String exclude : p.aliases()) {
                             if (names.contains(exclude.toLowerCase())) {
                                 return false;
