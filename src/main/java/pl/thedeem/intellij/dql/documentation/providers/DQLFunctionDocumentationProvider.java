@@ -3,10 +3,10 @@ package pl.thedeem.intellij.dql.documentation.providers;
 import com.intellij.openapi.util.text.HtmlChunk;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.model.Function;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
-import pl.thedeem.intellij.dql.definition.model.Signature;
 import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
+import pl.thedeem.intellij.dql.services.definition.model.Function;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.definition.model.Signature;
 
 import java.util.ArrayList;
 import java.util.List;

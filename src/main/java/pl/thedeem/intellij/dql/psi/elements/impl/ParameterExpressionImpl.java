@@ -13,14 +13,14 @@ import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLBracketExpression;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterName;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 import pl.thedeem.intellij.dql.psi.elements.ParameterExpression;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 import java.util.Collection;

@@ -7,13 +7,13 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiNamedElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.fixes.DropElementQuickFix;
 import pl.thedeem.intellij.dql.inspections.fixes.SetFieldNameQuickFix;
 import pl.thedeem.intellij.dql.psi.*;
 import pl.thedeem.intellij.dql.psi.elements.BaseElement;
 import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 
 import java.util.*;
 
@@ -37,7 +37,7 @@ public class DuplicatedFieldNamesInspection extends LocalInspectionTool {
                         return;
                     }
                     // we should check for duplicates only when defining list of fields
-                    if (definition.parameterValueTypes() != null && definition.parameterValueTypes().stream().noneMatch(DQLDefinitionService.FIELD_IDENTIFIER_PARAMETER_VALUE_TYPES::contains)) {
+                    if (definition.parameterValueTypes().stream().noneMatch(DQLDefinitionService.FIELD_IDENTIFIER_PARAMETER_VALUE_TYPES::contains)) {
                         return;
                     }
                     List<PsiElement> duplicatedFields = getDuplicatedFields(parameter);

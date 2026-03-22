@@ -20,9 +20,9 @@ import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.common.services.ProjectServicesManager;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFileType;
-import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 import pl.thedeem.intellij.dql.exec.DQLProcessHandler;
+import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 

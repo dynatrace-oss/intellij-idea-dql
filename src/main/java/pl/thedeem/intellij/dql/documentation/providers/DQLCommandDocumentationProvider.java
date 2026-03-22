@@ -3,8 +3,8 @@ package pl.thedeem.intellij.dql.documentation.providers;
 import com.intellij.openapi.util.text.HtmlChunk;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.model.Command;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
+import pl.thedeem.intellij.dql.services.definition.model.Command;
 
 import java.util.ArrayList;
 import java.util.List;

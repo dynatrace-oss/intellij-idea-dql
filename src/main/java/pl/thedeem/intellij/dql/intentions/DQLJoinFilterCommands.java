@@ -15,12 +15,12 @@ import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
-import pl.thedeem.intellij.dql.definition.model.Command;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
 import pl.thedeem.intellij.dql.psi.DQLParenthesisedExpression;
 import pl.thedeem.intellij.dql.psi.DQLPrimitiveExpression;
+import pl.thedeem.intellij.dql.services.definition.model.Command;
+import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 
 import javax.swing.*;
 import java.util.ArrayList;

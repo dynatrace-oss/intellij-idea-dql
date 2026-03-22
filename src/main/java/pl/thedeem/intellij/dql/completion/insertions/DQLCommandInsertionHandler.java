@@ -9,9 +9,9 @@ import com.intellij.codeInsight.template.TemplateManager;
 import com.intellij.openapi.editor.Editor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.LangUtils;
-import pl.thedeem.intellij.dql.definition.model.Command;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.definition.model.Command;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
 
 import java.util.Collection;
 import java.util.HashSet;

@@ -14,9 +14,9 @@ import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.psi.*;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
+import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 
 import javax.swing.*;
 import java.util.List;

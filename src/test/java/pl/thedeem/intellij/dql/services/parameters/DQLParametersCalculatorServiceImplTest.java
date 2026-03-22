@@ -8,10 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import pl.thedeem.intellij.dql.DQLTestsUtils;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 import pl.thedeem.intellij.dqlpart.DQLPartFileType;
 
 import java.util.List;

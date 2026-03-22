@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
-import pl.thedeem.intellij.dql.definition.model.DQLDurationType;
 import pl.thedeem.intellij.dql.psi.elements.DurationElement;
+import pl.thedeem.intellij.dql.services.definition.model.DQLDurationType;
 import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
 
 import java.util.Set;

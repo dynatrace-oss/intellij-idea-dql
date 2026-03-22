@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFileType;
-import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
+import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;

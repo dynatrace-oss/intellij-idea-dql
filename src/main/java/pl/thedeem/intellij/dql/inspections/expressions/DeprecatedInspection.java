@@ -6,9 +6,9 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.model.Function;
 import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
+import pl.thedeem.intellij.dql.services.definition.model.Function;
 
 public class DeprecatedInspection extends LocalInspectionTool {
     @Override

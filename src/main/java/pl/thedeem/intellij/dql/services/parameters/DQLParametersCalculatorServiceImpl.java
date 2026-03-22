@@ -3,12 +3,12 @@ package pl.thedeem.intellij.dql.services.parameters;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLBracketExpression;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 
 import java.util.*;
 

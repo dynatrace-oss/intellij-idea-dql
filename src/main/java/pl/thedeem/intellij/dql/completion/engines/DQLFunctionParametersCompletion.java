@@ -7,10 +7,10 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
-import pl.thedeem.intellij.dql.definition.model.Function;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
-import pl.thedeem.intellij.dql.definition.model.Signature;
 import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
+import pl.thedeem.intellij.dql.services.definition.model.Function;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.definition.model.Signature;
 
 import java.util.List;
 import java.util.Set;

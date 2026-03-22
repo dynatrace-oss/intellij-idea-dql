@@ -12,8 +12,8 @@ import com.intellij.psi.PsiRecursiveElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.psi.*;
+import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 
 import java.util.ArrayList;
 import java.util.List;

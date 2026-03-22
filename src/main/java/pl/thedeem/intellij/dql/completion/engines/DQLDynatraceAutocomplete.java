@@ -16,10 +16,10 @@ import pl.thedeem.intellij.common.sdk.model.DQLAutocompleteResult;
 import pl.thedeem.intellij.common.sdk.model.DQLSuggestion;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
-import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.services.dynatrace.DynatraceRestService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryParserService;
+import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 

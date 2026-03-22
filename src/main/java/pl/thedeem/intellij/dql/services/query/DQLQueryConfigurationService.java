@@ -8,7 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
+import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 
 public interface DQLQueryConfigurationService {
     Key<QueryConfiguration> QUERY_CONFIGURATION = Key.create("DQL_QUERY_CONFIGURATION");

@@ -6,7 +6,6 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.model.*;
 import pl.thedeem.intellij.dql.inspections.fixes.DropCommandQuickFix;
 import pl.thedeem.intellij.dql.inspections.fixes.DropFunctionQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
@@ -14,6 +13,11 @@ import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
+import pl.thedeem.intellij.dql.services.definition.model.Command;
+import pl.thedeem.intellij.dql.services.definition.model.Function;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.definition.model.Signature;
+import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 
 public class ExperimentalFeatureInspection extends LocalInspectionTool {
     @Override

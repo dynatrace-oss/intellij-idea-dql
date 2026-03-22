@@ -7,14 +7,14 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dpl.DynatracePatternLanguage;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLFunctionExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 import pl.thedeem.intellij.dql.psi.DQLString;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -38,7 +38,7 @@ public class DQLLanguagesInjector implements MultiHostInjector {
             return;
         }
         Parameter definition = parameter.definition();
-        if (definition == null || definition.parameterValueTypes() == null || !filter.test(definition.parameterValueTypes())) {
+        if (definition == null || !filter.test(definition.parameterValueTypes())) {
             return;
         }
         for (PsiElement expression : parameter.values()) {

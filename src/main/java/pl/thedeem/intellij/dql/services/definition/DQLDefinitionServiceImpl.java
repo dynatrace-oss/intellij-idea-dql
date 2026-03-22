@@ -8,7 +8,7 @@ import com.intellij.psi.util.CachedValuesManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.DefinitionUtils;
-import pl.thedeem.intellij.dql.definition.model.*;
+import pl.thedeem.intellij.dql.services.definition.model.*;
 
 import java.util.*;
 import java.util.function.Predicate;

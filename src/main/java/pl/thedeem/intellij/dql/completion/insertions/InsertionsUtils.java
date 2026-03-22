@@ -4,11 +4,10 @@ import com.intellij.codeInsight.template.Template;
 import com.intellij.codeInsight.template.impl.EmptyNode;
 import com.intellij.codeInsight.template.impl.TextExpression;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
 
 import java.util.List;
-import java.util.Objects;
 
 public class InsertionsUtils {
     public static void handleInsertionDefaultValue(@NotNull Parameter parameter, @NotNull Template template) {
@@ -24,7 +23,7 @@ public class InsertionsUtils {
     }
 
     private static boolean handleByParameterType(@NotNull Parameter parameter, @NotNull Template template, @NotNull String name) {
-        List<String> parameterValueTypes = Objects.requireNonNullElse(parameter.parameterValueTypes(), List.of());
+        List<String> parameterValueTypes = parameter.parameterValueTypes();
         if (parameter.defaultValue() != null) {
             template.addVariable("bodyDefaultValue:" + name, new TextExpression(parameter.defaultValue()), new EmptyNode(), true);
             return true;
@@ -98,7 +97,7 @@ public class InsertionsUtils {
     }
 
     private static boolean handleByParameterValue(@NotNull Parameter parameter, @NotNull Template template, @NotNull String name) {
-        List<String> valueTypes = Objects.requireNonNullElse(parameter.valueTypes(), List.of());
+        List<String> valueTypes = parameter.valueTypes();
 
         // We assume that the more important value types are presented on top of the list
         for (String valueType : valueTypes) {
