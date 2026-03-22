@@ -65,7 +65,6 @@ public class RecordsListValidatorTest extends LightPlatformCodeInsightFixture4Te
     public void cleanup() {
         DQLDefinitionService service = myFixture.getProject().getService(DQLDefinitionService.class);
         service.invalidateCache();
-        ServiceContainerUtil.unregisterService(getProject(), DQLDefinitionService.class);
     }
 
     @Test

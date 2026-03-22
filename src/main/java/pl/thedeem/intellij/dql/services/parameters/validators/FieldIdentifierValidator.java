@@ -12,14 +12,16 @@ import java.util.List;
 import java.util.Set;
 
 public class FieldIdentifierValidator extends AbstractParameterValidator {
+    private static final Set<String> ALLOWED_TYPES = Set.of(
+            "dql.parameterValueType.fieldPattern",
+            "dql.parameterValueType.identifierForFieldOnRootLevel",
+            "dql.parameterValueType.identifierForAnyField",
+            "dql.parameterValueType.dataObject"
+    );
+
     @Override
     public @NotNull List<DQLParameterValueTypesValidator.ValueIssue> validate(@NotNull PsiElement parameter, @NotNull Parameter definition) {
-        if (definition.parameterValueTypes().stream().noneMatch(p -> Set.of(
-                "dql.parameterValueType.fieldPattern",
-                "dql.parameterValueType.identifierForFieldOnRootLevel",
-                "dql.parameterValueType.identifierForAnyField",
-                "dql.parameterValueType.dataObject"
-        ).contains(p))) {
+        if (definition.parameterValueTypes().stream().noneMatch(ALLOWED_TYPES::contains)) {
             return List.of();
         }
 

@@ -88,7 +88,7 @@ public class JoinConditionValidatorTest extends LightPlatformCodeInsightFixture4
 
     @Test
     public void reportsAnIssueWhenLeftExpressionIsNotUsingLeftAlias() {
-        DQLExpression expression = createExpression("other[test] == right[test]}");
+        DQLExpression expression = createExpression("other[test] == right[test]");
 
         List<DQLParameterValueTypesValidator.ValueIssue> issues = validator.validate(expression, parameter);
 
@@ -99,7 +99,7 @@ public class JoinConditionValidatorTest extends LightPlatformCodeInsightFixture4
 
     @Test
     public void reportsAnIssueWhenRightExpressionIsNotUsingLeftAlias() {
-        DQLExpression expression = createExpression("left[test] == other[test]}");
+        DQLExpression expression = createExpression("left[test] == other[test]");
 
         List<DQLParameterValueTypesValidator.ValueIssue> issues = validator.validate(expression, parameter);
 
@@ -110,7 +110,7 @@ public class JoinConditionValidatorTest extends LightPlatformCodeInsightFixture4
 
     @Test
     public void allowsForComplexArrayExpressionsInBothOperands() {
-        DQLExpression expression = createExpression("left[test][1] == right[test][other]}");
+        DQLExpression expression = createExpression("left[test][1] == right[test][other]");
 
         List<DQLParameterValueTypesValidator.ValueIssue> issues = validator.validate(expression, parameter);
 

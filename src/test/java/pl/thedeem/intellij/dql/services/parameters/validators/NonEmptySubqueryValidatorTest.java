@@ -68,7 +68,7 @@ public class NonEmptySubqueryValidatorTest extends LightPlatformCodeInsightFixtu
     }
 
     @Test
-    public void reportsNoIssuesForNonEmtpySubquery() {
+    public void reportsNoIssuesForNotEmptySubquery() {
         DQLExpression expression = createExpression("[ data record() ]");
 
         List<DQLParameterValueTypesValidator.ValueIssue> issues = validator.validate(expression, parameter);

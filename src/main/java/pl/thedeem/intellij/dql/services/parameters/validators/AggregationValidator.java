@@ -1,6 +1,7 @@
 package pl.thedeem.intellij.dql.services.parameters.validators;
 
 import com.intellij.psi.PsiElement;
+import org.eclipse.sisu.Nullable;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLUtil;
@@ -16,13 +17,15 @@ import java.util.List;
 import java.util.Set;
 
 public class AggregationValidator extends AbstractParameterValidator {
+    private static final Set<String> ALLOWED_TYPES = Set.of(
+            "dql.parameterValueType.expressionTimeseriesAggregation",
+            "dql.parameterValueType.metricTimeseriesAggregation",
+            "dql.parameterValueType.aggregation"
+    );
+
     @Override
     public @NotNull List<DQLParameterValueTypesValidator.ValueIssue> validate(@NotNull PsiElement parameter, @NotNull Parameter definition) {
-        if (definition.parameterValueTypes().stream().noneMatch(p -> Set.of(
-                "dql.parameterValueType.expressionTimeseriesAggregation",
-                "dql.parameterValueType.metricTimeseriesAggregation",
-                "dql.parameterValueType.aggregation"
-        ).contains(p))) {
+        if (definition.parameterValueTypes().stream().noneMatch(ALLOWED_TYPES::contains)) {
             return List.of();
         }
 
@@ -51,36 +54,20 @@ public class AggregationValidator extends AbstractParameterValidator {
 
         while (!toProcess.isEmpty()) {
             PsiElement processing = DQLUtil.unpackParenthesis(toProcess.removeFirst());
-            switch (processing) {
-                case DQLAssignExpression expr -> toProcess.add(expr.getRightExpression());
-                case DQLArithmeticalExpression expr -> {
-                    toProcess.add(expr.getLeftExpression());
-                    toProcess.add(expr.getRightExpression());
-                }
-                case DQLComparisonExpression expr -> {
-                    toProcess.add(expr.getLeftExpression());
-                    toProcess.add(expr.getRightExpression());
-                }
-                case DQLConditionExpression expr -> {
-                    toProcess.add(expr.getLeftExpression());
-                    toProcess.add(expr.getRightExpression());
-                }
-                case DQLEqualityExpression expr -> {
-                    toProcess.add(expr.getLeftExpression());
-                    toProcess.add(expr.getRightExpression());
-                }
-                case DQLInExpression expr -> toProcess.add(expr.getLeftExpression());
-                case DQLNegativeValueExpression expr -> toProcess.add(expr.getExpression());
-                case DQLUnaryExpression expr -> toProcess.add(expr.getExpression());
-                case DQLArrayExpression expr -> toProcess.add(expr.getBaseExpression());
-                case DQLFunctionExpression expr -> {
-                    Function funDef = expr.getDefinition();
-                    return funDef != null
-                            && !allowedFunctions.contains(funDef)
-                            && !containsAllowedAggregation(expr, allowedFunctions);
-                }
-                case null, default -> {
-                    return true;
+            List<PsiElement> unwinded = unwindExpression(processing);
+            if (!unwinded.isEmpty()) {
+                toProcess.addAll(unwinded);
+            } else {
+                switch (processing) {
+                    case DQLFunctionExpression expr -> {
+                        Function funDef = expr.getDefinition();
+                        return funDef != null
+                                && !allowedFunctions.contains(funDef)
+                                && !containsAllowedAggregation(expr, allowedFunctions);
+                    }
+                    case null, default -> {
+                        return true;
+                    }
                 }
             }
         }
@@ -90,8 +77,11 @@ public class AggregationValidator extends AbstractParameterValidator {
     private boolean containsAllowedAggregation(@NotNull DQLFunctionExpression function, @NotNull Collection<Function> allowedFunctions) {
         List<PsiElement> toProcess = new ArrayList<>(function.getFunctionArguments());
         while (!toProcess.isEmpty()) {
-            PsiElement element = toProcess.removeFirst();
-            if (element instanceof DQLFunctionExpression functionCall) {
+            PsiElement processing = DQLUtil.unpackParenthesis(toProcess.removeFirst());
+            List<PsiElement> unwinded = unwindExpression(processing);
+            if (!unwinded.isEmpty()) {
+                toProcess.addAll(unwinded);
+            } else if (processing instanceof DQLFunctionExpression functionCall) {
                 Function funDef = functionCall.getDefinition();
                 // we do not know if the unknown function can be aggregation
                 if (funDef == null) {
@@ -102,12 +92,41 @@ public class AggregationValidator extends AbstractParameterValidator {
                 }
                 toProcess.addAll(functionCall.getFunctionArguments());
             }
-            if (element instanceof DQLParameterExpression expression) {
-                toProcess.add(expression.getExpression());
+        }
+        return false;
+    }
+
+    private @NotNull List<PsiElement> unwindExpression(@Nullable PsiElement expression) {
+        List<PsiElement> result = new ArrayList<>();
+
+        switch (expression) {
+            case DQLAssignExpression expr -> result.add(expr.getRightExpression());
+            case DQLArithmeticalExpression expr -> {
+                result.add(expr.getLeftExpression());
+                result.add(expr.getRightExpression());
+            }
+            case DQLComparisonExpression expr -> {
+                result.add(expr.getLeftExpression());
+                result.add(expr.getRightExpression());
+            }
+            case DQLConditionExpression expr -> {
+                result.add(expr.getLeftExpression());
+                result.add(expr.getRightExpression());
+            }
+            case DQLEqualityExpression expr -> {
+                result.add(expr.getLeftExpression());
+                result.add(expr.getRightExpression());
+            }
+            case DQLInExpression expr -> result.add(expr.getLeftExpression());
+            case DQLNegativeValueExpression expr -> result.add(expr.getExpression());
+            case DQLUnaryExpression expr -> result.add(expr.getExpression());
+            case DQLArrayExpression expr -> result.add(expr.getBaseExpression());
+            case DQLParameterExpression expr -> result.add(expr.getExpression());
+            case DQLBracketExpression expr -> result.addAll(expr.getExpressionList());
+            case null, default -> {
             }
         }
 
-
-        return false;
+        return result;
     }
 }

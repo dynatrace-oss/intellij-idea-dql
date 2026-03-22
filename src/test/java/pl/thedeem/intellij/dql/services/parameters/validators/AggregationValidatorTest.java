@@ -66,7 +66,6 @@ public class AggregationValidatorTest extends LightPlatformCodeInsightFixture4Te
     public void cleanup() {
         DQLDefinitionService service = myFixture.getProject().getService(DQLDefinitionService.class);
         service.invalidateCache();
-        ServiceContainerUtil.unregisterService(getProject(), DQLDefinitionService.class);
     }
 
     @Test
@@ -96,7 +95,7 @@ public class AggregationValidatorTest extends LightPlatformCodeInsightFixture4Te
     }
 
     @Test
-    public void reportsNoIssuesForValidRecordsFunctionCall() {
+    public void reportsNoIssuesForValidAggregationFunctionCall() {
         DQLExpression expression = createExpression("max(5)");
 
         List<DQLParameterValueTypesValidator.ValueIssue> issues = validator.validate(expression, parameter);
@@ -201,6 +200,20 @@ public class AggregationValidatorTest extends LightPlatformCodeInsightFixture4Te
     @Test
     public void allowsUsingNestedFunctionsToWrapAggregation() {
         DQLExpression expression = createExpression("otherFunction(max(5))");
+
+        List<DQLParameterValueTypesValidator.ValueIssue> issues = validator.validate(expression, parameter);
+
+        assertEmpty("Should report no issues, but returned: " + issues, issues);
+    }
+
+    @Test
+    public void allowsVeryComplexExpressionsWhenDefiningAggregation() {
+        DQLExpression expression = createExpression("""
+                if(
+                    sum(totalAmount) / 100 * (sum(currentAmount) - sum(totalAmount))>=0,
+                    concat("🟢", sum(totalAmount) / 100 * (sum(currentAmount) - sum(totalAmount)),"%"),
+                    else: concat("🔴", sum(totalAmount) / 100 * (sum(currentAmount) - sum(totalAmount)),"%") )
+                """);
 
         List<DQLParameterValueTypesValidator.ValueIssue> issues = validator.validate(expression, parameter);
 

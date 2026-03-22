@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.services.parameters.validators;
 
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLUtil;
@@ -21,7 +22,8 @@ public abstract class AbstractParameterValidator implements ParameterValidator {
         while (!toValidate.isEmpty()) {
             PsiElement element = DQLUtil.unpackParenthesis(toValidate.removeFirst());
             switch (element) {
-                case DQLParameterExpression param -> toValidate.add(param.getExpression());
+                case DQLParameterExpression param when !StringUtil.equalsIgnoreCase("alias", param.getName()) ->
+                        toValidate.add(param.getExpression());
                 case DQLBracketExpression bracket -> toValidate.addAll(bracket.getExpressionList());
                 case DQLAssignExpression assign -> toValidate.add(assign.getRightExpression());
                 case DQLNegativeValueExpression negative -> toValidate.add(negative.getExpression());
