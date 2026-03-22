@@ -21,6 +21,7 @@
      max_oom_kills = max(dt.kubernetes.container.oom_kills, default: 0, rollup: sum)
    }
    ```
+
 - `summarize` command will now validate if the `aggregation` parameter contains a valid aggregation function.
 - aggregations are now allowed within nested expressions, for example:
 
