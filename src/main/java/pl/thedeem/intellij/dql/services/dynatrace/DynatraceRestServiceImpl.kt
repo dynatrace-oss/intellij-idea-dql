@@ -19,18 +19,21 @@ import java.net.ConnectException
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
-internal class DynatraceRestServiceImpl(
+internal class DynatraceRestServiceImpl @JvmOverloads constructor(
     private val project: Project,
-    private val cs: CoroutineScope
+    private val cs: CoroutineScope,
+    private val client: DynatraceRestClient = DynatraceRestClient(CLIENT_CONTEXT),
+    private val pollIntervalMs: Long = POLL_INTERVAL_MS
 ) : DynatraceRestService {
 
     companion object {
         private val logger = Logger.getInstance(DynatraceRestServiceImpl::class.java)
         private const val POLL_INTERVAL_MS = 200L
+        private const val CLIENT_CONTEXT = "jetbrains-ide-dql-plugin"
     }
 
     override fun verifyQuery(tenant: DynatraceTenant, query: String): CompletableFuture<DQLVerifyResponse> =
-        executeAsync { DynatraceRestClient(tenant.url).verifyDQL(DQLVerifyPayload(query), resolveToken(tenant)) }
+        executeAsync { client.verifyDQL(tenant.url, DQLVerifyPayload(query), resolveToken(tenant)) }
 
     override fun autocompleteQuery(
         tenant: DynatraceTenant,
@@ -38,7 +41,8 @@ internal class DynatraceRestServiceImpl(
         offset: Long
     ): CompletableFuture<DQLAutocompleteResult> =
         executeAsync {
-            DynatraceRestClient(tenant.url).autocomplete(
+            client.autocomplete(
+                tenant.url,
                 DQLAutocompletePayload(query, offset),
                 resolveToken(tenant)
             )
@@ -58,26 +62,32 @@ internal class DynatraceRestServiceImpl(
                     DQLBundle.message("services.restService.executeQuery.progress.title"),
                     cancellable = true
                 ) {
-                    val client = DynatraceRestClient(tenant.url)
                     val apiToken = resolveToken(tenant)
-                    val executeResponse = withContext(Dispatchers.IO) { client.executeDQL(payload, apiToken) }
+                    val executeResponse = withContext(Dispatchers.IO) {
+                        client.executeDQL(
+                            tenant.url, payload, apiToken
+                        )
+                    }
                     val requestToken = executeResponse.requestToken
                         ?: throw IllegalStateException("DQL execute response did not return a request token")
 
                     logger.info("DQL query started: token=$requestToken, state=${executeResponse.state}")
 
                     try {
-                        pollUntilFinished(client, requestToken, apiToken, progressConsumer)
+                        pollUntilFinished(tenant.url, requestToken, apiToken, progressConsumer)
                     } catch (e: CancellationException) {
                         logger.info("DQL query $requestToken cancelled, requesting cancellation on Dynatrace")
                         withContext(NonCancellable + Dispatchers.IO) {
-                            runCatching { client.cancelDQL(requestToken, apiToken) }
-                                .onFailure {
-                                    logger.warn(
-                                        "Failed to send cancel request for DQL query $requestToken",
-                                        it
-                                    )
-                                }
+                            runCatching {
+                                client.cancelDQL(
+                                    tenant.url, requestToken, apiToken
+                                )
+                            }.onFailure {
+                                logger.warn(
+                                    "Failed to send cancel request for DQL query $requestToken",
+                                    it
+                                )
+                            }
                         }
                         throw e
                     }
@@ -99,7 +109,7 @@ internal class DynatraceRestServiceImpl(
     }
 
     private suspend fun pollUntilFinished(
-        client: DynatraceRestClient,
+        tenantUrl: String,
         requestToken: String,
         apiToken: String?,
         progressConsumer: Consumer<DQLPollResponse>?
@@ -107,8 +117,12 @@ internal class DynatraceRestServiceImpl(
         var pollResponse: DQLPollResponse
         do {
             yield()
-            delay(POLL_INTERVAL_MS)
-            pollResponse = withContext(Dispatchers.IO) { client.pollDQLState(requestToken, apiToken) }
+            delay(pollIntervalMs)
+            pollResponse = withContext(Dispatchers.IO) {
+                client.pollDQLState(
+                    tenantUrl, requestToken, apiToken
+                )
+            }
 
             val fraction = (pollResponse.progress ?: 0L) / 100.0
             ProgressManager.getInstance().progressIndicator?.fraction = fraction

@@ -67,21 +67,11 @@ public class OAuthSignInPanel extends JBPanel<OAuthSignInPanel> implements Dispo
             return;
         }
         updateStatus(loadingPanel);
-        ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            boolean isAuthSuccessful = false;
-            try {
-                String accessToken = DynatraceOAuthService.getInstance().resolveToken(credentialId, tenant.getUrl());
-                isAuthSuccessful = (accessToken != null);
-            } catch (Throwable t) {
-                LOG.error("Critical failure resolving OAuth status for " + credentialId, t);
-            } finally {
-                final boolean finalResult = isAuthSuccessful;
-                ApplicationManager.getApplication().invokeLater(
-                        () -> setAuthenticated(finalResult),
+        DynatraceOAuthService.getInstance().resolveToken(credentialId, tenant.getUrl())
+                .whenComplete((token, ex) -> ApplicationManager.getApplication().invokeLater(
+                        () -> setAuthenticated(ex == null && token != null),
                         ModalityState.any()
-                );
-            }
-        });
+                ));
     }
 
     public boolean isAuthenticated() {
@@ -131,7 +121,11 @@ public class OAuthSignInPanel extends JBPanel<OAuthSignInPanel> implements Dispo
 
     private void signOut() {
         if (credentialId != null) {
-            DynatraceOAuthService.getInstance().signOut(credentialId);
+            DynatraceOAuthService.getInstance().signOut(credentialId)
+                    .exceptionally(ex -> {
+                        LOG.warn("Failed to complete sign-out", ex);
+                        return null;
+                    });
         }
         setAuthenticated(false);
     }

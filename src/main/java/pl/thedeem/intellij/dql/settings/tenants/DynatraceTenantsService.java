@@ -9,6 +9,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
@@ -24,9 +25,11 @@ import pl.thedeem.intellij.dql.services.notifications.DQLNotificationsService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 @State(name = "DynatraceTenantsConfig", storages = @Storage("dynatraceTenants.xml"))
 public class DynatraceTenantsService implements PersistentStateComponent<DynatraceTenantsService.State> {
+    private static final Logger LOG = Logger.getInstance(DynatraceTenantsService.class);
     public static class State {
         public List<DynatraceTenant> tenants = new ArrayList<>();
         public boolean missingTenantsNotificationDismissed;
@@ -60,13 +63,14 @@ public class DynatraceTenantsService implements PersistentStateComponent<Dynatra
         if (tenant.getCredentialId() != null) {
             PasswordSafe.getInstance().set(DQLUtil.createCredentialAttributes(tenant.getCredentialId()), null);
             if (tenant.getAuthType() == DynatraceTenant.AuthType.SSO_OAUTH) {
-                DynatraceOAuthService.getInstance().signOut(tenant.getCredentialId());
+                DynatraceOAuthService.getInstance().signOut(tenant.getCredentialId())
+                        .exceptionally(ex -> { LOG.warn("Failed to complete sign-out for tenant: " + tenant.getName(), ex); return null; });
             }
         }
         myState.tenants.removeIf(t -> Objects.equals(t.getName(), tenant.getName()));
     }
 
-    public @Nullable String resolveApiToken(@NotNull Project project, @Nullable DynatraceTenant tenant) throws DTAuthException, InterruptedException {
+    public @Nullable String resolveApiToken(@NotNull Project project, @Nullable DynatraceTenant tenant) throws DTAuthException {
         if (tenant == null) {
             return null;
         }
@@ -84,35 +88,43 @@ public class DynatraceTenantsService implements PersistentStateComponent<Dynatra
                     yield null;
                 }
                 try {
-                    yield DynatraceOAuthService.getInstance().resolveToken(credentialId, tenant.getUrl());
-                } catch (SSOReAuthRequiredException e) {
-                    DQLNotificationsService.getInstance(project).showNotification(
-                            DQLNotificationsService.ERRORS,
-                            DQLBundle.message("notifications.error.invalidAuth.title", tenant.getName()),
-                            DQLBundle.message("notifications.error.oauthSessionExpired.message", tenant.getName()),
-                            NotificationType.WARNING,
-                            project,
-                            List.of(new AnAction(DQLBundle.message("notifications.error.oauthSessionExpired.action"), null, AllIcons.Actions.ForceRefresh) {
-                                @Override
-                                public void actionPerformed(@NotNull AnActionEvent e) {
-                                    DynatraceTenantsConfigurable.showSettings(tenant.getName());
-                                }
-                            }));
-                    throw e;
-                } catch (SSONotConfiguredException e) {
-                    DQLNotificationsService.getInstance(project).showNotification(
-                            DQLNotificationsService.ERRORS,
-                            DQLBundle.message("notifications.error.ssoNotConfigured.title", tenant.getName()),
-                            DQLBundle.message("notifications.error.ssoNotConfigured.message", tenant.getName()),
-                            NotificationType.WARNING,
-                            project,
-                            List.of(new AnAction(DQLBundle.message("notifications.error.oauthNotConfigured.action"), null, AllIcons.Actions.ForceRefresh) {
-                                @Override
-                                public void actionPerformed(@NotNull AnActionEvent e) {
-                                    DynatraceTenantsConfigurable.showSettings(tenant.getName());
-                                }
-                            }));
-                    throw e;
+                    yield DynatraceOAuthService.getInstance().resolveToken(credentialId, tenant.getUrl()).get();
+                } catch (ExecutionException e) {
+                    Throwable cause = e.getCause();
+                    if (cause instanceof SSOReAuthRequiredException re) {
+                        DQLNotificationsService.getInstance(project).showNotification(
+                                DQLNotificationsService.ERRORS,
+                                DQLBundle.message("notifications.error.invalidAuth.title", tenant.getName()),
+                                DQLBundle.message("notifications.error.oauthSessionExpired.message", tenant.getName()),
+                                NotificationType.WARNING,
+                                project,
+                                List.of(new AnAction(DQLBundle.message("notifications.error.oauthSessionExpired.action"), null, AllIcons.Actions.ForceRefresh) {
+                                    @Override
+                                    public void actionPerformed(@NotNull AnActionEvent e) {
+                                        DynatraceTenantsConfigurable.showSettings(tenant.getName());
+                                    }
+                                }));
+                        throw re;
+                    }
+                    if (cause instanceof SSONotConfiguredException sso) {
+                        DQLNotificationsService.getInstance(project).showNotification(
+                                DQLNotificationsService.ERRORS,
+                                DQLBundle.message("notifications.error.ssoNotConfigured.title", tenant.getName()),
+                                DQLBundle.message("notifications.error.ssoNotConfigured.message", tenant.getName()),
+                                NotificationType.WARNING,
+                                project,
+                                List.of(new AnAction(DQLBundle.message("notifications.error.oauthNotConfigured.action"), null, AllIcons.Actions.ForceRefresh) {
+                                    @Override
+                                    public void actionPerformed(@NotNull AnActionEvent e) {
+                                        DynatraceTenantsConfigurable.showSettings(tenant.getName());
+                                    }
+                                }));
+                        throw sso;
+                    }
+                    throw new DTAuthException("Unexpected error resolving OAuth token", cause);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new DTAuthException("Interrupted while resolving OAuth token", e);
                 }
             }
         };
