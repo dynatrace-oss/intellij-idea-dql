@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.quickFixes.AbstractAddElementQuickFix;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.completion.insertions.InsertionsUtils;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
 
 import java.util.Collection;
 

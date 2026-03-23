@@ -18,9 +18,9 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFile;
 import pl.thedeem.intellij.dql.actions.ExecuteDQLQueryAction;
-import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
+import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 
 import javax.swing.*;
 

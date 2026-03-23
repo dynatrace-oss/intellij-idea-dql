@@ -6,9 +6,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
-import pl.thedeem.intellij.dql.definition.model.Function;
 import pl.thedeem.intellij.dql.psi.DQLFieldName;
 import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.definition.model.Function;
 import pl.thedeem.intellij.dqlexpr.DQLExprFileType;
 
 public class DQLExprCompletionContributor extends CompletionContributor {

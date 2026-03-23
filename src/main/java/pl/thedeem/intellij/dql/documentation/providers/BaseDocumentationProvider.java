@@ -8,10 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.documentation.GenericDocumentationProvider;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.model.DataType;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
-import pl.thedeem.intellij.dql.definition.model.ParameterValueType;
 import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.definition.model.DataType;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.definition.model.ParameterValueType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -119,7 +119,7 @@ public class BaseDocumentationProvider<T extends PsiElement> extends GenericDocu
 
     protected @NotNull HtmlChunk prepareParameterTypesDescription(@NotNull Parameter parameter, @NotNull Project project) {
         DQLDefinitionService service = DQLDefinitionService.getInstance(project);
-        if (parameter.valueTypes() != null) {
+        if (!parameter.parameterValueTypes().isEmpty()) {
             return buildSeparatedElements(
                     parameter.parameterValueTypes().stream()
                             .map(service::findParameterValueType)
@@ -131,7 +131,7 @@ public class BaseDocumentationProvider<T extends PsiElement> extends GenericDocu
     }
 
     protected @NotNull HtmlChunk prepareEnumValuesDescription(@NotNull Parameter parameter) {
-        if (parameter.allowedEnumValues() != null) {
+        if (!parameter.allowedEnumValues().isEmpty()) {
             return buildSeparatedElements(parameter.allowedEnumValues(), HtmlChunk.tag("tt"));
         }
         return HtmlChunk.empty();

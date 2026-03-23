@@ -21,11 +21,11 @@ import pl.thedeem.intellij.common.services.ProjectServicesManager;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFileType;
 import pl.thedeem.intellij.dql.actions.ExecuteDQLQueryAction;
-import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 import pl.thedeem.intellij.dql.exec.DQLProcessHandler;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.services.query.DQLQuerySelectorService;
+import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 
 import java.util.List;
 import java.util.Objects;

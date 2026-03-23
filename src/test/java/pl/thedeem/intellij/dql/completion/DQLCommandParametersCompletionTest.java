@@ -56,7 +56,7 @@ public class DQLCommandParametersCompletionTest extends LightPlatformCodeInsight
         List<String> lookupElementStrings = myFixture.getLookupElementStrings();
 
         assertNotNull(lookupElementStrings);
-        assertSameElements(lookupElementStrings, "source", "from", "to");
+        assertSameElements(lookupElementStrings, "source", "from", "to", "\"\"\"...\"\"\"", "\"...\"");
     }
 
     @Test

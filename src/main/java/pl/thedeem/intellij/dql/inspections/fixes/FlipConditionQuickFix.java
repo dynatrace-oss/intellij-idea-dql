@@ -8,11 +8,11 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.quickFixes.AbstractReplaceElementQuickFix;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLUtil;
-import pl.thedeem.intellij.dql.definition.model.Command;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLUnaryExpression;
 import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.definition.model.Command;
+import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 
 public class FlipConditionQuickFix extends AbstractReplaceElementQuickFix<DQLCommand> {
     @Override

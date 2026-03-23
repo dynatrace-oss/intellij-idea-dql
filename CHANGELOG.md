@@ -22,6 +22,13 @@
    }
    ```
 
+- `summarize` command will now validate if the `aggregation` parameter contains a valid aggregation function.
+- aggregations are now allowed within nested expressions, for example:
+
+  ```dqlpart
+  summarize mbytes = sum(bytes) / 1024 / 1024
+  ```
+
 ### Bug fixes
 
 - `1e` is now a valid number (previously it was treated as an unknown duration type)

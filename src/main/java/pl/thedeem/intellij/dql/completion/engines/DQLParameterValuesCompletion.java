@@ -7,15 +7,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
-import pl.thedeem.intellij.dql.definition.model.Function;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.definition.model.Function;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 public class DQLParameterValuesCompletion {
     public void autocomplete(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
@@ -43,14 +42,14 @@ public class DQLParameterValuesCompletion {
         if (definition.requiresName() && !parameter.explicitlyNamed()) {
             return;
         }
-        if (definition.allowedEnumValues() != null) {
+        if (!definition.allowedEnumValues().isEmpty()) {
             for (String enumValue : definition.allowedEnumValues()) {
                 AutocompleteUtils.autocompleteStaticValue(enumValue, result);
             }
         } else {
             DQLDefinitionService service = DQLDefinitionService.getInstance(parameter.holder().getProject());
-            List<String> parameterValueTypes = Objects.requireNonNullElse(definition.parameterValueTypes(), List.of());
-            List<String> valueTypes = Objects.requireNonNullElse(definition.valueTypes(), List.of());
+            List<String> parameterValueTypes = definition.parameterValueTypes();
+            List<String> valueTypes = definition.valueTypes();
 
             if (definition.defaultValue() != null) {
                 AutocompleteUtils.autocompleteStaticValue(definition.defaultValue(), result);

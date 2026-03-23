@@ -13,10 +13,10 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.internal.StringUtil;
-import pl.thedeem.intellij.dql.definition.model.DQLDurationType;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.psi.*;
+import pl.thedeem.intellij.dql.services.definition.model.DQLDurationType;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 import pl.thedeem.intellij.dqlpart.DQLPartFileType;
 
@@ -180,14 +180,14 @@ public class DQLUtil {
                     if (names.contains(p.name().toLowerCase())) {
                         return false;
                     }
-                    if (p.excludes() != null) {
+                    if (!p.excludes().isEmpty()) {
                         for (String exclude : p.excludes()) {
                             if (names.contains(exclude.toLowerCase())) {
                                 return false;
                             }
                         }
                     }
-                    if (p.aliases() != null) {
+                    if (!p.aliases().isEmpty()) {
                         for (String exclude : p.aliases()) {
                             if (names.contains(exclude.toLowerCase())) {
                                 return false;

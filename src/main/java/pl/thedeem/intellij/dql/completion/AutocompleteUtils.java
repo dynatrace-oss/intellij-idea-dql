@@ -7,10 +7,10 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.insertions.*;
-import pl.thedeem.intellij.dql.definition.model.Command;
-import pl.thedeem.intellij.dql.definition.model.Function;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
-import pl.thedeem.intellij.dql.definition.model.Signature;
+import pl.thedeem.intellij.dql.services.definition.model.Command;
+import pl.thedeem.intellij.dql.services.definition.model.Function;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.definition.model.Signature;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 
 import java.util.stream.Collectors;

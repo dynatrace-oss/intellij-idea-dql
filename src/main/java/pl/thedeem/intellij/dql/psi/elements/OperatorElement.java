@@ -3,9 +3,9 @@ package pl.thedeem.intellij.dql.psi.elements;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.dql.definition.model.Operator;
-import pl.thedeem.intellij.dql.definition.model.Signature;
 import pl.thedeem.intellij.dql.psi.elements.impl.ExpressionOperatorImpl;
+import pl.thedeem.intellij.dql.services.definition.model.Operator;
+import pl.thedeem.intellij.dql.services.definition.model.Signature;
 
 import java.util.List;
 

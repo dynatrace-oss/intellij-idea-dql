@@ -1,12 +1,15 @@
 package pl.thedeem.intellij.dql;
 
+import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.dql.definition.model.*;
 import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.definition.model.*;
 
 import java.util.List;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -120,5 +123,10 @@ public class DQLTestsUtils {
         for (Command command : commands) {
             when(mock.getCommandByName(eq(command.name()))).thenReturn(command);
         }
+    }
+
+    public static void assertContains(@NotNull String expected, @Nullable String actual) {
+        assertNotNull("The string should contain '" + expected + "' but was null", actual);
+        assertTrue("The string does not contain '" + expected + "': " + actual, StringUtil.containsIgnoreCase(actual, expected));
     }
 }

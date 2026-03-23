@@ -9,8 +9,8 @@ import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.components.QueryTimeframeConfigurationComponent;
-import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
+import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;

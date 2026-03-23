@@ -6,11 +6,11 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.fixes.AddMissingParametersQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLCommandKeyword;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
 
 import java.util.Collection;
 import java.util.List;

@@ -3,7 +3,7 @@ package pl.thedeem.intellij.dql.services.definition;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.dql.definition.model.*;
+import pl.thedeem.intellij.dql.services.definition.model.*;
 
 import java.util.Collection;
 import java.util.List;

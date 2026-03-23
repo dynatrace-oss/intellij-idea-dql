@@ -13,12 +13,12 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLConfigurationFactory;
 import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLConfigurationType;
 import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLRunConfiguration;
 import pl.thedeem.intellij.dql.services.notifications.DQLNotificationsService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
+import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 
 import java.util.List;
 

@@ -5,12 +5,12 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.model.Command;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
-import pl.thedeem.intellij.dql.definition.model.Parameter;
 import pl.thedeem.intellij.dql.inspections.fixes.ReplaceFetchWithMetricsQuickFix;
 import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
+import pl.thedeem.intellij.dql.services.definition.model.Command;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 
 public class MetricSeriesMigrationInspection extends LocalInspectionTool {
     @Override
@@ -28,7 +28,7 @@ public class MetricSeriesMigrationInspection extends LocalInspectionTool {
 
                 for (MappedParameter parameter : command.getParameters()) {
                     Parameter paramDefinition = parameter.definition();
-                    if (paramDefinition != null && paramDefinition.parameterValueTypes() != null && paramDefinition.parameterValueTypes().contains("dql.parameterValueType.dataObject")) {
+                    if (paramDefinition != null && paramDefinition.parameterValueTypes().contains("dql.parameterValueType.dataObject")) {
                         String paramValue = parameter.holder().getText();
                         if ("metric.series".equalsIgnoreCase(paramValue)) {
                             holder.registerProblem(

@@ -18,7 +18,7 @@ import pl.thedeem.intellij.common.sdk.model.DQLResult;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
-import pl.thedeem.intellij.dql.definition.model.QueryConfiguration;
+import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 
 import javax.swing.*;
 import java.awt.*;

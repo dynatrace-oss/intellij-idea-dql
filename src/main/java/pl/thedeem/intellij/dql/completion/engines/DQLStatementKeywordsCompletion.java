@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.completion.AutocompleteUtils;
 import pl.thedeem.intellij.dql.completion.DQLPsiPatterns;
-import pl.thedeem.intellij.dql.definition.model.Command;
 import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
+import pl.thedeem.intellij.dql.services.definition.model.Command;
 
 import java.util.Collection;
 

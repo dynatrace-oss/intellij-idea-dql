@@ -11,8 +11,8 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.psi.PsiUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
-import pl.thedeem.intellij.dql.definition.model.MappedParameter;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
+import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 
 import java.util.List;
 
