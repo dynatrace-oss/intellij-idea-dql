@@ -18,19 +18,19 @@ import java.nio.charset.StandardCharsets;
 public class DynatraceRestClient {
     private static final Logger logger = Logger.getInstance(DynatraceRestClient.class);
     private final static ObjectMapper mapper = new ObjectMapper();
-    private final String tenantUrl;
+    private final static String CLIENT_CONTEXT = "jetbrains-ide-dql-plugin";
 
-    public DynatraceRestClient(String tenantUrl) {
-        this.tenantUrl = tenantUrl;
+    public DynatraceRestClient() {
     }
 
-    public DQLVerifyResponse verifyDQL(DQLVerifyPayload payload, String authToken) throws IOException, InterruptedException {
+    public DQLVerifyResponse verifyDQL(String tenantUrl, DQLVerifyPayload payload, String authToken) throws IOException, InterruptedException {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:verify").normalize())
                     .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + authToken)
+                    .header("dt-client-context", CLIENT_CONTEXT)
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -39,13 +39,14 @@ public class DynatraceRestClient {
         }
     }
 
-    public DQLExecuteResponse executeDQL(DQLExecutePayload payload, String authToken) throws IOException, InterruptedException {
+    public DQLExecuteResponse executeDQL(String tenantUrl, DQLExecutePayload payload, String authToken) throws IOException, InterruptedException {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:execute?enrich=metric-metadata").normalize())
                     .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + authToken)
+                    .header("dt-client-context", CLIENT_CONTEXT)
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -54,13 +55,14 @@ public class DynatraceRestClient {
         }
     }
 
-    public DQLPollResponse cancelDQL(String requestToken, String authToken) throws IOException, InterruptedException {
+    public DQLPollResponse cancelDQL(String tenantUrl, String requestToken, String authToken) throws IOException, InterruptedException {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:cancel?request-token=" + URLEncoder.encode(requestToken, StandardCharsets.UTF_8) + "&enrich=metric-metadata").normalize())
                     .method("POST", HttpRequest.BodyPublishers.ofString(""))
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + authToken)
+                    .header("dt-client-context", CLIENT_CONTEXT)
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -69,12 +71,13 @@ public class DynatraceRestClient {
         }
     }
 
-    public DQLPollResponse pollDQLState(String requestToken, String authToken) throws IOException, InterruptedException {
+    public DQLPollResponse pollDQLState(String tenantUrl, String requestToken, String authToken) throws IOException, InterruptedException {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:poll?enrich=metric-metadata&request-token=" + URLEncoder.encode(requestToken, StandardCharsets.UTF_8)).normalize())
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + authToken)
+                    .header("dt-client-context", CLIENT_CONTEXT)
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -83,13 +86,14 @@ public class DynatraceRestClient {
         }
     }
 
-    public DQLAutocompleteResult autocomplete(DQLAutocompletePayload payload, String authToken) throws IOException, InterruptedException {
+    public DQLAutocompleteResult autocomplete(String tenantUrl, DQLAutocompletePayload payload, String authToken) throws IOException, InterruptedException {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder(URI.create(tenantUrl + "/platform/storage/query/v1/query:autocomplete").normalize())
                     .method("POST", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + authToken)
+                    .header("dt-client-context", CLIENT_CONTEXT)
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
