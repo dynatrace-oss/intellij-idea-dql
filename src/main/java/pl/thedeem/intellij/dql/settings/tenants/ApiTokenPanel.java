@@ -27,26 +27,23 @@ public class ApiTokenPanel extends BorderLayoutPanel implements Disposable {
 
     public void init(@Nullable DynatraceTenant tenant) {
         if (tenant == null) {
-            removeAll();
-            addToTop(passwordField);
-            revalidate();
-            repaint();
-            loading.dispose();
+            updateUI(null);
             return;
         }
         String credentialId = tenant.getCredentialId();
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             String storedToken = StringUtil.isNotEmpty(credentialId) ?
                     PasswordSafe.getInstance().getPassword(DQLUtil.createCredentialAttributes(credentialId)) : null;
-            ApplicationManager.getApplication().invokeLater(() -> {
-                passwordField.setText(storedToken);
-                removeAll();
-                addToTop(passwordField);
-                revalidate();
-                repaint();
-                loading.dispose();
-            }, ModalityState.stateForComponent(this));
+            ApplicationManager.getApplication().invokeLater(() -> updateUI(storedToken), ModalityState.any());
         });
+    }
+
+    private void updateUI(@Nullable String token) {
+        removeAll();
+        passwordField.setText(token);
+        addToTop(passwordField);
+        revalidate();
+        repaint();
     }
 
     public boolean hasToken() {
