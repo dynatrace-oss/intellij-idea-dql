@@ -18,9 +18,11 @@ import java.nio.charset.StandardCharsets;
 public class DynatraceRestClient {
     private static final Logger logger = Logger.getInstance(DynatraceRestClient.class);
     private final static ObjectMapper mapper = new ObjectMapper();
-    private final static String CLIENT_CONTEXT = "jetbrains-ide-dql-plugin";
 
-    public DynatraceRestClient() {
+    private final String clientContext;
+
+    public DynatraceRestClient(String clientContext) {
+        this.clientContext = clientContext;
     }
 
     public DQLVerifyResponse verifyDQL(String tenantUrl, DQLVerifyPayload payload, String authToken) throws IOException, InterruptedException {
@@ -30,7 +32,7 @@ public class DynatraceRestClient {
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + authToken)
-                    .header("dt-client-context", CLIENT_CONTEXT)
+                    .header("dt-client-context", clientContext)
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -46,7 +48,7 @@ public class DynatraceRestClient {
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + authToken)
-                    .header("dt-client-context", CLIENT_CONTEXT)
+                    .header("dt-client-context", clientContext)
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -62,7 +64,7 @@ public class DynatraceRestClient {
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + authToken)
-                    .header("dt-client-context", CLIENT_CONTEXT)
+                    .header("dt-client-context", clientContext)
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -77,7 +79,7 @@ public class DynatraceRestClient {
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + authToken)
-                    .header("dt-client-context", CLIENT_CONTEXT)
+                    .header("dt-client-context", clientContext)
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -93,7 +95,7 @@ public class DynatraceRestClient {
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + authToken)
-                    .header("dt-client-context", CLIENT_CONTEXT)
+                    .header("dt-client-context", clientContext)
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

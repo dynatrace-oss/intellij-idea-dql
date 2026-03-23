@@ -22,13 +22,14 @@ import java.util.function.Consumer
 internal class DynatraceRestServiceImpl @JvmOverloads constructor(
     private val project: Project,
     private val cs: CoroutineScope,
-    private val client: DynatraceRestClient = DynatraceRestClient(),
+    private val client: DynatraceRestClient = DynatraceRestClient(CLIENT_CONTEXT),
     private val pollIntervalMs: Long = POLL_INTERVAL_MS
 ) : DynatraceRestService {
 
     companion object {
         private val logger = Logger.getInstance(DynatraceRestServiceImpl::class.java)
         private const val POLL_INTERVAL_MS = 200L
+        private const val CLIENT_CONTEXT = "jetbrains-ide-dql-plugin"
     }
 
     override fun verifyQuery(tenant: DynatraceTenant, query: String): CompletableFuture<DQLVerifyResponse> =
