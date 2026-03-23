@@ -62,7 +62,6 @@ internal class DynatraceRestServiceImpl @JvmOverloads constructor(
                     DQLBundle.message("services.restService.executeQuery.progress.title"),
                     cancellable = true
                 ) {
-                    val client = client
                     val apiToken = resolveToken(tenant)
                     val executeResponse = withContext(Dispatchers.IO) {
                         client.executeDQL(

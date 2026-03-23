@@ -178,9 +178,31 @@ public class DynatraceRestServiceImplTest extends LightPlatformCodeInsightFixtur
             .thenReturn(pollResponse("CANCELLED", 0L));
 
         var future = service.executeQuery(tenant, new DQLExecutePayload("fetch logs"), null);
-        Thread.sleep(300);
+        PlatformTestUtil.waitWithEventsDispatching(
+                "Waiting for initial pollDQLState call before cancellation",
+                () -> {
+                    try {
+                        verify(clientMock, atLeastOnce()).pollDQLState(anyString(), eq("token-cancel"), eq("test-token"));
+                        return true;
+                    } catch (Throwable ignored) {
+                        return false;
+                    }
+                },
+                10
+        );
         future.cancel(true);
-        Thread.sleep(500);
+        PlatformTestUtil.waitWithEventsDispatching(
+                "Waiting for Dynatrace DQL cancel request",
+                () -> {
+                    try {
+                        verify(clientMock).cancelDQL(anyString(), eq("token-cancel"), eq("test-token"));
+                        return true;
+                    } catch (Throwable ignored) {
+                        return false;
+                    }
+                },
+                10
+        );
 
         verify(clientMock, atLeastOnce()).pollDQLState(anyString(), eq("token-cancel"), eq("test-token"));
         verify(clientMock).cancelDQL(anyString(), eq("token-cancel"), eq("test-token"));

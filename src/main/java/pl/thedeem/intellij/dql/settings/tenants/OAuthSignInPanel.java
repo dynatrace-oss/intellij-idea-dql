@@ -68,15 +68,10 @@ public class OAuthSignInPanel extends JBPanel<OAuthSignInPanel> implements Dispo
         }
         updateStatus(loadingPanel);
         DynatraceOAuthService.getInstance().resolveToken(credentialId, tenant.getUrl())
-                .whenComplete((token, ex) -> {
-                    if (ex != null) {
-                        LOG.error("Critical failure resolving OAuth status for " + credentialId, ex);
-                    }
-                    ApplicationManager.getApplication().invokeLater(
-                            () -> setAuthenticated(ex == null && token != null),
-                            ModalityState.any()
-                    );
-                });
+                .whenComplete((token, ex) -> ApplicationManager.getApplication().invokeLater(
+                        () -> setAuthenticated(ex == null && token != null),
+                        ModalityState.any()
+                ));
     }
 
     public boolean isAuthenticated() {
@@ -127,7 +122,10 @@ public class OAuthSignInPanel extends JBPanel<OAuthSignInPanel> implements Dispo
     private void signOut() {
         if (credentialId != null) {
             DynatraceOAuthService.getInstance().signOut(credentialId)
-                    .exceptionally(ex -> { LOG.warn("Failed to complete sign-out", ex); return null; });
+                    .exceptionally(ex -> {
+                        LOG.warn("Failed to complete sign-out", ex);
+                        return null;
+                    });
         }
         setAuthenticated(false);
     }

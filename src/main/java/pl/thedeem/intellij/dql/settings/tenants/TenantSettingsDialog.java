@@ -74,6 +74,11 @@ public class TenantSettingsDialog extends DialogWrapper {
             urlField.setText(tenant.getUrl());
             authenticationMethod.setSelectedItem(tenant.getAuthType());
             authLayout.show(authCardPanel, tenant.getAuthType().name());
+            if (tenant.getAuthType() == DynatraceTenant.AuthType.SSO_OAUTH) {
+                oauthPanel.init(tenant);
+            } else {
+                apiTokenPanel.init(tenant);
+            }
         } else {
             authLayout.show(authCardPanel, DynatraceTenant.AuthType.SSO_OAUTH.name());
             oauthPanel.init(null);
