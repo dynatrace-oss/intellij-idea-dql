@@ -38,6 +38,8 @@
 ### Bug fixes
 
 - `1e` is now a valid number (previously it was treated as an unknown duration type)
+- Fixing `java.lang.NoClassDefFoundError: org/codehaus/plexus/util/StringUtils` error occurring in the latest IntelliJ
+  versions
 
 ## [1.7.0] - 2026-03-19
 

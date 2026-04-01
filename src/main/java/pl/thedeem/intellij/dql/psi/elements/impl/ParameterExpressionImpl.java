@@ -3,10 +3,10 @@ package pl.thedeem.intellij.dql.psi.elements.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.util.CachedValue;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
-import org.codehaus.plexus.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.StandardItemPresentation;
@@ -88,7 +88,7 @@ public abstract class ParameterExpressionImpl extends ASTWrapperPsiElement imple
         if (parameter == null) {
             return null;
         }
-        if (!StringUtils.equalsIgnoreCase(parameter.name(), this.getName())) {
+        if (!StringUtil.equalsIgnoreCase(parameter.name(), this.getName())) {
             return null;
         }
         return parameter.definition();
