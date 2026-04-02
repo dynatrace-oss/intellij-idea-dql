@@ -2,6 +2,7 @@ package pl.thedeem.intellij.dql.inspections.fields;
 
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
@@ -32,8 +33,10 @@ public class AliasDisallowedInspection extends LocalInspectionTool {
 
     private void validateParameters(@NotNull DQLParametersOwner parametersOwner, @NotNull ProblemsHolder holder) {
         for (MappedParameter parameter : parametersOwner.getParameters()) {
-            if (parameter.holder() instanceof DQLParameterExpression named && "alias".equalsIgnoreCase(named.getName())) {
-                validateAliasParameter(named, parameter, holder);
+            for (PsiElement expr : parameter.unpackExpressions()) {
+                if (expr instanceof DQLParameterExpression named && "alias".equalsIgnoreCase(named.getName())) {
+                    validateAliasParameter(named, parameter, holder);
+                }
             }
         }
     }
