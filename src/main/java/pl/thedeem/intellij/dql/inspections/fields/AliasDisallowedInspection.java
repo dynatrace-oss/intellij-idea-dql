@@ -6,7 +6,6 @@ import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.inspections.fixes.DropElementQuickFix;
-import pl.thedeem.intellij.dql.psi.DQLCommand;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 import pl.thedeem.intellij.dql.psi.DQLVisitor;
@@ -27,12 +26,6 @@ public class AliasDisallowedInspection extends LocalInspectionTool {
                     return;
                 }
                 validateParameters(parametersOwner, holder);
-            }
-
-            @Override
-            public void visitCommand(@NotNull DQLCommand command) {
-                super.visitCommand(command);
-                validateParameters(command, holder);
             }
         };
     }
