@@ -24,7 +24,7 @@ import pl.thedeem.intellij.dql.services.definition.model.Command;
 import pl.thedeem.intellij.dql.services.definition.model.Parameter;
 import pl.thedeem.intellij.dql.services.parameters.DQLParametersCalculatorService;
 import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 import java.util.Collection;
 import java.util.List;
@@ -51,7 +51,7 @@ public abstract class CommandElementImpl extends ASTWrapperPsiElement implements
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(getName());
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(getName());
     }
 
     @Override

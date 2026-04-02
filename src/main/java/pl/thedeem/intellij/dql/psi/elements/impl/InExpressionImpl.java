@@ -7,7 +7,7 @@ import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.elements.InExpression;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 public abstract class InExpressionImpl extends AbstractOperatorElementImpl implements InExpression {
 
@@ -22,7 +22,7 @@ public abstract class InExpressionImpl extends AbstractOperatorElementImpl imple
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(
                 getLeftExpression(),
                 " in ",
                 getRightExpression());

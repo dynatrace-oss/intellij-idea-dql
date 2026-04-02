@@ -330,7 +330,9 @@ public class DQLParametersCalculatorServiceImplTest extends LightPlatformCodeIns
 
     private void assertParametersEqual(@NotNull List<MappedParameter> result, @NotNull ParamMatcher... matchers) {
         List<ParamMatcher> expected = List.of(matchers);
-        List<ParamMatcher> actual = result.stream().map(p -> new ParamMatcher(
+        List<ParamMatcher> actual = result.stream()
+                .filter(MappedParameter::notPseudo)
+                .map(p -> new ParamMatcher(
                         p.name(),
                         p.definition() != null,
                         p.values().stream()
@@ -341,7 +343,7 @@ public class DQLParametersCalculatorServiceImplTest extends LightPlatformCodeIns
                                 .toList()
                 ))
                 .toList();
-        assertContainsOrdered(expected, actual);
+        assertContainsOrdered(actual, expected);
     }
 
     private record ParamMatcher(@Nullable String name, boolean definitionFound, @NotNull List<String> values) {

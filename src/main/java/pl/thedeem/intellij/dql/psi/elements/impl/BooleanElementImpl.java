@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.elements.BooleanElement;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 import java.util.Set;
 
@@ -38,6 +38,6 @@ public abstract class BooleanElementImpl extends ASTWrapperPsiElement implements
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(getName());
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(getName());
     }
 }

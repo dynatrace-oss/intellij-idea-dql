@@ -21,7 +21,7 @@ import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 import pl.thedeem.intellij.dql.psi.elements.ParameterExpression;
 import pl.thedeem.intellij.dql.services.definition.model.Parameter;
 import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 import java.util.Collection;
 import java.util.Set;
@@ -57,7 +57,7 @@ public abstract class ParameterExpressionImpl extends ASTWrapperPsiElement imple
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(
                 getName(),
                 ": ",
                 getExpression());

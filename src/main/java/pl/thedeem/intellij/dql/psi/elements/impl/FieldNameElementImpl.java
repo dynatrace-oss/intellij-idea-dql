@@ -20,7 +20,7 @@ import pl.thedeem.intellij.dql.psi.DQLElementFactory;
 import pl.thedeem.intellij.dql.psi.DQLFieldExpression;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
 import pl.thedeem.intellij.dql.psi.elements.FieldElement;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 
 import java.util.Collection;
@@ -85,7 +85,7 @@ public abstract class FieldNameElementImpl extends ASTWrapperPsiElement implemen
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(getName());
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(getName());
     }
 
     @Override

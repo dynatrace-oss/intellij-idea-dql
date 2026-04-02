@@ -25,7 +25,7 @@ import pl.thedeem.intellij.dql.services.definition.model.Parameter;
 import pl.thedeem.intellij.dql.services.definition.model.Signature;
 import pl.thedeem.intellij.dql.services.parameters.DQLParametersCalculatorService;
 import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 import java.util.Collection;
 import java.util.List;
@@ -119,15 +119,15 @@ public abstract class FunctionCallExpressionImpl extends ASTWrapperPsiElement im
 
     @Override
     public ItemPresentation getPresentation() {
-        return new StandardItemPresentation(getName(), this, DQLIcon.DQL_FUNCTION);
+        return new StandardItemPresentation(Objects.requireNonNullElse(getName(), ""), this, DQLIcon.DQL_FUNCTION);
     }
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(
                 getName(),
                 "(",
-                new DQLFieldNamesService.SeparatedChildren(getFunctionArguments(), ", "),
+                new DQLFieldsCalculatorService.SeparatedChildren(getFunctionArguments(), ", "),
                 ")"
         );
     }

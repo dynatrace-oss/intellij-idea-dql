@@ -10,50 +10,50 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DQLFieldNamesServiceImplTest {
-    private final DQLFieldNamesServiceImpl service = new DQLFieldNamesServiceImpl();
+public class DQLFieldsCalculatorServiceImplFieldNamesTest {
+    private final DQLFieldsCalculatorServiceImpl service = new DQLFieldsCalculatorServiceImpl();
 
     @Test
-    public void shouldReturnEmptyStringWhenNoPartsGiven() {
+    public void returnsEmptyStringWhenNoPartsGiven() {
         assertEquals("", service.calculateFieldName());
     }
 
     @Test
-    public void shouldSkipNullPart() {
+    public void skipsNullPart() {
         assertEquals("", service.calculateFieldName((Object) null));
     }
 
     @Test
-    public void shouldReturnTrimmedStringPart() {
+    public void returnsTrimmedStringPart() {
         assertEquals("hello", service.calculateFieldName("  hello  "));
     }
 
     @Test
-    public void shouldConcatenateMultipleStringParts() {
+    public void concatenatesMultipleStringParts() {
         assertEquals("abc", service.calculateFieldName("a", "b", "c"));
     }
 
     @Test
-    public void shouldSkipNullPartsMixedWithOtherParts() {
+    public void skipsNullPartsMixedWithOtherParts() {
         assertEquals("ab", service.calculateFieldName("a", null, "b"));
     }
 
     @Test
-    public void shouldDelegateToPsiElementGetText() {
+    public void delegatesToPsiElementGetText() {
         PsiElement element = mock(PsiElement.class);
         when(element.getText()).thenReturn("  fieldText  ");
         assertEquals("fieldText", service.calculateFieldName(element));
     }
 
     @Test
-    public void shouldDelegateToBaseTypedElementGetFieldName() {
+    public void delegatesToBaseTypedElementGetFieldName() {
         BaseTypedElement element = mock(BaseTypedElement.class);
         when(element.getFieldName()).thenReturn("computedFieldName");
         assertEquals("computedFieldName", service.calculateFieldName(element));
     }
 
     @Test
-    public void shouldPreferBaseTypedElementGetFieldNameWhenImplementingBothInterfaces() {
+    public void prefersBaseTypedElementGetFieldNameWhenImplementingBothInterfaces() {
         interface BaseTypedPsiElement extends BaseTypedElement, PsiElement {
         }
         BaseTypedPsiElement element = mock(BaseTypedPsiElement.class);
@@ -63,42 +63,42 @@ public class DQLFieldNamesServiceImplTest {
     }
 
     @Test
-    public void shouldJoinCollectionElementsWithComma() {
+    public void joinsCollectionElementsWithComma() {
         assertEquals("a,b,c", service.calculateFieldName(List.of("a", "b", "c")));
     }
 
     @Test
-    public void shouldJoinSeparatedChildrenWithCommaWhenSeparatorIsNull() {
-        DQLFieldNamesService.SeparatedChildren children =
-                new DQLFieldNamesService.SeparatedChildren(List.of("x", "y"), null);
+    public void joinsSeparatedChildrenWithCommaWhenSeparatorIsNull() {
+        DQLFieldsCalculatorService.SeparatedChildren children =
+                new DQLFieldsCalculatorService.SeparatedChildren(List.of("x", "y"), null);
         assertEquals("x,y", service.calculateFieldName(children));
     }
 
     @Test
-    public void shouldJoinSeparatedChildrenWithGivenStringSeparator() {
-        DQLFieldNamesService.SeparatedChildren children =
-                new DQLFieldNamesService.SeparatedChildren(List.of("a", "b", "c"), ",");
+    public void joinsSeparatedChildrenWithGivenStringSeparator() {
+        DQLFieldsCalculatorService.SeparatedChildren children =
+                new DQLFieldsCalculatorService.SeparatedChildren(List.of("a", "b", "c"), ",");
         assertEquals("a,b,c", service.calculateFieldName(children));
     }
 
     @Test
-    public void shouldJoinSeparatedChildrenUsingBaseTypedElementSeparatorFieldName() {
+    public void joinsSeparatedChildrenUsingBaseTypedElementSeparatorFieldName() {
         BaseTypedElement separator = mock(BaseTypedElement.class);
         when(separator.getFieldName()).thenReturn(" + ");
-        DQLFieldNamesService.SeparatedChildren children =
-                new DQLFieldNamesService.SeparatedChildren(List.of("left", "right"), separator);
+        DQLFieldsCalculatorService.SeparatedChildren children =
+                new DQLFieldsCalculatorService.SeparatedChildren(List.of("left", "right"), separator);
         assertEquals("left + right", service.calculateFieldName(children));
     }
 
     @Test
-    public void shouldBuildFunctionLikeFieldName() {
-        DQLFieldNamesService.SeparatedChildren args =
-                new DQLFieldNamesService.SeparatedChildren(List.of("arg1", "arg2"), ", ");
+    public void buildsFunctionLikeFieldName() {
+        DQLFieldsCalculatorService.SeparatedChildren args =
+                new DQLFieldsCalculatorService.SeparatedChildren(List.of("arg1", "arg2"), ", ");
         assertEquals("myFunc(arg1,arg2)", service.calculateFieldName("myFunc", "(", args, ")"));
     }
 
     @Test
-    public void shouldBuildBinaryOperatorFieldNameFromPsiElementParts() {
+    public void buildsBinaryOperatorFieldNameFromPsiElementParts() {
         PsiElement left = mock(PsiElement.class);
         when(left.getText()).thenReturn("fieldA");
         PsiElement op = mock(PsiElement.class);

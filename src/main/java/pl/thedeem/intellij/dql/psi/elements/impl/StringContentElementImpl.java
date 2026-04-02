@@ -7,8 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.elements.BaseNamedElement;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class StringContentElementImpl extends ASTWrapperPsiElement implements BaseNamedElement {
@@ -23,12 +24,12 @@ public abstract class StringContentElementImpl extends ASTWrapperPsiElement impl
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(getText());
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(getText());
     }
 
     @Override
     public ItemPresentation getPresentation() {
-        return new StandardItemPresentation(this.getName(), this, DQLIcon.DQL_STRING);
+        return new StandardItemPresentation(Objects.requireNonNullElse(this.getName(), ""), this, DQLIcon.DQL_STRING);
     }
 
     @Override

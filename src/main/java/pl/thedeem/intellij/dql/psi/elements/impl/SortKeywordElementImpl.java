@@ -7,7 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.elements.SortKeywordElement;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
+
+import java.util.Objects;
 
 public abstract class SortKeywordElementImpl extends ASTWrapperPsiElement implements SortKeywordElement {
     public SortKeywordElementImpl(@NotNull ASTNode node) {
@@ -21,12 +23,12 @@ public abstract class SortKeywordElementImpl extends ASTWrapperPsiElement implem
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(getName());
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(getName());
     }
 
     @Override
     public ItemPresentation getPresentation() {
-        return new StandardItemPresentation(this.getName(), this, DQLIcon.DQL_SORT_DIRECTION);
+        return new StandardItemPresentation(Objects.requireNonNullElse(this.getName(), ""), this, DQLIcon.DQL_SORT_DIRECTION);
     }
 
     @Override

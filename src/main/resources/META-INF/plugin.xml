@@ -116,11 +116,11 @@
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidFieldReadOperation"
                          enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.fieldReadOperation.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidFieldReadOperationInspection"/>
+                         implementationClass="pl.thedeem.intellij.dql.inspections.fields.InvalidFieldReadOperationInspection"/>
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLInvalidFieldWriteOperation"
                          enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.fieldWriteOperation.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.InvalidFieldWriteOperationInspection"/>
+                         implementationClass="pl.thedeem.intellij.dql.inspections.fields.InvalidFieldWriteOperationInspection"/>
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLUnsupportedOperatorDataType"
                          enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.operator.unsupportedType.display.name"
@@ -190,7 +190,7 @@
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLDuplicatedFieldNames"
                          enabledByDefault="true" level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.command.duplicatedFieldNames.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.commands.DuplicatedFieldNamesInspection"/>
+                         implementationClass="pl.thedeem.intellij.dql.inspections.fields.DuplicatedFieldNamesInspection"/>
         <!-- Parameters validations -->
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLConflictedParameter"
                          enabledByDefault="true" level="ERROR"
@@ -224,7 +224,7 @@
                          enabledByDefault="true"
                          level="ERROR"
                          groupKey="inspection.groups.dql" key="inspection.command.invalidAlias.display.name"
-                         implementationClass="pl.thedeem.intellij.dql.inspections.expressions.AliasDisallowedInspection"/>
+                         implementationClass="pl.thedeem.intellij.dql.inspections.fields.AliasDisallowedInspection"/>
         <!-- Value validations -->
         <localInspection language="DQL" bundle="messages.DQLBundle" shortName="DQLSingleQuotesUsage"
                          enabledByDefault="true" level="ERROR"
@@ -298,8 +298,9 @@
         <applicationService
                 serviceImplementation="pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidatorImpl"
                 serviceInterface="pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator"/>
-        <applicationService serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLFieldNamesServiceImpl"
-                            serviceInterface="pl.thedeem.intellij.dql.services.query.DQLFieldNamesService"/>
+        <applicationService
+                serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorServiceImpl"
+                serviceInterface="pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService"/>
         <applicationService
                 serviceImplementation="pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationServiceImpl"
                 serviceInterface="pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService"/>

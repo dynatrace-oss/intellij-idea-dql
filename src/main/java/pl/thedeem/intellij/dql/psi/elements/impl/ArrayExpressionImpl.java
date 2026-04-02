@@ -10,7 +10,7 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.elements.ArrayExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 public abstract class ArrayExpressionImpl extends AbstractOperatorElementImpl implements ArrayExpression {
     public ArrayExpressionImpl(@NotNull ASTNode node) {
@@ -32,7 +32,7 @@ public abstract class ArrayExpressionImpl extends AbstractOperatorElementImpl im
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(
                 getLeftExpression(),
                 "[",
                 getRightExpression(),

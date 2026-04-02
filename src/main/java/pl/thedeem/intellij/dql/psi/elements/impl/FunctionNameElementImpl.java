@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.elements.FunctionNameElement;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 public abstract class FunctionNameElementImpl extends ASTWrapperPsiElement implements FunctionNameElement {
     public FunctionNameElementImpl(@NotNull ASTNode node) {
@@ -28,7 +28,7 @@ public abstract class FunctionNameElementImpl extends ASTWrapperPsiElement imple
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(getName());
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(getName());
     }
 
     @Override
