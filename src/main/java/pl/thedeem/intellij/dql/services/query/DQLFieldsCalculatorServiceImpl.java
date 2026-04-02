@@ -86,7 +86,7 @@ public class DQLFieldsCalculatorServiceImpl implements DQLFieldsCalculatorServic
                     DQLExpression next = PsiUtils.getNextSiblingOfTypeSkippingWhitespaces(ex, DQLExpression.class, Set.of(DQLTypes.COMMA));
                     if (canBeAliased(ex) && next instanceof DQLParameterExpression param && ("alias".equalsIgnoreCase(param.getName()) && param.definition() == null)) {
                         DQLExpression expression = param.getExpression();
-                        fields.add(new MappedField(ex, expression != null ? expression.getText() : "", ex));
+                        fields.add(new MappedField(ex, expression != null ? expression.getText() : "", param));
                         processed.add(ex);
                     } else if (processed.add(ex)) {
                         result.add(ex);

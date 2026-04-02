@@ -50,7 +50,7 @@ public class DQLParametersCalculatorServiceImpl implements DQLParametersCalculat
                             activeVariadic.addChildExpression(currentExpression);
                         }
                     } else {
-                        Parameter nextDefinition = unfilledUnnamed.getFirst();
+                        Parameter nextDefinition = !unfilledUnnamed.isEmpty() ? unfilledUnnamed.getFirst() : null;
                         if (nextDefinition != null && nextDefinition.variadic()) {
                             unfilledUnnamed.removeFirst();
                             MappedParameter parameter = new MappedParameter(nextDefinition, currentExpression, false);
