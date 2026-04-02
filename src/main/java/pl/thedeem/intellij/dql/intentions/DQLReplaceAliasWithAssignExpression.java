@@ -16,6 +16,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import pl.thedeem.intellij.dql.psi.*;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
+import pl.thedeem.intellij.dql.services.definition.model.Parameter;
 import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 
 import javax.swing.*;
@@ -112,7 +113,8 @@ public class DQLReplaceAliasWithAssignExpression extends PsiElementBaseIntention
             return null;
         }
         MappedParameter parameter = owner.getParameter(paramExpression);
-        if (parameter == null || parameter.definition() == null || !parameter.definition().allowsFieldName()) {
+        Parameter definition = parameter != null ? parameter.definition() : null;
+        if (definition == null || !definition.allowsFieldName()) {
             return null;
         }
         return parameter;

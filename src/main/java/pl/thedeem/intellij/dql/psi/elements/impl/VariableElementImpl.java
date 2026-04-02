@@ -19,7 +19,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.DQLElementFactory;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 import pl.thedeem.intellij.dql.psi.elements.VariableElement;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 
 import java.util.List;
@@ -63,7 +63,7 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(getName());
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(getName());
     }
 
     @Override

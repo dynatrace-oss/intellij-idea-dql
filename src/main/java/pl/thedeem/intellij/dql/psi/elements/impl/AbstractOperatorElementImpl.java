@@ -20,7 +20,7 @@ import pl.thedeem.intellij.dql.services.definition.model.Operator;
 import pl.thedeem.intellij.dql.services.definition.model.Parameter;
 import pl.thedeem.intellij.dql.services.definition.model.Signature;
 import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,7 +47,7 @@ public abstract class AbstractOperatorElementImpl extends ASTWrapperPsiElement i
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(
                 getLeftExpression(),
                 getOperator(),
                 getRightExpression()

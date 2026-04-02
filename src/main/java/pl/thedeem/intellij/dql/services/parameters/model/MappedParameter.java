@@ -12,25 +12,31 @@ import pl.thedeem.intellij.dql.psi.DQLParameterExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseElement;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.services.definition.model.Parameter;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 import java.util.*;
 
 public class MappedParameter implements BaseTypedElement {
     private final Parameter definition;
     private final PsiElement holder;
-    private final List<PsiElement> expressions;
-    private final List<PsiElement> values;
+    private final Set<PsiElement> expressions;
+    private final Set<PsiElement> values;
     private final List<List<PsiElement>> parameterGroups;
     private final String name;
+    private final boolean pseudo;
 
     public MappedParameter(@Nullable Parameter definition, @NotNull PsiElement holder) {
+        this(definition, holder, false);
+    }
+
+    public MappedParameter(@Nullable Parameter definition, @NotNull PsiElement holder, boolean pseudo) {
         this.definition = definition;
         this.holder = holder;
-        this.expressions = new ArrayList<>();
-        this.values = new ArrayList<>();
+        this.expressions = new LinkedHashSet<>();
+        this.values = new LinkedHashSet<>();
         this.parameterGroups = new ArrayList<>();
         this.name = calculateName();
+        this.pseudo = pseudo;
         addChildExpression(holder);
     }
 
@@ -65,7 +71,7 @@ public class MappedParameter implements BaseTypedElement {
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(holder);
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(holder);
     }
 
     @Override
@@ -74,11 +80,11 @@ public class MappedParameter implements BaseTypedElement {
     }
 
     public @NotNull List<PsiElement> expressions() {
-        return expressions;
+        return expressions.stream().toList();
     }
 
     public @NotNull List<PsiElement> values() {
-        return values;
+        return values.stream().toList();
     }
 
     public @NotNull List<List<PsiElement>> parameterGroups() {
@@ -97,8 +103,12 @@ public class MappedParameter implements BaseTypedElement {
         return name;
     }
 
+    public boolean notPseudo() {
+        return !pseudo;
+    }
+
     public boolean includes(@NotNull PsiElement expression) {
-        return expressions.contains(expression);
+        return expressions.contains(expression) || values.contains(expression);
     }
 
     public boolean explicitlyNamed() {

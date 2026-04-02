@@ -35,6 +35,9 @@
   left[k8s.pod.uid] == right[objectRef][uid]
   ```
 
+- Much better support for the `alias` parameters. It now supports detecting conflicts with assignment expressions and
+  multiple `alias` definitions for the same field.
+
 ### Bug fixes
 
 - `1e` is now a valid number (previously it was treated as an unknown duration type)

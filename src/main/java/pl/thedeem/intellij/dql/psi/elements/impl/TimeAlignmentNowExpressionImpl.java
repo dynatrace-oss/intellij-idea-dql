@@ -5,7 +5,7 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.psi.elements.TimeAlignmentExpression;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 public abstract class TimeAlignmentNowExpressionImpl extends TimeAlignmentExpressionImpl implements TimeAlignmentExpression {
     public TimeAlignmentNowExpressionImpl(@NotNull ASTNode node) {
@@ -14,7 +14,7 @@ public abstract class TimeAlignmentNowExpressionImpl extends TimeAlignmentExpres
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(
                 "@",
                 getRightExpression()
         );

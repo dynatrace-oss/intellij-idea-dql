@@ -10,7 +10,7 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.DQLTypes;
 import pl.thedeem.intellij.dql.psi.elements.BaseNamedElement;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 public abstract class ExpressionOperatorImpl extends ASTWrapperPsiElement implements BaseNamedElement {
     public ExpressionOperatorImpl(@NotNull ASTNode node) {
@@ -24,7 +24,7 @@ public abstract class ExpressionOperatorImpl extends ASTWrapperPsiElement implem
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(
                 getText()
         );
     }

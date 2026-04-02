@@ -9,7 +9,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.NegativeValueExpression;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 import java.util.Collection;
 
@@ -25,7 +25,7 @@ public abstract class NegativeValueExpressionImpl extends AbstractOperatorElemen
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName("-", getLeftExpression());
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName("-", getLeftExpression());
     }
 
     @Override

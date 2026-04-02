@@ -15,7 +15,7 @@ import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.ParenthesizedExpression;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 import java.util.Collection;
 import java.util.Set;
@@ -46,7 +46,7 @@ public abstract class ParenthesizedExpressionImpl extends ASTWrapperPsiElement i
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(findChildByClass(DQLExpression.class));
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(findChildByClass(DQLExpression.class));
     }
 
     @Override

@@ -1,18 +1,20 @@
-package pl.thedeem.intellij.dql.inspections.expressions;
+package pl.thedeem.intellij.dql.inspections.fields;
 
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.inspections.fixes.SetFieldNameQuickFix;
-import pl.thedeem.intellij.dql.psi.*;
+import pl.thedeem.intellij.dql.psi.DQLCommand;
+import pl.thedeem.intellij.dql.psi.DQLExpression;
+import pl.thedeem.intellij.dql.psi.DQLVisitor;
 import pl.thedeem.intellij.dql.psi.elements.DQLParametersOwner;
 import pl.thedeem.intellij.dql.services.definition.model.Parameter;
 import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class InvalidFieldReadOperationInspection extends LocalInspectionTool {
@@ -39,34 +41,24 @@ public class InvalidFieldReadOperationInspection extends LocalInspectionTool {
     }
 
     private void validateParameters(@NotNull List<MappedParameter> parameters, @NotNull ProblemsHolder holder) {
+        DQLFieldsCalculatorService service = DQLFieldsCalculatorService.getInstance();
+
         for (MappedParameter parameter : parameters) {
-            if (readonlyDisallowed(parameter) && parameter.definition() != null) {
-                for (PsiElement value : parameter.expressions()) {
-                    validateValue(value, holder);
+            if (parameter.definition() != null && readonlyDisallowed(parameter)) {
+                Collection<DQLFieldsCalculatorService.MappedField> definedFields = service.calculateDefinedFields(parameter);
+
+                for (DQLFieldsCalculatorService.MappedField definedField : definedFields) {
+                    if (definedField.nameExpression() == null) {
+                        holder.registerProblem(
+                                definedField.expression(),
+                                DQLBundle.message("inspection.fieldReadOperation.notAllowed"),
+                                new SetFieldNameQuickFix()
+                        );
+                    }
                 }
+
             }
         }
-    }
-
-    private void validateValue(@NotNull PsiElement expression, @NotNull ProblemsHolder holder) {
-        List<PsiElement> toCheck = new ArrayList<>();
-        toCheck.add(expression);
-        while (!toCheck.isEmpty()) {
-            PsiElement check = toCheck.removeFirst();
-            if (check instanceof DQLBracketExpression bracket) {
-                toCheck.addAll(bracket.getExpressionList());
-            } else if (isReadExpression(check)) {
-                holder.registerProblem(
-                        check,
-                        DQLBundle.message("inspection.fieldReadOperation.notAllowed"),
-                        new SetFieldNameQuickFix()
-                );
-            }
-        }
-    }
-
-    private boolean isReadExpression(PsiElement fieldExpression) {
-        return !(fieldExpression instanceof DQLAssignExpression);
     }
 
     private boolean readonlyDisallowed(MappedParameter parameter) {

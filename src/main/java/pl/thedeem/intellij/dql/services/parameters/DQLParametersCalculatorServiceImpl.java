@@ -1,5 +1,6 @@
 package pl.thedeem.intellij.dql.services.parameters;
 
+import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLUtil;
@@ -13,6 +14,8 @@ import pl.thedeem.intellij.dql.services.parameters.model.MappedParameter;
 import java.util.*;
 
 public class DQLParametersCalculatorServiceImpl implements DQLParametersCalculatorService {
+    private final Set<String> PSEUDO_PARAMETER_NAMES = Set.of("alias");
+
     @Override
     public @NotNull List<MappedParameter> mapParameters(@NotNull DQLParametersOwner holder, @NotNull List<Parameter> definitions) {
         List<DQLExpression> toProcess = new ArrayList<>(holder.getParameterExpressions());
@@ -31,14 +34,32 @@ public class DQLParametersCalculatorServiceImpl implements DQLParametersCalculat
             DQLExpression flattened = DQLUtil.flattenBrackets(currentExpression);
             List<DQLExpression> nestedParameters = flattened != null ? findNestedParameters(flattened) : List.of();
             toProcess.addAll(0, nestedParameters);
-
-            if (flattened instanceof DQLParameterExpression named && !"alias".equalsIgnoreCase(named.getName())) {
+            if (flattened instanceof DQLParameterExpression named) {
                 String name = named.getName() != null ? named.getName().toLowerCase() : "";
                 Parameter definition = definitionsByName.get(name);
-                MappedParameter parameter = new MappedParameter(definition, currentExpression);
-                result.add(parameter);
-                if (canBecomeVariadic(activeVariadic, allVariadicRequireBrackets, definition)) {
-                    activeVariadic = parameter;
+                boolean pseudo = definition == null && PSEUDO_PARAMETER_NAMES.stream().anyMatch(p -> StringUtil.equalsIgnoreCase(p, name));
+                if (!pseudo) {
+                    MappedParameter parameter = new MappedParameter(definition, currentExpression);
+                    result.add(parameter);
+                    if (canBecomeVariadic(activeVariadic, allVariadicRequireBrackets, definition)) {
+                        activeVariadic = parameter;
+                    }
+                } else {
+                    if (activeVariadic != null) {
+                        if (activeVariadic.holder().getParent() == currentExpression.getParent()) {
+                            activeVariadic.addChildExpression(currentExpression);
+                        }
+                    } else {
+                        Parameter nextDefinition = unfilledUnnamed.getFirst();
+                        if (nextDefinition != null && nextDefinition.variadic()) {
+                            unfilledUnnamed.removeFirst();
+                            MappedParameter parameter = new MappedParameter(nextDefinition, currentExpression, false);
+                            activeVariadic = parameter;
+                            result.add(parameter);
+                        } else {
+                            result.add(new MappedParameter(null, currentExpression, true));
+                        }
+                    }
                 }
                 continue;
             }
@@ -52,7 +73,7 @@ public class DQLParametersCalculatorServiceImpl implements DQLParametersCalculat
                 Parameter definition = unfilledUnnamed.removeFirst();
                 MappedParameter parameter = new MappedParameter(definition, currentExpression);
                 result.add(parameter);
-                if (canBecomeVariadic(activeVariadic, allVariadicRequireBrackets, definition)) {
+                if (canBecomeVariadic(null, allVariadicRequireBrackets, definition)) {
                     activeVariadic = parameter;
                 }
                 continue;
@@ -76,7 +97,7 @@ public class DQLParametersCalculatorServiceImpl implements DQLParametersCalculat
                 toProcess.addAll(0, bracket.getExpressionList());
                 continue;
             }
-            if (current instanceof DQLParameterExpression named && !"alias".equalsIgnoreCase(named.getName())) {
+            if (current instanceof DQLParameterExpression) {
                 nested.add(current);
             }
         }

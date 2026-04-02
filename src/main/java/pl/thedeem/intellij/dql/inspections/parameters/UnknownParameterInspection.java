@@ -24,7 +24,7 @@ public class UnknownParameterInspection extends LocalInspectionTool {
                 if (expression.getParent() instanceof DQLParametersOwner parametersOwner) {
                     MappedParameter parameter = parametersOwner.getParameter(expression);
                     Parameter definition = parameter != null ? parameter.definition() : null;
-                    if (parameter != null && definition == null) {
+                    if (parameter != null && parameter.notPseudo() && definition == null) {
                         holder.registerProblem(
                                 parameter.holder() instanceof DQLParameterExpression p ? p.getParameterName() : parameter.holder(),
                                 DQLBundle.message("inspection.parameter.unknown.unknownNamed"),

@@ -7,7 +7,7 @@ import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.elements.UnaryExpression;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 public abstract class UnaryExpressionImpl extends AbstractOperatorElementImpl implements UnaryExpression {
     public UnaryExpressionImpl(@NotNull ASTNode node) {
@@ -16,7 +16,7 @@ public abstract class UnaryExpressionImpl extends AbstractOperatorElementImpl im
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(
                 "not ",
                 getLeftExpression()
         );

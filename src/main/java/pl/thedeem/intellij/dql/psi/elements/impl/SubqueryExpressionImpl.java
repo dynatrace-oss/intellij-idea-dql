@@ -9,7 +9,7 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.psi.elements.SubqueryExpression;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 public abstract class SubqueryExpressionImpl extends ASTWrapperPsiElement implements SubqueryExpression {
     public SubqueryExpressionImpl(@NotNull ASTNode node) {
@@ -18,7 +18,7 @@ public abstract class SubqueryExpressionImpl extends ASTWrapperPsiElement implem
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(
                 "[",
                 findChildByClass(DQLExpression.class),
                 "]"

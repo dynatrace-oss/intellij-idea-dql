@@ -3,30 +3,63 @@ package pl.thedeem.intellij.common.psi;
 import com.intellij.patterns.ElementPattern;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public class PsiUtils {
     @Nullable
-    public static <T> T getPrevSiblingOfTypeSkippingWhitespaces(PsiElement psiElement, Class<T> toFind) {
+    public static <T> T getPrevSiblingOfTypeSkippingWhitespaces(@Nullable PsiElement psiElement, @NotNull Class<T> toFind) {
+        return getPrevSiblingOfTypeSkippingWhitespaces(psiElement, toFind, Set.of());
+    }
+
+    public static <T> T getPrevSiblingOfTypeSkippingWhitespaces(
+            @Nullable PsiElement psiElement,
+            @NotNull Class<T> toFind,
+            @NotNull Set<IElementType> skippable
+    ) {
         if (psiElement == null) {
             return null;
         }
-        for (PsiElement prevSibling = psiElement.getPrevSibling(); prevSibling != null; prevSibling = prevSibling.getPrevSibling()) {
-            if (toFind.isInstance(prevSibling)) {
-                return toFind.cast(prevSibling);
+        for (PsiElement prev = psiElement.getPrevSibling(); prev != null; prev = prev.getPrevSibling()) {
+            if (toFind.isInstance(prev)) {
+                return toFind.cast(prev);
             }
-            if (!PlatformPatterns.psiElement().whitespaceCommentEmptyOrError().accepts(prevSibling)) {
+            if (!skippable.contains(prev.getNode().getElementType()) &&
+                    !PlatformPatterns.psiElement().whitespaceCommentEmptyOrError().accepts(prev)) {
                 return null;
             }
         }
         return null;
     }
+
+    @Nullable
+    public static <T> T getNextSiblingOfTypeSkippingWhitespaces(
+            @Nullable PsiElement psiElement,
+            @NotNull Class<T> toFind,
+            @NotNull Set<IElementType> skippable
+    ) {
+        if (psiElement == null) {
+            return null;
+        }
+        for (PsiElement next = psiElement.getNextSibling(); next != null; next = next.getNextSibling()) {
+            if (toFind.isInstance(next)) {
+                return toFind.cast(next);
+            }
+            if (!skippable.contains(next.getNode().getElementType())
+                    && !PlatformPatterns.psiElement().whitespaceCommentEmptyOrError().accepts(next)) {
+                return null;
+            }
+        }
+        return null;
+    }
+
 
     public static @NotNull List<PsiElement> getElementsUntilParent(PsiElement element, Class<?>... types) {
         return getElementsUntilParent(element, t -> true, types);

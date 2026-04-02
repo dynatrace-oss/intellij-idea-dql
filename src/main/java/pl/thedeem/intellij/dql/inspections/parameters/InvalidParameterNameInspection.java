@@ -19,7 +19,7 @@ public class InvalidParameterNameInspection extends LocalInspectionTool {
                 super.visitExpression(expression);
                 if (expression.getParent() instanceof DQLParametersOwner parametersOwner) {
                     MappedParameter parameter = parametersOwner.getParameter(expression);
-                    if (parameter != null) {
+                    if (parameter != null && parameter.notPseudo()) {
                         Parameter definition = parameter.definition();
                         if (definition != null && !definition.allowsName() && parameter.explicitlyNamed()) {
                             holder.registerProblem(

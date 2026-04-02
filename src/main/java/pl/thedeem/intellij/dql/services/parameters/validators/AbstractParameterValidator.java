@@ -22,8 +22,11 @@ public abstract class AbstractParameterValidator implements ParameterValidator {
         while (!toValidate.isEmpty()) {
             PsiElement element = DQLUtil.unpackParenthesis(toValidate.removeFirst());
             switch (element) {
-                case DQLParameterExpression param when !StringUtil.equalsIgnoreCase("alias", param.getName()) ->
+                case DQLParameterExpression param -> {
+                    if (!StringUtil.equalsIgnoreCase("alias", param.getName())) {
                         toValidate.add(param.getExpression());
+                    }
+                }
                 case DQLBracketExpression bracket -> toValidate.addAll(bracket.getExpressionList());
                 case DQLAssignExpression assign -> toValidate.add(assign.getRightExpression());
                 case DQLNegativeValueExpression negative -> toValidate.add(negative.getExpression());

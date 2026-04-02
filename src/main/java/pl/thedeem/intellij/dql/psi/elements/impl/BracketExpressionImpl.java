@@ -11,7 +11,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.elements.BaseElement;
 import pl.thedeem.intellij.dql.psi.elements.BaseTypedElement;
 import pl.thedeem.intellij.dql.psi.elements.BracketExpression;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -57,9 +57,9 @@ public abstract class BracketExpressionImpl extends ASTWrapperPsiElement impleme
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(
                 "{",
-                new DQLFieldNamesService.SeparatedChildren(List.of(getChildren()), ","),
+                new DQLFieldsCalculatorService.SeparatedChildren(List.of(getChildren()), ","),
                 "}"
         );
     }

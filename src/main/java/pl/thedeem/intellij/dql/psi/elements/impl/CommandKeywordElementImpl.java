@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.elements.CommandKeywordElement;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 public abstract class CommandKeywordElementImpl extends ASTWrapperPsiElement implements CommandKeywordElement {
     public CommandKeywordElementImpl(@NotNull ASTNode node) {
@@ -28,7 +28,7 @@ public abstract class CommandKeywordElementImpl extends ASTWrapperPsiElement imp
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(getName());
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(getName());
     }
 
     @Override

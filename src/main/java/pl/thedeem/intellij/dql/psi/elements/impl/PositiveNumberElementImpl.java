@@ -8,7 +8,7 @@ import pl.thedeem.intellij.common.StandardItemPresentation;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.elements.NumberElement;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 import java.util.Set;
 
@@ -24,7 +24,7 @@ public abstract class PositiveNumberElementImpl extends ASTWrapperPsiElement imp
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(getText());
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(getText());
     }
 
     @Override

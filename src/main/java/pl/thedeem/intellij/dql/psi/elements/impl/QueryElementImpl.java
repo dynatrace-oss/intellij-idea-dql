@@ -12,7 +12,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
 import pl.thedeem.intellij.dql.psi.elements.QueryElement;
 import pl.thedeem.intellij.dql.psi.elements.VariableElement;
-import pl.thedeem.intellij.dql.services.query.DQLFieldNamesService;
+import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 
 import java.util.*;
 
@@ -31,7 +31,7 @@ public abstract class QueryElementImpl extends ASTWrapperPsiElement implements Q
 
     @Override
     public String getFieldName() {
-        return DQLFieldNamesService.getInstance().calculateFieldName(getName());
+        return DQLFieldsCalculatorService.getInstance().calculateFieldName(getName());
     }
 
     @Override
