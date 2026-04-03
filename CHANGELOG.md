@@ -37,6 +37,7 @@
 
 - Much better support for the `alias` parameters. It now supports detecting conflicts with assignment expressions and
   multiple `alias` definitions for the same field.
+- Supporting negative values for the DQL time alignment operator, for example: `-1d@d`
 
 ### Bug fixes
 
