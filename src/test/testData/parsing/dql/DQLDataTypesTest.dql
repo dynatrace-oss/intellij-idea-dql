@@ -13,5 +13,6 @@ data record(
   """,
   empty = null,
   boolean = true,
-  time_align = @w2
+  time_align = @w2,
+  negative_value_time_align = -2d@d
 )
