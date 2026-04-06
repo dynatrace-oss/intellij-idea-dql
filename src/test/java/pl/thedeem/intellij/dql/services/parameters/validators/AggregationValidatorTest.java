@@ -13,9 +13,11 @@ import pl.thedeem.intellij.dql.psi.DQLExpression;
 import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
 import pl.thedeem.intellij.dql.services.definition.model.Function;
 import pl.thedeem.intellij.dql.services.definition.model.Parameter;
+import pl.thedeem.intellij.dql.services.definition.model.Signature;
 import pl.thedeem.intellij.dql.services.parameters.DQLParameterValueTypesValidator;
 import pl.thedeem.intellij.dqlexpr.DQLExprFileType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -24,12 +26,13 @@ import static org.mockito.Mockito.when;
 import static pl.thedeem.intellij.dql.DQLTestsUtils.assertContains;
 
 public class AggregationValidatorTest extends LightPlatformCodeInsightFixture4TestCase {
-    private AggregationValidator validator;
+    private final static String AGGREGATION_TYPE = "aggregation";
+    private final AggregationValidator validator = new AggregationValidator();
+    private final DQLDefinitionService serviceMock = mock(DQLDefinitionService.class);
     private Parameter parameter;
 
     @Before
     public void createService() {
-        validator = new AggregationValidator();
         parameter = new Parameter(
                 "value",
                 "description",
@@ -47,12 +50,16 @@ public class AggregationValidatorTest extends LightPlatformCodeInsightFixture4Te
                 null,
                 null
         );
-        DQLDefinitionService serviceMock = mock(DQLDefinitionService.class);
-        Function functionDefinition = DQLTestsUtils.createFunction("max", List.of("dql.functionCategory.expression timeseries"), List.of());
-        when(serviceMock.getFunctionByName("max")).thenReturn(List.of(functionDefinition));
-        when(serviceMock.getFunctionByName("otherFunction")).thenReturn(List.of(DQLTestsUtils.createFunction("otherFunction", List.of(), List.of())));
-        when(serviceMock.getFunctionCategoriesForParameterTypes(any())).thenReturn(List.of());
-        when(serviceMock.getFunctionsByCategoryAndReturnType(any(), any())).thenReturn(List.of(functionDefinition));
+
+        mockFunctions(
+                DQLTestsUtils.createFunction("max", List.of(AGGREGATION_TYPE), List.of()),
+                DQLTestsUtils.createFunction("takeLast", List.of(AGGREGATION_TYPE), List.of()),
+                DQLTestsUtils.createFunction("takeFirst", List.of(AGGREGATION_TYPE), List.of()),
+                DQLTestsUtils.createFunction("unixMillisFromTimestamp", List.of(), List.of()),
+                DQLTestsUtils.createFunction("coalesce", List.of(), List.of()),
+                DQLTestsUtils.createFunction("toTimestamp", List.of(), List.of()),
+                DQLTestsUtils.createFunction("now", List.of(), List.of())
+        );
 
         ServiceContainerUtil.registerOrReplaceServiceInstance(
                 getProject(),
@@ -116,7 +123,7 @@ public class AggregationValidatorTest extends LightPlatformCodeInsightFixture4Te
 
     @Test
     public void reportsAnIssueWhenTheExpressionIsAnotherFunctionCall() {
-        DQLExpression expression = createExpression("otherFunction()");
+        DQLExpression expression = createExpression("toTimestamp()");
 
         List<DQLParameterValueTypesValidator.ValueIssue> issues = validator.validate(expression, parameter);
 
@@ -199,7 +206,7 @@ public class AggregationValidatorTest extends LightPlatformCodeInsightFixture4Te
 
     @Test
     public void allowsUsingNestedFunctionsToWrapAggregation() {
-        DQLExpression expression = createExpression("otherFunction(max(5))");
+        DQLExpression expression = createExpression("toTimestamp(max(field))");
 
         List<DQLParameterValueTypesValidator.ValueIssue> issues = validator.validate(expression, parameter);
 
@@ -229,10 +236,57 @@ public class AggregationValidatorTest extends LightPlatformCodeInsightFixture4Te
         assertEmpty("Should report no issues, but returned: " + issues, issues);
     }
 
+    @Test
+    public void reportsNoIssuesForDeeplyNestedAggregationFunctions() {
+        DQLExpression expression = createExpression("""
+                duration_minutes = (
+                     (
+                       unixMillisFromTimestamp(coalesce(toTimestamp(takeLast(valid_to)), now()))
+                           - unixMillisFromTimestamp(toTimestamp(takeFirst(valid_from)))
+                     ) / 60000
+                   )
+                """);
+
+        List<DQLParameterValueTypesValidator.ValueIssue> issues = validator.validate(expression, parameter);
+
+        assertEmpty("Should report no issues, but returned: " + issues, issues);
+    }
+
+    @Test
+    public void reportsAnIssueForExpressionWithoutAggregationFunction() {
+        DQLExpression expression = createExpression("""
+                duration_minutes = (
+                     (
+                       unixMillisFromTimestamp(coalesce(toTimestamp((valid_to)), now()))
+                           - unixMillisFromTimestamp(toTimestamp(valid_from))
+                     ) / 60000
+                   )
+                """);
+
+        List<DQLParameterValueTypesValidator.ValueIssue> issues = validator.validate(expression, parameter);
+
+        assertNotEmpty(issues);
+        assertContains("Invalid aggregation value", issues.getFirst().issue());
+    }
+
     private @NotNull DQLExpression createExpression(@NotNull String content) {
         PsiFile file = myFixture.configureByText(DQLExprFileType.INSTANCE, content);
         DQLExpression functionExpression = PsiTreeUtil.findChildOfType(file, DQLExpression.class);
         assertNotNull("The provided DQL fragment does not contain valid expressions: " + content, functionExpression);
         return functionExpression;
+    }
+
+    private void mockFunctions(@NotNull Function... functions) {
+        List<Function> aggregations = new ArrayList<>();
+        for (Function function : functions) {
+            when(serviceMock.getFunctionByName(function.name())).thenReturn(List.of(function));
+            for (Signature signature : function.signatures()) {
+                if (signature.outputs().contains(AGGREGATION_TYPE)) {
+                    aggregations.add(function);
+                }
+            }
+        }
+
+        when(serviceMock.getFunctionsByCategoryAndReturnType(any(), any())).thenReturn(aggregations);
     }
 }

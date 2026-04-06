@@ -23,7 +23,7 @@
    ```
 
 - `summarize` command will now validate if the `aggregation` parameter contains a valid aggregation function.
-- aggregations are now allowed within nested expressions, for example:
+- aggregations are now properly validated within nested expressions, for example:
 
   ```dqlpart
   summarize mbytes = sum(bytes) / 1024 / 1024
@@ -35,8 +35,8 @@
   left[k8s.pod.uid] == right[objectRef][uid]
   ```
 
-- Much better support for the `alias` parameters. It now supports detecting conflicts with assignment expressions and
-  multiple `alias` definitions for the same field.
+- Much better support for the `alias` parameters - added conflicts detection with assignment expressions and multiple
+  `alias` definitions for the same field.
 - Supporting negative values for the DQL time alignment operator, for example: `-1d@d`
 
 ### Bug fixes
