@@ -32,7 +32,7 @@ public class AggregationValidatorTest extends LightPlatformCodeInsightFixture4Te
     private Parameter parameter;
 
     @Before
-    public void createService() {
+    public void setup() {
         parameter = new Parameter(
                 "value",
                 "description",
@@ -286,7 +286,7 @@ public class AggregationValidatorTest extends LightPlatformCodeInsightFixture4Te
                 }
             }
         }
-
+        when(serviceMock.getFunctionCategoriesForParameterTypes(any())).thenReturn(List.of());
         when(serviceMock.getFunctionsByCategoryAndReturnType(any(), any())).thenReturn(aggregations);
     }
 }
