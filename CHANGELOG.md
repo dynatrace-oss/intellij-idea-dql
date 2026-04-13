@@ -28,17 +28,20 @@
      max_oom_kills = max(dt.kubernetes.container.oom_kills, default: 0, rollup: sum)
    }
    ```
+
 - `summarize` command will now validate if the `aggregation` parameter contains a valid aggregation function.
 - aggregations are now properly validated within nested expressions, for example:
 
   ```dqlpart
   summarize mbytes = sum(bytes) / 1024 / 1024
   ```
+
 - `join` conditions now support recursive `[]` accessors for `left` and `right` fields, for example:
 
   ```dqlexpr
   left[k8s.pod.uid] == right[objectRef][uid]
   ```
+
 - Much better support for the `alias` parameters - added conflicts detection with assignment expressions and multiple
   `alias` definitions for the same field.
 - Supporting negative values for the DQL time alignment operator, for example: `-1d@d`
