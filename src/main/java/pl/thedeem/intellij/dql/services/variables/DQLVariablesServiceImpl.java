@@ -2,8 +2,9 @@ package pl.thedeem.intellij.dql.services.variables;
 
 import com.intellij.json.JsonFileType;
 import com.intellij.json.psi.*;
-import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.ThrowableComputable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -143,20 +144,21 @@ public final class DQLVariablesServiceImpl implements DQLVariablesService {
 
     @Override
     public @NotNull List<VariableDefinition> getDefinedVariables(@NotNull PsiFile file) {
-        return ReadAction.nonBlocking(() -> {
-            DQLQuery query = PsiTreeUtil.getChildOfType(file, DQLQuery.class);
-            if (query == null) {
-                return List.<VariableDefinition>of();
-            }
-            List<VariableDefinition> result = new ArrayList<>();
-            for (Map.Entry<String, List<VariableElement>> variable : query.getDefinedVariables().entrySet()) {
-                String name = variable.getKey();
-                if (!variable.getValue().isEmpty()) {
-                    VariableElement element = variable.getValue().getFirst();
-                    result.add(new VariableDefinition(name, element.getValue(), element.getDataType()));
-                }
-            }
-            return Collections.unmodifiableList(result);
-        }).executeSynchronously();
+        return ApplicationManager.getApplication().runReadAction(
+                (ThrowableComputable<List<VariableDefinition>, RuntimeException>) () -> {
+                    DQLQuery query = PsiTreeUtil.getChildOfType(file, DQLQuery.class);
+                    if (query == null) {
+                        return List.of();
+                    }
+                    List<VariableDefinition> result = new ArrayList<>();
+                    for (Map.Entry<String, List<VariableElement>> variable : query.getDefinedVariables().entrySet()) {
+                        String name = variable.getKey();
+                        if (!variable.getValue().isEmpty()) {
+                            VariableElement element = variable.getValue().getFirst();
+                            result.add(new VariableDefinition(name, element.getValue(), element.getDataType()));
+                        }
+                    }
+                    return Collections.unmodifiableList(result);
+                });
     }
 }
