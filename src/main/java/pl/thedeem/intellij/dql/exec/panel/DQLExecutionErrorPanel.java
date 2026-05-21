@@ -5,6 +5,7 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.OnePixelSplitter;
 import com.intellij.ui.components.JBPanel;
+import com.intellij.util.ui.HTMLEditorKitBuilder;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
@@ -159,14 +160,11 @@ public class DQLExecutionErrorPanel extends BorderLayoutPanel implements Disposa
                 return super.getMaximumSize();
             }
         };
-        field.setContentType("text/html");
+        field.setEditorKit(new HTMLEditorKitBuilder().build());
         field.setText("<html><body>" + htmlText + "</body></html>");
         field.setEditable(false);
         field.setFont(JBUI.Fonts.label());
-        Font font = JBUI.Fonts.label();
         HTMLDocument document = (HTMLDocument) field.getDocument();
-        String bodyRule = "body { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "pt; }";
-        document.getStyleSheet().addRule(bodyRule);
         document.getStyleSheet().addRule("p { text-align: center; }");
         field.setOpaque(false);
         field.setFocusable(true);
