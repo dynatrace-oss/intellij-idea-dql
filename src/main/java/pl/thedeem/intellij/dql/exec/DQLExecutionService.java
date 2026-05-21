@@ -319,13 +319,10 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
     }
 
     private @NotNull DQLExecutePayload preparePayload(@NotNull QueryConfiguration configuration, @NotNull Project project) {
-        DQLQueryParserService parser = DQLQueryParserService.getInstance();
+        List<DQLVariablesService.VariableDefinition> variables = loadVariables(configuration, project);
         DQLQueryParserService.ParseResult parsed = WriteCommandAction.runWriteCommandAction(
                 project,
-                (Computable<DQLQueryParserService.ParseResult>) () -> {
-                    List<DQLVariablesService.VariableDefinition> variables = loadVariables(configuration, project);
-                    return parser.getSubstitutedQuery(configuration.query(), project, variables);
-                });
+                (Computable<DQLQueryParserService.ParseResult>) () -> DQLQueryParserService.getInstance().getSubstitutedQuery(configuration.query(), project, variables));
         DQLExecutePayload result = new DQLExecutePayload(parsed.parsed());
         if (!StringUtil.isBlank(configuration.timeframeStart())) {
             try {
