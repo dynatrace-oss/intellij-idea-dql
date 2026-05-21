@@ -14,6 +14,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.pom.Navigatable;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,6 +43,7 @@ import pl.thedeem.intellij.dql.services.query.DQLQueryParserService;
 import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.services.ui.ConnectedTenantsServiceGroup;
 import pl.thedeem.intellij.dql.services.ui.TenantServiceGroup;
+import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
@@ -319,7 +322,10 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         DQLQueryParserService parser = DQLQueryParserService.getInstance();
         DQLQueryParserService.ParseResult parsed = WriteCommandAction.runWriteCommandAction(
                 project,
-                (Computable<DQLQueryParserService.ParseResult>) () -> parser.getSubstitutedQuery(configuration.query(), project, configuration.definedVariables()));
+                (Computable<DQLQueryParserService.ParseResult>) () -> {
+                    List<DQLVariablesService.VariableDefinition> variables = loadVariables(configuration, project);
+                    return parser.getSubstitutedQuery(configuration.query(), project, variables);
+                });
         DQLExecutePayload result = new DQLExecutePayload(parsed.parsed());
         if (!StringUtil.isBlank(configuration.timeframeStart())) {
             try {
@@ -343,6 +349,23 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         result.setMaxResultRecords(configuration.maxResultRecords());
         result.setTimezone(ZoneId.systemDefault().getId());
         return result;
+    }
+
+    private @NotNull List<DQLVariablesService.VariableDefinition> loadVariables(
+            @NotNull QueryConfiguration configuration, @NotNull Project project) {
+        String originalFile = configuration.originalFile();
+        if (originalFile == null) {
+            return List.of();
+        }
+        VirtualFile virtualFile = IntelliJUtils.getProjectRelativeFile(originalFile, project);
+        if (virtualFile == null) {
+            return List.of();
+        }
+        PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
+        if (psiFile == null) {
+            return List.of();
+        }
+        return DQLVariablesService.getInstance(project).getDefinedVariables(psiFile);
     }
 
     private void disposeAndClearContent() {

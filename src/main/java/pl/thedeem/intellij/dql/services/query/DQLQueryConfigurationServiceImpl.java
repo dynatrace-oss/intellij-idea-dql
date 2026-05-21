@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLRunConfiguration;
 import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
-import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
@@ -36,8 +35,6 @@ public class DQLQueryConfigurationServiceImpl implements DQLQueryConfigurationSe
                 configuration.setTenant(null);
             }
         }
-        DQLVariablesService variablesService = DQLVariablesService.getInstance(file.getProject());
-        configuration.setDefinedVariables(variablesService.getDefinedVariables(file));
         return configuration;
     }
 
