@@ -4,7 +4,7 @@
 
 ### Bug fixes
 
-- Ensuring loading DQL variables will not be done on EDT to avoid IDE slowdowns
+- Ensuring loading DQL variables will be now correctly handled on EDT to avoid IDE slowdowns
 - DQL autocompletion will now work correctly for query parts after variables usage
 - Error messages when executing DQL queries will now correctly use IntelliJ theme colors
 - For an empty DQL query execution, buttons for additional view settings will now be hidden, as they are not applicable
