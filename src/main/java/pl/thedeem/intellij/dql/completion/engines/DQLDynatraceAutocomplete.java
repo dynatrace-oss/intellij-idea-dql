@@ -20,9 +20,11 @@ import pl.thedeem.intellij.dql.services.dynatrace.DynatraceRestService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryParserService;
 import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
+import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -39,7 +41,7 @@ public class DQLDynatraceAutocomplete {
             return;
         }
         try {
-            DQLAutocompleteResult autocomplete = getAutocompleteResult(parameters, tenant, configuration);
+            DQLAutocompleteResult autocomplete = getAutocompleteResult(parameters, tenant);
             if (autocomplete == null) {
                 return;
             }
@@ -75,8 +77,7 @@ public class DQLDynatraceAutocomplete {
 
     private static DQLAutocompleteResult getAutocompleteResult(
             @NotNull CompletionParameters parameters,
-            @NotNull DynatraceTenant tenant,
-            @NotNull QueryConfiguration configuration
+            @NotNull DynatraceTenant tenant
     ) throws ExecutionException {
         Project project = parameters.getOriginalFile().getProject();
         return ApplicationUtil.runWithCheckCanceled(
@@ -84,13 +85,24 @@ public class DQLDynatraceAutocomplete {
                     try {
                         ProgressManager.checkCanceled();
                         DQLQueryParserService.ParseResult substitutedQuery = ReadAction.nonBlocking(
-                                () -> DQLQueryParserService.getInstance().getSubstitutedQuery(
-                                        parameters.getOriginalFile(),
-                                        configuration.definedVariables()
-                                )).executeSynchronously();
-                        long offset = substitutedQuery.getOriginalOffset(parameters.getPosition().getTextOffset());
+                                () -> {
+                                    List<DQLVariablesService.VariableDefinition> variables = DQLVariablesService
+                                            .getInstance(project)
+                                            .getDefinedVariables(parameters.getOriginalFile());
+                                    return DQLQueryParserService.getInstance().getSubstitutedQuery(
+                                            parameters.getOriginalFile(),
+                                            variables
+                                    );
+                                }).executeSynchronously();
                         DynatraceRestService rest = DynatraceRestService.getInstance(project);
-                        return rest.withStandardErrorHandling(rest.autocompleteQuery(tenant, substitutedQuery.parsed(), offset), tenant).get();
+                        return rest.withStandardErrorHandling(
+                                rest.autocompleteQuery(
+                                        tenant,
+                                        substitutedQuery.parsed(),
+                                        substitutedQuery.getSubstitutedOffset(parameters.getPosition().getTextOffset())
+                                ),
+                                tenant
+                        ).get();
                     } catch (ExecutionException e) {
                         return null;
                     } catch (InterruptedException e) {

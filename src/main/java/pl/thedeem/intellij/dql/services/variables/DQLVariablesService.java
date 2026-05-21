@@ -4,6 +4,7 @@ import com.intellij.json.psi.JsonValue;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +25,7 @@ public interface DQLVariablesService {
 
     @Nullable String getVariableValue(@Nullable JsonValue value);
 
+    @RequiresReadLock
     @NotNull List<VariableDefinition> getDefinedVariables(@NotNull PsiFile file);
 
     record VariableDefinition(String name, String value, Collection<String> dataTypes) {

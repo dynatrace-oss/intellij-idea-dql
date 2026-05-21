@@ -53,5 +53,24 @@ public interface DQLQueryParserService {
             }
             return Math.max(originalOffset, 0);
         }
+
+        public int getSubstitutedOffset(int originalOffset) {
+            if (originalOffset < 0) {
+                return -1;
+            }
+
+            int substitutedOffset = originalOffset;
+            for (OffsetMapping mapping : offsetMappings) {
+                if (originalOffset < mapping.originalStartOffset()) {
+                    break;
+                }
+                // if cursor is inside the original variable reference, map to end of substituted value
+                if (originalOffset < mapping.originalStartOffset() + mapping.originalLength()) {
+                    return mapping.substitutedStartOffset() + mapping.substitutedLength();
+                }
+                substitutedOffset += (mapping.substitutedLength() - mapping.originalLength());
+            }
+            return Math.max(substitutedOffset, 0);
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.lang.annotation.HighlightSeverity;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
@@ -19,11 +20,13 @@ import pl.thedeem.intellij.dql.services.dynatrace.DynatraceRestService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryParserService;
 import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
+import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 import pl.thedeem.intellij.dqlexpr.DQLExprFileType;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
@@ -46,9 +49,12 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
         DynatraceRestService rest = DynatraceRestService.getInstance(project);
         DynatraceTenant tenant = tenantsService.findTenant(configuration.tenant());
         if (tenant != null) {
+            List<DQLVariablesService.VariableDefinition> variables = ReadAction.compute(
+                    () -> DQLVariablesService.getInstance(project).getDefinedVariables(input.file)
+            );
             DQLQueryParserService.ParseResult parseResult = WriteCommandAction.runWriteCommandAction(
                     project,
-                    (Computable<DQLQueryParserService.ParseResult>) () -> parser.getSubstitutedQuery(input.file, configuration.definedVariables())
+                    (Computable<DQLQueryParserService.ParseResult>) () -> parser.getSubstitutedQuery(input.file, variables)
             );
             try {
                 DQLVerifyResponse response = rest.withStandardErrorHandling(rest.verifyQuery(tenant, parseResult.parsed()), tenant).get();
