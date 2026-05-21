@@ -47,7 +47,7 @@ public class DQLVisualizationPanel extends AbstractChartComponent implements Pan
 
     public @NotNull AnAction[] getToolbarActions() {
         if (this.records.isEmpty()) {
-            return new AnAction[]{};
+            return AnAction.EMPTY_ARRAY;
         }
         return List.of(
                 new ToggleAction(DQLBundle.message("components.visualization.chartTypes.line"), null, DQLIcon.LINE_CHART) {

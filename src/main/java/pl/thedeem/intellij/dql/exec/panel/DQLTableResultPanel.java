@@ -204,7 +204,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
             actions.add(new CustomPopupAction(
                     () -> DQLBundle.message("components.executionResult.actions.changeColumnsList.title"),
                     AllIcons.Nodes.DataColumn,
-                    () -> table == null || result == null ? null : table.createColumnsReorderPopup(result.getColumns())
+                    () -> table.createColumnsReorderPopup(result.getColumns())
             ));
 
             if (sorter != null) {
