@@ -5,6 +5,8 @@
 ### Bug fixes
 
 - Error messages when executing DQL queries will now correctly use IntelliJ theme colors
+- For an empty DQL query execution, buttons for additional view settings will now be hidden, as they are not applicable
+  in such a case
 
 ## [1.8.1] - 2026-04-13
 

@@ -63,7 +63,7 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
         super();
         withBorder(JBUI.Borders.empty()).andTransparent();
         this.result = result;
-        if (result == null || result.getRecords() == null || result.getRecords().isEmpty()) {
+        if (isResultEmpty()) {
             addToCenter(new TransparentScrollPane(new InformationComponent(
                     DQLBundle.message("components.results.table.information.noRecords"),
                     AllIcons.General.Information
@@ -111,6 +111,10 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
         });
 
         return table;
+    }
+
+    private boolean isResultEmpty() {
+        return result == null || result.getRecords() == null || result.getRecords().isEmpty();
     }
 
     private @NotNull JComponent createTableView(@NotNull Project project) {
@@ -196,29 +200,31 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
     @Override
     public @NotNull AnAction[] getToolbarActions() {
         List<AnAction> actions = new ArrayList<>();
-        actions.add(new CustomPopupAction(
-                () -> DQLBundle.message("components.executionResult.actions.changeColumnsList.title"),
-                AllIcons.Nodes.DataColumn,
-                () -> table == null || result == null ? null : table.createColumnsReorderPopup(result.getColumns())
-        ));
-
-        if (sorter != null) {
+        if (!isResultEmpty()) {
             actions.add(new CustomPopupAction(
-                    () -> DQLBundle.message("components.results.table.filter.action.title"),
-                    AllIcons.General.Filter,
-                    this::createFilterTablePopup) {
-                @Override
-                public void update(@NotNull AnActionEvent e) {
-                    super.update(e);
-                    e.getPresentation().setIcon(sorter.isFilterActive() ? DQLIcon.FILTER_ACTIVE : AllIcons.General.Filter);
-                }
+                    () -> DQLBundle.message("components.executionResult.actions.changeColumnsList.title"),
+                    AllIcons.Nodes.DataColumn,
+                    () -> table.createColumnsReorderPopup(result.getColumns())
+            ));
 
-                @Override
-                public @NotNull ActionUpdateThread getActionUpdateThread() {
-                    return ActionUpdateThread.EDT;
-                }
-            });
-            actions.add(new TablePagingActions(sorter));
+            if (sorter != null) {
+                actions.add(new CustomPopupAction(
+                        () -> DQLBundle.message("components.results.table.filter.action.title"),
+                        AllIcons.General.Filter,
+                        this::createFilterTablePopup) {
+                    @Override
+                    public void update(@NotNull AnActionEvent e) {
+                        super.update(e);
+                        e.getPresentation().setIcon(sorter.isFilterActive() ? DQLIcon.FILTER_ACTIVE : AllIcons.General.Filter);
+                    }
+
+                    @Override
+                    public @NotNull ActionUpdateThread getActionUpdateThread() {
+                        return ActionUpdateThread.EDT;
+                    }
+                });
+                actions.add(new TablePagingActions(sorter));
+            }
         }
         return actions.toArray(new AnAction[]{});
     }
