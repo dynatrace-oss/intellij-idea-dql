@@ -5,7 +5,7 @@
 ### Features
 
 - DQL autocompletion now supports bucket names, tabular files, metric keys, and SmartScape entities
-- Updated DQL engine - including support for the `fieldsSnapshot` command.
+- Updated DQL engine - including support for the `fieldsSnapshot` command, and fixed the `search` command parameters.
 
 ### Bug fixes
 

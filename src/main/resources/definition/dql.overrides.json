@@ -1006,6 +1006,111 @@
         }
       ]
     },
+    "dql.command.search": {
+      "parameters": [
+        {
+          "name": "condition",
+          "description": "The condition all records have to fulfill.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none"
+        },
+        {
+          "name": "caseSensitive",
+          "description": "Whether search patterns should be considered as case-sensitive (default: false).",
+          "experimental": true,
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "FALSE",
+          "valueTypes": [
+            "dql.dataType.boolean"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.primitiveValue"
+          ]
+        },
+        {
+          "name": "scope",
+          "description": "Where search patterns should be searched.",
+          "experimental": true,
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "\"all\"",
+          "parameterValueTypes": [
+            "dql.parameterValueType.enum"
+          ],
+          "allowedEnumValues": [
+            "\"all\"",
+            "\"names\"",
+            "\"values\""
+          ]
+        },
+        {
+          "name": "fields",
+          "description": "A field on which to apply search patterns.",
+          "experimental": true,
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForFieldOnRootLevel"
+          ],
+          "excludes": [
+            "skipFields"
+          ]
+        },
+        {
+          "name": "skipFields",
+          "description": "A field to be excluded from the search for search patterns.",
+          "experimental": true,
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForFieldOnRootLevel"
+          ],
+          "excludes": [
+            "fields"
+          ]
+        }
+      ]
+    },
     "dql.command.sort": {
       "parameters": [
         {
