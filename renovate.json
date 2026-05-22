@@ -26,10 +26,11 @@
       ]
     },
     {
-      "matchManagers": [
-        "gradle-wrapper"
+      "description": "Group Gradle wrapper and gradleVersion in gradle.properties into a single PR",
+      "matchDepNames": [
+        "gradle"
       ],
-      "groupName": "Gradle Wrapper updates"
+      "groupName": "Gradle"
     }
   ],
   "customManagers": [
