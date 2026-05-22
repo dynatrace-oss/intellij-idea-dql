@@ -5,7 +5,7 @@ The plugin adds support for
 [Dynatrace Query Language (DQL)](https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-query-language)
 and
 [Dynatrace Pattern Language (DPL)](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail/dynatrace-pattern-language)
-in IntelliJ IDEA.
+in most JetBrains IDEs.
 
 > **Note**
 > This product is a community-driven open-source plugin, helping users write and execute DQL & DPL statements within
