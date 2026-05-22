@@ -262,8 +262,7 @@
       "name": "ld",
       "output": "string",
       "aliases": [
-        "ldata",
-        "string"
+        "ldata"
       ],
       "quantifier": {
         "defaultMin": 1,
@@ -380,6 +379,28 @@
         "defaultMax": 4096
       },
       "description": "Matches string enclosed between double-quote characters (ASCII 0x22). Any double quote inside the string must be escaped by double-quote character (CSV style).",
+      "configuration": {
+        "locale": {
+          "type": "string",
+          "name": "locale",
+          "defaultValue": "English",
+          "description": "IETF BCP 47 language tag enclosed in single or double quotes (see the list in https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). The default locale is English"
+        },
+        "charset": {
+          "type": "string",
+          "name": "charset",
+          "description": "character set name enclosed in single or double quotes (for example charset=\"ISO-8859-1\")"
+        }
+      }
+    },
+    "string": {
+      "name": "string",
+      "output": "string",
+      "quantifier": {
+        "defaultMin": 1,
+        "defaultMax": 4096
+      },
+      "description": "Matches single or double quoted strings or character groups (excluding the first 32 symbols of the ASCII table).",
       "configuration": {
         "locale": {
           "type": "string",
