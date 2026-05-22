@@ -8,6 +8,11 @@ import javax.swing.*;
 
 public interface DQLIcon extends Icons {
     Icon DQL_FIELD = AllIcons.Nodes.Field;
+    Icon METRIC = AllIcons.Nodes.AbstractMethod;
+    Icon SMARTSCAPE = AllIcons.Nodes.Include;
+    Icon TABULAR_FILE = AllIcons.Nodes.DataTables;
+    Icon DATA_OBJECT = AllIcons.Nodes.AnonymousClass;
+    Icon BUCKET = AllIcons.Nodes.Artifact;
     Icon DQL_OPERATOR = AllIcons.Nodes.Lambda;
     Icon DQL_FUNCTION = AllIcons.Nodes.Function;
     Icon DQL_QUERY_COMMAND = AllIcons.Nodes.Class;

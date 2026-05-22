@@ -33,6 +33,12 @@ public interface DQLPsiPatterns {
     ElementPattern<PsiElement> SUGGEST_FIELD_NAMES = PlatformPatterns.or(
             psiElement().withParent(DQLFieldName.class)
     );
+    ElementPattern<PsiElement> SUGGEST_STRING_VALUES = PlatformPatterns.or(
+            psiElement().withParent(DQLStringContentElement.class)
+    );
+    ElementPattern<PsiElement> SUGGEST_DT_AUTOCOMPLETE = PlatformPatterns.or(
+            SUGGEST_FIELD_NAMES, SUGGEST_STRING_VALUES
+    );
     ElementPattern<PsiElement> SUGGEST_FUNCTION_PARAMETERS = psiElement().withSuperParent(2, DQLFunctionExpression.class);
 
     PsiElementPattern.Capture<PsiElement> SIBLING_OF_FIELD = psiElement()

@@ -22,6 +22,11 @@ public class AutocompleteUtils {
     public static final String FUNCTION = DQLBundle.message("autocomplete.types.function");
     public static final String BOOLEAN = DQLBundle.message("autocomplete.types.boolean");
     public static final String STATIC = DQLBundle.message("autocomplete.types.static");
+    public static final String BUCKET = DQLBundle.message("autocomplete.types.bucket");
+    public static final String SMARTSCAPE = DQLBundle.message("autocomplete.types.smartscape");
+    public static final String METRIC = DQLBundle.message("autocomplete.types.metric");
+    public static final String DATA_OBJECT = DQLBundle.message("autocomplete.types.dataObject");
+    public static final String FILE = DQLBundle.message("autocomplete.types.fileName");
     public static final String EXPRESSION = DQLBundle.message("autocomplete.types.expression");
     public static final String DATA_REFERENCE = DQLBundle.message("autocomplete.types.definedField");
     public static final String VARIABLE = DQLBundle.message("autocomplete.types.variable");

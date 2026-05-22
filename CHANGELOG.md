@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Features
+
+- DQL autocompletion now supports bucket names, tabular files, metric keys, and SmartScape entities
+
 ### Bug fixes
 
 - Ensuring loading DQL variables will be now correctly handled on EDT to avoid IDE slowdowns

@@ -2,12 +2,12 @@ package pl.thedeem.intellij.dql.completion;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementWeigher;
-import pl.thedeem.intellij.common.completion.CompletionUtils;
-import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.completion.CompletionUtils;
+import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 
-import java.util.List;
+import java.util.Set;
 
 public class DQLCompletionWeigher extends LookupElementWeigher {
 
@@ -18,7 +18,15 @@ public class DQLCompletionWeigher extends LookupElementWeigher {
     public @Nullable Comparable<?> weigh(@NotNull LookupElement element) {
         String userData = element.getUserData(CompletionUtils.LOOKUP_ELEMENT_KIND_KEY);
         if (userData != null) {
-            if (List.of(AutocompleteUtils.STATIC, AutocompleteUtils.BOOLEAN, AutocompleteUtils.QUERY_START).contains(userData)) {
+            if (Set.of(
+                    AutocompleteUtils.STATIC,
+                    AutocompleteUtils.BOOLEAN,
+                    AutocompleteUtils.QUERY_START,
+                    AutocompleteUtils.FILE,
+                    AutocompleteUtils.SMARTSCAPE,
+                    AutocompleteUtils.METRIC,
+                    AutocompleteUtils.BUCKET
+            ).contains(userData)) {
                 return 0;
             }
             if (AutocompleteUtils.COMMAND_PARAMETER.equals(userData)) {
