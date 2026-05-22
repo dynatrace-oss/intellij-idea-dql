@@ -9,8 +9,6 @@ plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.intelliJPlatform)
     alias(libs.plugins.changelog)
-    alias(libs.plugins.qodana)
-    alias(libs.plugins.kover)
     alias(libs.plugins.grammarkit)
 }
 
@@ -148,16 +146,6 @@ grammarKit {
             pathToPsiRoot.set("pl/thedeem/intellij/dql/psi")
             purgeOldFiles.set(true)
             dependsOn(named("generateDplParser"))
-        }
-    }
-}
-
-kover {
-    reports {
-        total {
-            xml {
-                onCheck = true
-            }
         }
     }
 }
