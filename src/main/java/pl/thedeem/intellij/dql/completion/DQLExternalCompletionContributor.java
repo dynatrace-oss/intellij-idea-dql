@@ -12,7 +12,7 @@ import pl.thedeem.intellij.dqlexpr.DQLExprFileType;
 public class DQLExternalCompletionContributor extends CompletionContributor {
 
     public DQLExternalCompletionContributor() {
-        extend(CompletionType.BASIC, DQLPsiPatterns.SUGGEST_FIELD_NAMES,
+        extend(CompletionType.BASIC, DQLPsiPatterns.SUGGEST_DT_AUTOCOMPLETE,
                 new CompletionProvider<>() {
                     public void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet resultSet) {
                         PsiFile file = parameters.getOriginalFile();
