@@ -1,160 +1,62 @@
 # intellij-idea-dql
 
-This repository contains the plugin adding support for
+<!-- Plugin description -->
+The plugin adds support for
 [Dynatrace Query Language (DQL)](https://docs.dynatrace.com/docs/discover-dynatrace/references/dynatrace-query-language)
+and
+[Dynatrace Pattern Language (DPL)](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail/dynatrace-pattern-language)
 in IntelliJ IDEA.
 
-<!-- Plugin description -->
 > **Note**
-> This product is a community-driven open-source plugin, helping users write and execute DQL statements within JetBrains
-> IDEs.
+> This product is a community-driven open-source plugin, helping users write and execute DQL & DPL statements within
+> JetBrains IDEs.
 > It's not officially supported by Dynatrace, please report any errors directly
 > via [GitHub Issues](https://github.com/dynatrace-oss/intellij-idea-dql/issues).
 
-This is an *unofficial* plugin offering tools for effective writing of DQL files. It offers similar functionality
-to the Dynatrace Notebooks, but can work fully locally.
-
-In the **full-local mode**, the plugin does not know any field-related context: it does not know which fields
-are available in `logs` or metrics, so it **cannot validate the whole query** as well as Dynatrace Notebooks can.
-
-When **a connection to the Dynatrace tenant is configured**, the plugin can execute DQL scripts and show the results.
-It can also use the connection to show any kind of validation offered by Dynatrace Notebooks.
-
-The plugin **does not aim to replace Dynatrace Notebooks** — it should still be your primary choice when writing DQLs!
-The main goal is to provide a good enough environment to work within IntelliJ when storing your DQLs in Git.
-In the local-only mode, it does not have nearly as many validations as the real notebook environment;
-so valid DQL queries written using the plugin can still be invalid after executing them on Notebooks
-(although errors should be rather minor).
-
 ## Features
+
+The list of features provided by this plugin can be divided into two categories: **fully local features** that do not
+require any external connection, and **remote features** that require an authenticated connection to a Dynatrace tenant.
+
+Local features are always enabled, and you can optionally configure a connection to a Dynatrace tenant to improve the
+integration.
+
+You can find more insights on the features in the [Wiki](https://github.com/dynatrace-oss/intellij-idea-dql/wiki).
 
 ### Local features
 
 Local features are covered completely by the plugin and do not require any kind of connection to the Dynatrace tenant.
-The features may not support all functionalities supported by Dynatrace Notebooks.
+This also means that not all functionalities provided by Dynatrace services and languages are supported. For example,
+without the connection the plugin is not able to provide any information about the data stored in the
+tenant, so no validations and autocompletion for field identifiers can be performed.
 
-#### DQL customization
+The list of local features includes:
 
-The plugin offers advanced and *customizable syntax highlighting* — within the code style settings page you can change
-most of the colors used for DQL tokens and keywords.
-
-The plugin also provides a lot of code style settings related to indents, spaces, and line breaks between DQL tokens.
-You will now be able to ensure a common style for all `.dql` files stored in your repository.
-
-As a bonus, the plugin also adds support for IntelliJ *inlays* for unnamed parameters, so it is now much easier to
-see which values belong to which parameter.
-
-#### Detecting references
-
-The plugin uses IntelliJ references to provide relations between **DQL fields, functions, statements,
-and parameters**. You can find usages of a specific field and see where in the query the value was set.
-There is also **support for code refactoring**, which makes it straightforward to — for example —
-change a field name everywhere at once.
-
-#### Code completion
-
-Depending on the context of the DQL query, the completion contributor will show you available
-options. It works with:
-
-- **DQL Commands**, with distinction for query-starting commands and operations on the data set.
-- **Statement parameters**, with automatically fulfilling their default values.
-- **DQL fields** — You'll see all fields used in the query, and if the field's value was overwritten.
-  It will also show the value within the completion tooltip.
-- **DQL functions and their parameters**, with automatically filtering out functions that do not provide a proper
-  return value for the current context.
-- **DQL subqueries**, for commands offering to join functionality.
-
-#### DQL functions support
-
-The plugin contains the list of **all supported DQL functions**.
-
-Unfortunately, because Dynatrace does not offer any REST API returning the list, it is scraped from the documentation
-page, making it possible to not have the latest-available set of functions. In case of using such an unknown function,
-the plugin will produce a weak warning but ignore its return values and parameters set.
-
-#### Contextual issues detection
-
-Apart from just validating the DQL file syntax, the plugin is also automatically detecting contextual
-issues and — where possible — offering a quick fix to resolve them. It can detect:
-
-- Invalid commands
-- Invalid command parameters: invalid names and values, missing and duplicated parameters, conflicts with other
-  parameters.
-- Invalid parameters for functions (also recursively checking if the function return value matches the required
-  parameter type)
-- Other smaller issues like static values being used in expressions or not-constant values provided where they are
-  required
-
-#### Documentation tooltips
-
-You can hover over query parts to see more information about the element.
-
-- DQL command documentation: description, list of available parameters
-- DQL functions documentation: description, syntax, list of available parameters, return values
-- Parameters documentation (for statements and functions): description, possible values
-- Context information for other elements, like DQL fields, variables, boolean types, etc.
-
-The plugin also implements structure with navbar for IntelliJ, so it's straightforward to track the context of the
-query.
-
-#### Partial DQL support
-
-If you store your DQLs in smaller chunks (and dynamically stitch them together), the query can report many errors due
-to the syntax not being properly validated.
-
-For such cases, you can rename your file to `*.dqlpart` (for DQL queries split into smaller command sets)
-or `*.dqlexpr` for files containing only DQL expressions (like functions or parameter definitions).
-
-#### DQL variables support
-
-Dynatrace Dashboards allow the user to specify global variables that can be injected into DQL queries.
-Unfortunately, those variable expressions are not supported outside Dynatrace Dashboards, making the written DQL query
-always fail with the `$` usage error. Because the Dynatrace REST API can only return a single error, this would mean
-that expressions defined after the variable would not be reported as errors, rendering the validation very limited.
-
-As a solution for the problem, the plugin allows specifying variable placeholders in a special file,
-`dql-variables.json`. If the placeholder for the variable was defined, it will be replaced with it before sending the
-DQL query to the tenant.
+- Highly customizable syntax highlighting and code style formatting
+- Detecting references between DQL fields, functions, statements, and parameters
+- Code completion for commands, fields, functions, and parameters
+- Hover documentation for commands, fields, functions, and parameters
+- Contextual issues detection, with quick fixes where possible
+- Partial DQL support for files containing only parts of the query (both smaller fragments & just expressions)
+- Support for DQL variables defined in Dynatrace Dashboards
+- Nested languages support (DPL inside DQL commands and functions, JSON for `data` command, and others)
 
 ### Remote features
 
-Apart from local features, the plugin also allows to specify a connection to a set of Dynatrace tenants.
-After the connection to the tenant is added, the plugin uses
-[official REST API](https://developer.dynatrace.com/develop/sdks/client-query/) to validate, execute and autocomplete
-DQLs.
+After connecting the plugin to a Dynatrace tenant, you can benefit from a wide range of features. You can sign in to
+multiple tenants and easily switch between them, so you can work with different environments without leaving the
+IDE.
 
-You can connect to the Dynatrace tenant in IntelliJ settings (`Tools` -> `Dynatrace Query Language` -> `Tenants`).
+Supported authentication methods include simple browser OAuth flow and API tokens.
 
-#### DQL execution on a specific tenant
+The list of remote features includes:
 
-The plugin adds support for executing DQL queries on a specific tenants from either DQL files, Run Configurations or
-a query console.
-The results of the query execution will be presented as a table, allowing you to quickly verify if the written query
-returns the correct data, or a JSON response returned by the tenant.
-
-#### Live validations
-
-If enabled, the plugin can execute external validations using Dynatrace REST API, showing you any kind of errors
-Dynatrace Notebooks could.
-
-By default, the feature is disabled, as it requires an authenticated connection to a Dynatrace tenant, which can be done
-in the plugin's settings.
-
-#### Live autocompletion
-
-If enabled, the plugin will request the list of supported data field identifiers and data objects, using the specified
-tenant's REST API.
-
-By default, the feature is disabled, as it requires an authenticated connection to a Dynatrace tenant, which can be done
-in the plugin's settings.
-
-### DPL support
-
-The plugin introduces similar functionality for
-the [Dynatrace Pattern Language](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail/dynatrace-pattern-language),
-delivering syntax highlighting, code style formatting, autocompletion, on-hover documentation, and a wide range of
-inspections and intentions. These features are available for both `.dpl` files and within the DQL commands and functions
-using DPL patterns.
+- DQL execution on a specific tenant, with results presented as a table, JSON response, or simple visualization
+- Live validations, reporting any kind of errors Dynatrace Notebooks would show
+- Live autocompletion for field identifiers and data objects supported by the tenant
+- Run configurations allowing to save parameters for DQL execution and run them with a single click
+- DQL query console, allowing to execute DQL statements without the need to create a file for them
+- DQL execution toolbar & gutter icons, allowing to easily provide parameters and execute smaller parts of the query
 
 ## More information
 
