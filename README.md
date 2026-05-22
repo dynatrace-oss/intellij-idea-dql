@@ -15,7 +15,7 @@ in IntelliJ IDEA.
 
 ## Features
 
-The list of features provided by this extension can be divided into two categories: **fully local features** that do not
+The list of features provided by this plugin can be divided into two categories: **fully local features** that do not
 require any external connection, and **remote features** that require an authenticated connection to a Dynatrace tenant.
 
 Local features are always enabled, and you can optionally configure a connection to a Dynatrace tenant to improve the
@@ -27,7 +27,7 @@ You can find more insights on the features in the [Wiki](https://github.com/dyna
 
 Local features are covered completely by the plugin and do not require any kind of connection to the Dynatrace tenant.
 This also means that not all functionalities provided by Dynatrace services and languages are supported. For example,
-without the connection the extension is not able to provide any information about the data stored in the
+without the connection the plugin is not able to provide any information about the data stored in the
 tenant, so no validations and autocompletion for field identifiers can be performed.
 
 The list of local features includes:
@@ -39,12 +39,12 @@ The list of local features includes:
 - Contextual issues detection, with quick fixes where possible
 - Partial DQL support for files containing only parts of the query (both smaller fragments & just expressions)
 - Support for DQL variables defined in Dynatrace Dashboards
-- Nested languages support (DPL inside DQL commands & functions, JSON etc.)
+- Nested languages support (DPL inside DQL commands and functions, JSON for `data` command, and others)
 
 ### Remote features
 
-After connecting the plugin to a Dynatrace tenant, you can benefit from a wide range of features. You can authorize
-into multiple tenants and easily switch between them, so you can work with different environments without leaving the
+After connecting the plugin to a Dynatrace tenant, you can benefit from a wide range of features. You can sign in to
+multiple tenants and easily switch between them, so you can work with different environments without leaving the
 IDE.
 
 Supported authentication methods include simple browser OAuth flow and API tokens.
