@@ -124,7 +124,10 @@ public class DQLDynatraceAutocomplete {
                     null
             );
             // Dynatrace returns one path segment instead of the whole file path (which IDE normally expects).
-            String typedPrefix = suggestion.getSuggestion().substring(0, Math.toIntExact(suggestion.alreadyTypedCharacters));
+            String fullSuggestion = suggestion.getSuggestion();
+            Long alreadyTyped = suggestion.getAlreadyTypedCharacters();
+            int prefixLength = alreadyTyped == null ? 0 : Math.clamp(alreadyTyped, 0, fullSuggestion.length());
+            String typedPrefix = fullSuggestion.substring(0, prefixLength);
             result.withPrefixMatcher(new PlainPrefixMatcher(typedPrefix, true)).addElement(element);
             return;
         }

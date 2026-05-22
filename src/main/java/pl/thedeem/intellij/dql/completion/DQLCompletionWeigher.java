@@ -10,6 +10,15 @@ import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
 import java.util.Set;
 
 public class DQLCompletionWeigher extends LookupElementWeigher {
+    private static final Set<String> STATIC_SUGGESTION_TYPES = Set.of(
+            AutocompleteUtils.STATIC,
+            AutocompleteUtils.BOOLEAN,
+            AutocompleteUtils.QUERY_START,
+            AutocompleteUtils.FILE,
+            AutocompleteUtils.SMARTSCAPE,
+            AutocompleteUtils.METRIC,
+            AutocompleteUtils.BUCKET
+    );
 
     protected DQLCompletionWeigher() {
         super(DynatraceQueryLanguage.DQL_ID);
@@ -18,15 +27,7 @@ public class DQLCompletionWeigher extends LookupElementWeigher {
     public @Nullable Comparable<?> weigh(@NotNull LookupElement element) {
         String userData = element.getUserData(CompletionUtils.LOOKUP_ELEMENT_KIND_KEY);
         if (userData != null) {
-            if (Set.of(
-                    AutocompleteUtils.STATIC,
-                    AutocompleteUtils.BOOLEAN,
-                    AutocompleteUtils.QUERY_START,
-                    AutocompleteUtils.FILE,
-                    AutocompleteUtils.SMARTSCAPE,
-                    AutocompleteUtils.METRIC,
-                    AutocompleteUtils.BUCKET
-            ).contains(userData)) {
+            if (STATIC_SUGGESTION_TYPES.contains(userData)) {
                 return 0;
             }
             if (AutocompleteUtils.COMMAND_PARAMETER.equals(userData)) {
