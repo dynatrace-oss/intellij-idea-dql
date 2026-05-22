@@ -3,6 +3,7 @@
     "data",
     "describe",
     "fetch",
+    "fieldsSnapshot",
     "load",
     "metrics",
     "smartscapeEdges",
@@ -382,6 +383,55 @@
           ],
           "parameterValueTypes": [
             "dql.parameterValueType.primitiveValue"
+          ]
+        }
+      ]
+    },
+    "dql.command.fieldsSnapshot": {
+      "parameters": [
+        {
+          "name": "dataObject",
+          "description": "The data object for which to load the fields snapshot.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none"
+        },
+        {
+          "name": "by",
+          "description": "A field name from the result schema to group by.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForFieldOnRootLevel"
+          ]
+        },
+        {
+          "name": "bucket",
+          "description": "A bucket for which to retrieve fields.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "parameterValueTypes": [
+            "dql.parameterValueType.bucket"
           ]
         }
       ]

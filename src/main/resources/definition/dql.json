@@ -889,6 +889,58 @@
         }
       ]
     },
+    "dql.command.fieldsSnapshot": {
+      "name": "fieldsSnapshot",
+      "description": "Loads a fields snapshot for a data source.",
+      "synopsis": "fieldsSnapshot dataObject [, by: { [field, …] }] [, bucket: name, …]",
+      "parameters": [
+        {
+          "name": "dataObject",
+          "description": "The data object for which to load the fields snapshot.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none"
+        },
+        {
+          "name": "field",
+          "description": "A field name from the result schema to group by.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.identifierForFieldOnRootLevel"
+          ]
+        },
+        {
+          "name": "name",
+          "description": "A bucket for which to retrieve fields.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "parameterValueTypes": [
+            "dql.parameterValueType.bucket"
+          ]
+        }
+      ]
+    },
     "dql.command.fieldsSummary": {
       "name": "fieldsSummary",
       "description": "Calculates the facets for the listed fields.",
@@ -9596,7 +9648,7 @@
       "name": "matchesPhrase",
       "description": "Matches a phrase against the input string expression using token matchers.",
       "category": "dql.functionCategory.string",
-      "synopsis": "matchesPhrase(expression, phrase [, caseSensitive])",
+      "synopsis": "matchesPhrase(expression, phrase [, caseSensitive] [, wildcard])",
       "signatures": [
         {
           "parameters": [
@@ -9644,7 +9696,6 @@
             {
               "name": "wildcard",
               "description": "A single character that will be used as wildcard (default: \"*\").",
-              "experimental": true,
               "required": false,
               "requiresName": true,
               "assignmentSupport": "none",
@@ -9709,7 +9760,7 @@
       "name": "matchesValue",
       "description": "Matches a value against the input expression using token matchers.",
       "category": "dql.functionCategory.string",
-      "synopsis": "matchesValue([caseSensitive ,] expression, value, …)",
+      "synopsis": "matchesValue([caseSensitive] [, wildcard ,] expression, value, …)",
       "signatures": [
         {
           "parameters": [
@@ -9730,7 +9781,6 @@
             {
               "name": "wildcard",
               "description": "A single character that will be used as wildcard (default: \"*\").",
-              "experimental": true,
               "required": false,
               "requiresName": true,
               "assignmentSupport": "none",
@@ -10429,7 +10479,7 @@
             },
             {
               "name": "value",
-              "description": "The percentile to compute, between 0 and 100.",
+              "description": "The value for which to retrieve the percentile.",
               "required": true,
               "requiresName": false,
               "assignmentSupport": "none",
