@@ -4,7 +4,6 @@ import com.intellij.injected.editor.DocumentWindow;
 import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.markup.*;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.JBPopupListener;
 import com.intellij.openapi.ui.popup.LightweightWindowEvent;
@@ -38,9 +37,9 @@ public class DQLQuerySelectorServiceImpl implements DQLQuerySelectorService {
     }
 
     @Override
-    public @NotNull String getQueryText(@NotNull DQLQuery query, @NotNull Project project) {
+    public @NotNull String getQueryText(@NotNull DQLQuery query) {
         PsiFile file = query.getContainingFile();
-        InjectedLanguageManager injector = InjectedLanguageManager.getInstance(project);
+        InjectedLanguageManager injector = InjectedLanguageManager.getInstance(file.getProject());
         if (!injector.isInjectedFragment(file)) {
             return Objects.requireNonNullElse(query.getText(), "");
         }

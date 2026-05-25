@@ -109,7 +109,7 @@ public class DQLFileQueryExecutionLineMarkerProvider extends AbstractDQLQueryLin
                         .add(CommonDataKeys.PSI_FILE, InjectedLanguageManager.getInstance(marked.getProject()).getTopLevelFile(marked))
                         .add(CommonDataKeys.PSI_ELEMENT, marked)
                         .add(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, configuration)
-                        .add(ExecuteDQLQueryAction.DQL_QUERY, DQLQuerySelectorService.getInstance().getQueryText(query, marked.getProject()))
+                        .add(ExecuteDQLQueryAction.DQL_QUERY, DQLQuerySelectorService.getInstance().getQueryText(query))
                         .build();
                 return original.withDataContext(customContext);
             }
