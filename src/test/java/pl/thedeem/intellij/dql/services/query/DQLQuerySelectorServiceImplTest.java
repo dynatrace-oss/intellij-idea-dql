@@ -6,12 +6,15 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.ui.popup.IPopupChooserBuilder;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.testFramework.ServiceContainerUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixture4TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import pl.thedeem.intellij.dql.DQLFileType;
+import pl.thedeem.intellij.dql.psi.DQLQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -169,6 +172,46 @@ public class DQLQuerySelectorServiceImplTest extends LightPlatformCodeInsightFix
             assertEquals("data record(field = \"value2\") | filter true", query);
             verify(factoryMock, atMostOnce()).createPopupChooserBuilder(any(List.class));
         });
+    }
+
+    @Test
+    public void shouldReturnQueryTextForDQLQueryInPlainDqlFile() {
+        PsiFile file = myFixture.configureByText(DQLFileType.INSTANCE, "fetch logs | filter true");
+        DQLQuery query = PsiTreeUtil.getChildOfType(file, DQLQuery.class);
+
+        assertNotNull(query);
+        assertEquals("fetch logs | filter true", service.getQueryText(query));
+    }
+
+    @Test
+    public void shouldReturnUnescapedQueryTextForDQLQueryInInjectedFragment() {
+        PsiFile file = myFixture.configureByText(JavaFileType.INSTANCE, /* language=Java */ """
+                public class TextClass {
+                    public static String printInjectedFragment() {
+                        System.out.println(/* language=DQL */ "<caret>data record(field = \\"value\\")");
+                    }
+                }
+                """);
+        DQLQuery query = PsiTreeUtil.getChildOfType(file, DQLQuery.class);
+
+        assertNotNull(query);
+        assertEquals("data record(field = \"value\")", service.getQueryText(query));
+    }
+
+    @Test
+    public void shouldReturnUnescapedSubqueryTextForNestedDQLQueryInInjectedFragment() {
+        PsiFile file = myFixture.configureByText(JavaFileType.INSTANCE, /* language=Java */ """
+                public class TextClass {
+                    public static String printInjectedFragment() {
+                        System.out.println(/* language=DQL */ "fetch logs | append [<caret>data record(field = \\"value2\\") | filter true]");
+                    }
+                }
+                """);
+        PsiElement caretElement = file.findElementAt(myFixture.getCaretOffset());
+        DQLQuery subquery = PsiTreeUtil.getParentOfType(caretElement, DQLQuery.class);
+
+        assertNotNull(subquery);
+        assertEquals("data record(field = \"value2\") | filter true", service.getQueryText(subquery));
     }
 
     @Test

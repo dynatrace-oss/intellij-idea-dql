@@ -8,8 +8,10 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.JBPopupListener;
 import com.intellij.openapi.ui.popup.LightweightWindowEvent;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.LiteralTextEscaper;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiLanguageInjectionHost;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.JBColor;
@@ -28,8 +30,21 @@ public class DQLQuerySelectorServiceImpl implements DQLQuerySelectorService {
     @Override
     public @NotNull String getQueryText(@NotNull PsiFile file) {
         InjectedLanguageManager injector = InjectedLanguageManager.getInstance(file.getProject());
-        String content = injector.isInjectedFragment(file) ? injector.getUnescapedText(file) : file.getText();
-        return Objects.requireNonNullElse(content, "");
+        if (!injector.isInjectedFragment(file)) {
+            return Objects.requireNonNullElse(file.getText(), "");
+        }
+        return decodeShreds(file, null);
+    }
+
+    @Override
+    public @NotNull String getQueryText(@NotNull DQLQuery query) {
+        PsiFile file = query.getContainingFile();
+        InjectedLanguageManager injector = InjectedLanguageManager.getInstance(file.getProject());
+        if (!injector.isInjectedFragment(file)) {
+            return Objects.requireNonNullElse(query.getText(), "");
+        }
+        TextRange hostRange = injector.injectedToHost(file, query.getTextRange());
+        return decodeShreds(file, hostRange);
     }
 
     @Override
@@ -44,27 +59,70 @@ public class DQLQuerySelectorServiceImpl implements DQLQuerySelectorService {
         if (contexts.isEmpty()) {
             consumer.accept(getQueryText(file));
         } else {
-            createSelectionPopup(editor, contexts, range -> consumer.accept(getQueryText(file, editor, range)));
+            createSelectionPopup(editor, contexts, hostRange -> consumer.accept(getQueryText(file, hostRange)));
         }
     }
 
-    private @NotNull String getQueryText(@NotNull PsiFile file, @NotNull Editor editor, @NotNull TextRange range) {
+    private @NotNull String getQueryText(@NotNull PsiFile file, @NotNull TextRange hostRange) {
         InjectedLanguageManager injector = InjectedLanguageManager.getInstance(file.getProject());
         if (!injector.isInjectedFragment(file)) {
-            return file.getFileDocument().getText(range);
+            return file.getFileDocument().getText(hostRange);
+        }
+        return decodeShreds(file, hostRange);
+    }
+
+    private @NotNull String decodeShreds(@NotNull PsiFile injectedFile, @Nullable TextRange hostRange) {
+        InjectedLanguageManager injector = InjectedLanguageManager.getInstance(injectedFile.getProject());
+        PsiLanguageInjectionHost rootHost = injector.getInjectionHost(injectedFile);
+        if (rootHost == null) {
+            return Objects.requireNonNullElse(injector.getUnescapedText(injectedFile), "");
+        }
+        StringBuilder out = new StringBuilder();
+        injector.enumerate(rootHost, (injectedPsi, places) -> {
+            if (!injectedFile.equals(injectedPsi)) {
+                return;
+            }
+            for (PsiLanguageInjectionHost.Shred shred : places) {
+                appendDecodedShred(out, shred, hostRange);
+            }
+        });
+        return out.toString();
+    }
+
+    private static void appendDecodedShred(@NotNull StringBuilder out, @NotNull PsiLanguageInjectionHost.Shred shred, @Nullable TextRange hostRange) {
+        PsiLanguageInjectionHost host = shred.getHost();
+        if (host == null) {
+            return;
+        }
+        TextRange rangeInHost = shred.getRangeInsideHost();
+        int hostStartInFile = host.getTextRange().getStartOffset();
+
+        TextRange effectiveRangeInHost;
+        if (hostRange != null) {
+            TextRange shredInFile = rangeInHost.shiftRight(hostStartInFile);
+            TextRange clipped = shredInFile.intersection(hostRange);
+            if (clipped == null) {
+                return;
+            }
+            effectiveRangeInHost = new TextRange(
+                    clipped.getStartOffset() - hostStartInFile,
+                    clipped.getEndOffset() - hostStartInFile
+            );
+        } else {
+            effectiveRangeInHost = rangeInHost;
+            out.append(shred.getPrefix());
         }
 
-        int injectedStart = range.getStartOffset();
-        int injectedEnd = range.getEndOffset();
-        if (file.getViewProvider().getDocument() instanceof DocumentWindow window && !(editor.getDocument() instanceof DocumentWindow)) {
-            injectedStart = window.hostToInjected(range.getStartOffset());
-            injectedEnd = window.hostToInjected(range.getEndOffset());
+        if (!effectiveRangeInHost.isEmpty()) {
+            LiteralTextEscaper<? extends PsiLanguageInjectionHost> escaper = host.createLiteralTextEscaper();
+            if (!escaper.decode(effectiveRangeInHost, out)) {
+                out.append(effectiveRangeInHost.substring(host.getText()));
+            }
         }
-        int unescapedStart = injector.mapInjectedOffsetToUnescaped(file, injectedStart);
-        int unescapedEnd = injector.mapInjectedOffsetToUnescaped(file, injectedEnd);
 
-        String fullUnescaped = injector.getUnescapedText(file);
-        return fullUnescaped.substring(unescapedStart, unescapedEnd);
+        if (hostRange == null) {
+            out.append(shred.getSuffix());
+        }
     }
 
     private @NotNull List<SelectionContext> getQueryFromSubqueries(@NotNull PsiFile file, @NotNull Editor editor) {
@@ -83,7 +141,7 @@ public class DQLQuerySelectorServiceImpl implements DQLQuerySelectorService {
             DQLQuery parent = PsiTreeUtil.getParentOfType(element, DQLQuery.class);
             if (parent != null) {
                 queries.add(new SelectionContext(
-                        getMappedTextRange(file, parent.getTextRange(), editor),
+                        toHostRange(file, parent.getTextRange()),
                         DQLBundle.message("services.executeDQL.selectQuery.subquery", DQLBundle.shorten(parent.getText()))
                 ));
             }
@@ -94,7 +152,7 @@ public class DQLQuerySelectorServiceImpl implements DQLQuerySelectorService {
         }
         queries.removeLast();
         queries.add(new SelectionContext(
-                getMappedTextRange(file, file.getTextRange(), editor),
+                toHostRange(file, file.getTextRange()),
                 DQLBundle.message("services.executeDQL.selectQuery.wholeFile")
         ));
 
@@ -102,13 +160,17 @@ public class DQLQuerySelectorServiceImpl implements DQLQuerySelectorService {
     }
 
     private @NotNull List<SelectionContext> getQueryFromSelection(@NotNull PsiFile file, @NotNull Editor editor, int start, int end) {
+        TextRange editorRange = new TextRange(start, end);
+        TextRange selectionHostRange = editor.getDocument() instanceof DocumentWindow documentWindow
+                ? documentWindow.injectedToHost(editorRange)
+                : editorRange;
         List<SelectionContext> queries = new ArrayList<>(2);
         queries.add(new SelectionContext(
-                new TextRange(start, end),
+                selectionHostRange,
                 DQLBundle.message("services.executeDQL.selectQuery.selectedText")
         ));
         queries.add(new SelectionContext(
-                getMappedTextRange(file, file.getTextRange(), editor),
+                toHostRange(file, file.getTextRange()),
                 DQLBundle.message("services.executeDQL.selectQuery.wholeFile")
         ));
         return queries;
@@ -119,6 +181,31 @@ public class DQLQuerySelectorServiceImpl implements DQLQuerySelectorService {
         TextAttributes attributes = new TextAttributes();
         attributes.setEffectType(EffectType.BOXED);
         attributes.setEffectColor(JBColor.GREEN);
+
+        RangeHighlighter[] activeHighlighter = new RangeHighlighter[1];
+        Runnable clearHighlighter = () -> {
+            RangeHighlighter current = activeHighlighter[0];
+            if (current != null) {
+                if (current.isValid()) {
+                    markupModel.removeHighlighter(current);
+                }
+                activeHighlighter[0] = null;
+            }
+        };
+        Consumer<TextRange> showHighlighter = hostRange -> {
+            clearHighlighter.run();
+            TextRange editorRange = toEditorRange(editor, hostRange);
+            if (editorRange == null) {
+                return;
+            }
+            activeHighlighter[0] = markupModel.addRangeHighlighter(
+                    editorRange.getStartOffset(),
+                    editorRange.getEndOffset(),
+                    HighlighterLayer.SELECTION - 1,
+                    attributes,
+                    HighlighterTargetArea.EXACT_RANGE
+            );
+        };
 
         JBPopupFactory.getInstance()
                 .createPopupChooserBuilder(queries)
@@ -132,45 +219,44 @@ public class DQLQuerySelectorServiceImpl implements DQLQuerySelectorService {
                 })
                 .setItemSelectedCallback(e -> {
                     if (e != null) {
-                        markupModel.removeAllHighlighters();
-                        markupModel.addRangeHighlighter(
-                                e.range().getStartOffset(),
-                                e.range().getEndOffset(),
-                                HighlighterLayer.SELECTION - 1,
-                                attributes,
-                                HighlighterTargetArea.EXACT_RANGE
-                        );
+                        showHighlighter.accept(e.range());
+                    } else {
+                        clearHighlighter.run();
                     }
                 })
                 .addListener(new JBPopupListener() {
                     @Override
                     public void beforeShown(@NotNull LightweightWindowEvent event) {
-                        SelectionContext context = queries.getFirst();
-                        markupModel.addRangeHighlighter(
-                                context.range().getStartOffset(),
-                                context.range().getEndOffset(),
-                                HighlighterLayer.SELECTION - 1,
-                                attributes,
-                                HighlighterTargetArea.EXACT_RANGE
-                        );
+                        showHighlighter.accept(queries.getFirst().range());
                     }
 
                     @Override
                     public void onClosed(@NotNull LightweightWindowEvent event) {
-                        markupModel.removeAllHighlighters();
+                        clearHighlighter.run();
                     }
                 })
                 .createPopup()
                 .showInBestPositionFor(editor);
     }
 
-    private @NotNull TextRange getMappedTextRange(@NotNull PsiFile file, @NotNull TextRange range, @NotNull Editor editor) {
+    private @NotNull TextRange toHostRange(@NotNull PsiFile file, @NotNull TextRange range) {
         InjectedLanguageManager injector = InjectedLanguageManager.getInstance(file.getProject());
-        if (injector.isInjectedFragment(file) && file.getViewProvider().getDocument() instanceof DocumentWindow
-                && !(editor.getDocument() instanceof DocumentWindow)) {
+        if (injector.isInjectedFragment(file) && file.getViewProvider().getDocument() instanceof DocumentWindow) {
             return injector.injectedToHost(file, range);
         }
         return range;
+    }
+
+    private static @Nullable TextRange toEditorRange(@NotNull Editor editor, @NotNull TextRange hostRange) {
+        if (!(editor.getDocument() instanceof DocumentWindow documentWindow)) {
+            return hostRange;
+        }
+        int start = documentWindow.hostToInjected(hostRange.getStartOffset());
+        int end = documentWindow.hostToInjected(hostRange.getEndOffset());
+        if (start < 0 || end < 0) {
+            return null;
+        }
+        return new TextRange(start, end);
     }
 
     protected record SelectionContext(@NotNull TextRange range, @NotNull String fragment) {

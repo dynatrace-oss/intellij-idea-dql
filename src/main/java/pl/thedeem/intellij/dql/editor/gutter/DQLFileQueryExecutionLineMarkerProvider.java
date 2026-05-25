@@ -20,6 +20,7 @@ import pl.thedeem.intellij.dql.DQLFile;
 import pl.thedeem.intellij.dql.actions.ExecuteDQLQueryAction;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
+import pl.thedeem.intellij.dql.services.query.DQLQuerySelectorService;
 import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 
 import javax.swing.*;
@@ -108,7 +109,7 @@ public class DQLFileQueryExecutionLineMarkerProvider extends AbstractDQLQueryLin
                         .add(CommonDataKeys.PSI_FILE, InjectedLanguageManager.getInstance(marked.getProject()).getTopLevelFile(marked))
                         .add(CommonDataKeys.PSI_ELEMENT, marked)
                         .add(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, configuration)
-                        .add(ExecuteDQLQueryAction.DQL_QUERY, query.getText())
+                        .add(ExecuteDQLQueryAction.DQL_QUERY, DQLQuerySelectorService.getInstance().getQueryText(query))
                         .build();
                 return original.withDataContext(customContext);
             }

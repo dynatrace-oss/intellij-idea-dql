@@ -18,6 +18,8 @@
 - Ensuring loading DQL variables will be now correctly handled on EDT to avoid IDE slowdowns
 - DQL autocompletion will now work correctly for query parts after variables usage
 - Error messages when executing DQL queries will now correctly use IntelliJ theme colors
+- Gutter icon will now properly unescape query strings for injected DQL fragments
+- Query selection popup no longer wipes out unrelated editor highlighters when showing the green selection box
 
 ## [1.8.1] - 2026-04-13
 
