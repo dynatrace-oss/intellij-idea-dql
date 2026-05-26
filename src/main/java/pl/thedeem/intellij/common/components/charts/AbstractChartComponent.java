@@ -3,12 +3,13 @@ package pl.thedeem.intellij.common.components.charts;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.LabeledComponent;
+import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.OnePixelSplitter;
-import com.intellij.ui.SimpleListCellRenderer;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import net.miginfocom.swing.MigLayout;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -177,18 +178,29 @@ public abstract class AbstractChartComponent extends BorderLayoutPanel {
                                 refreshContent(selected);
                             }
                         }) {{
-                    setRenderer(SimpleListCellRenderer.create("", position -> switch (position) {
-                        case ChartSettings.LegendPosition.TOP ->
-                                DQLBundle.message("components.visualization.settings.legend.position.top");
-                        case ChartSettings.LegendPosition.BOTTOM ->
-                                DQLBundle.message("components.visualization.settings.legend.position.bottom");
-                        case ChartSettings.LegendPosition.LEFT ->
-                                DQLBundle.message("components.visualization.settings.legend.position.left");
-                        case ChartSettings.LegendPosition.RIGHT ->
-                                DQLBundle.message("components.visualization.settings.legend.position.right");
-                        case null, default ->
-                                DQLBundle.message("components.visualization.settings.legend.position.none");
-                    }));
+                    setRenderer(new ColoredListCellRenderer<>() {
+                        @Override
+                        protected void customizeCellRenderer(
+                                @NotNull JList<? extends ChartSettings.LegendPosition> list,
+                                ChartSettings.LegendPosition position,
+                                int index,
+                                boolean selected,
+                                boolean hasFocus
+                        ) {
+                            append(switch (position) {
+                                case ChartSettings.LegendPosition.TOP ->
+                                        DQLBundle.message("components.visualization.settings.legend.position.top");
+                                case ChartSettings.LegendPosition.BOTTOM ->
+                                        DQLBundle.message("components.visualization.settings.legend.position.bottom");
+                                case ChartSettings.LegendPosition.LEFT ->
+                                        DQLBundle.message("components.visualization.settings.legend.position.left");
+                                case ChartSettings.LegendPosition.RIGHT ->
+                                        DQLBundle.message("components.visualization.settings.legend.position.right");
+                                case null, default ->
+                                        DQLBundle.message("components.visualization.settings.legend.position.none");
+                            });
+                        }
+                    });
                 }},
                 DQLBundle.message("components.visualization.settings.legend.position"),
                 BorderLayout.NORTH
