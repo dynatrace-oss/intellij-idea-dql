@@ -5,6 +5,7 @@
 ### Bug fixes
 
 - Replaced deprecated `ReadAction.compute(ThrowableComputable)` usage in DQL live verification code
+- Replaced scheduled-for-removal `SimpleListCellRenderer.create(String, Function)` usages with `ColoredListCellRenderer`
 
 ## [1.9.0] - 2026-05-26
 
@@ -60,7 +61,7 @@
 - aggregations are now properly validated within nested expressions, for example:
 
   ```dqlpart
-  summarize mbytes = sum(bytes) / 1024 / 1024
+  | summarize mbytes = sum(bytes) / 1024 / 1024
   ```
 
 - `join` conditions now support recursive `[]` accessors for `left` and `right` fields, for example:

@@ -1,7 +1,7 @@
 package pl.thedeem.intellij.common.components.charts.generators;
 
 import com.intellij.openapi.ui.LabeledComponent;
-import com.intellij.ui.SimpleListCellRenderer;
+import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.Consumer;
@@ -142,12 +142,22 @@ public class CategoryChart extends AbstractChartGenerator {
                                         onChange.consume(true);
                                     }
                                 }) {{
-                            setRenderer(SimpleListCellRenderer.create("", position -> {
-                                if (position == PlotOrientation.HORIZONTAL) {
-                                    return DQLBundle.message("components.visualization.settings.orientation.horizontal");
+                            setRenderer(new ColoredListCellRenderer<>() {
+                                @Override
+                                protected void customizeCellRenderer(
+                                        @NotNull JList<? extends PlotOrientation> list,
+                                        PlotOrientation position,
+                                        int index,
+                                        boolean selected,
+                                        boolean hasFocus
+                                ) {
+                                    if (position == PlotOrientation.HORIZONTAL) {
+                                        append(DQLBundle.message("components.visualization.settings.orientation.horizontal"));
+                                    } else {
+                                        append(DQLBundle.message("components.visualization.settings.orientation.vertical"));
+                                    }
                                 }
-                                return DQLBundle.message("components.visualization.settings.orientation.vertical");
-                            }));
+                            });
                         }},
                         DQLBundle.message("components.visualization.settings.orientation"),
                         BorderLayout.NORTH

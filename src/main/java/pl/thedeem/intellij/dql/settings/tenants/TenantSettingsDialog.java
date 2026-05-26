@@ -2,10 +2,11 @@ package pl.thedeem.intellij.dql.settings.tenants;
 
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.ui.SimpleListCellRenderer;
+import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.components.simple.SearchableComboBox;
 import pl.thedeem.intellij.dql.DQLBundle;
@@ -62,11 +63,22 @@ public class TenantSettingsDialog extends DialogWrapper {
                 apiTokenPanel.init(tenant);
             }
         }) {{
-            setRenderer(SimpleListCellRenderer.create("", position -> switch (position) {
-                case DynatraceTenant.AuthType.SSO_OAUTH ->
-                        DQLBundle.message("settings.dql.tenants.form.authType.ssoOauth");
-                case null, default -> DQLBundle.message("settings.dql.tenants.form.authType.apiToken");
-            }));
+            setRenderer(new ColoredListCellRenderer<>() {
+                @Override
+                protected void customizeCellRenderer(
+                        @NotNull JList<? extends DynatraceTenant.AuthType> list,
+                        DynatraceTenant.AuthType position,
+                        int index,
+                        boolean selected,
+                        boolean hasFocus
+                ) {
+                    append(switch (position) {
+                        case DynatraceTenant.AuthType.SSO_OAUTH ->
+                                DQLBundle.message("settings.dql.tenants.form.authType.ssoOauth");
+                        case null, default -> DQLBundle.message("settings.dql.tenants.form.authType.apiToken");
+                    });
+                }
+            });
         }};
 
         if (tenant != null) {
