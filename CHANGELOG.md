@@ -2,11 +2,6 @@
 
 ## [Unreleased]
 
-### Bug fixes
-
-- Replaced deprecated `ReadAction.compute(ThrowableComputable)` usage in DQL live verification code
-- Replaced scheduled-for-removal `SimpleListCellRenderer.create(String, Function)` usages with `ColoredListCellRenderer`
-
 ## [1.9.0] - 2026-05-26
 
 ### Features
@@ -27,6 +22,8 @@
 - Error messages when executing DQL queries will now correctly use IntelliJ theme colors
 - Gutter icon will now properly unescape query strings for injected DQL fragments
 - Query selection popup no longer wipes out unrelated editor highlighters when showing the green selection box
+- Replaced deprecated `ReadAction.compute(ThrowableComputable)` usage in DQL live verification code
+- Replaced scheduled-for-removal `SimpleListCellRenderer.create(String, Function)` usages with `ColoredListCellRenderer`
 
 ## [1.8.1] - 2026-04-13
 
