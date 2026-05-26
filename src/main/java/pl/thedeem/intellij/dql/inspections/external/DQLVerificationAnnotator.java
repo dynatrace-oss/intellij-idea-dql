@@ -49,9 +49,9 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
         DynatraceRestService rest = DynatraceRestService.getInstance(project);
         DynatraceTenant tenant = tenantsService.findTenant(configuration.tenant());
         if (tenant != null) {
-            List<DQLVariablesService.VariableDefinition> variables = ReadAction.compute(
-                    () -> DQLVariablesService.getInstance(project).getDefinedVariables(input.file)
-            );
+            List<DQLVariablesService.VariableDefinition> variables = ReadAction
+                    .nonBlocking(() -> DQLVariablesService.getInstance(project).getDefinedVariables(input.file))
+                    .executeSynchronously();
             DQLQueryParserService.ParseResult parseResult = WriteCommandAction.runWriteCommandAction(
                     project,
                     (Computable<DQLQueryParserService.ParseResult>) () -> parser.getSubstitutedQuery(input.file, variables)
