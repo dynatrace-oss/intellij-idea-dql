@@ -3,6 +3,7 @@ package pl.thedeem.intellij.common.components;
 import com.intellij.lang.Language;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider;
 import com.intellij.openapi.fileTypes.LanguageFileType;
@@ -69,14 +70,18 @@ public class FormattedLanguageText extends BorderLayoutPanel implements Disposab
                 if (vf == null) {
                     return;
                 }
-                TextEditor textEditor = (TextEditor) TextEditorProvider.getInstance().createEditor(project, vf);
-                if (isViewer) {
-                    ((EditorEx) textEditor.getEditor()).setViewer(true);
+
+                FileEditor fileEditor = TextEditorProvider.getInstance().createEditor(project, vf);
+                if (!(fileEditor instanceof TextEditor textEditor)) {
+                    fileEditor.dispose();
+                    return;
+                }
+                if (isViewer && textEditor.getEditor() instanceof EditorEx editorEx) {
+                    editorEx.setViewer(true);
                 }
                 currentEditor = textEditor;
 
                 addToCenter(textEditor.getComponent());
-                processIcon.dispose();
                 processIcon.setVisible(false);
                 revalidate();
                 repaint();
