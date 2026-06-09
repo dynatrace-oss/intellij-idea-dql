@@ -1,20 +1,20 @@
 package pl.thedeem.intellij.dql.fileProviders;
 
-import com.intellij.codeInsight.folding.CodeFoldingManager;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.application.ReadAction;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.lang.Language;
 import com.intellij.openapi.editor.ex.EditorEx;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.TextEditor;
+import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.fileTypes.PlainTextFileType;
+import com.intellij.openapi.fileTypes.PlainTextLanguage;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiDocumentManager;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiFileFactory;
 import com.intellij.testFramework.LightVirtualFile;
-import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLFileType;
 
 import javax.swing.*;
@@ -22,13 +22,13 @@ import java.util.Objects;
 
 public abstract class DQLVirtualFile<T> extends LightVirtualFile {
     protected final T content;
-    protected Editor editor = null;
+    private @Nullable TextEditor textEditor = null;
 
     public DQLVirtualFile(@NotNull String name, @NotNull T content) {
         super(name, DQLFileType.INSTANCE, content.toString());
         this.content = content;
     }
-    
+
     @Override
     public boolean isWritable() {
         return false;
@@ -48,32 +48,21 @@ public abstract class DQLVirtualFile<T> extends LightVirtualFile {
     }
 
     public void dispose() {
-        if (editor != null) {
-            EditorFactory.getInstance().releaseEditor(editor);
+        if (textEditor != null) {
+            TextEditorProvider.getInstance().disposeEditor(textEditor);
+            textEditor = null;
         }
     }
 
     public @NotNull JComponent createComponent(@NotNull Project project) {
-        LightVirtualFile displayFile = new LightVirtualFile(getName(), getBaseFileType(), getDocumentContent());
-        displayFile.setWritable(false);
-        Document document = Objects.requireNonNull(FileDocumentManager.getInstance().getDocument(displayFile));
-        this.editor = EditorFactory.getInstance().createEditor(document, project, getBaseFileType(), true);
-        EditorEx editorEx = (EditorEx) this.editor;
-        editorEx.setFile(displayFile);
-        editorEx.getSettings().setFoldingOutlineShown(true);
-        editorEx.getFoldingModel().setFoldingEnabled(true);
-        PsiDocumentManager.getInstance(project).performLaterWhenAllCommitted(() ->
-                ReadAction.nonBlocking(() -> {
-                            if (!editor.isDisposed()) {
-                                return CodeFoldingManager.getInstance(project).updateFoldRegionsAsync(editor, true);
-                            }
-                            return null;
-                        })
-                        .finishOnUiThread(ModalityState.any(), runnable -> {
-                            if (runnable != null) runnable.run();
-                        })
-                        .submit(AppExecutorUtil.getAppExecutorService()));
-        return this.editor.getComponent();
+        FileType baseFileType = getBaseFileType();
+        Language language = baseFileType instanceof LanguageFileType lft ? lft.getLanguage() : PlainTextLanguage.INSTANCE;
+        PsiFile psiFile = PsiFileFactory.getInstance(project)
+                .createFileFromText(getName(), language, getDocumentContent());
+        VirtualFile vf = Objects.requireNonNull(psiFile.getVirtualFile());
+        this.textEditor = (TextEditor) TextEditorProvider.getInstance().createEditor(project, vf);
+        ((EditorEx) this.textEditor.getEditor()).setViewer(true);
+        return this.textEditor.getComponent();
     }
 
     protected @NotNull FileType getBaseFileType() {

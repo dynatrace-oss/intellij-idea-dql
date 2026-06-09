@@ -5,15 +5,15 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider;
-import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import com.intellij.openapi.fileTypes.PlainTextFileType;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.testFramework.LightVirtualFile;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiFileFactory;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
@@ -26,16 +26,18 @@ import java.util.concurrent.Callable;
 public class FormattedLanguageText extends BorderLayoutPanel implements Disposable {
     private final LoadingPanel processIcon;
     private final Project project;
-    private final FileType fileType;
+    private final Language language;
+    private final String fileExtension;
     private final boolean isViewer;
     private @Nullable TextEditor currentEditor;
 
     public FormattedLanguageText(@NotNull Language language, @NotNull Project project, boolean isViewer) {
         withBorder(JBUI.Borders.empty()).andTransparent();
         this.project = project;
+        this.language = language;
         this.isViewer = isViewer;
         LanguageFileType languageFileType = language.getAssociatedFileType();
-        this.fileType = languageFileType != null ? languageFileType : PlainTextFileType.INSTANCE;
+        this.fileExtension = languageFileType != null ? languageFileType.getDefaultExtension() : "txt";
         processIcon = new LoadingPanel(DQLBundle.message("components.preparingView"));
         addToCenter(processIcon);
     }
@@ -61,9 +63,13 @@ public class FormattedLanguageText extends BorderLayoutPanel implements Disposab
 
                 disposeCurrentEditor();
 
-                LightVirtualFile displayFile = new LightVirtualFile("result." + fileType.getDefaultExtension(), fileType, text);
-                displayFile.setWritable(false);
-                TextEditor textEditor = (TextEditor) TextEditorProvider.getInstance().createEditor(project, displayFile);
+                PsiFile psiFile = PsiFileFactory.getInstance(project)
+                        .createFileFromText("result." + fileExtension, language, text);
+                VirtualFile vf = psiFile.getVirtualFile();
+                if (vf == null) {
+                    return;
+                }
+                TextEditor textEditor = (TextEditor) TextEditorProvider.getInstance().createEditor(project, vf);
                 if (isViewer) {
                     ((EditorEx) textEditor.getEditor()).setViewer(true);
                 }
