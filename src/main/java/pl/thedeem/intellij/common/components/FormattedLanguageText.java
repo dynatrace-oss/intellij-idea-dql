@@ -1,46 +1,52 @@
 package pl.thedeem.intellij.common.components;
 
-import com.intellij.codeInsight.folding.CodeFoldingManager;
 import com.intellij.lang.Language;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.fileEditor.TextEditor;
+import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.LanguageFileType;
+import com.intellij.openapi.fileTypes.PlainTextFileType;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.ui.EditorTextField;
-import com.intellij.util.concurrency.AppExecutorUtil;
+import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
 public class FormattedLanguageText extends BorderLayoutPanel implements Disposable {
     private final LoadingPanel processIcon;
-    private final EditorTextField editorField;
-    private volatile Future<?> pendingFoldingTask;
+    private final TextEditor textEditor;
 
     public FormattedLanguageText(@NotNull Language language, @NotNull Project project, boolean isViewer) {
         withBorder(JBUI.Borders.empty()).andTransparent();
         processIcon = new LoadingPanel(DQLBundle.message("components.preparingView"));
         addToCenter(processIcon);
-        editorField = IntelliJUtils.createEditorPanel(project, language, isViewer);
-        addToCenter(editorField);
-        editorField.setVisible(false);
+
+        LanguageFileType languageFileType = language.getAssociatedFileType();
+        FileType fileType = languageFileType != null ? languageFileType : PlainTextFileType.INSTANCE;
+        LightVirtualFile virtualFile = new LightVirtualFile("result." + fileType.getDefaultExtension(), fileType, "");
+
+        textEditor = (TextEditor) TextEditorProvider.getInstance().createEditor(project, virtualFile);
+        if (isViewer) {
+            ((EditorEx) textEditor.getEditor()).setViewer(true);
+        }
+        addToCenter(textEditor.getComponent());
+        textEditor.getComponent().setVisible(false);
     }
 
     public void showResult(@NotNull Callable<String> content) {
-        Project project = editorField.getProject();
-        ProgressManager processManager = ProgressManager.getInstance();
-        processManager.run(new Task.Backgroundable(project, DQLBundle.message("components.preparingView"), true) {
+        Project project = textEditor.getEditor().getProject();
+        ProgressManager.getInstance().run(new Task.Backgroundable(project, DQLBundle.message("components.preparingView"), true) {
             private String resultText;
 
             @Override
@@ -55,37 +61,19 @@ public class FormattedLanguageText extends BorderLayoutPanel implements Disposab
 
             @Override
             public void onSuccess() {
-                if (project.isDisposed()) {
+                if (project == null || project.isDisposed()) {
                     return;
                 }
-
                 WriteCommandAction.runWriteCommandAction(project, () -> {
-                    editorField.setText(Objects.requireNonNullElse(resultText, ""));
-                    setEditorFieldVisible();
-                });
-
-                PsiDocumentManager.getInstance(project).performLaterWhenAllCommitted(() -> {
-                    if (editorField.getEditor() == null) {
-                        return;
-                    }
-                    pendingFoldingTask = ReadAction.nonBlocking(() -> {
-                                if (editorField.getEditor() != null) {
-                                    return CodeFoldingManager.getInstance(project).updateFoldRegionsAsync(editorField.getEditor(), true);
-                                }
-                                return null;
-                            })
-                            .finishOnUiThread(ModalityState.any(), runnable -> {
-                                if (runnable != null) {
-                                    runnable.run();
-                                }
-                            }).submit(AppExecutorUtil.getAppExecutorService());
+                    textEditor.getEditor().getDocument().setText(StringUtil.convertLineSeparators(Objects.requireNonNullElse(resultText, "")));
+                    setEditorVisible();
                 });
             }
         });
     }
 
-    private void setEditorFieldVisible() {
-        editorField.setVisible(true);
+    private void setEditorVisible() {
+        textEditor.getComponent().setVisible(true);
         processIcon.dispose();
         processIcon.setVisible(false);
         revalidate();
@@ -93,14 +81,12 @@ public class FormattedLanguageText extends BorderLayoutPanel implements Disposab
     }
 
     public @NotNull String getText() {
-        return editorField.getText();
+        return textEditor.getEditor().getDocument().getText();
     }
 
     @Override
     public void dispose() {
-        if (pendingFoldingTask != null) {
-            pendingFoldingTask.cancel(true);
-        }
         processIcon.dispose();
+        TextEditorProvider.getInstance().disposeEditor(textEditor);
     }
 }

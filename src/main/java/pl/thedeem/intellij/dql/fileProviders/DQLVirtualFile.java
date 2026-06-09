@@ -1,8 +1,12 @@
 package pl.thedeem.intellij.dql.fileProviders;
 
+import com.intellij.codeInsight.folding.CodeFoldingManager;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.PlainTextFileType;
 import com.intellij.openapi.project.Project;
@@ -47,9 +51,19 @@ public abstract class DQLVirtualFile<T> extends LightVirtualFile {
     }
 
     public @NotNull JComponent createComponent(@NotNull Project project) {
-        Document document = EditorFactory.getInstance().createDocument(getDocumentContent());
-        document.setReadOnly(true);
-        this.editor = EditorFactory.getInstance().createEditor(document, project, getBaseFileType(), false);
+        LightVirtualFile displayFile = new LightVirtualFile(getName(), getBaseFileType(), getDocumentContent());
+        displayFile.setWritable(false);
+        Document document = Objects.requireNonNull(FileDocumentManager.getInstance().getDocument(displayFile));
+        this.editor = EditorFactory.getInstance().createEditor(document, project, getBaseFileType(), true);
+        EditorEx editorEx = (EditorEx) this.editor;
+        editorEx.setFile(displayFile);
+        editorEx.getSettings().setFoldingOutlineShown(true);
+        editorEx.getFoldingModel().setFoldingEnabled(true);
+        ApplicationManager.getApplication().invokeLater(() -> {
+            if (!editor.isDisposed()) {
+                CodeFoldingManager.getInstance(project).updateFoldRegionsAsync(editor, true);
+            }
+        });
         return this.editor.getComponent();
     }
 
