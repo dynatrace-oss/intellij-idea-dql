@@ -1,7 +1,8 @@
 package pl.thedeem.intellij.dql.fileProviders;
 
 import com.intellij.codeInsight.folding.CodeFoldingManager;
-import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
@@ -10,7 +11,9 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.PlainTextFileType;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.testFramework.LightVirtualFile;
+import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.DQLFileType;
 
@@ -59,11 +62,17 @@ public abstract class DQLVirtualFile<T> extends LightVirtualFile {
         editorEx.setFile(displayFile);
         editorEx.getSettings().setFoldingOutlineShown(true);
         editorEx.getFoldingModel().setFoldingEnabled(true);
-        ApplicationManager.getApplication().invokeLater(() -> {
-            if (!editor.isDisposed()) {
-                CodeFoldingManager.getInstance(project).updateFoldRegionsAsync(editor, true);
-            }
-        });
+        PsiDocumentManager.getInstance(project).performLaterWhenAllCommitted(() ->
+                ReadAction.nonBlocking(() -> {
+                            if (!editor.isDisposed()) {
+                                return CodeFoldingManager.getInstance(project).updateFoldRegionsAsync(editor, true);
+                            }
+                            return null;
+                        })
+                        .finishOnUiThread(ModalityState.any(), runnable -> {
+                            if (runnable != null) runnable.run();
+                        })
+                        .submit(AppExecutorUtil.getAppExecutorService()));
         return this.editor.getComponent();
     }
 

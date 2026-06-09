@@ -1,15 +1,10 @@
 package pl.thedeem.intellij.common.components;
 
-import com.intellij.codeInsight.folding.CodeFoldingManager;
 import com.intellij.lang.Language;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.WriteCommandAction;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.ex.EditorEx;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.TextEditor;
+import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.fileTypes.PlainTextFileType;
@@ -22,6 +17,7 @@ import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 
 import java.util.Objects;
@@ -30,27 +26,18 @@ import java.util.concurrent.Callable;
 public class FormattedLanguageText extends BorderLayoutPanel implements Disposable {
     private final LoadingPanel processIcon;
     private final Project project;
-    private final Editor editor;
+    private final FileType fileType;
+    private final boolean isViewer;
+    private @Nullable TextEditor currentEditor;
 
     public FormattedLanguageText(@NotNull Language language, @NotNull Project project, boolean isViewer) {
         withBorder(JBUI.Borders.empty()).andTransparent();
         this.project = project;
+        this.isViewer = isViewer;
+        LanguageFileType languageFileType = language.getAssociatedFileType();
+        this.fileType = languageFileType != null ? languageFileType : PlainTextFileType.INSTANCE;
         processIcon = new LoadingPanel(DQLBundle.message("components.preparingView"));
         addToCenter(processIcon);
-
-        LanguageFileType languageFileType = language.getAssociatedFileType();
-        FileType fileType = languageFileType != null ? languageFileType : PlainTextFileType.INSTANCE;
-        LightVirtualFile virtualFile = new LightVirtualFile("result." + fileType.getDefaultExtension(), fileType, "");
-
-        Document document = Objects.requireNonNull(FileDocumentManager.getInstance().getDocument(virtualFile));
-        editor = EditorFactory.getInstance().createEditor(document, project, fileType, isViewer);
-        EditorEx editorEx = (EditorEx) editor;
-        editorEx.setFile(virtualFile);
-        editorEx.getSettings().setFoldingOutlineShown(true);
-        editorEx.getFoldingModel().setFoldingEnabled(true);
-
-        addToCenter(editor.getComponent());
-        editor.getComponent().setVisible(false);
     }
 
     public void showResult(@NotNull Callable<String> content) {
@@ -70,34 +57,42 @@ public class FormattedLanguageText extends BorderLayoutPanel implements Disposab
             @Override
             public void onSuccess() {
                 if (project.isDisposed()) return;
-                WriteCommandAction.runWriteCommandAction(project, () -> {
-                    editor.getDocument().setText(StringUtil.convertLineSeparators(Objects.requireNonNullElse(resultText, "")));
-                    setEditorVisible();
-                });
-                ApplicationManager.getApplication().invokeLater(() -> {
-                    if (!editor.isDisposed()) {
-                        CodeFoldingManager.getInstance(project).updateFoldRegionsAsync(editor, true);
-                    }
-                });
+                String text = StringUtil.convertLineSeparators(Objects.requireNonNullElse(resultText, ""));
+
+                disposeCurrentEditor();
+
+                LightVirtualFile displayFile = new LightVirtualFile("result." + fileType.getDefaultExtension(), fileType, text);
+                displayFile.setWritable(false);
+                TextEditor textEditor = (TextEditor) TextEditorProvider.getInstance().createEditor(project, displayFile);
+                if (isViewer) {
+                    ((EditorEx) textEditor.getEditor()).setViewer(true);
+                }
+                currentEditor = textEditor;
+
+                addToCenter(textEditor.getComponent());
+                processIcon.dispose();
+                processIcon.setVisible(false);
+                revalidate();
+                repaint();
             }
         });
     }
 
-    private void setEditorVisible() {
-        editor.getComponent().setVisible(true);
-        processIcon.dispose();
-        processIcon.setVisible(false);
-        revalidate();
-        repaint();
+    private void disposeCurrentEditor() {
+        if (currentEditor != null) {
+            remove(currentEditor.getComponent());
+            TextEditorProvider.getInstance().disposeEditor(currentEditor);
+            currentEditor = null;
+        }
     }
 
     public @NotNull String getText() {
-        return editor.getDocument().getText();
+        return currentEditor != null ? currentEditor.getEditor().getDocument().getText() : "";
     }
 
     @Override
     public void dispose() {
         processIcon.dispose();
-        EditorFactory.getInstance().releaseEditor(editor);
+        disposeCurrentEditor();
     }
 }
