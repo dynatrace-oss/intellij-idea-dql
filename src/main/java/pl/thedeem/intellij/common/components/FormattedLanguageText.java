@@ -11,7 +11,6 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -42,7 +41,6 @@ public class FormattedLanguageText extends BorderLayoutPanel implements Disposab
         this.fileExtension = languageFileType != null ? languageFileType.getDefaultExtension() : "txt";
         processIcon = new LoadingPanel(DQLBundle.message("components.preparingView"));
         addToCenter(processIcon);
-        Disposer.register(project, this);
     }
 
     public void showResult(@NotNull Callable<String> content) {
