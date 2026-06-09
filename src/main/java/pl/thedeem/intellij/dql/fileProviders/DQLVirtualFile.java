@@ -74,7 +74,7 @@ public abstract class DQLVirtualFile<T> extends LightVirtualFile {
             return JBUI.Panels.simplePanel();
         }
         if (te.getEditor() instanceof EditorEx editorEx) {
-            editorEx.setViewer(true);
+            editorEx.setViewer(!isWritable());
         }
         this.textEditor = te;
         return te.getComponent();
