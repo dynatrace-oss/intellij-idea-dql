@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Bug fixes
+
+- Removing JetBrains internal API usages
+
 ## [1.9.0] - 2026-05-26
 
 ### Features
