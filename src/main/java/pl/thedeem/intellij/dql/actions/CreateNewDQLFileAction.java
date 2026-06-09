@@ -2,7 +2,6 @@ package pl.thedeem.intellij.dql.actions;
 
 import com.intellij.ide.actions.CreateElementActionBase;
 import com.intellij.ide.actions.CreateFileAction;
-import com.intellij.lang.LangBundle;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -84,7 +83,7 @@ public class CreateNewDQLFileAction extends CreateFileAction {
                 return new ValidationInfo(DQLBundle.message("action.DQL.NewDQLFile.form.validation.alreadyExists"), fileNameField);
             }
             if (!validator.checkInput(fullName) || !validator.canClose(fullName)) {
-                String errorMessage = validator instanceof InputValidatorEx ? ((InputValidatorEx) validator).getErrorText(name) : LangBundle.message("incorrect.name");
+                String errorMessage = validator instanceof InputValidatorEx ? ((InputValidatorEx) validator).getErrorText(name) : DQLBundle.message("action.DQL.NewDQLFile.form.validation.invalidName");
                 return new ValidationInfo(
                         Objects.requireNonNullElseGet(
                                 errorMessage,

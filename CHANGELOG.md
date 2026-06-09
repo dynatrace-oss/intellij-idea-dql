@@ -4,6 +4,10 @@
 
 ## [1.9.0] - 2026-05-26
 
+### Bug fixes
+
+- Removing JetBrains internal API usages
+
 ### Features
 
 - DQL autocompletion now supports bucket names, tabular files, metric keys, and SmartScape entities
