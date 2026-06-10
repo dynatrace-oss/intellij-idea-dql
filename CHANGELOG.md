@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Features
+
+- The plugin now uses JetBrains-native code editors for embedded DQLs & JSONs (like the DQL results panel).
+  This makes the JSON/DQL code use all JetBrains features like code folding, or proper syntax highlighting.
+
 ### Bug fixes
 
 - Removing JetBrains internal API usages

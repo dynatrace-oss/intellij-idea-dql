@@ -1,46 +1,50 @@
 package pl.thedeem.intellij.common.components;
 
-import com.intellij.codeInsight.folding.CodeFoldingManager;
 import com.intellij.lang.Language;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.application.ReadAction;
-import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.TextEditor;
+import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider;
+import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.ui.EditorTextField;
-import com.intellij.util.concurrency.AppExecutorUtil;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiFileFactory;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
-import pl.thedeem.intellij.common.IntelliJUtils;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
 
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
 public class FormattedLanguageText extends BorderLayoutPanel implements Disposable {
     private final LoadingPanel processIcon;
-    private final EditorTextField editorField;
-    private volatile Future<?> pendingFoldingTask;
+    private final Project project;
+    private final Language language;
+    private final String fileExtension;
+    private final boolean isViewer;
+    private @Nullable TextEditor currentEditor;
 
     public FormattedLanguageText(@NotNull Language language, @NotNull Project project, boolean isViewer) {
         withBorder(JBUI.Borders.empty()).andTransparent();
+        this.project = project;
+        this.language = language;
+        this.isViewer = isViewer;
+        LanguageFileType languageFileType = language.getAssociatedFileType();
+        this.fileExtension = languageFileType != null ? languageFileType.getDefaultExtension() : "txt";
         processIcon = new LoadingPanel(DQLBundle.message("components.preparingView"));
         addToCenter(processIcon);
-        editorField = IntelliJUtils.createEditorPanel(project, language, isViewer);
-        addToCenter(editorField);
-        editorField.setVisible(false);
     }
 
     public void showResult(@NotNull Callable<String> content) {
-        Project project = editorField.getProject();
-        ProgressManager processManager = ProgressManager.getInstance();
-        processManager.run(new Task.Backgroundable(project, DQLBundle.message("components.preparingView"), true) {
+        ProgressManager.getInstance().run(new Task.Backgroundable(project, DQLBundle.message("components.preparingView"), true) {
             private String resultText;
 
             @Override
@@ -55,52 +59,51 @@ public class FormattedLanguageText extends BorderLayoutPanel implements Disposab
 
             @Override
             public void onSuccess() {
-                if (project.isDisposed()) {
+                if (project.isDisposed()) return;
+                String text = StringUtil.convertLineSeparators(Objects.requireNonNullElse(resultText, ""));
+
+                disposeCurrentEditor();
+
+                PsiFile psiFile = PsiFileFactory.getInstance(project)
+                        .createFileFromText("result." + fileExtension, language, text);
+                VirtualFile vf = psiFile.getVirtualFile();
+                if (vf == null) {
                     return;
                 }
 
-                WriteCommandAction.runWriteCommandAction(project, () -> {
-                    editorField.setText(Objects.requireNonNullElse(resultText, ""));
-                    setEditorFieldVisible();
-                });
+                FileEditor fileEditor = TextEditorProvider.getInstance().createEditor(project, vf);
+                if (!(fileEditor instanceof TextEditor textEditor)) {
+                    fileEditor.dispose();
+                    return;
+                }
+                if (isViewer && textEditor.getEditor() instanceof EditorEx editorEx) {
+                    editorEx.setViewer(true);
+                }
+                currentEditor = textEditor;
 
-                PsiDocumentManager.getInstance(project).performLaterWhenAllCommitted(() -> {
-                    if (editorField.getEditor() == null) {
-                        return;
-                    }
-                    pendingFoldingTask = ReadAction.nonBlocking(() -> {
-                                if (editorField.getEditor() != null) {
-                                    return CodeFoldingManager.getInstance(project).updateFoldRegionsAsync(editorField.getEditor(), true);
-                                }
-                                return null;
-                            })
-                            .finishOnUiThread(ModalityState.any(), runnable -> {
-                                if (runnable != null) {
-                                    runnable.run();
-                                }
-                            }).submit(AppExecutorUtil.getAppExecutorService());
-                });
+                addToCenter(textEditor.getComponent());
+                processIcon.setVisible(false);
+                revalidate();
+                repaint();
             }
         });
     }
 
-    private void setEditorFieldVisible() {
-        editorField.setVisible(true);
-        processIcon.dispose();
-        processIcon.setVisible(false);
-        revalidate();
-        repaint();
+    private void disposeCurrentEditor() {
+        if (currentEditor != null) {
+            remove(currentEditor.getComponent());
+            TextEditorProvider.getInstance().disposeEditor(currentEditor);
+            currentEditor = null;
+        }
     }
 
     public @NotNull String getText() {
-        return editorField.getText();
+        return currentEditor != null ? currentEditor.getEditor().getDocument().getText() : "";
     }
 
     @Override
     public void dispose() {
-        if (pendingFoldingTask != null) {
-            pendingFoldingTask.cancel(true);
-        }
         processIcon.dispose();
+        disposeCurrentEditor();
     }
 }
