@@ -6,6 +6,7 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -181,18 +182,18 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
     @Override
     public void uiDataSnapshot(@NotNull DataSink dataSink) {
         dataSink.set(EXECUTION_SERVICE, this);
-        dataSink.set(DQLQueryConfigurationService.DATA_TENANT, configurationCopy.tenant());
-        dataSink.set(DQLQueryConfigurationService.DATA_TIMEFRAME_START, configurationCopy.timeframeStart());
-        dataSink.set(DQLQueryConfigurationService.DATA_TIMEFRAME_END, configurationCopy.timeframeEnd());
-        dataSink.set(DQLQueryConfigurationService.DATA_DEFAULT_SCAN_LIMIT, configurationCopy.defaultScanLimit());
-        dataSink.set(DQLQueryConfigurationService.DATA_MAX_RESULT_BYTES, configurationCopy.maxResultBytes());
-        dataSink.set(DQLQueryConfigurationService.DATA_MAX_RESULT_RECORDS, configurationCopy.maxResultRecords());
-        dataSink.set(DQLQueryConfigurationService.DATA_ORIGINAL_FILE, configurationCopy.originalFile());
-        dataSink.set(DQLQueryConfigurationService.DATA_RUN_CONFIG_NAME, configurationCopy.runConfigName());
         dataSink.set(QueryConfigurationAction.SHOW_TIMEFRAME, false);
         dataSink.set(QueryConfigurationAction.SHOW_TENANT_SELECTION, false);
         dataSink.set(QueryConfigurationAction.SHOW_CONFIGURATION, false);
         dataSink.set(QueryConfigurationAction.SHOW_QUERY_VALIDATION_OPTION, false);
+        dataSink.set(DQLQueryConfigurationService.DATA_TENANT, configurationCopy.tenant());
+        dataSink.set(DQLQueryConfigurationService.DATA_ORIGINAL_FILE, configurationCopy.originalFile());
+        dataSink.set(DQLQueryConfigurationService.DATA_RUN_CONFIG_NAME, configurationCopy.runConfigName());
+        dataSink.set(DQLQueryConfigurationService.DATA_DEFAULT_SCAN_LIMIT, configurationCopy.defaultScanLimit());
+        dataSink.set(DQLQueryConfigurationService.DATA_MAX_RESULT_BYTES, configurationCopy.maxResultBytes());
+        dataSink.set(DQLQueryConfigurationService.DATA_MAX_RESULT_RECORDS, configurationCopy.maxResultRecords());
+        dataSink.set(DQLQueryConfigurationService.DATA_TIMEFRAME_START, configurationCopy.timeframeStart());
+        dataSink.set(DQLQueryConfigurationService.DATA_TIMEFRAME_END, configurationCopy.timeframeEnd());
     }
 
     @Override
@@ -328,11 +329,11 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
     }
 
     private @Nullable DQLExecutePayload preparePayload(@NotNull Project project) {
-        String query = resolveQuery(project);
+        String query = ReadAction.compute(() -> resolveQuery(project));
         if (query == null) {
             return null;
         }
-        List<DQLVariablesService.VariableDefinition> variables = loadVariables(configuration.originalFile(), project);
+        List<DQLVariablesService.VariableDefinition> variables = ReadAction.compute(() -> loadVariables(configuration.originalFile(), project));
         DQLQueryParserService.ParseResult parsed = WriteCommandAction.runWriteCommandAction(
                 project,
                 (Computable<DQLQueryParserService.ParseResult>) () -> DQLQueryParserService.getInstance().getSubstitutedQuery(query, project, variables));

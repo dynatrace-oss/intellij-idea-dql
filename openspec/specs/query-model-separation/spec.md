@@ -26,7 +26,7 @@ source file. It SHALL NOT accept a `QueryContext` parameter.
 
 #### Scenario: Execution service constructor accepts only QueryConfiguration
 - **WHEN** `DQLExecutionService` is instantiated
-- **THEN** its constructor signature is `(String name, QueryConfiguration configuration, Project project, DQLProcessHandler handler)`
+- **THEN** its constructor signature is `(String name, QueryConfiguration configuration, @Nullable String selectedQuery, Project project, DQLProcessHandler handler)`
 
 #### Scenario: Payload preparation resolves query text via service
 - **WHEN** `DQLExecutionService.preparePayload()` runs
@@ -58,7 +58,7 @@ parameter. They SHALL NOT depend on `QueryContext`.
 
 #### Scenario: Result panel receives query text as String
 - **WHEN** `DQLExecutionResult` is constructed
-- **THEN** it accepts the query text as a `String` alongside `QueryConfiguration`, not as a `QueryContext`
+- **THEN** it accepts the query text as a `String` (alongside project, result, and execution timestamp), not wrapped in a `QueryContext` or `QueryConfiguration`
 
 ---
 
