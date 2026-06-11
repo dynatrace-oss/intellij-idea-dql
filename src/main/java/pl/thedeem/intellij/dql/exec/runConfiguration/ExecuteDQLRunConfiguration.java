@@ -22,6 +22,7 @@ import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFileType;
 import pl.thedeem.intellij.dql.exec.DQLExecutionService;
 import pl.thedeem.intellij.dql.exec.DQLProcessHandler;
+import pl.thedeem.intellij.dql.services.query.DQLQuerySelectorService;
 import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
@@ -47,7 +48,6 @@ public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLR
         getOptions().setDqlPath(dqlFile);
     }
 
-
     @NotNull
     @Override
     public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
@@ -67,7 +67,7 @@ public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLR
                 IntelliJUtils.openRunConfiguration(getProject());
                 return null;
             }
-            DQLExecutionService service = new DQLExecutionService(getName(), payload, getProject(), processHandler);
+            DQLExecutionService service = new DQLExecutionService(getName(), payload, getQuery(), getProject(), processHandler);
             ProcessTerminatedListener.attach(processHandler);
             processHandler.startNotify();
             ProjectServicesManager.getInstance(getProject()).registerService(service);
@@ -98,8 +98,7 @@ public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLR
     public @NotNull QueryConfiguration getConfiguration() {
         ExecuteDQLRunConfigurationOptions options = getOptions();
         QueryConfiguration configuration = new QueryConfiguration();
-        configuration.setRelatedRunConfiguration(getName());
-        configuration.setQuery(getQuery());
+        configuration.setRunConfigName(getName());
         configuration.setTenant(options.getSelectedTenant());
         configuration.setDefaultScanLimit(options.getDefaultScanLimit());
         configuration.setMaxResultBytes(options.getMaxResultBytes());
@@ -119,12 +118,14 @@ public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLR
         } else {
             options.setFromFileSelected(false);
         }
-        options.setDqlQuery(configuration.query());
         options.setDefaultScanLimit(configuration.defaultScanLimit());
         options.setTimeframeStart(configuration.timeframeStart());
         options.setTimeframeEnd(configuration.timeframeEnd());
         options.setMaxResultBytes(configuration.maxResultBytes());
         options.setMaxResultRecords(configuration.maxResultRecords());
+        if (file != null) {
+            options.setDqlQuery(ReadAction.compute(() -> DQLQuerySelectorService.getInstance().getQueryText(file)));
+        }
     }
 
     private @Nullable String getQuery() {

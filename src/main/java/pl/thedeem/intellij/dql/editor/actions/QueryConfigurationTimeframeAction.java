@@ -3,6 +3,7 @@ package pl.thedeem.intellij.dql.editor.actions;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.psi.PsiFile;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
@@ -32,37 +33,43 @@ public class QueryConfigurationTimeframeAction extends AnAction implements Custo
 
     @Override
     public void update(@NotNull AnActionEvent e) {
-        QueryConfiguration configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
-        if (configuration == null) {
+        DataContext ctx = e.getDataContext();
+        if (ctx.getData(DQLQueryConfigurationService.DATA_ORIGINAL_FILE) == null
+                && ctx.getData(DQLQueryConfigurationService.DATA_TENANT) == null) {
             e.getPresentation().setEnabledAndVisible(false);
             return;
         }
-        e.getPresentation().putClientProperty(DQLQueryConfigurationService.QUERY_CONFIGURATION, configuration);
+        e.getPresentation().putClientProperty(DQLQueryConfigurationService.TIMEFRAME_START,
+                ctx.getData(DQLQueryConfigurationService.DATA_TIMEFRAME_START));
+        e.getPresentation().putClientProperty(DQLQueryConfigurationService.TIMEFRAME_END,
+                ctx.getData(DQLQueryConfigurationService.DATA_TIMEFRAME_END));
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        QueryConfiguration configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
-        if (configuration != null) {
+        PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
+        if (file != null) {
+            DQLQueryConfigurationService service = DQLQueryConfigurationService.getInstance();
+            QueryConfiguration configuration = service.getQueryConfiguration(file);
             configuration.setTimeframeStart(myQueryTimeframeComponent.queryStartField().getText());
             configuration.setTimeframeEnd(myQueryTimeframeComponent.queryEndField().getText());
+            service.updateConfiguration(file, configuration);
         }
     }
 
     @Override
     public void updateCustomComponent(@NotNull JComponent component, @NotNull Presentation presentation) {
-        QueryConfiguration config = presentation.getClientProperty(DQLQueryConfigurationService.QUERY_CONFIGURATION);
-        if (config != null) {
-            String currentStart = Objects.requireNonNullElse(config.timeframeStart(), "");
-            if (!myQueryTimeframeComponent.queryStartField().isFocusOwner()
-                    && !Objects.equals(myQueryTimeframeComponent.queryStartField().getText(), currentStart)) {
-                myQueryTimeframeComponent.queryStartField().setText(currentStart);
-            }
-            String currentEnd = Objects.requireNonNullElse(config.timeframeEnd(), "");
-            if (!myQueryTimeframeComponent.queryEndField().isFocusOwner()
-                    && !Objects.equals(myQueryTimeframeComponent.queryEndField().getText(), currentEnd)) {
-                myQueryTimeframeComponent.queryEndField().setText(currentEnd);
-            }
+        String currentStart = Objects.requireNonNullElse(
+                presentation.getClientProperty(DQLQueryConfigurationService.TIMEFRAME_START), "");
+        if (!myQueryTimeframeComponent.queryStartField().isFocusOwner()
+                && !Objects.equals(myQueryTimeframeComponent.queryStartField().getText(), currentStart)) {
+            myQueryTimeframeComponent.queryStartField().setText(currentStart);
+        }
+        String currentEnd = Objects.requireNonNullElse(
+                presentation.getClientProperty(DQLQueryConfigurationService.TIMEFRAME_END), "");
+        if (!myQueryTimeframeComponent.queryEndField().isFocusOwner()
+                && !Objects.equals(myQueryTimeframeComponent.queryEndField().getText(), currentEnd)) {
+            myQueryTimeframeComponent.queryEndField().setText(currentEnd);
         }
     }
 

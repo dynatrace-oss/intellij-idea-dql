@@ -7,7 +7,6 @@ import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
-import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,12 +27,11 @@ public class QueryConfigurationAction extends AnAction implements CustomComponen
             e.getPresentation().setEnabledAndVisible(false);
             return;
         }
-        QueryConfiguration configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
-        if (configuration == null) {
+        DataContext ctx = e.getDataContext();
+        if (ctx.getData(DQLQueryConfigurationService.DATA_ORIGINAL_FILE) == null
+                && ctx.getData(DQLQueryConfigurationService.DATA_TENANT) == null) {
             e.getPresentation().setEnabledAndVisible(false);
-            return;
         }
-        e.getPresentation().putClientProperty(DQLQueryConfigurationService.QUERY_CONFIGURATION, configuration);
     }
 
     @Override
@@ -43,9 +41,9 @@ public class QueryConfigurationAction extends AnAction implements CustomComponen
 
     protected void saveCurrentQueryConfiguration(@NotNull AnActionEvent e) {
         PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
-        QueryConfiguration configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
-        if (configuration != null && file != null) {
-            DQLQueryConfigurationService.getInstance().updateConfiguration(file, configuration);
+        if (file != null) {
+            DQLQueryConfigurationService service = DQLQueryConfigurationService.getInstance();
+            service.updateConfiguration(file, service.getQueryConfiguration(file));
         }
     }
 

@@ -22,6 +22,7 @@ import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.editor.actions.QueryConfigurationAction;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
+import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 
 import javax.swing.*;
 import java.awt.*;
@@ -81,12 +82,19 @@ public class DQLQueryConfigurationLineMarkerProvider extends AbstractDQLQueryLin
 
                 @Override
                 public void uiDataSnapshot(@NotNull DataSink dataSink) {
-                    DQLQueryConfigurationService service = DQLQueryConfigurationService.getInstance();
+                    QueryConfiguration config = DQLQueryConfigurationService.getInstance().getQueryConfiguration(element.getContainingFile());
                     dataSink.lazy(CommonDataKeys.PSI_FILE, element::getContainingFile);
                     dataSink.lazy(CommonDataKeys.PSI_ELEMENT, () -> element);
                     dataSink.set(QueryConfigurationAction.SHOW_QUERY_EXECUTE_BUTTON, false);
                     dataSink.set(QueryConfigurationAction.SHOW_QUERY_VALIDATION_OPTION, false);
-                    dataSink.lazy(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, () -> service.getQueryConfiguration(element.getContainingFile()));
+                    dataSink.set(DQLQueryConfigurationService.DATA_TENANT, config.tenant());
+                    dataSink.set(DQLQueryConfigurationService.DATA_TIMEFRAME_START, config.timeframeStart());
+                    dataSink.set(DQLQueryConfigurationService.DATA_TIMEFRAME_END, config.timeframeEnd());
+                    dataSink.set(DQLQueryConfigurationService.DATA_DEFAULT_SCAN_LIMIT, config.defaultScanLimit());
+                    dataSink.set(DQLQueryConfigurationService.DATA_MAX_RESULT_BYTES, config.maxResultBytes());
+                    dataSink.set(DQLQueryConfigurationService.DATA_MAX_RESULT_RECORDS, config.maxResultRecords());
+                    dataSink.set(DQLQueryConfigurationService.DATA_ORIGINAL_FILE, config.originalFile());
+                    dataSink.set(DQLQueryConfigurationService.DATA_RUN_CONFIG_NAME, config.runConfigName());
                 }
             };
             panel.setBorder(JBUI.Borders.empty(5));

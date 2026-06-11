@@ -17,6 +17,7 @@ import pl.thedeem.intellij.common.components.TransparentScrollPane;
 import pl.thedeem.intellij.dql.DQLFileType;
 import pl.thedeem.intellij.dql.editor.actions.QueryConfigurationAction;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
+import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.settings.DQLSettings;
 
 import javax.swing.*;
@@ -45,7 +46,15 @@ public class DQLToolbarProvider implements EditorNotificationProvider {
             BorderLayoutPanel container = new SimpleDataProviderPanel() {
                 @Override
                 public void uiDataSnapshot(@NotNull DataSink dataSink) {
-                    dataSink.lazy(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, () -> DQLQueryConfigurationService.getInstance().getQueryConfiguration(file));
+                    QueryConfiguration config = DQLQueryConfigurationService.getInstance().getQueryConfiguration(file);
+                    dataSink.set(DQLQueryConfigurationService.DATA_TENANT, config.tenant());
+                    dataSink.set(DQLQueryConfigurationService.DATA_ORIGINAL_FILE, config.originalFile());
+                    dataSink.set(DQLQueryConfigurationService.DATA_RUN_CONFIG_NAME, config.runConfigName());
+                    dataSink.set(DQLQueryConfigurationService.DATA_MAX_RESULT_BYTES, config.maxResultBytes());
+                    dataSink.set(DQLQueryConfigurationService.DATA_MAX_RESULT_RECORDS, config.maxResultRecords());
+                    dataSink.set(DQLQueryConfigurationService.DATA_TIMEFRAME_START, config.timeframeStart());
+                    dataSink.set(DQLQueryConfigurationService.DATA_TIMEFRAME_END, config.timeframeEnd());
+                    dataSink.set(DQLQueryConfigurationService.DATA_DEFAULT_SCAN_LIMIT, config.defaultScanLimit());
                 }
             };
             ActionToolbar toolbar = createToolbarPanel(actionManager);

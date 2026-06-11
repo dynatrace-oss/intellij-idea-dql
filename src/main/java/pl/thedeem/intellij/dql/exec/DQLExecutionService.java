@@ -6,6 +6,7 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -40,6 +41,7 @@ import pl.thedeem.intellij.dql.fileProviders.DQLResultVirtualFile;
 import pl.thedeem.intellij.dql.services.dynatrace.DynatraceRestService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
 import pl.thedeem.intellij.dql.services.query.DQLQueryParserService;
+import pl.thedeem.intellij.dql.services.query.DQLQuerySelectorService;
 import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.services.ui.ConnectedTenantsServiceGroup;
 import pl.thedeem.intellij.dql.services.ui.TenantServiceGroup;
@@ -70,17 +72,19 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
     private final BorderLayoutPanel contentPanel;
     private final QueryConfiguration configuration;
     private final QueryConfiguration configurationCopy;
+    private final String selectedQuery;
 
     private String executionId;
     private DefaultActionGroup actions;
     private ZonedDateTime executionTime;
 
-    public DQLExecutionService(@NotNull String name, @NotNull QueryConfiguration params, @NotNull Project project, @NotNull DQLProcessHandler processHandler) {
+    public DQLExecutionService(@NotNull String name, @NotNull QueryConfiguration configuration, @Nullable String selectedQuery, @NotNull Project project, @NotNull DQLProcessHandler processHandler) {
         this.project = project;
         this.name = name;
         this.processHandler = processHandler;
-        this.configuration = params;
-        this.configurationCopy = params.copy();
+        this.configuration = configuration;
+        this.configurationCopy = configuration.copy();
+        this.selectedQuery = selectedQuery;
         this.contentPanel = new BorderLayoutPanel();
         this.contentPanel.addToCenter(new InformationComponent(DQLBundle.message("services.executeDQL.information.startedExecuting"), AllIcons.General.Information));
     }
@@ -178,13 +182,19 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
     @Override
     public void uiDataSnapshot(@NotNull DataSink dataSink) {
         dataSink.set(EXECUTION_SERVICE, this);
-        dataSink.set(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, configurationCopy);
         dataSink.set(QueryConfigurationAction.SHOW_TIMEFRAME, false);
         dataSink.set(QueryConfigurationAction.SHOW_TENANT_SELECTION, false);
         dataSink.set(QueryConfigurationAction.SHOW_CONFIGURATION, false);
         dataSink.set(QueryConfigurationAction.SHOW_QUERY_VALIDATION_OPTION, false);
+        dataSink.set(DQLQueryConfigurationService.DATA_TENANT, configurationCopy.tenant());
+        dataSink.set(DQLQueryConfigurationService.DATA_ORIGINAL_FILE, configurationCopy.originalFile());
+        dataSink.set(DQLQueryConfigurationService.DATA_RUN_CONFIG_NAME, configurationCopy.runConfigName());
+        dataSink.set(DQLQueryConfigurationService.DATA_DEFAULT_SCAN_LIMIT, configurationCopy.defaultScanLimit());
+        dataSink.set(DQLQueryConfigurationService.DATA_MAX_RESULT_BYTES, configurationCopy.maxResultBytes());
+        dataSink.set(DQLQueryConfigurationService.DATA_MAX_RESULT_RECORDS, configurationCopy.maxResultRecords());
+        dataSink.set(DQLQueryConfigurationService.DATA_TIMEFRAME_START, configurationCopy.timeframeStart());
+        dataSink.set(DQLQueryConfigurationService.DATA_TIMEFRAME_END, configurationCopy.timeframeEnd());
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -210,7 +220,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
             virtualFile = IntelliJUtils.getProjectRelativeFile(originalFile, project);
         }
         if (virtualFile == null) {
-            virtualFile = new DQLQueryConsoleVirtualFile(this.name, this.configuration.query())
+            virtualFile = new DQLQueryConsoleVirtualFile(this.name, Objects.requireNonNullElse(this.selectedQuery, ""))
                     .setInitialConfiguration(this.configuration);
         }
         return new OpenFileDescriptor(project, virtualFile);
@@ -221,20 +231,11 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         disposeAndClearContent();
         additionalActions.removeAll();
 
-        if (configuration.query() == null) {
-            contentPanel.addToCenter(new DQLExecutionErrorPanel(
-                    DQLBundle.message("services.executeDQL.errors.invalidPayload"),
-                    configuration.query(),
-                    project
-            ));
-            return;
-        }
-
         DynatraceTenant tenant = DynatraceTenantsService.getInstance().findTenant(configuration.tenant());
         if (tenant == null) {
             contentPanel.addToCenter(new DQLExecutionErrorPanel(
                     DQLBundle.message("services.executeDQL.errors.missingTenant", configuration.tenant()),
-                    configuration.query(),
+                    selectedQuery,
                     project
             ));
             return;
@@ -243,7 +244,16 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         DQLExecuteInProgressPanel progressPanel = new DQLExecuteInProgressPanel();
         contentPanel.addToCenter(progressPanel);
 
-        DQLExecutePayload payload = preparePayload(configuration, project);
+        DQLExecutePayload payload = preparePayload(project);
+        if (payload == null) {
+            contentPanel.addToCenter(new DQLExecutionErrorPanel(
+                    DQLBundle.message("services.executeDQL.errors.invalidPayload"),
+                    selectedQuery,
+                    project
+            ));
+            return;
+        }
+
         executionId = String.valueOf(payload.getQuery().hashCode());
         logger.info(String.format("Executing a DQL query with hash %s on the tenant: %s", executionId, tenant.getName()));
 
@@ -262,7 +272,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
                 Exception exception = error instanceof Exception e ? e : new RuntimeException(error);
                 ApplicationManager.getApplication().invokeLater(() -> {
                     disposeAndClearContent();
-                    contentPanel.add(new DQLExecutionErrorPanel(exception, configuration.query(), project));
+                    contentPanel.add(new DQLExecutionErrorPanel(exception, selectedQuery, project));
                     contentPanel.revalidate();
                     contentPanel.repaint();
                 });
@@ -273,7 +283,7 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
             ApplicationManager.getApplication().invokeLater(() -> {
                 disposeAndClearContent();
                 if (result.getResult() != null) {
-                    DQLExecutionResult resultPanel = new DQLExecutionResult(project, result.getResult(), executionTime, configuration);
+                    DQLExecutionResult resultPanel = new DQLExecutionResult(project, result.getResult(), executionTime, selectedQuery);
                     contentPanel.add(resultPanel);
                     additionalActions.addAction(resultPanel.getToolbarActions());
                 } else {
@@ -318,11 +328,15 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         return future.getNow(null);
     }
 
-    private @NotNull DQLExecutePayload preparePayload(@NotNull QueryConfiguration configuration, @NotNull Project project) {
-        List<DQLVariablesService.VariableDefinition> variables = loadVariables(configuration, project);
+    private @Nullable DQLExecutePayload preparePayload(@NotNull Project project) {
+        String query = ReadAction.compute(() -> resolveQuery(project));
+        if (query == null) {
+            return null;
+        }
+        List<DQLVariablesService.VariableDefinition> variables = ReadAction.compute(() -> loadVariables(configuration.originalFile(), project));
         DQLQueryParserService.ParseResult parsed = WriteCommandAction.runWriteCommandAction(
                 project,
-                (Computable<DQLQueryParserService.ParseResult>) () -> DQLQueryParserService.getInstance().getSubstitutedQuery(configuration.query(), project, variables));
+                (Computable<DQLQueryParserService.ParseResult>) () -> DQLQueryParserService.getInstance().getSubstitutedQuery(query, project, variables));
         DQLExecutePayload result = new DQLExecutePayload(parsed.parsed());
         if (!StringUtil.isBlank(configuration.timeframeStart())) {
             try {
@@ -348,13 +362,30 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         return result;
     }
 
-    private @NotNull List<DQLVariablesService.VariableDefinition> loadVariables(
-            @NotNull QueryConfiguration configuration, @NotNull Project project) {
+    private @Nullable String resolveQuery(@NotNull Project project) {
+        if (selectedQuery != null) {
+            return selectedQuery;
+        }
         String originalFile = configuration.originalFile();
         if (originalFile == null) {
-            return List.of();
+            return null;
         }
         VirtualFile virtualFile = IntelliJUtils.getProjectRelativeFile(originalFile, project);
+        if (virtualFile == null) {
+            return null;
+        }
+        PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
+        if (psiFile == null) {
+            return null;
+        }
+        return DQLQuerySelectorService.getInstance().getQueryText(psiFile);
+    }
+
+    private @NotNull List<DQLVariablesService.VariableDefinition> loadVariables(@Nullable String file, @NotNull Project project) {
+        if (file == null) {
+            return List.of();
+        }
+        VirtualFile virtualFile = IntelliJUtils.getProjectRelativeFile(file, project);
         if (virtualFile == null) {
             return List.of();
         }

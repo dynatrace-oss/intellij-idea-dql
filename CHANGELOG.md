@@ -6,6 +6,9 @@
 
 - The plugin now uses JetBrains-native code editors for embedded DQLs & JSONs (like the DQL results panel).
   This makes the JSON/DQL code use all JetBrains features like code folding, or proper syntax highlighting.
+- Code refactoring
+  - Updating translations to use proper casing, as required by JetBrains guidelines
+  - Changed the approach to manage DQL query configuration for executions
 
 ### Bug fixes
 

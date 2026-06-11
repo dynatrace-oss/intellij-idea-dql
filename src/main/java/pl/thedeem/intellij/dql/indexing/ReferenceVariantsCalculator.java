@@ -100,7 +100,7 @@ public record ReferenceVariantsCalculator(DQLFieldExpression field) {
         private String sanitizeNodeValue(String value) {
             return StringUtil.first(
                     value
-                            .replaceAll("\n", "")
+                            .replace("\n", "")
                             .replaceAll("\\s+", " "),
                     15, true
             );

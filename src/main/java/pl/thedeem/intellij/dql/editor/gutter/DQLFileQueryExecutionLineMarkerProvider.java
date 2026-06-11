@@ -108,7 +108,14 @@ public class DQLFileQueryExecutionLineMarkerProvider extends AbstractDQLQueryLin
                         .setParent(original.getDataContext())
                         .add(CommonDataKeys.PSI_FILE, InjectedLanguageManager.getInstance(marked.getProject()).getTopLevelFile(marked))
                         .add(CommonDataKeys.PSI_ELEMENT, marked)
-                        .add(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, configuration)
+                        .add(DQLQueryConfigurationService.DATA_TENANT, configuration.tenant())
+                        .add(DQLQueryConfigurationService.DATA_TIMEFRAME_START, configuration.timeframeStart())
+                        .add(DQLQueryConfigurationService.DATA_TIMEFRAME_END, configuration.timeframeEnd())
+                        .add(DQLQueryConfigurationService.DATA_DEFAULT_SCAN_LIMIT, configuration.defaultScanLimit())
+                        .add(DQLQueryConfigurationService.DATA_MAX_RESULT_BYTES, configuration.maxResultBytes())
+                        .add(DQLQueryConfigurationService.DATA_MAX_RESULT_RECORDS, configuration.maxResultRecords())
+                        .add(DQLQueryConfigurationService.DATA_ORIGINAL_FILE, configuration.originalFile())
+                        .add(DQLQueryConfigurationService.DATA_RUN_CONFIG_NAME, configuration.runConfigName())
                         .add(ExecuteDQLQueryAction.DQL_QUERY, DQLQuerySelectorService.getInstance().getQueryText(query))
                         .build();
                 return original.withDataContext(customContext);

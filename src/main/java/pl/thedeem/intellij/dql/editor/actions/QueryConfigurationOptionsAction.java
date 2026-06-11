@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.psi.PsiFile;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
@@ -44,42 +45,51 @@ public class QueryConfigurationOptionsAction extends AnAction implements CustomC
 
     @Override
     public void update(@NotNull AnActionEvent e) {
-        QueryConfiguration configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
-        if (configuration == null) {
+        DataContext ctx = e.getDataContext();
+        if (ctx.getData(DQLQueryConfigurationService.DATA_ORIGINAL_FILE) == null
+                && ctx.getData(DQLQueryConfigurationService.DATA_TENANT) == null) {
             e.getPresentation().setEnabledAndVisible(false);
             return;
         }
-        e.getPresentation().putClientProperty(DQLQueryConfigurationService.QUERY_CONFIGURATION, configuration);
+        e.getPresentation().putClientProperty(DQLQueryConfigurationService.DEFAULT_SCAN_LIMIT,
+                ctx.getData(DQLQueryConfigurationService.DATA_DEFAULT_SCAN_LIMIT));
+        e.getPresentation().putClientProperty(DQLQueryConfigurationService.MAX_RESULT_BYTES,
+                ctx.getData(DQLQueryConfigurationService.DATA_MAX_RESULT_BYTES));
+        e.getPresentation().putClientProperty(DQLQueryConfigurationService.MAX_RESULT_RECORDS,
+                ctx.getData(DQLQueryConfigurationService.DATA_MAX_RESULT_RECORDS));
         e.getPresentation().putClientProperty(SHOW_OPTIONS_INITIALLY_KEY, e.getData(SHOW_OPTIONS_INITIALLY));
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        QueryConfiguration configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
-        if (configuration != null) {
+        PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
+        if (file != null) {
+            DQLQueryConfigurationService service = DQLQueryConfigurationService.getInstance();
+            QueryConfiguration configuration = service.getQueryConfiguration(file);
             configuration.setDefaultScanLimit(parseLong(myQueryConfigurationComponent.scanLimit().getText()));
             configuration.setMaxResultBytes(parseLong(myQueryConfigurationComponent.maxBytes().getText()));
             configuration.setMaxResultRecords(parseLong(myQueryConfigurationComponent.maxRecords().getText()));
+            service.updateConfiguration(file, configuration);
         }
     }
 
     @Override
     public void updateCustomComponent(@NotNull JComponent component, @NotNull Presentation presentation) {
         myQueryConfigurationComponent.setVisible(!Boolean.TRUE.equals(optionsHidden));
-        QueryConfiguration config = presentation.getClientProperty(DQLQueryConfigurationService.QUERY_CONFIGURATION);
-        if (config != null) {
-            if (!myQueryConfigurationComponent.scanLimit().isFocusOwner()
-                    && !Objects.equals(parseLong(myQueryConfigurationComponent.scanLimit().getText()), config.defaultScanLimit())) {
-                myQueryConfigurationComponent.scanLimit().setText(String.valueOf(config.defaultScanLimit()));
-            }
-            if (!myQueryConfigurationComponent.maxBytes().isFocusOwner()
-                    && !Objects.equals(parseLong(myQueryConfigurationComponent.maxBytes().getText()), config.maxResultBytes())) {
-                myQueryConfigurationComponent.maxBytes().setText(String.valueOf(config.maxResultBytes()));
-            }
-            if (!myQueryConfigurationComponent.maxRecords().isFocusOwner()
-                    && !Objects.equals(parseLong(myQueryConfigurationComponent.maxRecords().getText()), config.maxResultRecords())) {
-                myQueryConfigurationComponent.maxRecords().setText(String.valueOf(config.maxResultRecords()));
-            }
+        Long scanLimit = presentation.getClientProperty(DQLQueryConfigurationService.DEFAULT_SCAN_LIMIT);
+        Long maxBytes = presentation.getClientProperty(DQLQueryConfigurationService.MAX_RESULT_BYTES);
+        Long maxRecords = presentation.getClientProperty(DQLQueryConfigurationService.MAX_RESULT_RECORDS);
+        if (!myQueryConfigurationComponent.scanLimit().isFocusOwner()
+                && !Objects.equals(parseLong(myQueryConfigurationComponent.scanLimit().getText()), scanLimit)) {
+            myQueryConfigurationComponent.scanLimit().setText(String.valueOf(scanLimit));
+        }
+        if (!myQueryConfigurationComponent.maxBytes().isFocusOwner()
+                && !Objects.equals(parseLong(myQueryConfigurationComponent.maxBytes().getText()), maxBytes)) {
+            myQueryConfigurationComponent.maxBytes().setText(String.valueOf(maxBytes));
+        }
+        if (!myQueryConfigurationComponent.maxRecords().isFocusOwner()
+                && !Objects.equals(parseLong(myQueryConfigurationComponent.maxRecords().getText()), maxRecords)) {
+            myQueryConfigurationComponent.maxRecords().setText(String.valueOf(maxRecords));
         }
         component.revalidate();
         component.repaint();
