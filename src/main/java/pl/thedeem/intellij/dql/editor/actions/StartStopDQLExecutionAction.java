@@ -95,12 +95,15 @@ public class StartStopDQLExecutionAction extends AnAction {
             if (service.isRunning()) {
                 stopService(service);
             } else {
+                DataContext ctx = e.getDataContext();
+                QueryConfiguration rerunConfig = (ctx.getData(DQLQueryConfigurationService.DATA_TENANT) != null
+                        || ctx.getData(DQLQueryConfigurationService.DATA_ORIGINAL_FILE) != null)
+                        ? DQLQueryConfigurationService.getInstance().fromDataContext(ctx)
+                        : service.getConfiguration();
                 startService(project, new DQLExecutionService(
                         service.getServiceId(),
-                        Objects.requireNonNullElseGet(
-                                e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION),
-                                service::getConfiguration
-                        ),
+                        rerunConfig,
+                        null,
                         project,
                         new DQLProcessHandler()
                 ));
@@ -131,13 +134,12 @@ public class StartStopDQLExecutionAction extends AnAction {
 
     private void startService(@NotNull Project project, @NotNull AnActionEvent e, @NotNull PsiFile file) {
         Editor editor = getEditor(e);
-        QueryConfiguration config = Objects.requireNonNullElseGet(
-                e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION),
-                () -> DQLQueryConfigurationService.getInstance().getQueryConfiguration(file)
-        );
+        DataContext ctx = e.getDataContext();
+        QueryConfiguration config = (ctx.getData(DQLQueryConfigurationService.DATA_TENANT) != null
+                || ctx.getData(DQLQueryConfigurationService.DATA_ORIGINAL_FILE) != null)
+                ? DQLQueryConfigurationService.getInstance().fromDataContext(ctx)
+                : DQLQueryConfigurationService.getInstance().getQueryConfiguration(file);
         DQLQuerySelectorService.getInstance().getQueryFromEditorContext(file, editor, (query) -> {
-            QueryConfiguration configuration = config.copy();
-            configuration.setQuery(query);
             e.getPresentation().setEnabled(false);
             DQLExecutionService newService = new DQLExecutionService(
                     DQLBundle.message(
@@ -147,7 +149,8 @@ public class StartStopDQLExecutionAction extends AnAction {
                                     file::getName
                             )
                     ),
-                    configuration,
+                    config.copy(),
+                    query,
                     project,
                     new DQLProcessHandler()
             );

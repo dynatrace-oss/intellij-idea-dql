@@ -48,24 +48,24 @@ public class DQLSplitLineHandler extends EditorActionHandler {
             return;
         }
 
-        QueryConfiguration configuration = Objects.requireNonNullElse(
-                e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION),
-                DQLQueryConfigurationService.getInstance().getQueryConfiguration(dqlFile)
-        );
+        DQLQueryConfigurationService configService = DQLQueryConfigurationService.getInstance();
+        QueryConfiguration fromContext = configService.fromDataContext(e);
+        QueryConfiguration configuration = (fromContext.tenant() != null || fromContext.originalFile() != null)
+                ? fromContext
+                : configService.getQueryConfiguration(dqlFile);
 
         if (configuration.tenant() == null) {
             originalHandler.execute(editor, caret, e);
             return;
         }
         DQLQuerySelectorService.getInstance().getQueryFromEditorContext(dqlFile, editor, (query) -> {
-            QueryConfiguration config = configuration.copy();
-            config.setQuery(query);
             DQLExecutionService service = new DQLExecutionService(
                     DQLBundle.message(
                             "services.executeDQL.serviceName",
                             Objects.requireNonNullElseGet(e.getData(PREFERRED_EXECUTION_NAME), dqlFile::getName)
                     ),
-                    config,
+                    configuration.copy(),
+                    query,
                     project,
                     new DQLProcessHandler()
             );

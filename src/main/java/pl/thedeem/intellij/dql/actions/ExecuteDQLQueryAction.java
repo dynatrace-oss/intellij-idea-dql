@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.services.ProjectServicesManager;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLFileType;
@@ -64,26 +65,23 @@ public class ExecuteDQLQueryAction extends AnAction {
             return;
         }
         Project project = file.getProject();
-        if (e.getData(DQL_QUERY) != null) {
-            QueryConfiguration copy = configuration.copy();
-            copy.setQuery(e.getData(DQL_QUERY));
-            executeDQLQuery(e, file, copy, project);
+        String preselectedQuery = e.getData(DQL_QUERY);
+        if (preselectedQuery != null) {
+            executeDQLQuery(e, file, configuration.copy(), preselectedQuery, project);
             return;
         }
-        DQLQuerySelectorService.getInstance().getQueryFromEditorContext(file, editor, (query) -> {
-            QueryConfiguration copy = configuration.copy();
-            copy.setQuery(query);
-            executeDQLQuery(e, file, copy, project);
-        });
+        DQLQuerySelectorService.getInstance().getQueryFromEditorContext(file, editor, (query) ->
+                executeDQLQuery(e, file, configuration.copy(), query, project));
     }
 
-    private static void executeDQLQuery(@NotNull AnActionEvent e, @NotNull PsiFile file, @NotNull QueryConfiguration configuration, @NotNull Project project) {
+    private static void executeDQLQuery(@NotNull AnActionEvent e, @NotNull PsiFile file, @NotNull QueryConfiguration configuration, @Nullable String selectedQuery, @NotNull Project project) {
         DQLExecutionService service = new DQLExecutionService(
                 DQLBundle.message(
                         "services.executeDQL.serviceName",
                         Objects.requireNonNullElseGet(e.getData(PREFERRED_EXECUTION_NAME), file::getName)
                 ),
                 configuration,
+                selectedQuery,
                 project,
                 new DQLProcessHandler()
         );
@@ -96,12 +94,15 @@ public class ExecuteDQLQueryAction extends AnAction {
     }
 
     protected @NotNull QueryConfiguration getConfiguration(AnActionEvent e, PsiFile file) {
-        return Objects.requireNonNullElse(
-                e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION),
-                file != null
-                        ? DQLQueryConfigurationService.getInstance().getQueryConfiguration(file)
-                        : DQLQueryConfigurationService.getInstance().createDefaultConfiguration()
-        );
+        DataContext ctx = e.getDataContext();
+        if (ctx.getData(DQLQueryConfigurationService.DATA_TENANT) != null
+                || ctx.getData(DQLQueryConfigurationService.DATA_ORIGINAL_FILE) != null) {
+            return DQLQueryConfigurationService.getInstance().fromDataContext(ctx);
+        }
+        if (file != null) {
+            return DQLQueryConfigurationService.getInstance().getQueryConfiguration(file);
+        }
+        return DQLQueryConfigurationService.getInstance().createDefaultConfiguration();
     }
 
     protected boolean isNotRelatedToDQL(@NotNull AnActionEvent e) {

@@ -4,12 +4,13 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLBundle;
+import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.services.query.DQLQueryConfigurationService;
-import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
@@ -73,15 +74,17 @@ public class TenantSelectorAction extends ComboBoxAction {
         return group;
     }
 
-    protected @Nullable String getSelectedTenant(@NotNull DataContext e) {
-        QueryConfiguration config = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
-        return config != null ? config.tenant() : null;
+    protected @Nullable String getSelectedTenant(@NotNull DataContext context) {
+        return context.getData(DQLQueryConfigurationService.DATA_TENANT);
     }
 
     protected void updateSelectedTenant(@NotNull String selectedTenant, @NotNull AnActionEvent e) {
-        QueryConfiguration config = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
-        if (config != null) {
+        PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
+        if (file != null) {
+            DQLQueryConfigurationService service = DQLQueryConfigurationService.getInstance();
+            QueryConfiguration config = service.getQueryConfiguration(file);
             config.setTenant(selectedTenant);
+            service.updateConfiguration(file, config);
         }
     }
 

@@ -86,7 +86,14 @@ public class DQLQueryConfigurationLineMarkerProvider extends AbstractDQLQueryLin
                     dataSink.lazy(CommonDataKeys.PSI_ELEMENT, () -> element);
                     dataSink.set(QueryConfigurationAction.SHOW_QUERY_EXECUTE_BUTTON, false);
                     dataSink.set(QueryConfigurationAction.SHOW_QUERY_VALIDATION_OPTION, false);
-                    dataSink.lazy(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, () -> service.getQueryConfiguration(element.getContainingFile()));
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_TENANT, () -> service.getQueryConfiguration(element.getContainingFile()).tenant());
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_TIMEFRAME_START, () -> service.getQueryConfiguration(element.getContainingFile()).timeframeStart());
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_TIMEFRAME_END, () -> service.getQueryConfiguration(element.getContainingFile()).timeframeEnd());
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_DEFAULT_SCAN_LIMIT, () -> service.getQueryConfiguration(element.getContainingFile()).defaultScanLimit());
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_MAX_RESULT_BYTES, () -> service.getQueryConfiguration(element.getContainingFile()).maxResultBytes());
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_MAX_RESULT_RECORDS, () -> service.getQueryConfiguration(element.getContainingFile()).maxResultRecords());
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_ORIGINAL_FILE, () -> service.getQueryConfiguration(element.getContainingFile()).originalFile());
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_RUN_CONFIG_NAME, () -> service.getQueryConfiguration(element.getContainingFile()).runConfigName());
                 }
             };
             panel.setBorder(JBUI.Borders.empty(5));

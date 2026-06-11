@@ -39,9 +39,9 @@ public class SaveQueryConfigurationAction extends AnAction {
         }
         PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
         RunManager runManager = RunManager.getInstance(project);
-        QueryConfiguration configuration = e.getData(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION);
+        QueryConfiguration configuration = DQLQueryConfigurationService.getInstance().fromDataContext(e.getDataContext());
 
-        if (configuration == null) {
+        if (configuration.tenant() == null && configuration.originalFile() == null) {
             DQLNotificationsService.getInstance(project).showErrorNotification(
                     DQLBundle.message("editor.action.saveConfigurationAsRunConfig.notifications.title"),
                     DQLBundle.message("editor.action.saveConfigurationAsRunConfig.notifications.missingConfiguration"),

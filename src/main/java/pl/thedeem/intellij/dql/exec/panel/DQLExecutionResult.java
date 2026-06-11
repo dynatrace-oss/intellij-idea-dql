@@ -18,7 +18,6 @@ import pl.thedeem.intellij.common.sdk.model.DQLResult;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.DQLIcon;
 import pl.thedeem.intellij.dql.DynatraceQueryLanguage;
-import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,7 +28,7 @@ public class DQLExecutionResult extends BorderLayoutPanel implements Disposable 
     private final DefaultActionGroup customActions;
     private final DefaultActionGroup panelToolbar;
     private final DQLResult result;
-    private final QueryConfiguration params;
+    private final String query;
 
     private final FormattedLanguageText queryPanel;
     private final FormattedLanguageText jsonPanel;
@@ -39,12 +38,12 @@ public class DQLExecutionResult extends BorderLayoutPanel implements Disposable 
     private final JBCardLayout cardLayout;
     private final JBPanel<?> cardPanel;
 
-    public DQLExecutionResult(@NotNull Project project, @NotNull DQLResult result, @Nullable ZonedDateTime executionTime, @Nullable QueryConfiguration params) {
+    public DQLExecutionResult(@NotNull Project project, @NotNull DQLResult result, @Nullable ZonedDateTime executionTime, @Nullable String query) {
         withBorder(JBUI.Borders.empty()).andTransparent();
 
         this.result = result;
         this.project = project;
-        this.params = params;
+        this.query = query;
 
         this.customActions = new DefaultActionGroup();
         this.panelToolbar = createPanelToolbar();
@@ -135,8 +134,8 @@ public class DQLExecutionResult extends BorderLayoutPanel implements Disposable 
             case USED_QUERY -> {
                 if (result.getGrailMetadata() != null) {
                     queryPanel.showResult(() -> result.getGrailMetadata().getQuery());
-                } else if (params != null) {
-                    queryPanel.showResult(params::query);
+                } else if (query != null) {
+                    queryPanel.showResult(() -> query);
                 }
             }
             case JSON -> jsonPanel.showResult(() -> IntelliJUtils.prettyPrintJson(result.getRecords()));

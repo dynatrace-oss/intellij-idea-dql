@@ -45,7 +45,15 @@ public class DQLToolbarProvider implements EditorNotificationProvider {
             BorderLayoutPanel container = new SimpleDataProviderPanel() {
                 @Override
                 public void uiDataSnapshot(@NotNull DataSink dataSink) {
-                    dataSink.lazy(DQLQueryConfigurationService.DATA_QUERY_CONFIGURATION, () -> DQLQueryConfigurationService.getInstance().getQueryConfiguration(file));
+                    DQLQueryConfigurationService service = DQLQueryConfigurationService.getInstance();
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_TENANT, () -> service.getQueryConfiguration(file).tenant());
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_TIMEFRAME_START, () -> service.getQueryConfiguration(file).timeframeStart());
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_TIMEFRAME_END, () -> service.getQueryConfiguration(file).timeframeEnd());
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_DEFAULT_SCAN_LIMIT, () -> service.getQueryConfiguration(file).defaultScanLimit());
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_MAX_RESULT_BYTES, () -> service.getQueryConfiguration(file).maxResultBytes());
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_MAX_RESULT_RECORDS, () -> service.getQueryConfiguration(file).maxResultRecords());
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_ORIGINAL_FILE, () -> service.getQueryConfiguration(file).originalFile());
+                    dataSink.lazy(DQLQueryConfigurationService.DATA_RUN_CONFIG_NAME, () -> service.getQueryConfiguration(file).runConfigName());
                 }
             };
             ActionToolbar toolbar = createToolbarPanel(actionManager);
