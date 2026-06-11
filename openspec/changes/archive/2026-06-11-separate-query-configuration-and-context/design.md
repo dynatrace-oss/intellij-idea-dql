@@ -5,6 +5,7 @@ a pre-fetched bundle: callers load file content and parse variables upfront, the
 opaque object.
 
 The problem is that two services already own this data:
+
 - `DQLQuerySelectorService` — retrieves the query text for a given `PsiFile`
 - `DQLVariablesService` — parses and returns variable definitions from a `PsiFile`
 
