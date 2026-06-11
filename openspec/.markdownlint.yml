@@ -1,7 +1,0 @@
-extends: ../.markdownlint.yml
-
-# emphasis used as headings in spec/proposal documents
-MD036: false
-
-# first line not required to be a top-level heading in openspec documents
-MD041: false
