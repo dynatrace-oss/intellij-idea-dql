@@ -347,6 +347,7 @@
                              action="EditorSplitLine"
                              implementationClass="pl.thedeem.intellij.dql.editor.DQLSplitLineHandler"
                              order="first"/>
+        <breadcrumbsInfoProvider implementation="pl.thedeem.intellij.dql.editor.DQLBreadcrumbsProvider"/>
         <!-- endregion DQL -->
         <!-- region DPL -->
         <fileType name="DPL"

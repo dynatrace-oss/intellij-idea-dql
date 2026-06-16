@@ -6,6 +6,9 @@
 
 - The plugin now uses JetBrains-native code editors for embedded DQLs & JSONs (like the DQL results panel).
   This makes the JSON/DQL code use all JetBrains features like code folding, or proper syntax highlighting.
+- DQL editors now support breadcrumbs and sticky lines (sticky scroll) — the entry command of every query
+  and each nested subquery stays pinned at the top of the viewport while scrolling through long,
+  multi-stage DQL queries. You can disable this feature in standard sticky lines IDE settings.
 - Code refactoring
   - Updating translations to use proper casing, as required by JetBrains guidelines
   - Changed the approach to manage DQL query configuration for executions
