@@ -329,11 +329,12 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
     }
 
     private @Nullable DQLExecutePayload preparePayload(@NotNull Project project) {
-        String query = ReadAction.compute(() -> resolveQuery(project));
+        String query = ReadAction.nonBlocking(() -> resolveQuery(project)).executeSynchronously();
         if (query == null) {
             return null;
         }
-        List<DQLVariablesService.VariableDefinition> variables = ReadAction.compute(() -> loadVariables(configuration.originalFile(), project));
+        List<DQLVariablesService.VariableDefinition> variables = ReadAction.nonBlocking(
+                () -> loadVariables(configuration.originalFile(), project)).executeSynchronously();
         DQLQueryParserService.ParseResult parsed = WriteCommandAction.runWriteCommandAction(
                 project,
                 (Computable<DQLQueryParserService.ParseResult>) () -> DQLQueryParserService.getInstance().getSubstitutedQuery(query, project, variables));
@@ -405,3 +406,4 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         contentPanel.removeAll();
     }
 }
+

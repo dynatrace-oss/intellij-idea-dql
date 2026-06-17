@@ -124,7 +124,8 @@ public class ExecuteDQLRunConfiguration extends RunConfigurationBase<ExecuteDQLR
         options.setMaxResultBytes(configuration.maxResultBytes());
         options.setMaxResultRecords(configuration.maxResultRecords());
         if (file != null) {
-            options.setDqlQuery(ReadAction.compute(() -> DQLQuerySelectorService.getInstance().getQueryText(file)));
+            String query = ReadAction.nonBlocking(() -> DQLQuerySelectorService.getInstance().getQueryText(file)).executeSynchronously();
+            options.setDqlQuery(query);
         }
     }
 
