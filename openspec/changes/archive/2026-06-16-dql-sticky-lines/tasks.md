@@ -6,9 +6,9 @@
   handling
 
 > Outcome: IntelliJ does not expose a public `StickyLinesProvider` extension point — sticky lines are
-> driven entirely by `com.intellij.ui.breadcrumbs.BreadcrumbsProvider` (extension point
-> `com.intellij.ui.breadcrumbs`). Implementation pivoted to a `BreadcrumbsProvider`; no unstable-API
-> suppression is required.
+> driven entirely by `com.intellij.ui.breadcrumbs.BreadcrumbsProvider`, registered via the
+> `<breadcrumbsInfoProvider>` tag in `plugin.xml`. Implementation pivoted to a `BreadcrumbsProvider`; no
+> unstable-API suppression is required.
 
 ## 2. Implement DQLBreadcrumbsProvider
 
@@ -18,9 +18,7 @@
   line is pinned (sticky lines walk PSI ancestors automatically)
 - [x] 2.3 In `getElementInfo`, return the first `DQLCommand` name for `DQLQuery` (guarding against an empty
   `getCommandList()`)
-- [x] 2.4 Accept any `DQLCommand` whose subtree contains a `DQLSubqueryExpression` so the operator (`append`/`join`/
-  `lookup`) line sticks immediately before the subquery's entry sticky line
-- [x] 2.5 Return empty info / `false` from `acceptElement` when the PSI is incomplete so the editor never throws
+- [x] 2.4 Return empty info / `false` from `acceptElement` when the PSI is incomplete so the editor never throws
 
 ## 3. Register Extension
 

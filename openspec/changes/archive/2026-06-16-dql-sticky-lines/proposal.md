@@ -8,18 +8,16 @@ significantly more readable and navigable.
 
 ## What Changes
 
-- Add a `DqlStickyLinesProvider` that identifies sticky line candidates in a DQL document.
+- Add a `DQLBreadcrumbsProvider` that registers breadcrumbs for DQL queries, which the IDE uses to drive sticky lines.
 - The top-level pipeline entry command (any data source command: `fetch`, `data`, `timeseries`, `metrics`, `describe`,
-  `fieldsSnapshot`, `load`, `smartscapeEdges`, `smartscapeNodes`) is pinned as the first sticky line.
-- Subquery entry points pin two sticky lines: the enclosing operator (`append`, `join`, `lookup`, etc.) and the
-  subquery's own entry command, displayed as `append → fetch` or `join → data`.
-- Register the provider with IntelliJ's sticky-lines extension point for the DQL language.
+  `fieldsSnapshot`, `load`, `smartscapeEdges`, `smartscapeNodes`) is pinned as a sticky line.
+- For subqueries: only the subquery's own entry command is shown as a sticky line (the outer operator command is not).
+- Register the provider with IntelliJ's `<breadcrumbsInfoProvider>` extension point for the DQL language.
 
 ## Capabilities
 
 ### New Capabilities
 - `dql-sticky-lines`: Sticky lines support for DQL editors — pins the active pipeline entry command and each subquery's entry command as the user scrolls through a query.
-  headers as the user scrolls through a query.
 
 ### Modified Capabilities
 
@@ -27,8 +25,8 @@ significantly more readable and navigable.
 
 ## Impact
 
-- **New source files**: `DqlStickyLinesProvider` (Kotlin), likely under the editor or language support package.
-- **Plugin descriptor**: `plugin.xml` needs a new extension registration for the sticky-lines extension point.
+- **New source files**: `DQLBreadcrumbsProvider` (Java), under `pl.thedeem.intellij.dql.editor`.
+- **Plugin descriptor**: `plugin.xml` needs a new `<breadcrumbsInfoProvider>` extension registration.
 - **DQL PSI / structure**: The provider will walk the PSI tree produced by the existing DQL grammar to locate pipeline
   commands and subquery blocks — read-only usage of existing PSI nodes.
 - **No API changes** and no breaking changes.
