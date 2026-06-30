@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-06-30
+
 ### Features
 
 - The plugin now uses JetBrains-native code editors for embedded DQLs & JSONs (like the DQL results panel).
@@ -69,20 +71,17 @@
      max_oom_kills = max(dt.kubernetes.container.oom_kills, default: 0, rollup: sum)
    }
    ```
-
 - `summarize` command will now validate if the `aggregation` parameter contains a valid aggregation function.
 - aggregations are now properly validated within nested expressions, for example:
 
   ```dqlpart
   | summarize mbytes = sum(bytes) / 1024 / 1024
   ```
-
 - `join` conditions now support recursive `[]` accessors for `left` and `right` fields, for example:
 
   ```dqlexpr
   left[k8s.pod.uid] == right[objectRef][uid]
   ```
-
 - Much better support for the `alias` parameters - added conflicts detection with assignment expressions and multiple
   `alias` definitions for the same field.
 - Supporting negative values for the DQL time alignment operator, for example: `-1d@d`
@@ -410,34 +409,20 @@
   - the file supports specifying `record` (JSON object), `array` (JSON array), `string`, `boolean`, `number`, and
     `null` types.
 
-[Unreleased]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.9.0...HEAD
-
-[1.9.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.8.1...1.9.0
-
-[1.8.1]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.8.0...1.8.1
-
-[1.8.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.7.0...1.8.0
-
-[1.7.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.6.0...1.7.0
-
-[1.6.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.5.0...1.6.0
-
-[1.5.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.4.0...1.5.0
-
-[1.4.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.3.0...1.4.0
-
-[1.3.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.2.0...1.3.0
-
-[1.2.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.1.0...1.2.0
-
-[1.1.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.0.4...1.1.0
-
-[1.0.4]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.0.3...1.0.4
-
-[1.0.3]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.0.2...1.0.3
-
-[1.0.2]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.0.1...1.0.2
-
-[1.0.1]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/1.0.0...1.0.1
-
-[1.0.0]: https://github.com/dynatrace-oss/intellij-idea-dql/commits/1.0.0
+[Unreleased]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.9.0...v1.10.0
+[1.9.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.8.1...v1.9.0
+[1.8.1]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.8.0...v1.8.1
+[1.8.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.7.0...v1.8.0
+[1.7.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.6.0...v1.7.0
+[1.6.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.5.0...v1.6.0
+[1.5.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.4.0...v1.5.0
+[1.4.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.3.0...v1.4.0
+[1.3.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.4...v1.1.0
+[1.0.4]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.3...v1.0.4
+[1.0.3]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.2...v1.0.3
+[1.0.2]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/dynatrace-oss/intellij-idea-dql/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/dynatrace-oss/intellij-idea-dql/commits/v1.0.0
