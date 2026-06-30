@@ -32,7 +32,7 @@ public class DQLFunctionDocumentationProvider extends BaseDocumentationProvider<
             }
             Signature signature = element.getSignature();
             if (signature != null) {
-                if (signature.outputs() != null && !signature.outputs().isEmpty()) {
+                if (!signature.outputs().isEmpty()) {
                     sections.add(buildTitledSection(
                             DQLBundle.message("documentation.function.returnValues"),
                             prepareValuesDescription(signature.outputs(), element.getProject())));
