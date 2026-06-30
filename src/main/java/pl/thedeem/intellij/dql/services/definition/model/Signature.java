@@ -24,11 +24,11 @@ public final class Signature {
     }
 
     public List<Parameter> parameters() {
-        return parameters;
+        return Objects.requireNonNullElseGet(parameters, List::of);
     }
 
     public List<String> outputs() {
-        return outputs;
+        return Objects.requireNonNullElseGet(outputs, List::of);
     }
 
     public Boolean experimental() {
@@ -71,7 +71,9 @@ public final class Signature {
     }
 
     public @NotNull List<Parameter> requiredParameters() {
-        List<Parameter> params = Objects.requireNonNullElse(parameters, List.of());
-        return params.stream().filter(p -> !p.hidden() && Boolean.TRUE.equals(p.required())).toList();
+        return parameters()
+                .stream()
+                .filter(p -> !p.hidden() && Boolean.TRUE.equals(p.required()))
+                .toList();
     }
 }

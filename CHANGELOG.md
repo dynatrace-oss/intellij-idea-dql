@@ -16,6 +16,7 @@
 ### Bug fixes
 
 - Removing JetBrains internal API usages
+- Fixing NullPointerException when autocompleting parameters for a function without any parameters
 
 ## [1.9.0] - 2026-05-26
 
