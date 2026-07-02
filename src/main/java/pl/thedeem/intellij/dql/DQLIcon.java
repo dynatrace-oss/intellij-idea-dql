@@ -37,6 +37,8 @@ public interface DQLIcon extends Icons {
     Icon QUERY_METADATA = IconLoader.getIcon("/icons/query-metadata.svg", Icons.class);
     Icon QUERY_USED = IconLoader.getIcon("/icons/used-query.svg", Icons.class);
 
+    Icon DQL_VARIABLES_FILE = Icons.layer(AllIcons.FileTypes.Json, DYNATRACE_LOGO, SwingConstants.SOUTH_EAST);
+
     Icon EXTERNAL_VALIDATION_ENABLED = Icons.layerScaled(AllIcons.General.InspectionsOK, AllIcons.Actions.Lightning, 0.5f, SwingConstants.SOUTH_EAST);
     Icon FILTER_ACTIVE = Icons.layer(AllIcons.General.Filter, AllIcons.General.WarningDecorator, SwingConstants.NORTH_EAST);
 

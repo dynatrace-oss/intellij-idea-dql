@@ -49,6 +49,12 @@
                 language="DQL"
                 implementationClass="pl.thedeem.intellij.dql.documentation.DQLDocumentationProvider"/>
 
+        <!-- dql-variables.json integration -->
+        <referencesSearch
+                implementation="pl.thedeem.intellij.dql.indexing.search.DQLVariableDefinitionReferencesSearcher"/>
+        <iconProvider
+                implementation="pl.thedeem.intellij.dql.services.variables.DQLVariablesIconProvider"/>
+
         <!-- References -->
         <psi.referenceContributor
                 language="DQL"
@@ -606,6 +612,11 @@
                 implementationClass="pl.thedeem.intellij.dqlpart.DQLPartParserDefinition"/>
         <quoteHandler className="pl.thedeem.intellij.dql.code.DQLQuoteHandler" fileType="DQLPart"/>
         <!-- endregion DQLPart -->
+    </extensions>
+
+    <extensions defaultExtensionNs="JavaScript.JsonSchema">
+        <ProviderFactory
+                implementation="pl.thedeem.intellij.dql.services.variables.schema.DQLVariablesJsonSchemaProviderFactory"/>
     </extensions>
 
     <actions resource-bundle="messages.DQLBundle">

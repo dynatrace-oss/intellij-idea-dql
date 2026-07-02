@@ -4,23 +4,25 @@ import com.intellij.json.JsonFileType;
 import com.intellij.json.psi.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.dql.DQLFileType;
+import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
+import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
 import pl.thedeem.intellij.dql.psi.elements.VariableElement;
 
 import java.nio.file.Path;
 import java.util.*;
 
 public final class DQLVariablesServiceImpl implements DQLVariablesService {
-    private final static String DQL_VARIABLES_FILE = "dql-variables.json";
     private final Project project;
 
     public DQLVariablesServiceImpl(Project project) {
@@ -67,6 +69,51 @@ public final class DQLVariablesServiceImpl implements DQLVariablesService {
             }
         }
         return result;
+    }
+
+    @Override
+    public @NotNull List<DQLVariableExpression> findVariableUsages(@NotNull JsonProperty definition) {
+        PsiFile definitionFile = definition.getContainingFile();
+        if (definitionFile == null || definitionFile.getVirtualFile() == null
+                || !DQL_VARIABLES_FILE.equals(definitionFile.getVirtualFile().getName())) {
+            return List.of();
+        }
+        String variableName = definition.getName();
+        Path definitionPath = Path.of(definitionFile.getVirtualFile().getPath()).normalize();
+        Path definitionDirectory = definitionPath.getParent();
+        if (definitionDirectory == null) {
+            return List.of();
+        }
+
+        List<DQLVariableExpression> result = new ArrayList<>();
+        Collection<VirtualFile> dqlFiles = FileTypeIndex.getFiles(DQLFileType.INSTANCE, GlobalSearchScope.allScope(project));
+        PsiManager psiManager = PsiManager.getInstance(project);
+        for (VirtualFile dqlVirtualFile : dqlFiles) {
+            Path dqlPath = Path.of(dqlVirtualFile.getPath()).normalize();
+            if (!dqlPath.startsWith(definitionDirectory)) {
+                continue;
+            }
+            PsiFile psiFile = psiManager.findFile(dqlVirtualFile);
+            if (psiFile == null) {
+                continue;
+            }
+            for (DQLVariableExpression variable : DQLUtil.findVariablesInFile(psiFile)) {
+                if (!variableName.equals(variable.getName())) {
+                    continue;
+                }
+                List<PsiElement> definitions = findVariableDefinitionFiles(variableName, psiFile);
+                if (definitions.isEmpty()) {
+                    continue;
+                }
+                PsiElement closest = findClosestDefinition(dqlVirtualFile.getPath(), definitions);
+                PsiFile closestFile = closest.getContainingFile();
+                if (closestFile != null && closestFile.getVirtualFile() != null
+                        && definitionPath.equals(Path.of(closestFile.getVirtualFile().getPath()).normalize())) {
+                    result.add(variable);
+                }
+            }
+        }
+        return Collections.unmodifiableList(result);
     }
 
     @Override

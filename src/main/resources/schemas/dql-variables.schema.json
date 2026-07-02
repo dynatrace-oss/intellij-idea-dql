@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/dynatrace-oss/intellij-idea-dql/dql-variables.schema.json",
+  "title": "DQL Variables",
+  "description": "Definitions for variables referenced from DQL queries via $variableName.",
+  "type": "object",
+  "additionalProperties": {
+    "$ref": "#/definitions/variableValue"
+  },
+  "definitions": {
+    "variableValue": {
+      "description": "A DQL variable value: a scalar, an array, a record object, or a DQL fragment.",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "number" },
+        { "type": "boolean" },
+        { "type": "null" },
+        { "$ref": "#/definitions/array" },
+        { "$ref": "#/definitions/dqlFragment" },
+        { "$ref": "#/definitions/record" }
+      ]
+    },
+    "array": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/variableValue" }
+    },
+    "dqlFragment": {
+      "description": "An injected DQL fragment: {\"$type\": \"dql\", \"dql\": \"<query>\"}.",
+      "type": "object",
+      "required": ["$type", "dql"],
+      "properties": {
+        "$type": { "const": "dql" },
+        "dql": {
+          "type": "string",
+          "description": "The DQL fragment substituted where the variable is used."
+        }
+      },
+      "additionalProperties": false
+    },
+    "record": {
+      "description": "A record object; the reserved $type property is not allowed here.",
+      "type": "object",
+      "not": { "required": ["$type"] },
+      "additionalProperties": { "$ref": "#/definitions/variableValue" }
+    }
+  }
+}
