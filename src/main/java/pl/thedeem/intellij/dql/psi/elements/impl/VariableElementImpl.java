@@ -11,6 +11,7 @@ import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry
 import com.intellij.psi.util.CachedValue;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
+import com.intellij.psi.util.PsiModificationTracker;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.common.StandardItemPresentation;
@@ -109,13 +110,10 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
     public @Nullable PsiElement getDefinition() {
         if (reference == null) {
             reference = CachedValuesManager.getManager(getProject()).createCachedValue(
-                    () -> {
-                        PsiElement dqlVariableReference = recalculateReference();
-                        if (dqlVariableReference != null) {
-                            return new CachedValueProvider.Result<>(dqlVariableReference, this, dqlVariableReference);
-                        }
-                        return new CachedValueProvider.Result<>(null, this);
-                    },
+                    () -> new CachedValueProvider.Result<>(
+                            recalculateReference(),
+                            PsiModificationTracker.MODIFICATION_COUNT
+                    ),
                     false
             );
         }

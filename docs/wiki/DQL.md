@@ -167,6 +167,22 @@ data record(
 )
 ```
 
+#### Editor integration
+
+The plugin treats `dql-variables.json` as its own file and keeps the relationship between definitions and DQL
+queries two-directional:
+
+- **Distinctive icon** — `dql-variables.json` files keep the standard JSON file icon but carry a small Dynatrace
+  badge in the corner, so they are easy to spot in the project view and editor tabs.
+- **Schema validation** — any file named `dql-variables.json` is automatically validated against the plugin's
+  bundled JSON schema. Malformed definitions are reported directly in the JSON editor, and completion is offered while
+  editing the file.
+- **Live reload** — editing, creating, or deleting a `dql-variables.json` immediately updates every DQL query
+  that resolves variables against it. A variable that previously had no definition resolves as soon as one is
+  added, without reopening the query.
+- **Find Usages** — invoking *Find Usages* on a variable definition in `dql-variables.json` lists every DQL query
+  that references it, honouring the same "closest definition wins" directory scoping used to resolve the value.
+
 ### Query execution
 
 When a Dynatrace tenant connection is configured, you can execute DQL queries directly from the IDE by clicking on
