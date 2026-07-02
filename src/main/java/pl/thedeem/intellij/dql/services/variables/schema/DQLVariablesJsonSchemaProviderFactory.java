@@ -7,6 +7,7 @@ import com.jetbrains.jsonSchema.extension.JsonSchemaProviderFactory;
 import com.jetbrains.jsonSchema.extension.SchemaType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public final class DQLVariablesJsonSchemaProviderFactory implements JsonSchemaPr
 
         @Override
         public @NotNull String getName() {
-            return "DQL Variables";
+            return DQLBundle.message("schema.dqlVariables.name");
         }
 
         @Override

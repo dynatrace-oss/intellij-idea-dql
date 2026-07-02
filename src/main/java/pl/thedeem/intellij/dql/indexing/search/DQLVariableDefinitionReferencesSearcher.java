@@ -2,6 +2,7 @@ package pl.thedeem.intellij.dql.indexing.search;
 
 import com.intellij.json.psi.JsonProperty;
 import com.intellij.openapi.application.QueryExecutorBase;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -23,6 +24,9 @@ public final class DQLVariableDefinitionReferencesSearcher extends QueryExecutor
     @Override
     public void processQuery(@NotNull ReferencesSearch.SearchParameters parameters,
                              @NotNull Processor<? super PsiReference> consumer) {
+        if (DumbService.isDumb(parameters.getProject())) {
+            return;
+        }
         PsiElement target = parameters.getElementToSearch();
         if (!(target instanceof JsonProperty definition)) {
             return;

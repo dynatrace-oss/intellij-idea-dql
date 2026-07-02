@@ -16,9 +16,8 @@ public class DQLVariablesSchemaTest extends LightPlatformCodeInsightFixture4Test
     protected void setUp() throws Exception {
         super.setUp();
         String schemaRoot = PathManager.getResourceRoot(getClass(), "/schemas/dql-variables.schema.json");
-        if (schemaRoot != null) {
-            VfsRootAccess.allowRootAccess(getTestRootDisposable(), schemaRoot);
-        }
+        assertNotNull("Schema resource root must be resolvable", schemaRoot);
+        VfsRootAccess.allowRootAccess(getTestRootDisposable(), schemaRoot);
         myFixture.enableInspections(new JsonSchemaComplianceInspection());
     }
 
