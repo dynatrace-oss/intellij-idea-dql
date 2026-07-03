@@ -10,6 +10,13 @@
   - `dql-variables.json` files now show the JSON icon with a small Dynatrace badge in the corner
   - DQL queries reload variable definitions live when the `dql-variables.json` is created, edited, or deleted
   - _Find Usages_ works on a variable definition, showing all DQL queries that use it
+- Undefined variables in DQL queries will now cause a new modal dialog to appear during query execution, allowing the
+  user to define the missing variable value on the fly.
+  - Those values will be remembered until the next IDE restart.
+  - You can disable this feature in the plugin's settings if you want to keep the previous behavior of just replacing
+    them with `null` values.
+  - In case there are undefined variables in the query, the DQL toolbar will show Variables manager button, allowing the
+    user to define them before executing the query.
 
 ## [1.10.0] - 2026-06-30
 
