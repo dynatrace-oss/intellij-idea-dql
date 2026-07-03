@@ -2,7 +2,12 @@ package pl.thedeem.intellij.dql.services.variables;
 
 import com.intellij.json.JsonFileType;
 import com.intellij.json.psi.*;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Key;
+import com.intellij.openapi.util.ModificationTracker;
+import com.intellij.openapi.util.SimpleModificationTracker;
+import com.intellij.openapi.util.UserDataHolderEx;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -13,6 +18,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.DQLFileType;
 import pl.thedeem.intellij.dql.DQLUtil;
 import pl.thedeem.intellij.dql.psi.DQLQuery;
@@ -23,6 +29,11 @@ import java.nio.file.Path;
 import java.util.*;
 
 public final class DQLVariablesServiceImpl implements DQLVariablesService {
+    public static final String NULL_VARIABLE_PLACEHOLDER = "null";
+
+    private static final Key<SimpleModificationTracker> RUNTIME_VALUES_TRACKER_KEY = Key.create("DQL_RUNTIME_VARIABLE_VALUES_TRACKER");
+    private static final Logger logger = Logger.getInstance(DQLVariablesServiceImpl.class);
+
     private final Project project;
 
     public DQLVariablesServiceImpl(Project project) {
@@ -74,8 +85,7 @@ public final class DQLVariablesServiceImpl implements DQLVariablesService {
     @Override
     public @NotNull List<DQLVariableExpression> findVariableUsages(@NotNull JsonProperty definition) {
         PsiFile definitionFile = definition.getContainingFile();
-        if (definitionFile == null || definitionFile.getVirtualFile() == null
-                || !DQL_VARIABLES_FILE.equals(definitionFile.getVirtualFile().getName())) {
+        if (definitionFile == null || definitionFile.getVirtualFile() == null || !DQL_VARIABLES_FILE.equals(definitionFile.getVirtualFile().getName())) {
             return List.of();
         }
         String variableName = definition.getName();
@@ -107,8 +117,7 @@ public final class DQLVariablesServiceImpl implements DQLVariablesService {
                 }
                 PsiElement closest = findClosestDefinition(dqlVirtualFile.getPath(), definitions);
                 PsiFile closestFile = closest.getContainingFile();
-                if (closestFile != null && closestFile.getVirtualFile() != null
-                        && definitionPath.equals(Path.of(closestFile.getVirtualFile().getPath()).normalize())) {
+                if (closestFile != null && closestFile.getVirtualFile() != null && definitionPath.equals(Path.of(closestFile.getVirtualFile().getPath()).normalize())) {
                     result.add(variable);
                 }
             }
@@ -117,7 +126,108 @@ public final class DQLVariablesServiceImpl implements DQLVariablesService {
     }
 
     @Override
-    public @NotNull PsiElement findClosestDefinition(@NotNull String path, @NotNull List<PsiElement> definitions) {
+    public @Nullable VariableDefinition loadVariable(@NotNull PsiFile file, @NotNull String variableName) {
+        List<PsiElement> definitions = findVariableDefinitionFiles(variableName, file);
+        if (!definitions.isEmpty()) {
+            PsiElement definition = findClosestDefinition(file.getVirtualFile().getPath(), definitions);
+            if (definition instanceof JsonProperty property) {
+                return new VariableDefinition(property.getName(), getVariableValue(property.getValue()), getDataType(property.getValue()));
+            }
+        }
+        for (VariableDefinition def : getUserDefinedVariables(file)) {
+            if (variableName.equals(def.name())) {
+                return def;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    @RequiresReadLock
+    public @NotNull Set<String> getUndefinedVariables(@NotNull PsiFile file) {
+        Set<String> result = new LinkedHashSet<>();
+        for (DQLVariableExpression variable : PsiTreeUtil.findChildrenOfType(file, DQLVariableExpression.class)) {
+            if (variable.getValue() == null) {
+                result.add(variable.getName());
+            }
+        }
+        return result;
+    }
+
+    @Override
+    @RequiresReadLock
+    public @NotNull List<VariableDefinition> getDefinedVariables(@NotNull PsiFile file) {
+        DQLQuery query = PsiTreeUtil.getChildOfType(file, DQLQuery.class);
+        if (query == null) {
+            return List.of();
+        }
+        List<VariableDefinition> result = new ArrayList<>();
+        Set<String> names = new HashSet<>();
+        for (Map.Entry<String, List<VariableElement>> variable : query.getDefinedVariables().entrySet()) {
+            String name = variable.getKey();
+            if (!variable.getValue().isEmpty()) {
+                VariableElement element = variable.getValue().getFirst();
+                String value = element.getValue();
+                if (value != null) {
+                    result.add(new VariableDefinition(name, value, element.getDataType()));
+                    names.add(name);
+                }
+            }
+        }
+        for (VariableDefinition definition : getUserDefinedVariables(file)) {
+            if (!names.contains(definition.name())) {
+                result.add(definition);
+            }
+        }
+        return Collections.unmodifiableList(result);
+    }
+
+    @Override
+    @RequiresReadLock
+    public @NotNull Collection<VariableDefinition> getUserDefinedVariables(@NotNull PsiFile file) {
+        Map<String, VariableDefinition> userData = file.getUserData(RUNTIME_VALUES_KEY);
+        if (userData == null) {
+            return List.of();
+        }
+        return userData.values();
+    }
+
+    @Override
+    public void updateUserDefinedVariables(@NotNull PsiFile file, @NotNull Collection<VariableDefinition> definitions) {
+        Map<String, VariableDefinition> userData = file.getUserData(RUNTIME_VALUES_KEY);
+        if (userData == null) {
+            userData = new HashMap<>();
+            file.putUserData(RUNTIME_VALUES_KEY, userData);
+        }
+        for (VariableDefinition definition : definitions) {
+            if (definition.value() == null) {
+                userData.remove(definition.name());
+            } else {
+                userData.put(definition.name(), definition);
+            }
+        }
+        runtimeValuesTracker(file).incModificationCount();
+        try {
+            IntelliJUtils.retriggerValidations(file);
+        } catch (Exception error) {
+            logger.warn("Could not retrigger code analysis after updating user defined variables", error);
+        }
+    }
+
+    @Override
+    public @NotNull ModificationTracker getUserDefinedVariablesTracker(@NotNull PsiFile file) {
+        return runtimeValuesTracker(file);
+    }
+
+    private @NotNull SimpleModificationTracker runtimeValuesTracker(@NotNull PsiFile file) {
+        SimpleModificationTracker tracker = file.getUserData(RUNTIME_VALUES_TRACKER_KEY);
+        if (tracker == null) {
+            tracker = ((UserDataHolderEx) file).putUserDataIfAbsent(RUNTIME_VALUES_TRACKER_KEY, new SimpleModificationTracker());
+        }
+        return tracker;
+    }
+
+    private @NotNull PsiElement findClosestDefinition(@NotNull String path, @NotNull List<PsiElement> definitions) {
         Path myFile = Path.of(path).normalize();
         PsiElement closestDefinition = definitions.getFirst();
         int commonSegments = -1;
@@ -141,8 +251,7 @@ public final class DQLVariablesServiceImpl implements DQLVariablesService {
         return closestDefinition;
     }
 
-    @Override
-    public @Nullable String getVariableValue(@Nullable JsonValue value) {
+    private @Nullable String getVariableValue(@Nullable JsonValue value) {
         if (value == null) {
             return null;
         }
@@ -150,7 +259,7 @@ public final class DQLVariablesServiceImpl implements DQLVariablesService {
             case JsonStringLiteral literal -> "\"" + literal.getValue() + "\"";
             case JsonNumberLiteral literal -> String.valueOf(literal.getValue());
             case JsonBooleanLiteral literal -> String.valueOf(literal.getValue());
-            case JsonNullLiteral ignored -> "null";
+            case JsonNullLiteral ignored -> NULL_VARIABLE_PLACEHOLDER;
             case JsonObject object -> {
                 JsonProperty $type = object.findProperty("$type");
                 if ($type != null && $type.getValue() instanceof JsonStringLiteral literal && literal.getValue().equals("dql")) {
@@ -188,21 +297,22 @@ public final class DQLVariablesServiceImpl implements DQLVariablesService {
         };
     }
 
-    @Override
-    @RequiresReadLock
-    public @NotNull List<VariableDefinition> getDefinedVariables(@NotNull PsiFile file) {
-        DQLQuery query = PsiTreeUtil.getChildOfType(file, DQLQuery.class);
-        if (query == null) {
-            return List.of();
-        }
-        List<VariableDefinition> result = new ArrayList<>();
-        for (Map.Entry<String, List<VariableElement>> variable : query.getDefinedVariables().entrySet()) {
-            String name = variable.getKey();
-            if (!variable.getValue().isEmpty()) {
-                VariableElement element = variable.getValue().getFirst();
-                result.add(new VariableDefinition(name, element.getValue(), element.getDataType()));
+    private @NotNull Set<String> getDataType(@Nullable JsonValue value) {
+        return switch (value) {
+            case JsonStringLiteral ignored -> Set.of("dql.dataType.string");
+            case JsonNumberLiteral ignored -> Set.of("dql.dataType.double", "dql.dataType.long");
+            case JsonNullLiteral ignored -> Set.of("dql.dataType.null");
+            case JsonBooleanLiteral ignored -> Set.of("dql.dataType.boolean");
+            case JsonObject object -> {
+                JsonProperty $type = object.findProperty("$type");
+                // for injected DQL fragments we do not know what type it produces
+                if ($type != null && $type.getValue() instanceof JsonStringLiteral literal && literal.getValue().equals("dql")) {
+                    yield Set.of();
+                }
+                yield Set.of("dql.dataType.record");
             }
-        }
-        return Collections.unmodifiableList(result);
+            case JsonArray ignored -> Set.of("dql.dataType.array");
+            case null, default -> Set.of();
+        };
     }
 }
