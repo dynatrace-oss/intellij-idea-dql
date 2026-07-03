@@ -34,7 +34,8 @@ public class DQLSettingsConfigurable implements Configurable {
                 || mySettingsComponent.isAllowingExperimentalFeatures() != mySettings.isAllowingExperimentalFeatures()
                 || mySettingsComponent.isPerformingLiveValidationEnabled() != mySettings.isPerformingLiveValidationEnabled()
                 || mySettingsComponent.isUseDynatraceAutocompleteEnabled() != mySettings.isUseDynatraceAutocompleteEnabled()
-                || mySettingsComponent.isDQLExecutionToolbarVisible() != mySettings.isDQLExecutionToolbarVisible();
+                || mySettingsComponent.isDQLExecutionToolbarVisible() != mySettings.isDQLExecutionToolbarVisible()
+                || mySettingsComponent.isShowModalForUnresolvedVariables() != mySettings.isShowModalForUnresolvedVariables();
     }
 
     @Override
@@ -44,6 +45,7 @@ public class DQLSettingsConfigurable implements Configurable {
         mySettings.setPerformingLiveValidationEnabled(mySettingsComponent.isPerformingLiveValidationEnabled());
         mySettings.setUseDynatraceAutocompleteEnabled(mySettingsComponent.isUseDynatraceAutocompleteEnabled());
         mySettings.setDQLExecutionToolbarVisible(mySettingsComponent.isDQLExecutionToolbarVisible());
+        mySettings.setShowModalForUnresolvedVariables(mySettingsComponent.isShowModalForUnresolvedVariables());
     }
 
     @Override
@@ -53,6 +55,7 @@ public class DQLSettingsConfigurable implements Configurable {
         mySettingsComponent.setPerformingLiveValidationEnabled(mySettings.isPerformingLiveValidationEnabled());
         mySettingsComponent.setUseDynatraceAutocompleteEnabled(mySettings.isUseDynatraceAutocompleteEnabled());
         mySettingsComponent.setDQLExecutionToolbarVisible(mySettings.isDQLExecutionToolbarVisible());
+        mySettingsComponent.setShowModalForUnresolvedVariables(mySettings.isShowModalForUnresolvedVariables());
     }
 
     @Override

@@ -15,6 +15,8 @@ public class DQLSettingsState {
     public boolean allowExperimentalFeatures;
     @OptionTag
     public boolean showDqlExecutionToolbar = true;
+    @OptionTag
+    public boolean showModalForUnresolvedVariables = true;
 
     @Override
     public boolean equals(Object o) {
@@ -25,7 +27,8 @@ public class DQLSettingsState {
                 && performLiveValidation == that.performLiveValidation
                 && useDynatraceAutocomplete == that.useDynatraceAutocomplete
                 && allowExperimentalFeatures == that.allowExperimentalFeatures
-                && showDqlExecutionToolbar == that.showDqlExecutionToolbar;
+                && showDqlExecutionToolbar == that.showDqlExecutionToolbar
+                && showModalForUnresolvedVariables == that.showModalForUnresolvedVariables;
     }
 
     @Override
@@ -35,7 +38,8 @@ public class DQLSettingsState {
                 performLiveValidation,
                 useDynatraceAutocomplete,
                 allowExperimentalFeatures,
-                showDqlExecutionToolbar
+                showDqlExecutionToolbar,
+                showModalForUnresolvedVariables
         );
     }
 }

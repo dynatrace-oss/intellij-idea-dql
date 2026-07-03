@@ -87,6 +87,8 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
             start = parsedQuery.getOriginalOffset(start);
             end = parsedQuery.getOriginalOffset(end);
         }
+        if (start < 0) start = 0;
+        if (end < start) end = start;
         return new TextRange(start, end);
     }
 
