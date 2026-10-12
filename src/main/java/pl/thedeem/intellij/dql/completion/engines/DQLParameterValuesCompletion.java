@@ -56,7 +56,7 @@ public class DQLParameterValuesCompletion {
             }
             Collection<String> categories = service.getFunctionCategoriesForParameterTypes(parameterValueTypes);
 
-            if (parameterValueTypes.stream().anyMatch(DQLDefinitionService.STRING_PARAMETER_VALUE_TYPES::contains)) {
+            if (parameterValueTypes.stream().anyMatch(service.getStringParameterValueTypes()::contains)) {
                 AutocompleteUtils.autocompleteStringValues(result);
             }
             if (categories == null) {
@@ -72,7 +72,7 @@ public class DQLParameterValuesCompletion {
             if (valueTypes.contains("dql.dataType.boolean")) {
                 AutocompleteUtils.autocompleteBooleans(result);
             }
-            if (valueTypes.stream().anyMatch(DQLDefinitionService.STRING_VALUE_TYPES::contains)) {
+            if (valueTypes.stream().anyMatch(service.getStringDataTypes()::contains)) {
                 AutocompleteUtils.autocompleteStringValues(result);
             }
             if (valueTypes.contains("dql.dataType.timestamp")) {

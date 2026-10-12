@@ -4,6 +4,8 @@
 
 ### Features
 
+- Updated project dependencies
+- Updated DQL definition engine
 - Two-sided `dql-variables.json` integration
   - `dql-variables.json` files are now recognized as plugin-owned and validated against a bundled JSON schema,
     reporting malformed variable definitions directly in the editor

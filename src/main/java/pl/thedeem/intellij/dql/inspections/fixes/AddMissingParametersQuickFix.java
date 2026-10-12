@@ -43,7 +43,7 @@ public class AddMissingParametersQuickFix extends AbstractAddElementQuickFix {
             if (param.requiresName()) {
                 template.addTextSegment(param.name() + ": ");
             }
-            InsertionsUtils.handleInsertionDefaultValue(param, template);
+            InsertionsUtils.handleInsertionDefaultValue(element.getProject(), param, template);
             i++;
         }
         return template;

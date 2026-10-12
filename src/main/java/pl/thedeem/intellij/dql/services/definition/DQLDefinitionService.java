@@ -8,33 +8,9 @@ import pl.thedeem.intellij.dql.services.definition.model.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 
 public interface DQLDefinitionService {
-    Set<String> STRING_PARAMETER_VALUE_TYPES = Set.of(
-            "dql.parameterValueType.bucket",
-            "dql.parameterValueType.dplPattern",
-            "dql.parameterValueType.filePattern",
-            "dql.parameterValueType.jsonPath",
-            "dql.parameterValueType.namelessDplPattern",
-            "dql.parameterValueType.prefix",
-            "dql.parameterValueType.tabularFileExisting",
-            "dql.parameterValueType.tabularFileNew",
-            "dql.parameterValueType.url"
-    );
-    Set<String> STRING_VALUE_TYPES = Set.of("dql.dataType.uid", "dql.dataType.string", "dql.dataType.ip");
-    Set<String> NUMERIC_VALUE_TYPES = Set.of("dql.dataType.double", "dql.dataType.long");
-    Set<String> DPL_VALUE_TYPES = Set.of("dql.parameterValueType.namelessDplPattern", "dql.parameterValueType.dplPattern");
-    Set<String> EXECUTION_PARAMETER_VALUE_TYPES = Set.of("dql.parameterValueType.nonEmptyExecutionBlock", "dql.parameterValueType.executionBlock");
-    Set<String> FIELD_IDENTIFIER_PARAMETER_VALUE_TYPES = Set.of(
-            "dql.parameterValueType.fieldPattern",
-            "dql.parameterValueType.identifierForFieldOnRootLevel",
-            "dql.parameterValueType.identifierForAnyField",
-            "dql.parameterValueType.dataObject"
-    );
-    Map<String, String> FILTER_COMMAND_NEGATIONS = Map.of("filter", "filterOut", "filterOut", "filter");
-
     static @NotNull DQLDefinitionService getInstance(@NotNull Project project) {
         return project.getService(DQLDefinitionService.class);
     }
@@ -62,4 +38,18 @@ public interface DQLDefinitionService {
     @NotNull Collection<Command> getCommands();
 
     @Nullable Operator getOperator(@NotNull String operatorId);
+
+    @NotNull Collection<String> getStringDataTypes();
+
+    @NotNull Collection<String> getNumericDataTypes();
+
+    @NotNull Collection<String> getStringParameterValueTypes();
+
+    @NotNull Collection<String> getDplParameterValueTypes();
+
+    @NotNull Collection<String> getExecutionBlockParameterValueTypes();
+
+    @NotNull Collection<String> getFieldIdentifierParameterValueTypes();
+
+    @NotNull Map<String, String> getFilterCommandNegations();
 }

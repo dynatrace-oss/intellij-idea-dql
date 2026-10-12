@@ -24,11 +24,22 @@ public class DQLLanguagesInjector implements MultiHostInjector {
     public void getLanguagesToInject(@NotNull MultiHostRegistrar registrar, @NotNull PsiElement context) {
         Language json = Language.findLanguageByID("JSON");
         Language dpl = DynatracePatternLanguage.INSTANCE;
+        DQLDefinitionService service = DQLDefinitionService.getInstance(context.getProject());
 
         if (context instanceof DQLParametersOwner paramsOwner) {
             for (MappedParameter parameter : paramsOwner.getParameters()) {
-                injectLanguagesInParameter(parameter, json, (List<String> paramTypes) -> paramTypes.contains("dql.dataType.json"), registrar);
-                injectLanguagesInParameter(parameter, dpl, (List<String> paramTypes) -> paramTypes.stream().anyMatch(DQLDefinitionService.DPL_VALUE_TYPES::contains), registrar);
+                injectLanguagesInParameter(
+                        parameter,
+                        json,
+                        (List<String> paramTypes) -> paramTypes.contains("dql.dataType.json"),
+                        registrar
+                );
+                injectLanguagesInParameter(
+                        parameter,
+                        dpl,
+                        (List<String> paramTypes) -> paramTypes.stream().anyMatch(service.getDplParameterValueTypes()::contains),
+                        registrar
+                );
             }
         }
     }

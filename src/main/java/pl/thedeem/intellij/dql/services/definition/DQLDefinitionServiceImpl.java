@@ -80,11 +80,11 @@ public class DQLDefinitionServiceImpl implements DQLDefinitionService {
     @Override
     public @Nullable Collection<String> getFunctionCategoriesForParameterTypes(@NotNull Collection<String> parameterValueTypes) {
         // if the parameter requires fields names, do not suggest functions
-        if (parameterValueTypes.stream().anyMatch(FIELD_IDENTIFIER_PARAMETER_VALUE_TYPES::contains)) {
+        if (parameterValueTypes.stream().anyMatch(getFieldIdentifierParameterValueTypes()::contains)) {
             return null;
         }
         // if the parameter requires a primitive value, do not suggest functions
-        if (parameterValueTypes.contains("dql.parameterValueType.primitiveValue") || parameterValueTypes.stream().anyMatch(STRING_PARAMETER_VALUE_TYPES::contains)) {
+        if (parameterValueTypes.contains("dql.parameterValueType.primitiveValue") || parameterValueTypes.stream().anyMatch(getStringParameterValueTypes()::contains)) {
             return null;
         }
         Set<String> categories = new HashSet<>();
@@ -129,6 +129,41 @@ public class DQLDefinitionServiceImpl implements DQLDefinitionService {
     @Override
     public @Nullable Operator getOperator(@NotNull String operatorId) {
         return getDefinition().operators().get(operatorId);
+    }
+
+    @Override
+    public @NotNull Collection<String> getStringDataTypes() {
+        return getDefinition().stringDataTypes();
+    }
+
+    @Override
+    public @NotNull Collection<String> getNumericDataTypes() {
+        return getDefinition().numericDataTypes();
+    }
+
+    @Override
+    public @NotNull Collection<String> getStringParameterValueTypes() {
+        return getDefinition().stringDataTypes();
+    }
+
+    @Override
+    public @NotNull Collection<String> getDplParameterValueTypes() {
+        return getDefinition().dplParameterValueTypes();
+    }
+
+    @Override
+    public @NotNull Collection<String> getExecutionBlockParameterValueTypes() {
+        return getDefinition().executionBlockParameterValueTypes();
+    }
+
+    @Override
+    public @NotNull Collection<String> getFieldIdentifierParameterValueTypes() {
+        return getDefinition().fieldIdentifierParameterValueTypes();
+    }
+
+    @Override
+    public @NotNull Map<String, String> getFilterCommandNegations() {
+        return getDefinition().filterNegations();
     }
 
     private @NotNull DQLDefinition getDefinition() {
