@@ -30,7 +30,8 @@ public class FlipConditionQuickFix extends AbstractReplaceElementQuickFix<DQLCom
         if (condition == null) {
             return null;
         }
-        return "|" + DQLDefinitionService.FILTER_COMMAND_NEGATIONS.get(definition.name()) + " " +
+        DQLDefinitionService service = DQLDefinitionService.getInstance(command.getProject());
+        return "|" + service.getFilterCommandNegations().get(definition.name()) + " " +
                 String.join(",", condition.expressions().stream().map(expression -> {
                     if (DQLUtil.unpackParenthesis(expression) instanceof DQLUnaryExpression unary) {
                         return unary.getExpression() != null ? unary.getExpression().getText() : "";

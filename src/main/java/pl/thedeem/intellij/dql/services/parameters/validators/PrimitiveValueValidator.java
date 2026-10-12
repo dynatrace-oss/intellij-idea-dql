@@ -19,7 +19,8 @@ public class PrimitiveValueValidator extends AbstractParameterValidator {
             return List.of();
         }
         List<DQLParameterValueTypesValidator.ValueIssue> result = new ArrayList<>();
-        for (PsiElement invalidValue : getInvalidValues(parameter, element -> isInvalid(element, definition))) {
+        DQLDefinitionService service = DQLDefinitionService.getInstance(parameter.getProject());
+        for (PsiElement invalidValue : getInvalidValues(parameter, element -> isInvalid(service, element, definition))) {
             result.add(new DQLParameterValueTypesValidator.ValueIssue(
                     invalidValue,
                     DQLBundle.message(
@@ -32,12 +33,12 @@ public class PrimitiveValueValidator extends AbstractParameterValidator {
         return result;
     }
 
-    private boolean isInvalid(@NotNull PsiElement element, @NotNull Parameter definition) {
+    private boolean isInvalid(@NotNull DQLDefinitionService service, @NotNull PsiElement element, @NotNull Parameter definition) {
         if (element instanceof DQLPrimitiveExpression) {
             return false;
         }
         return !(element instanceof DQLFieldExpression) || definition.parameterValueTypes()
                 .stream()
-                .noneMatch(DQLDefinitionService.FIELD_IDENTIFIER_PARAMETER_VALUE_TYPES::contains);
+                .noneMatch(service.getFieldIdentifierParameterValueTypes()::contains);
     }
 }

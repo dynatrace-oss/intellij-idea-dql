@@ -21,9 +21,10 @@ public class NegatedFilteringConditionInspection extends LocalInspectionTool {
             @Override
             public void visitCommand(@NotNull DQLCommand command) {
                 super.visitCommand(command);
+                DQLDefinitionService service = DQLDefinitionService.getInstance(holder.getProject());
 
                 Command definition = command.getDefinition();
-                if (definition == null || !DQLDefinitionService.FILTER_COMMAND_NEGATIONS.containsKey(definition.name())) {
+                if (definition == null || !service.getFilterCommandNegations().containsKey(definition.name())) {
                     return;
                 }
                 MappedParameter condition = command.findParameter("condition");
@@ -37,7 +38,7 @@ public class NegatedFilteringConditionInspection extends LocalInspectionTool {
                             DQLBundle.message(
                                     "inspection.negatedFilteringCondition.shouldBeFlipped",
                                     definition.name(),
-                                    DQLDefinitionService.FILTER_COMMAND_NEGATIONS.get(definition.name())
+                                    service.getFilterCommandNegations().get(definition.name())
                             ),
                             new FlipConditionQuickFix()
                     );

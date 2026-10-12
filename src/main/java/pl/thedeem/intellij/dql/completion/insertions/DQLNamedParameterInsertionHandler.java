@@ -43,7 +43,7 @@ public class DQLNamedParameterInsertionHandler implements InsertHandler<LookupEl
             template.addTextSegment(parameter.name() + ": ");
         }
 
-        InsertionsUtils.handleInsertionDefaultValue(parameter, template);
+        InsertionsUtils.handleInsertionDefaultValue(context.getProject(), parameter, template);
 
         context.getDocument().deleteString(startOffset, context.getTailOffset());
 

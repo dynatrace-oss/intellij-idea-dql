@@ -43,6 +43,7 @@ public class DQLCommandParametersCompletionTest extends LightPlatformCodeInsight
 
     @Test
     public void testAtTheEndOfCommandShouldSuggestCommandParameters() {
+        when(serviceMock.getStringDataTypes()).thenReturn(List.of("dql.dataType.string"));
         DQLTestsUtils.mockCommands(serviceMock,
                 DQLTestsUtils.createCommand("fetch", List.of(
                         DQLTestsUtils.createParameter("source", List.of("dql.dataType.string"), true, List.of(), List.of(), null, false),

@@ -41,7 +41,7 @@ public class DQLFunctionInsertionHandler implements InsertHandler<LookupElement>
             if (param.requiresName()) {
                 template.addTextSegment(param.name() + ":");
             }
-            InsertionsUtils.handleInsertionDefaultValue(param, template);
+            InsertionsUtils.handleInsertionDefaultValue(context.getProject(), param, template);
             if (i < parameters.size() - 1) {
                 template.addTextSegment(", ");
             }

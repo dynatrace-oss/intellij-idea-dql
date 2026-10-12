@@ -27,8 +27,7 @@
     },
     "dql.dataType.ip": {
       "name": "IpAddress",
-      "description": "Represents an IPv4 or IPv6 address.",
-      "experimental": true
+      "description": "Represents an IPv4 or IPv6 address."
     },
     "dql.dataType.long": {
       "name": "Long",
@@ -40,8 +39,7 @@
     },
     "dql.dataType.smartscapeid": {
       "name": "SmartscapeId",
-      "description": "A data type that is used to represent identifiers for smartscape.",
-      "experimental": true
+      "description": "A data type that is used to represent identifiers for smartscape."
     },
     "dql.dataType.string": {
       "name": "String",
@@ -109,10 +107,6 @@
       "name": "pattern for filtering field names",
       "description": "plain string used to specify multiple fields using a pattern with wildcards"
     },
-    "dql.parameterValueType.filePattern": {
-      "name": "pattern for file listing",
-      "description": "pattern for selecting files"
-    },
     "dql.parameterValueType.identifierForAnyField": {
       "name": "field identifier",
       "description": "has to refer to an existing field, but it might also be a nested record list"
@@ -169,9 +163,17 @@
       "name": "tabular file name",
       "description": "a string that represents the name of a tabular file to load"
     },
-    "dql.parameterValueType.tabularFileNew": {
+    "dql.parameterValueType.tabularFileLookupsNew": {
+      "name": "new tabular file name",
+      "description": "a string that represents the name of a tabular lookup file to upload"
+    },
+    "dql.parameterValueType.tabularFileResultsNew": {
       "name": "new tabular file name",
       "description": "a string that represents the name of a tabular file to save"
+    },
+    "dql.parameterValueType.uriPattern": {
+      "name": "URI pattern",
+      "description": "URI pattern for file listing"
     },
     "dql.parameterValueType.url": {
       "name": "URL",
@@ -420,80 +422,6 @@
           "assignmentSupport": "none",
           "defaultValue": "2147483647",
           "minValue": "1",
-          "valueTypes": [
-            "dql.dataType.long"
-          ],
-          "parameterValueTypes": [
-            "dql.parameterValueType.expressionWithConstantValue"
-          ]
-        }
-      ]
-    },
-    "dql.command.experimentalSave": {
-      "name": "experimentalSave",
-      "description": "Experimental Save command to store records as table permanently.",
-      "experimental": true,
-      "synopsis": "experimentalSave tabularFile [, overwrite] [, expiresAfter] [, maxRows] [, maxGBytes]",
-      "parameters": [
-        {
-          "name": "tabularFile",
-          "description": "The name of the tabular file to be saved.",
-          "required": true,
-          "requiresName": false,
-          "assignmentSupport": "none",
-          "valueTypes": [
-            "dql.dataType.string"
-          ],
-          "parameterValueTypes": [
-            "dql.parameterValueType.expressionWithConstantValue",
-            "dql.parameterValueType.tabularFileNew"
-          ]
-        },
-        {
-          "name": "overwrite",
-          "description": "Determines whether the tabular file should be overwritten if a table with the same name already exists.",
-          "required": false,
-          "requiresName": true,
-          "assignmentSupport": "none",
-          "valueTypes": [
-            "dql.dataType.boolean"
-          ],
-          "parameterValueTypes": [
-            "dql.parameterValueType.expressionWithConstantValue"
-          ]
-        },
-        {
-          "name": "expiresAfter",
-          "description": "Specifies the time duration after which the tabular file should be automatically deleted or expired.",
-          "required": false,
-          "requiresName": true,
-          "assignmentSupport": "none",
-          "valueTypes": [
-            "dql.dataType.duration"
-          ],
-          "parameterValueTypes": [
-            "dql.parameterValueType.expressionWithConstantValue"
-          ]
-        },
-        {
-          "name": "maxRows",
-          "description": "Sets the maximum number of rows that the tabular file can have. If the source has more rows than this limit, only the first ‘maxRows’ rows will be saved.",
-          "required": false,
-          "requiresName": true,
-          "assignmentSupport": "none",
-          "valueTypes": [
-            "dql.dataType.long"
-          ],
-          "parameterValueTypes": [
-            "dql.parameterValueType.expressionWithConstantValue"
-          ]
-        },
-        {
-          "name": "maxGBytes",
-          "description": "Sets the maximum storage size (in gigabytes) that the tabular file can hold. When query returns more data then saved result is truncated.",
-          "required": false,
-          "requiresName": true,
-          "assignmentSupport": "none",
           "valueTypes": [
             "dql.dataType.long"
           ],
@@ -793,6 +721,79 @@
         {
           "name": "field",
           "description": "A field or fields based on a pattern to keep in the record list.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.fieldPattern",
+            "dql.parameterValueType.identifierForFieldOnRootLevel"
+          ]
+        }
+      ]
+    },
+    "dql.command.fieldsMove": {
+      "name": "fieldsMove",
+      "description": "Moves fields matching a pattern into a new nested record.",
+      "synopsis": "fieldsMove fieldName [, include: pattern, …] [, exclude: pattern, …]",
+      "parameters": [
+        {
+          "name": "fieldName",
+          "description": "The name of the new record field that will contain the moved fields.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "parameterValueTypes": [
+            "dql.parameterValueType.simpleIdentifier"
+          ]
+        },
+        {
+          "name": "pattern",
+          "description": "A field or a pattern for field names to move into the new record.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.fieldPattern",
+            "dql.parameterValueType.identifierForFieldOnRootLevel"
+          ]
+        },
+        {
+          "name": "pattern",
+          "description": "A field or a pattern for field names to exclude from the move.",
           "required": true,
           "requiresName": false,
           "assignmentSupport": "none",
@@ -1247,7 +1248,6 @@
     "dql.command.jsonExtract": {
       "name": "jsonExtract",
       "description": "Extracts fields from a JSON string expression into the record.",
-      "experimental": true,
       "synopsis": "jsonExtract input [, conflicts]",
       "parameters": [
         {
@@ -1779,6 +1779,302 @@
           ],
           "parameterValueTypes": [
             "dql.parameterValueType.expressionWithFieldAccess"
+          ]
+        }
+      ]
+    },
+    "dql.command.previewExternalList": {
+      "name": "previewExternalList",
+      "description": "Preview command that lists cloud objects from object stores (e.g. S3).",
+      "experimental": true,
+      "synopsis": "previewExternalList uri [, includeObjects] [, includeDirectories] [, mode] [, timezone] [, locale] [, ignoreErrors] [, scanLimitGBytes]",
+      "parameters": [
+        {
+          "name": "uri",
+          "description": "The URI pattern describing the external files/objects.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "parameterValueTypes": [
+            "dql.parameterValueType.uriPattern"
+          ]
+        },
+        {
+          "name": "includeObjects",
+          "description": "Include objects matching the URI pattern in the listing.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "TRUE",
+          "valueTypes": [
+            "dql.dataType.boolean"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.primitiveValue"
+          ]
+        },
+        {
+          "name": "includeDirectories",
+          "description": "Include directories matching the URI pattern in the listing.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "FALSE",
+          "valueTypes": [
+            "dql.dataType.boolean"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.primitiveValue"
+          ]
+        },
+        {
+          "name": "mode",
+          "description": "Controls how matched objects are returned. Allowed values: `flat` (default), `browse`. Mutually exclusive with `includeObjects` and `includeDirectories`.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "\"flat\"",
+          "parameterValueTypes": [
+            "dql.parameterValueType.enum"
+          ],
+          "allowedEnumValues": [
+            "\"flat\"",
+            "\"browse\""
+          ]
+        },
+        {
+          "name": "timezone",
+          "description": "Timezone used for evaluating time patterns in the URI.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none"
+        },
+        {
+          "name": "locale",
+          "description": "Locale for time pattern evaluation.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none"
+        },
+        {
+          "name": "ignoreErrors",
+          "description": "When true, IO errors such as file not found or access denied do not interrupt the listing.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "FALSE",
+          "valueTypes": [
+            "dql.dataType.boolean"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.primitiveValue"
+          ]
+        },
+        {
+          "name": "scanLimitGBytes",
+          "description": "The maximum amount of listing data to scan in gigabytes.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.long"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        }
+      ]
+    },
+    "dql.command.previewExternalParse": {
+      "name": "previewExternalParse",
+      "description": "Preview command that parses incoming records using a DPL pattern.",
+      "experimental": true,
+      "synopsis": "previewExternalParse pattern [, skipRecords] [, autoExtract] [, scanLimitGBytes]",
+      "parameters": [
+        {
+          "name": "pattern",
+          "description": "The DPL pattern for extracting and transforming the input data.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "parameterValueTypes": [
+            "dql.parameterValueType.dplPattern"
+          ]
+        },
+        {
+          "name": "skipRecords",
+          "description": "Number of initial records to discard. Can be used to skip header rows.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "0",
+          "minValue": "0",
+          "maxValue": "10",
+          "valueTypes": [
+            "dql.dataType.long"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.primitiveValue"
+          ]
+        },
+        {
+          "name": "autoExtract",
+          "description": "When true, extracts nested fields to the root level if the DPL pattern results in a single record-type field.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "FALSE",
+          "valueTypes": [
+            "dql.dataType.boolean"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.primitiveValue"
+          ]
+        },
+        {
+          "name": "scanLimitGBytes",
+          "description": "The maximum amount of data to scan in gigabytes.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.long"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        }
+      ]
+    },
+    "dql.command.save": {
+      "name": "save",
+      "description": "Save command to store records as a tabular file for reading with Load command.",
+      "experimental": true,
+      "synopsis": "save tabularFile [, overwrite] [, expiresAfter] [, maxRecords] [, maxGBytes] [, displayName] [, description] [, costCenter] [, costProduct]",
+      "parameters": [
+        {
+          "name": "tabularFile",
+          "description": "The name of the tabular file to be saved.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.string"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue",
+            "dql.parameterValueType.tabularFileResultsNew"
+          ]
+        },
+        {
+          "name": "overwrite",
+          "description": "Determines whether the tabular file should be overwritten if a file with the same name already exists.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.boolean"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "expiresAfter",
+          "description": "Specifies the duration or calendar duration after which the tabular file should be automatically deleted or expired. Must not be negative; `0ns` expires immediately. Defaults to 24 hours.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "24h",
+          "valueTypes": [
+            "dql.dataType.duration"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "maxRecords",
+          "description": "Sets the maximum number of records that the tabular file can have. If the source has more records than this limit, only the first `maxRecords` records will be saved. Has to be in range [0, 100000000]; defaults to 1000000.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "1000000",
+          "minValue": "0",
+          "maxValue": "100000000",
+          "valueTypes": [
+            "dql.dataType.long"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "maxGBytes",
+          "description": "Sets the maximum storage size (in gigabytes) that the tabular file can hold. When query returns more data than the limit, the saved result is truncated. Has to be in range [0, 16]; defaults to 1.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "defaultValue": "1",
+          "minValue": "0",
+          "maxValue": "16",
+          "valueTypes": [
+            "dql.dataType.long"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "displayName",
+          "description": "The display name of the tabular file.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.string"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "description",
+          "description": "The description of the tabular file.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.string"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "costCenter",
+          "description": "The cost center the tabular file is allocated to.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.string"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
+          ]
+        },
+        {
+          "name": "costProduct",
+          "description": "The cost product the tabular file is allocated to.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "valueTypes": [
+            "dql.dataType.string"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.expressionWithConstantValue"
           ]
         }
       ]
@@ -2432,7 +2728,6 @@
         {
           "name": "nodeId",
           "description": "The field that contains the id of the node in the incoming records.",
-          "experimental": true,
           "required": false,
           "requiresName": true,
           "assignmentSupport": "none",
@@ -2527,6 +2822,10 @@
     "dql.functionCategory.openPipeline": {
       "name": "OpenPipeline",
       "description": "open pipeline function"
+    },
+    "dql.functionCategory.record": {
+      "name": "Record",
+      "description": "record function"
     },
     "dql.functionCategory.smartscape": {
       "name": "Smartscape",
@@ -3849,12 +4148,10 @@
       "synopsis": "asIp(value)",
       "signatures": [
         {
-          "experimental": true,
           "parameters": [
             {
               "name": "value",
               "description": "The expression to cast as an ip address.",
-              "experimental": true,
               "required": true,
               "requiresName": false,
               "assignmentSupport": "none",
@@ -3965,12 +4262,10 @@
       "synopsis": "asSmartscapeId(value)",
       "signatures": [
         {
-          "experimental": true,
           "parameters": [
             {
               "name": "value",
               "description": "The expression to cast as a smartscape id.",
-              "experimental": true,
               "required": true,
               "requiresName": false,
               "assignmentSupport": "none",
@@ -6612,7 +6907,7 @@
             },
             {
               "name": "value",
-              "description": "The percentile to compute, between 0 and 100.",
+              "description": "The value for which to retrieve the percentile.",
               "required": true,
               "requiresName": false,
               "assignmentSupport": "none",
@@ -8007,6 +8302,35 @@
         }
       ]
     },
+    "dql.function.iAll": {
+      "name": "iAll",
+      "description": "Checks an iterative boolean expression and returns `true` if it was `true` for all elements, `false` if not.",
+      "experimental": true,
+      "category": "dql.functionCategory.iterative",
+      "synopsis": "iAll(expression)",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "expression",
+              "description": "The iterative boolean expression.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.boolean"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.boolean"
+          ]
+        }
+      ]
+    },
     "dql.function.iAny": {
       "name": "iAny",
       "description": "Checks an iterative boolean expression and returns `true` if it was `true` at least once, `false` if not.",
@@ -8195,6 +8519,35 @@
             "dql.dataType.long",
             "dql.dataType.string",
             "dql.dataType.timestamp"
+          ]
+        }
+      ]
+    },
+    "dql.function.iNone": {
+      "name": "iNone",
+      "description": "Checks an iterative boolean expression and returns `true` if it was never `true`, `false` if not.",
+      "experimental": true,
+      "category": "dql.functionCategory.iterative",
+      "synopsis": "iNone(expression)",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "expression",
+              "description": "The iterative boolean expression.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.boolean"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.boolean"
           ]
         }
       ]
@@ -8490,7 +8843,6 @@
       "synopsis": "ip(expression)",
       "signatures": [
         {
-          "experimental": true,
           "parameters": [
             {
               "name": "expression",
@@ -8681,7 +9033,6 @@
       "synopsis": "ipMask(expression, maskBits [, ipv6MaskBits])",
       "signatures": [
         {
-          "experimental": true,
           "parameters": [
             {
               "name": "expression",
@@ -9372,7 +9723,7 @@
                 "dql.dataType.string"
               ],
               "parameterValueTypes": [
-                "dql.parameterValueType.expressionWithFieldAccess"
+                "dql.parameterValueType.expressionWithConstantValue"
               ]
             }
           ],
@@ -9746,7 +10097,7 @@
                 "dql.dataType.string"
               ],
               "parameterValueTypes": [
-                "dql.parameterValueType.expressionWithFieldAccess"
+                "dql.parameterValueType.expressionWithConstantValue"
               ]
             }
           ],
@@ -11508,6 +11859,172 @@
         }
       ]
     },
+    "dql.function.recordField": {
+      "name": "recordField",
+      "description": "Extracts a value from a record field.",
+      "category": "dql.functionCategory.record",
+      "synopsis": "recordField(record, fieldName)",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "record",
+              "description": "The record from which to extract the field.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.record"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            },
+            {
+              "name": "fieldName",
+              "description": "The name of the record field to extract.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.string"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ]
+        }
+      ]
+    },
+    "dql.function.recordFields": {
+      "name": "recordFields",
+      "description": "Returns the fields of a record as an array of `{key, value}` records.",
+      "category": "dql.functionCategory.record",
+      "synopsis": "recordFields(record)",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "record",
+              "description": "The record from which to extract the fields.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.record"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.array"
+          ]
+        }
+      ]
+    },
+    "dql.function.recordFromFields": {
+      "name": "recordFromFields",
+      "description": "Creates a `record` from an array of `{key, value}` records.",
+      "category": "dql.functionCategory.record",
+      "synopsis": "recordFromFields(fields)",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "fields",
+              "description": "An array of `{key, value}` records representing the fields of the resulting record.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.array"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.record"
+          ]
+        }
+      ]
+    },
+    "dql.function.recordKeys": {
+      "name": "recordKeys",
+      "description": "Returns the keys of a record as an array of strings.",
+      "category": "dql.functionCategory.record",
+      "synopsis": "recordKeys(record)",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "record",
+              "description": "The record from which to extract the keys.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.record"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.array"
+          ]
+        }
+      ]
+    },
+    "dql.function.recordValues": {
+      "name": "recordValues",
+      "description": "Returns the values of a record as an array.",
+      "category": "dql.functionCategory.record",
+      "synopsis": "recordValues(record)",
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "record",
+              "description": "The record from which to extract the values.",
+              "required": true,
+              "requiresName": false,
+              "assignmentSupport": "none",
+              "valueTypes": [
+                "dql.dataType.record"
+              ],
+              "parameterValueTypes": [
+                "dql.parameterValueType.expressionWithFieldAccess"
+              ]
+            }
+          ],
+          "outputs": [
+            "dql.dataType.array"
+          ]
+        }
+      ]
+    },
     "dql.function.replacePattern": {
       "name": "replacePattern",
       "description": "Replaces each substring of a string that matches the DPL pattern with the given string.",
@@ -11753,7 +12270,6 @@
       "synopsis": "smartscapeId(type, numericId)",
       "signatures": [
         {
-          "experimental": true,
           "parameters": [
             {
               "name": "type",
@@ -12876,7 +13392,6 @@
       "synopsis": "toIp(value)",
       "signatures": [
         {
-          "experimental": true,
           "parameters": [
             {
               "name": "value",
@@ -12945,7 +13460,6 @@
       "synopsis": "toSmartscapeId(value)",
       "signatures": [
         {
-          "experimental": true,
           "parameters": [
             {
               "name": "value",

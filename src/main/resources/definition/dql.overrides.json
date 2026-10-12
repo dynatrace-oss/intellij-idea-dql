@@ -8,8 +8,49 @@
     "metrics",
     "smartscapeEdges",
     "smartscapeNodes",
-    "timeseries"
+    "timeseries",
+    "previewExternalList"
   ],
+  "stringDataTypes": [
+    "dql.dataType.uid",
+    "dql.dataType.string",
+    "dql.dataType.ip",
+    "dql.dataType.smartscapeid"
+  ],
+  "numericDataTypes": [
+    "dql.dataType.double",
+    "dql.dataType.long"
+  ],
+  "stringParameterValueTypes": [
+    "dql.parameterValueType.bucket",
+    "dql.parameterValueType.dplPattern",
+    "dql.parameterValueType.namelessDplPattern",
+    "dql.parameterValueType.jsonPath",
+    "dql.parameterValueType.prefix",
+    "dql.parameterValueType.tabularFileExisting",
+    "dql.parameterValueType.tabularFileLookupsNew",
+    "dql.parameterValueType.tabularFileResultsNew",
+    "dql.parameterValueType.uriPattern",
+    "dql.parameterValueType.url"
+  ],
+  "dplParameterValueTypes": [
+    "dql.parameterValueType.namelessDplPattern",
+    "dql.parameterValueType.dplPattern"
+  ],
+  "executionBlockParameterValueTypes": [
+    "dql.parameterValueType.nonEmptyExecutionBlock",
+    "dql.parameterValueType.executionBlock"
+  ],
+  "fieldIdentifierParameterValueTypes": [
+    "dql.parameterValueType.fieldPattern",
+    "dql.parameterValueType.identifierForFieldOnRootLevel",
+    "dql.parameterValueType.identifierForAnyField",
+    "dql.parameterValueType.dataObject"
+  ],
+  "filterNegations": {
+    "filter": "filterOut",
+    "filterOut": "filter"
+  },
   "dataTypes": {
     "dql.dataType.null": {
       "name": "NULL",
@@ -383,6 +424,76 @@
           ],
           "parameterValueTypes": [
             "dql.parameterValueType.primitiveValue"
+          ]
+        }
+      ]
+    },
+    "dql.command.fieldsMove": {
+      "parameters": [
+        {
+          "name": "fieldName",
+          "description": "The name of the new record field that will contain the moved fields.",
+          "required": true,
+          "requiresName": false,
+          "assignmentSupport": "none",
+          "parameterValueTypes": [
+            "dql.parameterValueType.simpleIdentifier"
+          ]
+        },
+        {
+          "name": "include",
+          "description": "A field or a pattern for field names to move into the new record.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.fieldPattern",
+            "dql.parameterValueType.identifierForFieldOnRootLevel"
+          ]
+        },
+        {
+          "name": "exclude",
+          "description": "A field or a pattern for field names to exclude from the move.",
+          "required": false,
+          "requiresName": true,
+          "assignmentSupport": "none",
+          "variadic": true,
+          "valueTypes": [
+            "dql.dataType.array",
+            "dql.dataType.binary",
+            "dql.dataType.boolean",
+            "dql.dataType.double",
+            "dql.dataType.duration",
+            "dql.dataType.geopoint",
+            "dql.dataType.ip",
+            "dql.dataType.long",
+            "dql.dataType.record",
+            "dql.dataType.smartscapeid",
+            "dql.dataType.string",
+            "dql.dataType.timeframe",
+            "dql.dataType.timestamp",
+            "dql.dataType.uid"
+          ],
+          "parameterValueTypes": [
+            "dql.parameterValueType.fieldPattern",
+            "dql.parameterValueType.identifierForFieldOnRootLevel"
           ]
         }
       ]

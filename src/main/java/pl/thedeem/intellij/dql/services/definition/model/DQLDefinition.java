@@ -24,6 +24,13 @@ public final class DQLDefinition {
     @JsonMerge(value = OptBoolean.TRUE)
     private Map<String, Operator> searchOperators;
     private List<String> dataSources;
+    private List<String> stringDataTypes;
+    private List<String> numericDataTypes;
+    private List<String> stringParameterValueTypes;
+    private List<String> dplParameterValueTypes;
+    private List<String> executionBlockParameterValueTypes;
+    private List<String> fieldIdentifierParameterValueTypes;
+    private Map<String, String> filterNegations;
 
     public DQLDefinition() {
     }
@@ -36,7 +43,14 @@ public final class DQLDefinition {
             Map<String, Function> functions,
             Map<String, Operator> operators,
             Map<String, Operator> searchOperators,
-            List<String> dataSources
+            List<String> dataSources,
+            List<String> stringDataTypes,
+            List<String> numericDataTypes,
+            List<String> stringParameterValueTypes,
+            List<String> dplParameterValueTypes,
+            List<String> executionBlockParameterValueTypes,
+            List<String> fieldIdentifierParameterValueTypes,
+            Map<String, String> filterNegations
     ) {
         this.dataTypes = dataTypes;
         this.parameterValueTypes = parameterValueTypes;
@@ -46,10 +60,21 @@ public final class DQLDefinition {
         this.operators = operators;
         this.searchOperators = searchOperators;
         this.dataSources = dataSources;
+        this.stringDataTypes = stringDataTypes;
+        this.numericDataTypes = numericDataTypes;
+        this.stringParameterValueTypes = stringParameterValueTypes;
+        this.dplParameterValueTypes = dplParameterValueTypes;
+        this.executionBlockParameterValueTypes = executionBlockParameterValueTypes;
+        this.fieldIdentifierParameterValueTypes = fieldIdentifierParameterValueTypes;
+        this.filterNegations = filterNegations;
     }
 
     public static @NotNull DQLDefinition empty() {
-        return new DQLDefinition(Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), List.of());
+        return new DQLDefinition(
+                Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(),
+                List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                Map.of()
+        );
     }
 
     public Map<String, DataType> dataTypes() {
@@ -108,6 +133,71 @@ public final class DQLDefinition {
         this.searchOperators = searchOperators;
     }
 
+
+    public List<String> dataSources() {
+        return Objects.requireNonNullElseGet(dataSources, List::of);
+    }
+
+    public void setDataSources(List<String> dataSources) {
+        this.dataSources = Objects.requireNonNullElseGet(dataSources, List::of);
+    }
+
+    public List<String> stringDataTypes() {
+        return Objects.requireNonNullElseGet(stringDataTypes, List::of);
+    }
+
+    public void setStringDataTypes(List<String> stringDataTypes) {
+        this.stringDataTypes = stringDataTypes;
+    }
+
+    public List<String> numericDataTypes() {
+        return Objects.requireNonNullElseGet(numericDataTypes, List::of);
+    }
+
+    public void setNumericDataTypes(List<String> numericDataTypes) {
+        this.numericDataTypes = numericDataTypes;
+    }
+
+    public List<String> dplParameterValueTypes() {
+        return Objects.requireNonNullElseGet(dplParameterValueTypes, List::of);
+    }
+
+    public void setDplParameterValueTypes(List<String> dplParameterValueTypes) {
+        this.dplParameterValueTypes = dplParameterValueTypes;
+    }
+
+    public List<String> executionBlockParameterValueTypes() {
+        return Objects.requireNonNullElseGet(executionBlockParameterValueTypes, List::of);
+    }
+
+    public void setExecutionBlockParameterValueTypes(List<String> executionBlockParameterValueTypes) {
+        this.executionBlockParameterValueTypes = executionBlockParameterValueTypes;
+    }
+
+    public List<String> fieldIdentifierParameterValueTypes() {
+        return Objects.requireNonNullElseGet(fieldIdentifierParameterValueTypes, List::of);
+    }
+
+    public void setFieldIdentifierParameterValueTypes(List<String> fieldIdentifierParameterValueTypes) {
+        this.fieldIdentifierParameterValueTypes = fieldIdentifierParameterValueTypes;
+    }
+
+    public Map<String, String> filterNegations() {
+        return Objects.requireNonNullElseGet(filterNegations, Map::of);
+    }
+
+    public void setFilterNegations(Map<String, String> filterNegations) {
+        this.filterNegations = filterNegations;
+    }
+
+    public List<String> stringParameterValueTypes() {
+        return stringParameterValueTypes;
+    }
+
+    public void setStringParameterValueTypes(List<String> stringParameterValueTypes) {
+        this.stringParameterValueTypes = stringParameterValueTypes;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -120,12 +210,23 @@ public final class DQLDefinition {
                 Objects.equals(this.functions, that.functions) &&
                 Objects.equals(this.operators, that.operators) &&
                 Objects.equals(this.searchOperators, that.searchOperators) &&
-                Objects.equals(this.dataSources, that.dataSources);
+                Objects.equals(this.dataSources, that.dataSources) &&
+                Objects.equals(this.stringDataTypes, that.stringDataTypes) &&
+                Objects.equals(this.numericDataTypes, that.numericDataTypes) &&
+                Objects.equals(this.stringParameterValueTypes, that.stringParameterValueTypes) &&
+                Objects.equals(this.dplParameterValueTypes, that.dplParameterValueTypes) &&
+                Objects.equals(this.fieldIdentifierParameterValueTypes, that.fieldIdentifierParameterValueTypes) &&
+                Objects.equals(this.filterNegations, that.filterNegations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dataTypes, parameterValueTypes, commands, functionCategories, functions, operators, searchOperators, dataSources);
+        return Objects.hash(
+                dataTypes, parameterValueTypes, commands, functionCategories,
+                functions, operators, searchOperators, dataSources,
+                stringDataTypes, numericDataTypes, stringParameterValueTypes, dplParameterValueTypes,
+                fieldIdentifierParameterValueTypes, filterNegations
+        );
     }
 
     @Override
@@ -138,14 +239,13 @@ public final class DQLDefinition {
                 "functions=" + functions + ", " +
                 "operators=" + operators + ", " +
                 "searchOperators=" + searchOperators + ", " +
-                "dataSources=" + dataSources + ']';
-    }
-
-    public List<String> dataSources() {
-        return Objects.requireNonNullElseGet(dataSources, List::of);
-    }
-
-    public void setDataSources(List<String> dataSources) {
-        this.dataSources = dataSources;
+                "dataSources=" + dataSources + ", " +
+                "stringDataTypes=" + stringDataTypes + ", " +
+                "numericDataTypes=" + numericDataTypes + ", " +
+                "stringParameterValueTypes=" + stringParameterValueTypes + ", " +
+                "dplParameterValueTypes=" + dplParameterValueTypes + ", " +
+                "fieldIdentifierParameterValueTypes=" + fieldIdentifierParameterValueTypes + ", " +
+                "filterNegations=" + filterNegations
+                + ']';
     }
 }

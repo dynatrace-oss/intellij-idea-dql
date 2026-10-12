@@ -7,6 +7,7 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.template.Template;
 import com.intellij.codeInsight.template.TemplateManager;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import pl.thedeem.intellij.common.LangUtils;
 import pl.thedeem.intellij.dql.services.definition.DQLDefinitionService;
@@ -42,7 +43,7 @@ public class DQLCommandInsertionHandler implements InsertHandler<LookupElement> 
         template.addTextSegment(definition.name());
         template.addTextSegment(" ");
 
-        handleRequiredParameters(template);
+        handleRequiredParameters(context.getProject(), template);
 
         context.getDocument().deleteString(startOffset, context.getTailOffset());
 
@@ -52,7 +53,7 @@ public class DQLCommandInsertionHandler implements InsertHandler<LookupElement> 
         AutoPopupController.getInstance(context.getProject()).autoPopupParameterInfo(editor, context.getFile());
     }
 
-    private void handleRequiredParameters(Template template) {
+    private void handleRequiredParameters(@NotNull Project project, @NotNull Template template) {
         int i = 0;
         Collection<Parameter> requiredParameters = definition.requiredParameters();
         Set<String> blockedNames = new HashSet<>();
@@ -65,7 +66,7 @@ public class DQLCommandInsertionHandler implements InsertHandler<LookupElement> 
                     if (param.requiresName()) {
                         template.addTextSegment(param.name() + ": ");
                     }
-                    InsertionsUtils.handleInsertionDefaultValue(param, template);
+                    InsertionsUtils.handleInsertionDefaultValue(project, param, template);
                     i++;
                     blockedNames.add(param.name());
                     if (!param.aliases().isEmpty()) {
