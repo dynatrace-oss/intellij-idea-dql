@@ -55,7 +55,6 @@ import java.awt.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -402,13 +401,13 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         if (file == null) {
             return true;
         }
-        PsiFile psiFile = ReadAction.nonBlocking(() -> {
-            VirtualFile virtualFile = IntelliJUtils.getProjectRelativeFile(file, project);
-            if (virtualFile == null) {
-                return null;
-            }
-            return PsiManager.getInstance(project).findFile(virtualFile);
-        }).executeSynchronously();
+        VirtualFile virtualFile = IntelliJUtils.getProjectRelativeFile(file, project);
+        if (virtualFile == null) {
+            return true;
+        }
+        PsiFile psiFile = ReadAction
+                .nonBlocking(() -> PsiManager.getInstance(project).findFile(virtualFile))
+                .executeSynchronously();
         if (psiFile == null) {
             return true;
         }
@@ -420,10 +419,9 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         if (undefined.isEmpty()) {
             return true;
         }
-        List<DQLVariablesService.VariableDefinition> varsList = new ArrayList<>(variablesService.getUserDefinedVariables(psiFile));
-        varsList.addAll(undefined.stream().map(name -> new DQLVariablesService.VariableDefinition(name, null, Set.of())).toList());
-
-        DQLRuntimeVariableDialog dialog = new DQLRuntimeVariableDialog(project, varsList);
+        DQLRuntimeVariableDialog dialog = new DQLRuntimeVariableDialog(project, undefined.stream()
+                .map(name -> new DQLVariablesService.VariableDefinition(name, null, Set.of()))
+                .toList());
         if (!dialog.showAndGet()) {
             return false;
         }
