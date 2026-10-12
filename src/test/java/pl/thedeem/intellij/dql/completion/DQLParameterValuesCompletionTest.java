@@ -117,6 +117,7 @@ public class DQLParameterValuesCompletionTest extends LightPlatformCodeInsightFi
 
     @Test
     public void testInsideFunctionParameterShouldCompleteFunctionsWithMatchingOutputs() {
+        when(serviceMock.getStringDataTypes()).thenReturn(List.of("dql.dataType.string"));
         when(serviceMock.getFunctionByName("matchesPattern")).thenReturn(List.of(
                 DQLTestsUtils.createFunction("matchesPattern", List.of("dql.dataType.boolean"), List.of(
                         DQLTestsUtils.createParameter("value", List.of("dql.dataType.string"), true, List.of(), null, null, false),

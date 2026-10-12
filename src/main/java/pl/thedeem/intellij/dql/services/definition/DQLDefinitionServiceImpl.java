@@ -143,7 +143,7 @@ public class DQLDefinitionServiceImpl implements DQLDefinitionService {
 
     @Override
     public @NotNull Collection<String> getStringParameterValueTypes() {
-        return getDefinition().stringDataTypes();
+        return getDefinition().stringParameterValueTypes();
     }
 
     @Override

@@ -8,7 +8,8 @@
     "metrics",
     "smartscapeEdges",
     "smartscapeNodes",
-    "timeseries"
+    "timeseries",
+    "previewExternalList"
   ],
   "stringDataTypes": [
     "dql.dataType.uid",
