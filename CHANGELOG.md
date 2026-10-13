@@ -6,14 +6,17 @@
 
 - Updated project dependencies
 - Updated DQL definition engine
-- Fixed the indentation issue with nested bracket expressions (like `field[key][otherKey][yetAnotherKey]`)
-- Removed deprecated & internal API usages in newer IDEs
 - Two-sided `dql-variables.json` integration
   - `dql-variables.json` files are now recognized as plugin-owned and validated against a bundled JSON schema,
     reporting malformed variable definitions directly in the editor
   - `dql-variables.json` files now show the JSON icon with a small Dynatrace badge in the corner
   - DQL queries reload variable definitions live when the `dql-variables.json` is created, edited, or deleted
   - _Find Usages_ works on a variable definition, showing all DQL queries that use it
+
+### Bug fixes
+
+- Removed deprecated & internal API usages in newer IDEs
+- Fixed the indentation issue with nested bracket expressions (like `field[key][otherKey][yetAnotherKey]`)
 
 ## [1.10.0] - 2026-06-30
 
