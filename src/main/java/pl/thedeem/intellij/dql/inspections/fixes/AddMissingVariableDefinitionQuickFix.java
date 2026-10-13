@@ -14,7 +14,6 @@ import com.intellij.json.psi.JsonProperty;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
@@ -27,6 +26,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.thedeem.intellij.common.IntelliJUtils;
 import pl.thedeem.intellij.dql.DQLBundle;
 import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
 import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
@@ -71,7 +71,8 @@ public class AddMissingVariableDefinitionQuickFix implements LocalQuickFix {
             if (document != null) {
                 PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(document);
                 PsiDocumentManager.getInstance(project).commitDocument(document);
-                Editor editor = FileEditorManager.getInstance(project).openTextEditor(new OpenFileDescriptor(project, virtualFile, rootObject.getLastChild().getTextOffset()), true);
+                Editor editor = IntelliJUtils.findEditorForFile(virtualFile, project, document);
+                new OpenFileDescriptor(project, virtualFile, rootObject.getLastChild().getTextOffset()).navigate(true);
                 if (editor != null) {
                     TemplateManager templateManager = TemplateManager.getInstance(project);
                     Template template = templateManager.createTemplate("", "");

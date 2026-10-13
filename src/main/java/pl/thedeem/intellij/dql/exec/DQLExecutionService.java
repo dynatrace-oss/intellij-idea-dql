@@ -9,7 +9,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
@@ -134,14 +133,16 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
                     if (result == null) {
                         return;
                     }
-                    FileEditorManager.getInstance(project)
-                            .openFile(new DQLResultVirtualFile(
+                    new OpenFileDescriptor(
+                            project,
+                            new DQLResultVirtualFile(
                                     DQLBundle.message(
                                             "services.executeDQL.actions.openInNewTab.tabTitle",
                                             getPresentation().getPresentableText()
                                     ),
                                     result
-                            ), true);
+                            )
+                    ).navigate(true);
                 }
 
                 @Override

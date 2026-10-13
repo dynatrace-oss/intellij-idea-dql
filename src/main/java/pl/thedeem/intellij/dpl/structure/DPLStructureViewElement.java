@@ -2,78 +2,76 @@ package pl.thedeem.intellij.dpl.structure;
 
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.structureView.StructureViewTreeElement;
+import com.intellij.ide.structureView.impl.common.PsiTreeElementBase;
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement;
-import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dpl.DPLFile;
 import pl.thedeem.intellij.dpl.psi.*;
 import pl.thedeem.intellij.dpl.psi.elements.ExpressionElement;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-public class DPLStructureViewElement implements StructureViewTreeElement, SortableTreeElement {
-    private final NavigatablePsiElement element;
-
+public class DPLStructureViewElement extends PsiTreeElementBase<NavigatablePsiElement> implements SortableTreeElement {
     public DPLStructureViewElement(NavigatablePsiElement element) {
-        this.element = element;
-    }
-
-    @Override
-    public void navigate(boolean requestFocus) {
-        element.navigate(requestFocus);
-    }
-
-    @Override
-    public boolean canNavigate() {
-        return element.canNavigate();
-    }
-
-    @Override
-    public boolean canNavigateToSource() {
-        return element.canNavigateToSource();
-    }
-
-    @Override
-    public Object getValue() {
-        return element;
+        super(element);
     }
 
     @Override
     public @NotNull String getAlphaSortKey() {
-        String name = element.getName();
-        return name != null ? name : "";
+        NavigatablePsiElement element = getElement();
+        if (element != null) {
+            String name = element.getName();
+            return name != null ? name : "";
+        }
+        return "";
     }
 
     @Override
     public @NotNull ItemPresentation getPresentation() {
-        ItemPresentation presentation = element.getPresentation();
-        return presentation != null ? presentation : new PresentationData();
+        NavigatablePsiElement element = getElement();
+        if (element != null) {
+            ItemPresentation presentation = element.getPresentation();
+            return presentation != null ? presentation : new PresentationData();
+        }
+        return new PresentationData();
     }
 
     @Override
-    public TreeElement @NotNull [] getChildren() {
-        List<TreeElement> result = new ArrayList<>();
+    public @Nullable String getPresentableText() {
+        return getPresentation().getPresentableText();
+    }
+
+    @Override
+    public @NotNull Collection<StructureViewTreeElement> getChildrenBase() {
+        NavigatablePsiElement element = getElement();
+        if (element == null) return List.of();
+
+        List<StructureViewTreeElement> result = new ArrayList<>();
 
         switch (element) {
             case DPLFile file -> {
                 DPLDpl dpl = PsiTreeUtil.getChildOfType(file, DPLDpl.class);
-                PsiElement[] macros = PsiTreeUtil.getChildrenOfType(dpl, DPLMacroDefinitionExpression.class);
-                DPLExpressionsSequence[] expressions = PsiTreeUtil.getChildrenOfType(dpl, DPLExpressionsSequence.class);
-                List<PsiElement> elements = new ArrayList<>();
-                if (macros != null) {
-                    elements.addAll(List.of(macros));
-                }
-                if (expressions != null) {
-                    for (DPLExpressionsSequence expression : expressions) {
-                        elements.addAll(expression.getExpressionDefinitionList());
+                if (dpl != null) {
+                    PsiElement[] macros = PsiTreeUtil.getChildrenOfType(dpl, DPLMacroDefinitionExpression.class);
+                    DPLExpressionsSequence[] expressions = PsiTreeUtil.getChildrenOfType(dpl, DPLExpressionsSequence.class);
+                    List<PsiElement> elements = new ArrayList<>();
+                    if (macros != null) {
+                        elements.addAll(List.of(macros));
                     }
+                    if (expressions != null) {
+                        for (DPLExpressionsSequence expression : expressions) {
+                            elements.addAll(expression.getExpressionDefinitionList());
+                        }
+                    }
+                    result.addAll(convert(elements));
                 }
-                result.addAll(convert(elements));
             }
             case DPLExpressionsSequence sequence -> result.addAll(convert(sequence.getExpressionDefinitionList()));
             case DPLMacroDefinitionExpression macro -> {
@@ -149,17 +147,16 @@ public class DPLStructureViewElement implements StructureViewTreeElement, Sortab
                 }
             }
             default -> {
-                return EMPTY_ARRAY;
             }
         }
-        return result.toArray(new TreeElement[0]);
+
+        return result;
     }
 
-    private <T extends PsiElement> @NotNull List<TreeElement> convert(List<T> element) {
-        return element.stream()
+    private <T extends PsiElement> @NotNull List<StructureViewTreeElement> convert(List<T> elements) {
+        return elements.stream()
                 .filter(e -> e instanceof NavigatablePsiElement)
-                .map(e -> new DPLStructureViewElement((NavigatablePsiElement) e))
-                .map(e -> (TreeElement) e)
+                .map(e -> (StructureViewTreeElement) new DPLStructureViewElement((NavigatablePsiElement) e))
                 .toList();
     }
 }

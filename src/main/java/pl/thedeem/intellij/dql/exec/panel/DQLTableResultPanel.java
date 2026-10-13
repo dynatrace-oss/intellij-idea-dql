@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -345,11 +345,14 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
         int col = table.getSelectedColumn();
         if (row != -1 && col != -1) {
             Object value = table.getValueAt(row, col);
-            FileEditorManager.getInstance(project).openFile(new DQLRecordFieldVirtualFile(
-                    DQLBundle.message("components.results.table.actions.openField.tabTitle", table.getColumnName(col)),
-                    value == null ? "" : value,
-                    columnTypes.get(table.getColumnName(col))
-            ), true);
+            new OpenFileDescriptor(
+                    project,
+                    new DQLRecordFieldVirtualFile(
+                            DQLBundle.message("components.results.table.actions.openField.tabTitle", table.getColumnName(col)),
+                            value == null ? "" : value,
+                            columnTypes.get(table.getColumnName(col))
+                    )
+            ).navigate(true);
         }
     }
 
@@ -360,10 +363,13 @@ public class DQLTableResultPanel extends BorderLayoutPanel implements PanelWithT
         for (int col = 0; col < table.getColumnCount(); col++) {
             rowValues.put(table.getColumnName(col), ComponentsUtils.prepareColumnValue(table.getValueAt(row, col)));
         }
-        FileEditorManager.getInstance(project).openFile(new DQLRecordVirtualFile(
-                DQLBundle.message("components.results.table.actions.openRecord.tabTitle"),
-                rowValues
-        ), true);
+        new OpenFileDescriptor(
+                project,
+                new DQLRecordVirtualFile(
+                        DQLBundle.message("components.results.table.actions.openRecord.tabTitle"),
+                        rowValues
+                )
+        ).navigate(true);
     }
 
     private @NotNull AnAction createEDTAction(@NotNull String title, @Nullable String description, @Nullable Icon icon, @NotNull Runnable action) {
