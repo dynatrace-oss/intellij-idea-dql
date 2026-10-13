@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.impl.EditConfigurationsDialog;
@@ -25,6 +26,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileWrapper;
+import com.intellij.psi.PsiFile;
 import com.intellij.ui.EditorCustomization;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.EditorTextFieldProvider;
@@ -38,6 +40,8 @@ import pl.thedeem.intellij.dql.exec.runConfiguration.ExecuteDQLRunConfiguration;
 import java.io.File;
 import java.io.FileWriter;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -184,6 +188,29 @@ public class IntelliJUtils {
                 );
             } catch (Exception ignored2) {
                 return null;
+            }
+        }
+    }
+
+    /*
+     * The IntelliJ platform deprecated the "restart" method in DaemonCodeAnalyzer in favor of a new method that accepts
+     * an additional reason parameter.
+     * Unfortunately, older versions of the platform do not have the new method, so we need to use reflection to call
+     * the appropriate method based on the platform version.
+     * This method will be replaced with "DaemonCodeAnalyzer.restart(file, reason)" once we drop support for
+     * older platform versions.
+     */
+    public static void retriggerValidations(@NotNull PsiFile file) throws Exception {
+        DaemonCodeAnalyzer analyzer = DaemonCodeAnalyzer.getInstance(file.getProject());
+        try {
+            Method restartMethod = analyzer.getClass().getMethod("restart", PsiFile.class, String.class);
+            restartMethod.invoke(analyzer, file, "Validation settings have changed");
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
+            try {
+                Method restartMethod = analyzer.getClass().getMethod("restart", PsiFile.class);
+                restartMethod.invoke(analyzer, file);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException error) {
+                throw new Exception("Could not retrigger code analysis");
             }
         }
     }

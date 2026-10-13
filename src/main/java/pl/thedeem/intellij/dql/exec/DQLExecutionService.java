@@ -46,6 +46,8 @@ import pl.thedeem.intellij.dql.services.query.model.QueryConfiguration;
 import pl.thedeem.intellij.dql.services.ui.ConnectedTenantsServiceGroup;
 import pl.thedeem.intellij.dql.services.ui.TenantServiceGroup;
 import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
+import pl.thedeem.intellij.dql.services.variables.components.DQLRuntimeVariableDialog;
+import pl.thedeem.intellij.dql.settings.DQLSettings;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenant;
 import pl.thedeem.intellij.dql.settings.tenants.DynatraceTenantsService;
 
@@ -54,8 +56,10 @@ import java.awt.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -244,6 +248,13 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
         DQLExecuteInProgressPanel progressPanel = new DQLExecuteInProgressPanel();
         contentPanel.addToCenter(progressPanel);
 
+        if (!verifyUndefinedVariables(project)) {
+            contentPanel.addToCenter(new InformationComponent(
+                    DQLBundle.message("services.executeDQL.information.undefinedVariables"),
+                    AllIcons.General.Information
+            ));
+            return;
+        }
         DQLExecutePayload payload = preparePayload(project);
         if (payload == null) {
             contentPanel.addToCenter(new DQLExecutionErrorPanel(
@@ -380,6 +391,43 @@ public class DQLExecutionService implements ManagedService, UiDataProvider {
             return null;
         }
         return DQLQuerySelectorService.getInstance().getQueryText(psiFile);
+    }
+
+    private boolean verifyUndefinedVariables(@NotNull Project project) {
+        if (!DQLSettings.getInstance().isShowModalForUnresolvedVariables()) {
+            return true;
+        }
+        String file = configuration.originalFile();
+        if (file == null) {
+            return true;
+        }
+        PsiFile psiFile = ReadAction.nonBlocking(() -> {
+            VirtualFile virtualFile = IntelliJUtils.getProjectRelativeFile(file, project);
+            if (virtualFile == null) {
+                return null;
+            }
+            return PsiManager.getInstance(project).findFile(virtualFile);
+        }).executeSynchronously();
+        if (psiFile == null) {
+            return true;
+        }
+
+        DQLVariablesService variablesService = DQLVariablesService.getInstance(project);
+        Set<String> undefined = ReadAction.nonBlocking(
+                () -> variablesService.getUndefinedVariables(psiFile)
+        ).executeSynchronously();
+        if (undefined.isEmpty()) {
+            return true;
+        }
+        List<DQLVariablesService.VariableDefinition> varsList = new ArrayList<>(variablesService.getUserDefinedVariables(psiFile));
+        varsList.addAll(undefined.stream().map(name -> new DQLVariablesService.VariableDefinition(name, null, Set.of())).toList());
+
+        DQLRuntimeVariableDialog dialog = new DQLRuntimeVariableDialog(project, varsList);
+        if (!dialog.showAndGet()) {
+            return false;
+        }
+        variablesService.updateUserDefinedVariables(psiFile, dialog.getResult());
+        return true;
     }
 
     private @NotNull List<DQLVariablesService.VariableDefinition> loadVariables(@Nullable String file, @NotNull Project project) {

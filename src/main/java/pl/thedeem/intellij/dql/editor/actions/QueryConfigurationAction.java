@@ -13,6 +13,7 @@ import java.awt.*;
 
 public class QueryConfigurationAction extends AnAction implements CustomComponentAction {
     public static final DataKey<Boolean> SHOW_TIMEFRAME = DataKey.create("DQL_SHOW_TIMEFRAME_OPTIONS");
+    public static final DataKey<Boolean> SHOW_VARIABLES_MANAGER = DataKey.create("SHOW_VARIABLES_MANAGER");
     public static final DataKey<Boolean> SHOW_CONFIGURATION = DataKey.create("DQL_SHOW_CONFIGURATION_OPTIONS");
     public static final DataKey<Boolean> SHOW_QUERY_EXECUTE_BUTTON = DataKey.create("DQL_SHOW_QUERY_EXECUTE_BUTTON");
     public static final DataKey<Boolean> SHOW_TENANT_SELECTION = DataKey.create("DQL_SHOW_TENANT_SELECTION");
@@ -79,6 +80,13 @@ public class QueryConfigurationAction extends AnAction implements CustomComponen
                 public void update(@NotNull AnActionEvent e) {
                     super.update(e);
                     e.getPresentation().setEnabledAndVisible(!Boolean.FALSE.equals(e.getData(SHOW_QUERY_VALIDATION_OPTION)));
+                }
+            });
+            group.add(new ManageVariablesAction() {
+                @Override
+                public void update(@NotNull AnActionEvent e) {
+                    super.update(e);
+                    e.getPresentation().setEnabledAndVisible(e.getPresentation().isEnabledAndVisible() && !Boolean.FALSE.equals(e.getData(SHOW_VARIABLES_MANAGER)));
                 }
             });
             group.addAction(new QueryConfigurationTimeframeAction() {
