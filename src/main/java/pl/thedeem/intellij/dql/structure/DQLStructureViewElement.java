@@ -2,61 +2,47 @@ package pl.thedeem.intellij.dql.structure;
 
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.structureView.StructureViewTreeElement;
+import com.intellij.ide.structureView.impl.common.PsiTreeElementBase;
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement;
-import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLFile;
 import pl.thedeem.intellij.dql.psi.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
-public class DQLStructureViewElement implements StructureViewTreeElement, SortableTreeElement {
-    private final NavigatablePsiElement element;
+public class DQLStructureViewElement extends PsiTreeElementBase<NavigatablePsiElement> implements SortableTreeElement {
 
     public DQLStructureViewElement(NavigatablePsiElement element) {
-        this.element = element;
-    }
-
-    @Override
-    public void navigate(boolean requestFocus) {
-        element.navigate(requestFocus);
-    }
-
-    @Override
-    public boolean canNavigate() {
-        return element.canNavigate();
-    }
-
-    @Override
-    public boolean canNavigateToSource() {
-        return element.canNavigateToSource();
-    }
-
-    @Override
-    public Object getValue() {
-        return element;
-    }
-
-    @Override
-    public @NotNull String getAlphaSortKey() {
-        return Objects.requireNonNullElse(getPresentation().getPresentableText(), "");
+        super(element);
     }
 
     @Override
     public @NotNull ItemPresentation getPresentation() {
-        ItemPresentation presentation = element.getPresentation();
-        return presentation != null ? presentation : new PresentationData();
+        NavigatablePsiElement element = getElement();
+        if (element != null && element.getPresentation() != null) {
+            return element.getPresentation();
+        }
+        return new PresentationData();
     }
 
     @Override
-    public TreeElement @NotNull [] getChildren() {
+    public @NotNull String getAlphaSortKey() {
+        ItemPresentation presentation = getPresentation();
+        return presentation.getPresentableText() != null ? presentation.getPresentableText() : "";
+    }
+
+    @Override
+    public @NotNull Collection<StructureViewTreeElement> getChildrenBase() {
+        NavigatablePsiElement element = getElement();
+        if (element == null) return List.of();
+
         return switch (element) {
             case DQLFile file -> {
                 DQLQuery[] queries = PsiTreeUtil.getChildrenOfType(file, DQLQuery.class);
@@ -69,26 +55,31 @@ public class DQLStructureViewElement implements StructureViewTreeElement, Sortab
                 List<PsiElement> expressions = PsiTreeUtil.getChildrenOfAnyType(expression, DQLExpression.class, DQLQuery.class);
                 yield handleChildren(expressions);
             }
-            default -> EMPTY_ARRAY;
+            default -> List.of();
         };
     }
 
-    private TreeElement @NotNull [] handleChildren(Collection<?> children) {
+    private Collection<StructureViewTreeElement> handleChildren(Collection<?> children) {
         if (children == null) {
-            return EMPTY_ARRAY;
+            return List.of();
         }
-        List<TreeElement> result = new ArrayList<>(children.size());
+        List<StructureViewTreeElement> result = new ArrayList<>(children.size());
         for (Object child : children) {
             if (child instanceof DQLQuery query) {
-                result.addAll(List.of(handleChildren(query.getCommandList())));
+                result.addAll(handleChildren(query.getCommandList()));
             } else if (child instanceof DQLParenthesisedExpression expr) {
                 if (expr.getExpression() != null) {
-                    result.addAll(List.of(handleChildren(List.of(expr.getExpression()))));
+                    result.addAll(handleChildren(List.of(expr.getExpression())));
                 }
             } else {
                 result.add(new DQLStructureViewElement((NavigatablePsiElement) child));
             }
         }
-        return result.toArray(new TreeElement[0]);
+        return result;
+    }
+
+    @Override
+    public @Nullable String getPresentableText() {
+        return getPresentation().getPresentableText();
     }
 }

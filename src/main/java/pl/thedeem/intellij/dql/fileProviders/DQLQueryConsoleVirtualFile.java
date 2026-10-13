@@ -1,6 +1,6 @@
 package pl.thedeem.intellij.dql.fileProviders;
 
-import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
@@ -52,7 +52,7 @@ public class DQLQueryConsoleVirtualFile extends DQLVirtualFile<String> {
     public static DQLQueryConsoleVirtualFile open(@NotNull Project project, @NotNull String name, @Nullable QueryConfiguration configuration) {
         DQLQueryConsoleVirtualFile vf = new DQLQueryConsoleVirtualFile(name)
                 .setInitialConfiguration(configuration);
-        FileEditorManager.getInstance(project).openFile(vf, true);
+        new OpenFileDescriptor(project, vf).navigate(true);
         return vf;
     }
 

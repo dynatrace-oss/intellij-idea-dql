@@ -10,12 +10,18 @@ import com.intellij.execution.impl.EditConfigurationsDialog;
 import com.intellij.ide.DataManager;
 import com.intellij.lang.Language;
 import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.fileChooser.FileSaverDescriptor;
 import com.intellij.openapi.fileChooser.FileSaverDialog;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.fileTypes.PlainTextLanguage;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
@@ -186,5 +192,22 @@ public class IntelliJUtils {
                 return null;
             }
         }
+    }
+
+    public static @Nullable Editor findEditorForFile(@NotNull VirtualFile file, @NotNull Project project, @NotNull Document document) {
+        FileEditor[] fileEditors = FileEditorManager.getInstance(project).getAllEditors(file);
+        for (FileEditor fileEditor : fileEditors) {
+            if (fileEditor instanceof TextEditor textEditor) {
+                return textEditor.getEditor();
+            }
+        }
+
+        Editor[] docEditors = EditorFactory.getInstance().getEditors(document, project);
+        if (docEditors.length > 0) {
+            return docEditors[0];
+        }
+
+
+        return null;
     }
 }
