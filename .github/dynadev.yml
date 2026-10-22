@@ -1,0 +1,34 @@
+version: 1
+enabled: true
+onboarding: future_changes
+approved_profile: default
+skip_drafts: true
+skip_bots: true
+
+github_review:
+  approval_mode: standard
+
+review_lanes:
+  security:
+    enabled: true
+    mode: advisory
+    profile: security-default-v1
+    notify_min_severity: critical
+  architecture:
+    enabled: true
+    mode: advisory
+    profile: architecture-default-v1
+    notify_min_severity: warning
+
+conversation_aware:
+  capture: true
+  verify: true
+  pr_level: true
+  reply_trigger: false
+
+pr_review_learnings:
+  enabled: false
+  frequency: weekly
+
+large_pr_reviews:
+  enabled: true
