@@ -17,7 +17,7 @@ public class UnknownVariableInspection extends LocalInspectionTool {
             public void visitVariableExpression(@NotNull DQLVariableExpression variable) {
                 super.visitVariableExpression(variable);
 
-                if (variable.getDefinition() == null) {
+                if (variable.getValue() == null) {
                     holder.registerProblem(variable, DQLBundle.message(
                             "inspection.variable.unknown.missingDefinition",
                             variable.getName()

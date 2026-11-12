@@ -75,4 +75,12 @@ public class DQLSettings implements PersistentStateComponent<DQLSettingsState> {
     public void setDQLExecutionToolbarVisible(boolean enabled) {
         myState.showDqlExecutionToolbar = enabled;
     }
+
+    public boolean isShowModalForUnresolvedVariables() {
+        return myState.showModalForUnresolvedVariables;
+    }
+
+    public void setShowModalForUnresolvedVariables(boolean enabled) {
+        myState.showModalForUnresolvedVariables = enabled;
+    }
 }
