@@ -39,6 +39,7 @@ repositories {
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
 dependencies {
     implementation(libs.jFreeChart)
+    implementation(libs.jacksonDatabind)
 
     testImplementation(libs.junit)
     testImplementation(libs.opentest4j)

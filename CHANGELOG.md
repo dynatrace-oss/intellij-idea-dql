@@ -17,6 +17,8 @@
 
 - Removed deprecated & internal API usages in newer IDEs
 - Fixed the indentation issue with nested bracket expressions (like `field[key][otherKey][yetAnotherKey]`)
+- Fixed the `java.lang.NoClassDefFoundError: com/fasterxml/jackson/core/type/TypeReference` happening on the latest
+  IDE versions
 
 ## [1.10.0] - 2026-06-30
 
