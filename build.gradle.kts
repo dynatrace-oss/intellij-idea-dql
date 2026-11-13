@@ -1,7 +1,7 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
-import org.jetbrains.grammarkit.tasks.GenerateLexerTask
-import org.jetbrains.grammarkit.tasks.GenerateParserTask
+import org.jetbrains.intellij.platform.gradle.tasks.GenerateLexerTask
+import org.jetbrains.intellij.platform.gradle.tasks.GenerateParserTask
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.intelliJPlatform)
     alias(libs.plugins.changelog)
-    alias(libs.plugins.grammarkit)
+    alias(libs.plugins.intelliJPlatformGrammarkit)
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -117,41 +117,37 @@ changelog {
     repositoryUrl = providers.gradleProperty("pluginRepositoryUrl")
 }
 
-grammarKit {
-    tasks {
-        register<GenerateParserTask>("generateDplParser") {
-            mustRunAfter("compileKotlin")
-            sourceFile.set(File("src/main/grammar/dpl.bnf"))
-            targetRootOutputDir.set(File("src/main/gen"))
-            pathToParser.set("pl/thedeem/intellij/dpl/DPLParser.java")
-            pathToPsiRoot.set("pl/thedeem/intellij/dql/psi")
-            purgeOldFiles.set(true)
-        }
-
-        register<GenerateLexerTask>("generateDplLexer") {
-            sourceFile.set(File("src/main/grammar/dpl.flex"))
-            targetOutputDir.set(File("src/main/gen/pl/thedeem/intellij/dpl/psi"))
-            dependsOn(named("generateDplParser"))
-        }
-
-        generateLexer {
-            sourceFile.set(File("src/main/grammar/dql.flex"))
-            targetOutputDir.set(File("src/main/gen/pl/thedeem/intellij/dql/psi"))
-            dependsOn(generateParser, named("generateDplLexer"))
-        }
-
-        generateParser {
-            sourceFile.set(File("src/main/grammar/dql.bnf"))
-            targetRootOutputDir.set(File("src/main/gen"))
-            pathToParser.set("pl/thedeem/intellij/dql/DQLParser.java")
-            pathToPsiRoot.set("pl/thedeem/intellij/dql/psi")
-            purgeOldFiles.set(true)
-            dependsOn(named("generateDplParser"))
-        }
-    }
-}
-
 tasks {
+    register<GenerateParserTask>("generateDplParser") {
+        mustRunAfter("compileKotlin")
+        sourceFile.set(File("src/main/grammar/dpl.bnf"))
+        targetRootOutputDir.set(File("src/main/gen"))
+        pathToParser.set("pl/thedeem/intellij/dpl/DPLParser.java")
+        pathToPsiRoot.set("pl/thedeem/intellij/dql/psi")
+        purgeOldFiles.set(true)
+    }
+
+    register<GenerateLexerTask>("generateDplLexer") {
+        sourceFile.set(File("src/main/grammar/dpl.flex"))
+        targetOutputDir.set(File("src/main/gen/pl/thedeem/intellij/dpl/psi"))
+        dependsOn(named("generateDplParser"))
+    }
+
+    generateLexer {
+        sourceFile.set(File("src/main/grammar/dql.flex"))
+        targetOutputDir.set(File("src/main/gen/pl/thedeem/intellij/dql/psi"))
+        dependsOn(generateParser, named("generateDplLexer"))
+    }
+
+    generateParser {
+        sourceFile.set(File("src/main/grammar/dql.bnf"))
+        targetRootOutputDir.set(File("src/main/gen"))
+        pathToParser.set("pl/thedeem/intellij/dql/DQLParser.java")
+        pathToPsiRoot.set("pl/thedeem/intellij/dql/psi")
+        purgeOldFiles.set(true)
+        dependsOn(named("generateDplParser"))
+    }
+
     compileJava {
         dependsOn("generateLexer")
     }
