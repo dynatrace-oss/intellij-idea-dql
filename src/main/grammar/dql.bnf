@@ -114,7 +114,7 @@ primitive_expression ::=
     string |
     number |
     duration |
-    null
+    null_value
 
 arithmetical_expression ::= expression (additive_operator | multiplicative_operator) expression {
    pin=2
@@ -334,7 +334,7 @@ boolean ::= TRUE | FALSE {
     mixin="pl.thedeem.intellij.dql.psi.elements.impl.BooleanElementImpl"
     implements="pl.thedeem.intellij.dql.psi.elements.BooleanElement"
 }
-null ::= NULL_TYPE {
+null_value ::= NULL_TYPE {
     extends=primitive_expression
     mixin="pl.thedeem.intellij.dql.psi.elements.impl.NullElementImpl"
     implements="pl.thedeem.intellij.dql.psi.elements.NullElement"

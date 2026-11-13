@@ -275,7 +275,7 @@ simple_expression ::=
     string |
     boolean |
     number |
-    null
+    null_value
 
 field_name ::= DOTTED_IDENTIFIER | IDENTIFIER | string {
     implements="pl.thedeem.intellij.dpl.psi.elements.FieldNameElement"
@@ -307,7 +307,7 @@ boolean ::= TRUE | FALSE {
    implements="pl.thedeem.intellij.dpl.psi.elements.BooleanElement"
    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.BooleanElementImpl"
 }
-null ::= NULL_TYPE {
+null_value ::= NULL_TYPE {
    extends=simple_expression
    implements="pl.thedeem.intellij.dpl.psi.elements.NullElement"
    mixin="pl.thedeem.intellij.dpl.psi.elements.impl.NullElementImpl"
