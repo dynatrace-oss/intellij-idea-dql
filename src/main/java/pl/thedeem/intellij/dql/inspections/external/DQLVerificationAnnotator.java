@@ -56,9 +56,12 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
                     project,
                     (Computable<DQLQueryParserService.ParseResult>) () -> parser.getSubstitutedQuery(input.file, variables)
             );
+            if (parseResult == null) {
+                return new Result(new DQLVerifyResponse(), null);
+            }
             try {
                 DQLVerifyResponse response = rest.withStandardErrorHandling(rest.verifyQuery(tenant, parseResult.parsed()), tenant).get();
-                return new Result(response, parseResult);
+                return new Result(response != null ? response : new DQLVerifyResponse(), parseResult);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return new Result(new DQLVerifyResponse(), null);
