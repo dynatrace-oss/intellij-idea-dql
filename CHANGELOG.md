@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Bug fixes
+
+- Fixed an issue with the external annotator when the Dynatrace response was empty and the plugin threw an error
+
 ## [1.11.0] - 2026-11-12
 
 ### Features
