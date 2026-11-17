@@ -61,7 +61,7 @@ public class DQLVerificationAnnotator extends ExternalAnnotator<DQLVerificationA
             }
             try {
                 DQLVerifyResponse response = rest.withStandardErrorHandling(rest.verifyQuery(tenant, parseResult.parsed()), tenant).get();
-                return new Result(response, parseResult);
+                return new Result(response != null ? response : new DQLVerifyResponse(), parseResult);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return new Result(new DQLVerifyResponse(), null);
