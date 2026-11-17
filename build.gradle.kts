@@ -23,7 +23,7 @@ java {
 sourceSets {
     main {
         java {
-            srcDirs("src/main/gen")
+            srcDirs("src/main/gen/dql", "src/main/gen/dpl")
         }
     }
 }
@@ -121,27 +121,27 @@ tasks {
     register<GenerateParserTask>("generateDplParser") {
         mustRunAfter("compileKotlin")
         sourceFile.set(File("src/main/grammar/dpl.bnf"))
-        targetRootOutputDir.set(File("src/main/gen"))
+        targetRootOutputDir.set(File("src/main/gen/dpl"))
         pathToParser.set("pl/thedeem/intellij/dpl/DPLParser.java")
-        pathToPsiRoot.set("pl/thedeem/intellij/dql/psi")
+        pathToPsiRoot.set("pl/thedeem/intellij/dpl/psi")
         purgeOldFiles.set(true)
     }
 
     register<GenerateLexerTask>("generateDplLexer") {
         sourceFile.set(File("src/main/grammar/dpl.flex"))
-        targetOutputDir.set(File("src/main/gen/pl/thedeem/intellij/dpl/psi"))
+        targetOutputDir.set(File("src/main/gen/dpl/pl/thedeem/intellij/dpl/psi"))
         dependsOn(named("generateDplParser"))
     }
 
     generateLexer {
         sourceFile.set(File("src/main/grammar/dql.flex"))
-        targetOutputDir.set(File("src/main/gen/pl/thedeem/intellij/dql/psi"))
+        targetOutputDir.set(File("src/main/gen/dql/pl/thedeem/intellij/dql/psi"))
         dependsOn(generateParser, named("generateDplLexer"))
     }
 
     generateParser {
         sourceFile.set(File("src/main/grammar/dql.bnf"))
-        targetRootOutputDir.set(File("src/main/gen"))
+        targetRootOutputDir.set(File("src/main/gen/dql"))
         pathToParser.set("pl/thedeem/intellij/dql/DQLParser.java")
         pathToPsiRoot.set("pl/thedeem/intellij/dql/psi")
         purgeOldFiles.set(true)
