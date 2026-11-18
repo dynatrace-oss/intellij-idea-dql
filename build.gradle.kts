@@ -1,8 +1,8 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.intellij.platform.gradle.tasks.GenerateLexerTask
 import org.jetbrains.intellij.platform.gradle.tasks.GenerateParserTask
-import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
     id("java")
@@ -20,13 +20,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 }
 
-sourceSets {
-    main {
-        java {
-            srcDirs("src/main/gen/dql", "src/main/gen/dpl")
-        }
-    }
-}
 
 repositories {
     mavenCentral()
@@ -119,44 +112,51 @@ changelog {
 
 tasks {
     register<GenerateParserTask>("generateDplParser") {
-        mustRunAfter("compileKotlin")
-        sourceFile.set(File("src/main/grammar/dpl.bnf"))
-        targetRootOutputDir.set(File("src/main/gen/dpl"))
-        pathToParser.set("pl/thedeem/intellij/dpl/DPLParser.java")
-        pathToPsiRoot.set("pl/thedeem/intellij/dpl/psi")
-        purgeOldFiles.set(true)
+        sourceFile = layout.projectDirectory.file("src/main/grammar/dpl.bnf")
+        targetRootOutputDir = layout.projectDirectory.dir("src/main/gen/dpl")
+        purgeOldFiles = true
     }
 
     register<GenerateLexerTask>("generateDplLexer") {
-        sourceFile.set(File("src/main/grammar/dpl.flex"))
-        targetOutputDir.set(File("src/main/gen/dpl/pl/thedeem/intellij/dpl/psi"))
+        sourceFile = layout.projectDirectory.file("src/main/grammar/dpl.flex")
+        targetRootOutputDir = layout.projectDirectory.dir("src/main/gen/dpl-lexer")
+        purgeOldFiles = true
         dependsOn(named("generateDplParser"))
     }
 
     generateLexer {
-        sourceFile.set(File("src/main/grammar/dql.flex"))
-        targetOutputDir.set(File("src/main/gen/dql/pl/thedeem/intellij/dql/psi"))
+        sourceFile = layout.projectDirectory.file("src/main/grammar/dql.flex")
+        targetRootOutputDir = layout.projectDirectory.dir("src/main/gen/dql-lexer")
+        purgeOldFiles = true
         dependsOn(generateParser, named("generateDplLexer"))
     }
 
     generateParser {
-        sourceFile.set(File("src/main/grammar/dql.bnf"))
-        targetRootOutputDir.set(File("src/main/gen/dql"))
-        pathToParser.set("pl/thedeem/intellij/dql/DQLParser.java")
-        pathToPsiRoot.set("pl/thedeem/intellij/dql/psi")
-        purgeOldFiles.set(true)
+        sourceFile = layout.projectDirectory.file("src/main/grammar/dql.bnf")
+        targetRootOutputDir = layout.projectDirectory.dir("src/main/gen/dql")
+        purgeOldFiles = true
         dependsOn(named("generateDplParser"))
     }
 
-    compileJava {
-        dependsOn("generateLexer")
-    }
     wrapper {
         gradleVersion = providers.gradleProperty("gradleVersion").get()
     }
 
     publishPlugin {
         dependsOn(generateLexer, patchChangelog)
+    }
+}
+
+// Registering the generator tasks (not plain paths) as source directories makes every consumer of the source set
+// (compileJava, compileKotlin, sourcesJar, ...) depend on them automatically.
+sourceSets {
+    main {
+        java {
+            srcDir(tasks.named("generateDplParser"))
+            srcDir(tasks.named("generateDplLexer"))
+            srcDir(tasks.generateParser)
+            srcDir(tasks.generateLexer)
+        }
     }
 }
 
