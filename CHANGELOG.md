@@ -5,6 +5,8 @@
 ### Bug fixes
 
 - Fixed an issue with the external annotator when the Dynatrace response was empty and the plugin threw an error
+- Fixed an issue with the external annotator that marks the found query places incorrectly when there is an empty
+  (0-length string) variable defined
 
 ## [1.11.0] - 2026-11-12
 

@@ -5,7 +5,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
 import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 
 import java.util.List;
@@ -24,9 +23,6 @@ public interface DQLQueryParserService {
             int substitutedStartOffset,
             int originalLength,
             int substitutedLength) {
-    }
-
-    record Replacement(DQLVariableExpression variable, String value) {
     }
 
     record ParseResult(
