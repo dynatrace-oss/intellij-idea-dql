@@ -1,7 +1,9 @@
 package pl.thedeem.intellij.dql.services.query;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
@@ -19,7 +21,7 @@ public class DQLQueryParserServiceImpl implements DQLQueryParserService {
     public ParseResult getSubstitutedQuery(@NotNull PsiFile psiFile, @Nullable List<DQLVariablesService.VariableDefinition> variableDefinitions) {
         Map<String, String> definitions = getFoundVariables(psiFile, variableDefinitions);
 
-        return ReadAction.compute(() -> {
+        return ApplicationManager.getApplication().runReadAction((Computable<ParseResult>) () -> {
             String originalText = psiFile.getText();
             List<DQLVariableExpression> vars = new ArrayList<>(PsiTreeUtil.findChildrenOfType(psiFile, DQLVariableExpression.class));
             vars.sort(Comparator.comparingInt(v -> v.getTextRange().getStartOffset()));
