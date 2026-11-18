@@ -147,8 +147,6 @@ tasks {
     }
 }
 
-// Registering the generator tasks (not plain paths) as source directories makes every consumer of the source set
-// (compileJava, compileKotlin, sourcesJar, ...) depend on them automatically.
 sourceSets {
     main {
         java {
