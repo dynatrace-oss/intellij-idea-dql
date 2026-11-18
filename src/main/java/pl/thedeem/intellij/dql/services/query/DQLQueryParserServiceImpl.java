@@ -2,14 +2,13 @@ package pl.thedeem.intellij.dql.services.query;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiElement;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pl.thedeem.intellij.dql.DQLFileType;
-import pl.thedeem.intellij.dql.psi.DQLElementFactory;
 import pl.thedeem.intellij.dql.psi.DQLVariableExpression;
 import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 
@@ -20,47 +19,28 @@ public class DQLQueryParserServiceImpl implements DQLQueryParserService {
     public ParseResult getSubstitutedQuery(@NotNull PsiFile psiFile, @Nullable List<DQLVariablesService.VariableDefinition> variableDefinitions) {
         Map<String, String> definitions = getFoundVariables(psiFile, variableDefinitions);
 
-        PsiElement copied = psiFile.copy();
-        List<DQLVariableExpression> vars = new ArrayList<>(PsiTreeUtil.findChildrenOfType(copied, DQLVariableExpression.class));
-        vars.sort(Comparator.comparingInt(PsiElement::getTextOffset));
+        return ReadAction.compute(() -> {
+            String originalText = psiFile.getText();
+            List<DQLVariableExpression> vars = new ArrayList<>(PsiTreeUtil.findChildrenOfType(psiFile, DQLVariableExpression.class));
+            vars.sort(Comparator.comparingInt(v -> v.getTextRange().getStartOffset()));
 
-        List<OffsetMapping> mappings = new ArrayList<>();
-        List<Replacement> replacements = new ArrayList<>();
-
-        // collect the information about variable positions
-        for (DQLVariableExpression variable : vars) {
-            String name = variable.getName();
-            String value = definitions.get(name);
-            if (value == null) {
-                value = "null";
+            List<OffsetMapping> mappings = new ArrayList<>();
+            StringBuilder substituted = new StringBuilder(originalText.length());
+            int lastOriginalOffset = 0;
+            for (DQLVariableExpression variable : vars) {
+                TextRange range = variable.getTextRange();
+                if (range.getStartOffset() < lastOriginalOffset) {
+                    continue;
+                }
+                String value = Objects.requireNonNullElse(definitions.get(variable.getName()), "null");
+                substituted.append(originalText, lastOriginalOffset, range.getStartOffset());
+                mappings.add(new OffsetMapping(range.getStartOffset(), substituted.length(), range.getLength(), value.length()));
+                substituted.append(value);
+                lastOriginalOffset = range.getEndOffset();
             }
-
-            int originalStartOffset = variable.getTextOffset();
-            String originalText = variable.getText();
-            int originalLength = originalText.length();
-            int substitutedLength = value.length();
-
-            mappings.add(new OffsetMapping(originalStartOffset, -1, originalLength, substitutedLength));
-            replacements.add(new Replacement(variable, value));
-        }
-
-        // update variables and substituted offsets
-        for (int i = 0; i < replacements.size(); i++) {
-            Replacement r = replacements.get(i);
-            int substitutedStartOffset = r.variable().getTextOffset();
-
-            mappings.set(i, new OffsetMapping(
-                    mappings.get(i).originalStartOffset(),
-                    substitutedStartOffset,
-                    mappings.get(i).originalLength(),
-                    mappings.get(i).substitutedLength()
-            ));
-
-            PsiElement replacementElement = DQLElementFactory.createUnknownElement(psiFile.getProject(), r.value());
-            r.variable().replace(replacementElement);
-        }
-
-        return new ParseResult(mappings, copied.getText());
+            substituted.append(originalText, lastOriginalOffset, originalText.length());
+            return new ParseResult(mappings, substituted.toString());
+        });
     }
 
     @Override

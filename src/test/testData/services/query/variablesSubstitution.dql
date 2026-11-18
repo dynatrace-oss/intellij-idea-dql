@@ -1,0 +1,23 @@
+fetch logs, bucket: {
+  "demo_application_logs"
+}
+| filter isNotNull(app.function) and app.id == "demo.application"
+// Show only logs matching the selected context
+| filter arraySize(array($Customer)) == 0 or in(customer.id, array($Customer))
+// Load customer details to enrich the logs with customer names
+| lookup [
+    fetch bizevents, bucket: {
+      "demo_customer_events"
+    }, from: -1d
+    | filter event.category == "customer_details"
+    | dedup customer, sort: {
+      timestamp desc
+    }
+], lookupField: customer, sourceField: customer.id, fields: {
+  customer_name
+}
+| sort timestamp desc
+// Filter out not matching logs
+| filter arraySize(array($Severity)) == 0 or in(loglevel, array($Severity))
+| filter stringLength($WorkflowID) == 0 or workflow.id == $WorkflowID
+| filter stringLength($LogMessage) == 0 or contains(content, $LogMessage, caseSensitive: false)
