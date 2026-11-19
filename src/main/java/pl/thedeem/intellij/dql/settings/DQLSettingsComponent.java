@@ -14,6 +14,7 @@ public class DQLSettingsComponent {
     private final JBCheckBox performLiveValidations = new JBCheckBox(DQLBundle.message("settings.dql.features.performLiveValidations"));
     private final JBCheckBox useDynatraceAutocomplete = new JBCheckBox(DQLBundle.message("settings.dql.features.useDynatraceAutocomplete"));
     private final JBCheckBox showDqlExecutionToolbar = new JBCheckBox(DQLBundle.message("settings.dql.features.showDqlExecutionToolbar"));
+    private final JBCheckBox showModalForUnresolvedVariables = new JBCheckBox(DQLBundle.message("settings.dql.features.showModalForUnresolvedVariables"));
 
     public DQLSettingsComponent(DQLSettings settings) {
         calculateFieldsDataType.setToolTipText(DQLBundle.message("settings.dql.features.calculateFieldsDataTypeDescription"));
@@ -25,6 +26,7 @@ public class DQLSettingsComponent {
                 .addComponent(allowExperimentalFeatures, 1)
                 .addComponent(performLiveValidations, 1)
                 .addComponent(useDynatraceAutocomplete, 1)
+                .addComponent(showModalForUnresolvedVariables, 1)
                 .addComponentFillVertically(new JBPanel<>(), 0)
                 .getPanel();
 
@@ -34,6 +36,7 @@ public class DQLSettingsComponent {
         performLiveValidations.setSelected(settings.isPerformingLiveValidationEnabled());
         useDynatraceAutocomplete.setSelected(settings.isUseDynatraceAutocompleteEnabled());
         showDqlExecutionToolbar.setSelected(settings.isDQLExecutionToolbarVisible());
+        showModalForUnresolvedVariables.setSelected(settings.isShowModalForUnresolvedVariables());
 
     }
 
@@ -79,5 +82,13 @@ public class DQLSettingsComponent {
 
     public void setDQLExecutionToolbarVisible(boolean visible) {
         showDqlExecutionToolbar.setSelected(visible);
+    }
+
+    public boolean isShowModalForUnresolvedVariables() {
+        return showModalForUnresolvedVariables.isSelected();
+    }
+
+    public void setShowModalForUnresolvedVariables(boolean enabled) {
+        showModalForUnresolvedVariables.setSelected(enabled);
     }
 }
