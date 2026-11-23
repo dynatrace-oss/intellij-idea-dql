@@ -1,6 +1,6 @@
 package pl.thedeem.intellij.dql.services.definition.model;
 
-import groovyjarjarantlr4.v4.runtime.misc.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.time.Instant;
