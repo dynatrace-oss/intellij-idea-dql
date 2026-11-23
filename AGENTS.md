@@ -156,7 +156,24 @@ operators) comes from JSON:
 - `definition/dql.json` – the large upstream DQL definition. Treat it as data synced from Dynatrace and
   avoid hand-editing it.
 - `definition/dql.overrides.json` – plugin-specific additions and corrections merged on top of `dql.json`
-  (`DefinitionUtils.mergeDefinitions`). Put local fixes here. Know how the merge works before editing it:
+  (`DefinitionUtils.mergeDefinitions`). Put local fixes here.
+
+  The main reason overrides exist: upstream command parameters are derived from the command's `synopsis`, in the
+  context of the synopsis placeholders. For a named, repeatable parameter such as `bucket: name, …` or
+  `by: { [expression, …] }`, the upstream entry describes the repeated value instead of the parameter itself.
+  As a result, it:
+  - is named after the value placeholder instead of the parameter name (`name` instead of `bucket`, `expression`
+    instead of `by`, `field` instead of `fields`, `pattern` instead of `include`/`exclude`, `condition` instead
+    of `on`)
+  - has `requiresName: false`, although the parameter has to be written as `bucket: …`
+  - is often `required: true`, although only the value is mandatory once the parameter is used
+
+  Check the parameter's `variadic` flag too: the repetition (`…`) describes the parameter's values. In
+  `dql.command.fetch`, compare the synopsis
+  `fetch dataObject [, bucket: name, …] …` with the upstream `name` parameter and the corrected `bucket` override.
+  When `dql.json` is updated, check new or changed commands for this pattern.
+
+  Know how the merge works before editing the overrides file:
   - Top-level maps (`commands`, `functions`, `operators`, `dataTypes`, ...) merge by key. Within an existing
     entry, fields you leave out of the override keep their upstream value.
   - Lists are **replaced, not merged**. This includes a command's `parameters` (see
