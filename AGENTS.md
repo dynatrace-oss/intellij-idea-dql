@@ -35,8 +35,11 @@ Marketplace verification.
 Treat as forbidden anything that is:
 
 - annotated `@Deprecated`, `@ApiStatus.Internal` or `@ApiStatus.ScheduledForRemoval`, or deprecated in Kotlin
-- in an `impl` package or otherwise not part of the public platform API
 - marked `@ApiStatus.OverrideOnly` or `@ApiStatus.NonExtendable`, when called or extended against those contracts
+
+Judge by annotations and documentation, not by package name. Some public, documented API lives in `impl`
+packages, for example the extension point classes `PostFormatProcessor` and `UsageTypeProvider`, and is fine
+to use. Classes in `impl` packages are internal more often than not, though, so check them before relying on them.
 
 Avoid `@ApiStatus.Experimental` API too. If there is no alternative, ask before using it, and call it out in the
 change.
@@ -153,7 +156,13 @@ operators) comes from JSON:
 - `definition/dql.json` – the large upstream DQL definition. Treat it as data synced from Dynatrace and
   avoid hand-editing it.
 - `definition/dql.overrides.json` – plugin-specific additions and corrections merged on top of `dql.json`
-  (`DefinitionUtils.mergeDefinitions`). Put local fixes here.
+  (`DefinitionUtils.mergeDefinitions`). Put local fixes here. Know how the merge works before editing it:
+  - Top-level maps (`commands`, `functions`, `operators`, `dataTypes`, ...) merge by key. Within an existing
+    entry, fields you leave out of the override keep their upstream value.
+  - Lists are **replaced, not merged**. This includes a command's `parameters` (see
+    `ParameterListMergingDeserializer`) and any other list, such as a function's `signatures` or a parameter's
+    `valueTypes`. To change one parameter, copy the complete upstream list into the override and edit it there.
+    Otherwise the other parameters silently disappear, along with their completion and validation.
 - `definition/dpl.json` – DPL commands, expressions and POSIX classes.
 
 These are loaded by `DQLDefinitionService` / `DPLDefinitionService` (project services) and mapped to models in
@@ -205,7 +214,9 @@ generated code.
 **Change syntax:** edit the `.bnf`/`.flex`, rebuild, then update or add parsing tests and their expected
 PSI dumps (`src/test/testData/parsing/<lang>/*.txt`).
 
-**Add or fix command/function knowledge:** change `dql.overrides.json` (or `dpl.json`), not Java code.
+**Add or fix command/function knowledge:** change `dql.overrides.json` (or `dpl.json`), not Java code. Lists in
+overrides replace the upstream list, so always provide the complete list (see
+[Language definitions drive semantics](#language-definitions-drive-semantics)).
 
 ## Testing
 
