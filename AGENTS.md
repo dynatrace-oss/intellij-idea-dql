@@ -161,8 +161,13 @@ operators) comes from JSON:
     entry, fields you leave out of the override keep their upstream value.
   - Lists are **replaced, not merged**. This includes a command's `parameters` (see
     `ParameterListMergingDeserializer`) and any other list, such as a function's `signatures` or a parameter's
-    `valueTypes`. To change one parameter, copy the complete upstream list into the override and edit it there.
-    Otherwise the other parameters silently disappear, along with their completion and validation.
+    `valueTypes`. An override list must therefore always be complete, or the missing entries silently disappear
+    along with their completion and validation.
+  - If the override file already defines the list (16 commands override `parameters`, for example), edit that
+    list in place. Never replace it with the upstream list, because that discards plugin-specific corrections:
+    the `dql.command.fetch` override, for instance, replaces the upstream `name` parameter with `bucket`.
+  - Copy the upstream list from `dql.json` only when creating a new override for a list that isn't overridden
+    yet, then apply your change to the copy.
 - `definition/dpl.json` – DPL commands, expressions and POSIX classes.
 
 These are loaded by `DQLDefinitionService` / `DPLDefinitionService` (project services) and mapped to models in
@@ -215,7 +220,8 @@ generated code.
 PSI dumps (`src/test/testData/parsing/<lang>/*.txt`).
 
 **Add or fix command/function knowledge:** change `dql.overrides.json` (or `dpl.json`), not Java code. Lists in
-overrides replace the upstream list, so always provide the complete list (see
+overrides replace the upstream list, so keep them complete. Edit an existing override list in place, and copy
+from upstream only when adding a new override (see
 [Language definitions drive semantics](#language-definitions-drive-semantics)).
 
 ## Testing
@@ -260,7 +266,7 @@ Java code to Kotlin unless the change requires one of these APIs.
   actions and titles, sentence case for descriptions).
 - Prefer IntelliJ UI classes (`JBLabel`, `JBTable`, `JBScrollPane`, `JBUI`, popups, notifications) and existing
   components in `common/components` over raw Swing. Build new forms with the Kotlin UI DSL rather than
-  `FormBuilder` or hand-written layouts.
+  `FormBuilder` or handwritten layouts.
 - Never block the EDT. For new background work, prefer coroutines (in Kotlin, see above). In Java,
   `Task.Backgroundable` and `ReadAction` are acceptable. PSI access off the EDT always needs a read action.
 - Language analysis runs constantly. Cache derived results (`CachedValuesManager`, service caches) instead of
