@@ -163,9 +163,9 @@ operators) comes from JSON:
     `ParameterListMergingDeserializer`) and any other list, such as a function's `signatures` or a parameter's
     `valueTypes`. An override list must therefore always be complete, or the missing entries silently disappear
     along with their completion and validation.
-  - If the override file already defines the list (16 commands override `parameters`, for example), edit that
-    list in place. Never replace it with the upstream list, because that discards plugin-specific corrections:
-    the `dql.command.fetch` override, for instance, replaces the upstream `name` parameter with `bucket`.
+  - If the override file already defines the list, edit that list in place. Never replace it with the upstream list,
+    because that discards plugin-specific corrections: the `dql.command.fetch` override, for instance,
+    replaces the upstream `name` parameter with `bucket`.
   - Copy the upstream list from `dql.json` only when creating a new override for a list that isn't overridden
     yet, then apply your change to the copy.
 - `definition/dpl.json` – DPL commands, expressions and POSIX classes.
