@@ -1,7 +1,6 @@
 package pl.thedeem.intellij.dql.psi.elements.impl;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import com.intellij.json.psi.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.util.text.StringUtil;
@@ -23,12 +22,12 @@ import pl.thedeem.intellij.dql.psi.elements.VariableElement;
 import pl.thedeem.intellij.dql.services.query.DQLFieldsCalculatorService;
 import pl.thedeem.intellij.dql.services.variables.DQLVariablesService;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
 public abstract class VariableElementImpl extends ASTWrapperPsiElement implements VariableElement {
-    private CachedValue<PsiElement> reference;
+    private CachedValue<DQLVariablesService.VariableDefinition> reference;
 
     public VariableElementImpl(@NotNull ASTNode node) {
         super(node);
@@ -83,36 +82,30 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
     }
 
     @Override
-    public @NotNull Set<String> getDataType() {
-        PsiElement definition = getDefinition();
-        if (definition instanceof JsonProperty jsonProperty && jsonProperty.getValue() != null) {
-            return switch (jsonProperty.getValue()) {
-                case JsonStringLiteral ignored -> Set.of("dql.dataType.string");
-                case JsonNumberLiteral ignored -> Set.of("dql.dataType.double", "dql.dataType.long");
-                case JsonNullLiteral ignored -> Set.of("dql.dataType.null");
-                case JsonBooleanLiteral ignored -> Set.of("dql.dataType.boolean");
-                case JsonObject object -> {
-                    JsonProperty $type = object.findProperty("$type");
-                    // for injected DQL fragments we do not know what type it produces
-                    if ($type != null && $type.getValue() instanceof JsonStringLiteral literal && literal.getValue().equals("dql")) {
-                        yield Set.of();
-                    }
-                    yield Set.of("dql.dataType.record");
-                }
-                case JsonArray ignored -> Set.of("dql.dataType.array");
-                default -> Set.of();
-            };
+    public @NotNull Collection<String> getDataType() {
+        DQLVariablesService.VariableDefinition definition = getDefinition();
+        if (definition == null) {
+            return Set.of();
         }
-        return Set.of();
+        return definition.dataTypes();
     }
 
     @Override
-    public @Nullable PsiElement getDefinition() {
+    public @Nullable String getValue() {
+        DQLVariablesService.VariableDefinition definition = getDefinition();
+        if (definition == null) {
+            return null;
+        }
+        return definition.value();
+    }
+
+    private @Nullable DQLVariablesService.VariableDefinition getDefinition() {
         if (reference == null) {
             reference = CachedValuesManager.getManager(getProject()).createCachedValue(
                     () -> new CachedValueProvider.Result<>(
                             recalculateReference(),
-                            PsiModificationTracker.MODIFICATION_COUNT
+                            PsiModificationTracker.MODIFICATION_COUNT,
+                            DQLVariablesService.getInstance(getProject()).getUserDefinedVariablesTracker(getContainingFile())
                     ),
                     false
             );
@@ -120,25 +113,11 @@ public abstract class VariableElementImpl extends ASTWrapperPsiElement implement
         return reference.getValue();
     }
 
-    @Override
-    public @Nullable String getValue() {
-        PsiElement definition = getDefinition();
-        DQLVariablesService service = DQLVariablesService.getInstance(getProject());
-        if (definition instanceof JsonProperty property) {
-            return service.getVariableValue(property.getValue());
-        }
-        return service.getVariableValue(null);
-    }
-
-    private PsiElement recalculateReference() {
-        String name = getName();
-        if (name != null) {
-            DQLVariablesService service = DQLVariablesService.getInstance(getProject());
-            List<PsiElement> definitions = service.findVariableDefinitionFiles(name, getContainingFile());
-            if (!definitions.isEmpty()) {
-                return service.findClosestDefinition(getContainingFile().getVirtualFile().getPath(), definitions);
-            }
-        }
-        return null;
+    private @Nullable DQLVariablesService.VariableDefinition recalculateReference() {
+        return DQLVariablesService.getInstance(getProject())
+                .loadVariable(
+                        getContainingFile(),
+                        Objects.requireNonNullElse(getName(), "")
+                );
     }
 }
